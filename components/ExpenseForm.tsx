@@ -1,0 +1,1017 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { bankIcons, categoryStyles } from "@/lib/expense-ui";
+
+type Option = { id: number; code?: string; name: string };
+type SupplierOption = {
+  id: number;
+  businessName: string;
+  alias?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  pec?: string | null;
+  taxCodeSdi?: string | null;
+  internalNotes?: string | null;
+};
+type PaymentRow = {
+  key: number;
+  id?: number;
+  paymentDate: string;
+  channel: string;
+  bankId: string;
+  amount: string;
+  paidBy: "HERBAL_MARKET" | "ALTRO_OPERATORE";
+  amountTouched: boolean;
+};
+
+type InitialPayment = {
+  id?: number;
+  paymentDate?: string | Date | null;
+  channel?: string | null;
+  bankId?: number | null;
+  amount?: string | number | { toString(): string } | null;
+  paidBy?: "HERBAL_MARKET" | "ALTRO_OPERATORE";
+};
+
+type InitialExpense = {
+  id?: number;
+  receivedDate?: string | Date | null;
+  dueDate?: string | Date | null;
+  supplierId?: number | null;
+  merchant?: string | null;
+  categoryId?: number | null;
+  description?: string | null;
+  amount?: string | number | { toString(): string } | null;
+  vatRate?: string | number | { toString(): string } | null;
+  paymentStatus?: string | null;
+  month?: number;
+  year?: number;
+  hasElectronicInvoice?: boolean;
+  invoiceStatus?: string | null;
+  isDeclared?: boolean;
+  payments?: InitialPayment[];
+  notes?: string | null;
+};
+
+type Props = {
+  categories: Option[];
+  banks: Option[];
+  suppliers?: SupplierOption[];
+  initialExpense?: InitialExpense;
+  action?: string;
+  title?: string;
+  submitLabel?: string;
+  onCancel?: () => void;
+  cancelHref?: string;
+};
+
+function toDateInput(value?: string | Date | null) {
+  if (!value) return "";
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toISOString().slice(0, 10);
+}
+
+const today = new Date().toISOString().slice(0, 10);
+function datePlusDays(days: number) {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+function addDaysToDateInput(value: string, days: number) {
+  const date = value ? new Date(`${value}T00:00:00`) : new Date();
+  if (Number.isNaN(date.getTime())) return datePlusDays(days);
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+const currentBillingPeriod = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+const defaultChannel = "Bonifico";
+
+const paymentStatusOptions = [
+  ["DA_PAGARE", "⚪ Non pagato"],
+  ["COMPLETATO", "✅ Completato"],
+  ["PAGATO_PARZIALMENTE", "🟡 Pagato parzialmente"],
+];
+
+function normalizeMoney(value: unknown) {
+  if (value === null || value === undefined) return "";
+  return String(value).replace(",", ".");
+}
+
+function formatEuro(value: number) {
+  return new Intl.NumberFormat("it-IT", {
+    style: "currency",
+    currency: "EUR",
+  }).format(value || 0);
+}
+
+function emptyPaymentRow(key: number): PaymentRow {
+  return {
+    key,
+    paymentDate: "",
+    channel: defaultChannel,
+    bankId: "",
+    amount: "",
+    paidBy: "HERBAL_MARKET",
+    amountTouched: false,
+  };
+}
+
+function paymentRowFromInitial(
+  payment: InitialPayment,
+  index: number,
+): PaymentRow {
+  return {
+    key: payment.id ?? Date.now() + index,
+    id: payment.id,
+    paymentDate: toDateInput(payment.paymentDate),
+    channel: payment.channel ?? defaultChannel,
+    bankId: payment.bankId ? String(payment.bankId) : "",
+    amount: normalizeMoney(payment.amount),
+    paidBy: payment.paidBy ?? "HERBAL_MARKET",
+    amountTouched: true,
+  };
+}
+
+function isPaymentComplete(row: PaymentRow) {
+  return Boolean(
+    row.paymentDate &&
+    row.channel &&
+    row.bankId &&
+    Number(row.amount || 0) > 0 &&
+    row.paidBy,
+  );
+}
+
+function MoneyInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <div className="money-input">
+      <span>€</span>
+      <input type="number" step="0.01" min="0" {...props} />
+    </div>
+  );
+}
+
+function SupplierAutocomplete({
+  suppliers = [],
+  initialSupplierId,
+  initialMerchant,
+}: {
+  suppliers?: SupplierOption[];
+  initialSupplierId?: number | null;
+  initialMerchant?: string | null;
+}) {
+  const initial =
+    suppliers.find((supplier) => supplier.id === initialSupplierId) ?? null;
+  const [query, setQuery] = useState(
+    initial?.businessName ?? initialMerchant ?? "",
+  );
+  const [selected, setSelected] = useState<SupplierOption | null>(initial);
+  const [results, setResults] = useState<SupplierOption[]>(
+    suppliers.slice(0, 10),
+  );
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [showCreate, setShowCreate] = useState(false);
+  const [createData, setCreateData] = useState({
+    businessName: "",
+    email: "",
+    phone: "",
+    pec: "",
+    taxCodeSdi: "",
+    alias: "",
+    internalNotes: "",
+  });
+  const [isSaving, setIsSaving] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      )
+        setIsOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      const params = query.trim()
+        ? `?search=${encodeURIComponent(query.trim())}`
+        : "";
+      const response = await fetch(`/api/suppliers${params}`, {
+        signal: controller.signal,
+      }).catch(() => null);
+      if (!response?.ok) return;
+      const data = await response.json();
+      setResults(data);
+      setActiveIndex(0);
+    }, 180);
+    return () => {
+      controller.abort();
+      window.clearTimeout(timer);
+    };
+  }, [query]);
+
+  function selectSupplier(supplier: SupplierOption) {
+    setSelected(supplier);
+    setQuery(supplier.businessName);
+    setIsOpen(false);
+  }
+
+  function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (!isOpen && ["ArrowDown", "ArrowUp"].includes(event.key))
+      setIsOpen(true);
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setActiveIndex((index) => Math.min(index + 1, results.length - 1));
+    }
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActiveIndex((index) => Math.max(index - 1, 0));
+    }
+    if (event.key === "Enter" && isOpen && results[activeIndex]) {
+      event.preventDefault();
+      selectSupplier(results[activeIndex]);
+    }
+    if (event.key === "Escape") setIsOpen(false);
+  }
+
+  async function createSupplier() {
+    if (!createData.businessName.trim()) return;
+    setIsSaving(true);
+    const response = await fetch("/api/suppliers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(createData),
+    });
+    setIsSaving(false);
+    if (!response.ok) return;
+    const supplier = await response.json();
+    setResults((current) => [
+      supplier,
+      ...current.filter((item) => item.id !== supplier.id),
+    ]);
+    selectSupplier(supplier);
+    setCreateData({
+      businessName: "",
+      email: "",
+      phone: "",
+      pec: "",
+      taxCodeSdi: "",
+      alias: "",
+      internalNotes: "",
+    });
+    setShowCreate(false);
+  }
+
+  return (
+    <div className="supplier-picker supplier-picker-wide" ref={containerRef}>
+      <input type="hidden" name="supplierId" value={selected?.id ?? ""} />
+      <input
+        type="hidden"
+        name="merchant"
+        value={selected?.businessName ?? query}
+      />
+      <label>
+        Esercente
+        <div className="supplier-input-row">
+          <input
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setSelected(null);
+              setIsOpen(true);
+            }}
+            onFocus={() => setIsOpen(true)}
+            onKeyDown={onKeyDown}
+            placeholder="Cerca per ragione sociale o alias"
+            autoComplete="off"
+            required
+          />
+          <button
+            type="button"
+            className="inline-link-button"
+            onClick={() => {
+              setCreateData((data) => ({ ...data, businessName: query }));
+              setShowCreate(true);
+            }}
+          >
+            ＋ Nuovo
+          </button>
+        </div>
+      </label>
+      {isOpen && (
+        <div className="supplier-results" role="listbox">
+          {results.length ? (
+            results.map((supplier, index) => (
+              <button
+                type="button"
+                key={supplier.id}
+                className={index === activeIndex ? "active" : ""}
+                onMouseEnter={() => setActiveIndex(index)}
+                onClick={() => selectSupplier(supplier)}
+              >
+                <strong>{supplier.businessName}</strong>
+                {supplier.alias && <small>Alias: {supplier.alias}</small>}
+              </button>
+            ))
+          ) : (
+            <div className="empty-supplier-result">
+              Nessun fornitore trovato.
+            </div>
+          )}
+        </div>
+      )}
+      {showCreate && (
+        <div className="modal-backdrop">
+          <div className="modal-card">
+            <div className="modal-title">
+              <h3>➕ Nuovo fornitore</h3>
+              <button type="button" onClick={() => setShowCreate(false)}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-form-grid">
+              <label>
+                Ragione Sociale
+                <input
+                  value={createData.businessName}
+                  onChange={(e) =>
+                    setCreateData((d) => ({
+                      ...d,
+                      businessName: e.target.value,
+                    }))
+                  }
+                  required
+                />
+              </label>
+              <label>
+                Email
+                <input
+                  value={createData.email}
+                  onChange={(e) =>
+                    setCreateData((d) => ({ ...d, email: e.target.value }))
+                  }
+                />
+              </label>
+              <label>
+                Telefono
+                <input
+                  value={createData.phone}
+                  onChange={(e) =>
+                    setCreateData((d) => ({ ...d, phone: e.target.value }))
+                  }
+                />
+              </label>
+              <label>
+                PEC
+                <input
+                  value={createData.pec}
+                  onChange={(e) =>
+                    setCreateData((d) => ({ ...d, pec: e.target.value }))
+                  }
+                />
+              </label>
+              <label>
+                Codice SDI/Codice Fiscale
+                <input
+                  value={createData.taxCodeSdi}
+                  onChange={(e) =>
+                    setCreateData((d) => ({ ...d, taxCodeSdi: e.target.value }))
+                  }
+                />
+              </label>
+              <label>
+                Alias
+                <input
+                  value={createData.alias}
+                  onChange={(e) =>
+                    setCreateData((d) => ({ ...d, alias: e.target.value }))
+                  }
+                />
+              </label>
+              <label className="full">
+                Note interne
+                <textarea
+                  rows={3}
+                  value={createData.internalNotes}
+                  onChange={(e) =>
+                    setCreateData((d) => ({
+                      ...d,
+                      internalNotes: e.target.value,
+                    }))
+                  }
+                />
+              </label>
+            </div>
+            <div className="actions-row right-actions">
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={() => setShowCreate(false)}
+              >
+                ✕ Annulla
+              </button>
+              <button
+                type="button"
+                disabled={isSaving}
+                onClick={createSupplier}
+              >
+                ✓ Salva e seleziona
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProductServiceAutocomplete({
+  initialValue = "",
+}: {
+  initialValue?: string | null;
+}) {
+  const [query, setQuery] = useState(initialValue ?? "");
+  const [results, setResults] = useState<string[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const containerRef = useRef<HTMLLabelElement>(null);
+
+  useEffect(() => {
+    const handler = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      )
+        setIsOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      const params = query.trim()
+        ? `?search=${encodeURIComponent(query.trim())}`
+        : "";
+      const response = await fetch(`/api/expense-descriptions${params}`, {
+        signal: controller.signal,
+      }).catch(() => null);
+      if (!response?.ok) return;
+      const data = await response.json();
+      setResults(Array.isArray(data) ? data : []);
+      setActiveIndex(0);
+    }, 180);
+    return () => {
+      controller.abort();
+      window.clearTimeout(timer);
+    };
+  }, [query]);
+
+  function selectSuggestion(value: string) {
+    setQuery(value);
+    setIsOpen(false);
+  }
+
+  function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (!isOpen && ["ArrowDown", "ArrowUp"].includes(event.key))
+      setIsOpen(true);
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setActiveIndex((index) => Math.min(index + 1, results.length - 1));
+    }
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActiveIndex((index) => Math.max(index - 1, 0));
+    }
+    if (event.key === "Enter" && isOpen && results[activeIndex]) {
+      event.preventDefault();
+      selectSuggestion(results[activeIndex]);
+    }
+    if (event.key === "Escape") setIsOpen(false);
+  }
+
+  return (
+    <label
+      className="span-2 product-suggestion-picker"
+      ref={containerRef}
+    >
+      Prodotto/servizio
+      <input
+        name="description"
+        required
+        placeholder="Descrizione libera della spesa"
+        value={query}
+        onChange={(event) => {
+          setQuery(event.target.value);
+          setIsOpen(true);
+        }}
+        onFocus={() => setIsOpen(true)}
+        onKeyDown={onKeyDown}
+        autoComplete="off"
+      />
+      {isOpen && results.length > 0 && (
+        <div className="suggestion-results" role="listbox">
+          {results.map((value, index) => (
+            <button
+              type="button"
+              key={`${value}-${index}`}
+              className={index === activeIndex ? "active" : ""}
+              onMouseEnter={() => setActiveIndex(index)}
+              onClick={() => selectSuggestion(value)}
+            >
+              {value}
+            </button>
+          ))}
+        </div>
+      )}
+    </label>
+  );
+}
+
+export default function ExpenseForm({
+  categories,
+  banks,
+  suppliers = [],
+  initialExpense,
+  action = "/api/expenses",
+  title = "Nuova spesa",
+  submitLabel = "Salva spesa",
+  onCancel,
+  cancelHref,
+}: Props) {
+  const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount));
+  const [paymentStatus, setPaymentStatus] = useState(
+    initialExpense?.paymentStatus ?? "DA_PAGARE",
+  );
+  const [hasElectronicInvoice, setHasElectronicInvoice] = useState(
+    initialExpense?.hasElectronicInvoice ?? true,
+  );
+  const [isDeclared, setIsDeclared] = useState(
+    initialExpense?.isDeclared ?? true,
+  );
+  const [payments, setPayments] = useState<PaymentRow[]>(
+    initialExpense?.payments?.length
+      ? initialExpense.payments.map(paymentRowFromInitial)
+      : [emptyPaymentRow(1)],
+  );
+  const [attachmentError, setAttachmentError] = useState("");
+  const [orderDate, setOrderDate] = useState(toDateInput(initialExpense?.receivedDate) || today);
+  const [dueDate, setDueDate] = useState(
+    initialExpense ? toDateInput(initialExpense.dueDate) : addDaysToDateInput(toDateInput(initialExpense?.receivedDate) || today, 7),
+  );
+  const [invoiceStatus, setInvoiceStatus] = useState(
+    initialExpense?.invoiceStatus ?? "IN_ATTESA",
+  );
+
+  const amountValue = Number(amount || 0);
+  const paidAmountValue = payments.reduce(
+    (sum, row) => sum + Number(row.amount || 0),
+    0,
+  );
+  const residual = Math.max(0, amountValue - paidAmountValue);
+  const canAddPayment = isPaymentComplete(payments[payments.length - 1]);
+  const initialBillingPeriod =
+    initialExpense?.year && initialExpense?.month
+      ? `${initialExpense.year}-${String(initialExpense.month).padStart(2, "0")}`
+      : currentBillingPeriod;
+
+  const invoiceStatuses = useMemo(
+    () => {
+      const base = [
+        ["IN_ATTESA", "⏳ In attesa"],
+        ["RICEVUTA", "✅ Emessa"],
+        ["CONTESTAZIONE", "⚠️ Contestazione"],
+      ];
+      return [["NON_PREVISTA", "— Non prevista"], ...base];
+    },
+    [],
+  );
+
+  const invoiceNotExpected = !hasElectronicInvoice && !isDeclared;
+
+  useEffect(() => {
+    if (!isDeclared) {
+      setHasElectronicInvoice(false);
+      setInvoiceStatus("NON_PREVISTA");
+      return;
+    }
+    if (invoiceStatus === "NON_PREVISTA") {
+      setInvoiceStatus("IN_ATTESA");
+    }
+  }, [isDeclared, invoiceStatus]);
+
+  useEffect(() => {
+    if (!hasElectronicInvoice && !isDeclared) {
+      setInvoiceStatus("NON_PREVISTA");
+      return;
+    }
+    if (invoiceStatus === "NON_PREVISTA" && isDeclared) {
+      setInvoiceStatus("IN_ATTESA");
+    }
+  }, [hasElectronicInvoice, isDeclared, invoiceStatus]);
+
+  function handleAmountChange(value: string) {
+    setAmount(value);
+    if (paymentStatus === "COMPLETATO") {
+      setPayments((rows) =>
+        rows.map((row, index) =>
+          index === 0 && !row.amountTouched ? { ...row, amount: value } : row,
+        ),
+      );
+    }
+  }
+
+  function updatePayment(index: number, patch: Partial<PaymentRow>) {
+    setPayments((rows) =>
+      rows.map((row, i) => (i === index ? { ...row, ...patch } : row)),
+    );
+  }
+
+  function handlePaymentStatusChange(value: string) {
+    setPaymentStatus(value);
+    if (value === "DA_PAGARE") return;
+    setPayments((rows) =>
+      rows.map((row, index) => {
+        const next = { ...row, paymentDate: row.paymentDate || today };
+        if (value === "COMPLETATO" && index === 0 && !row.amountTouched)
+          next.amount = amount;
+        return next;
+      }),
+    );
+  }
+
+  function addPaymentRow() {
+    if (!canAddPayment) return;
+    setPayments((rows) => [...rows, emptyPaymentRow(Date.now())]);
+  }
+
+  function removePaymentRow(index: number) {
+    setPayments((rows) =>
+      rows.length === 1 ? rows : rows.filter((_, i) => i !== index),
+    );
+  }
+
+  return (
+    <form
+      className="card form expense-form"
+      action={action}
+      method="post"
+      encType="multipart/form-data"
+    >
+      <h2 className="full">{title}</h2>
+
+      <label>
+        Data ordine
+        <input
+          type="date"
+          name="receivedDate"
+          value={orderDate}
+          onChange={(event) => {
+            const nextOrderDate = event.currentTarget.value;
+            setOrderDate(nextOrderDate);
+            setDueDate(addDaysToDateInput(nextOrderDate, 7));
+          }}
+          required
+        />
+      </label>
+      <label>
+        Data scadenza
+        <input
+          type="date"
+          name="dueDate"
+          value={dueDate}
+          onChange={(event) => setDueDate(event.currentTarget.value)}
+        />
+      </label>
+      <label>
+        {/*🏷️ Categoria*/}
+        Categoria
+        <select
+          name="categoryId"
+          required
+          defaultValue={initialExpense?.categoryId ?? ""}
+        >
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {categoryStyles[c.name]?.icon ?? "•"} {c.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <SupplierAutocomplete
+          suppliers={suppliers}
+          initialSupplierId={initialExpense?.supplierId ?? null}
+          initialMerchant={initialExpense?.merchant ?? ""}
+      />
+      <ProductServiceAutocomplete
+          initialValue={initialExpense?.description ?? ""}
+      />
+      <label>
+        Costo IVA inclusa
+        <MoneyInput
+          name="amount"
+          required
+          value={amount}
+          onChange={(e) => handleAmountChange(e.currentTarget.value)}
+        />
+      </label>
+      <label>
+        Applicazione IVA
+        <select
+          name="vatRate"
+          defaultValue={normalizeMoney(initialExpense?.vatRate) || "22"}
+        >
+          <option value="0">0%</option>
+          <option value="4">4%</option>
+          <option value="10">10%</option>
+          <option value="22">22%</option>
+        </select>
+      </label>
+      <label>
+        {/*📌 Stato pagamento*/}
+        Stato pagamento
+        <select
+          name="paymentStatus"
+          value={paymentStatus}
+          onChange={(e) => handlePaymentStatusChange(e.target.value)}
+        >
+          {paymentStatusOptions.map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </label>
+
+
+
+      <label>
+        Periodo Fatturazione
+        <input
+          type="month"
+          name="billingPeriod"
+          defaultValue={initialBillingPeriod}
+          required
+        />
+      </label>
+      {/*<div className="field-note">*/}
+      {/*  <span>Residuo da pagare</span>*/}
+      {/*  <strong*/}
+      {/*    className={*/}
+      {/*      residual > 0 || paymentStatus !== "COMPLETATO" ? "warning" : ""*/}
+      {/*    }*/}
+      {/*  >*/}
+      {/*    {formatEuro(residual)}*/}
+      {/*  </strong>*/}
+      {/*  <small>Totale pagato: {formatEuro(paidAmountValue)}</small>*/}
+      {/*  {paymentStatus !== "COMPLETATO" && <small>Stato non completato</small>}*/}
+      {/*</div>*/}
+
+      {/*<div className="toggle-field-wrap">*/}
+      <div className="toggle-field switch-toggle-field">
+        <span>Detrazione</span>
+        <label className="switch">
+          <input
+              type="checkbox"
+              name="isDeclared"
+              value="true"
+              checked={isDeclared}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                setIsDeclared(checked);
+                if (!checked) {
+                  setHasElectronicInvoice(false);
+                  setInvoiceStatus("NON_PREVISTA");
+                } else if (invoiceStatus === "NON_PREVISTA") {
+                  setInvoiceStatus("IN_ATTESA");
+                }
+              }}
+          />
+          <span className="slider" />
+          <span>{isDeclared ? "Si" : "No"}</span>
+        </label>
+      </div>
+
+      <div className="toggle-field switch-toggle-field">
+        <span>Fattura Elettronica</span>
+        <label className="switch">
+          <input
+            type="checkbox"
+            name="hasElectronicInvoice"
+            value="true"
+            checked={hasElectronicInvoice}
+            disabled={!isDeclared}
+            onChange={(e) => {
+              const checked = e.target.checked;
+              setHasElectronicInvoice(checked);
+              if (checked) setIsDeclared(true);
+            }}
+          />
+          <span className="slider" />
+          <span>{hasElectronicInvoice ? "Si" : "No"}</span>
+        </label>
+      </div>
+      {/*</div>*/}
+      <label>
+        🧾 Stato Fattura
+        <select
+          name="invoiceStatus"
+          value={invoiceStatus}
+          disabled={invoiceNotExpected}
+          onChange={(e) => setInvoiceStatus(e.currentTarget.value)}
+        >
+          {invoiceStatuses.map(([value, label]) => (
+            <option key={value} value={value} disabled={value === "NON_PREVISTA" && isDeclared}>
+              {label}
+            </option>
+          ))}
+        </select>
+        {invoiceNotExpected && <input type="hidden" name="invoiceStatus" value="NON_PREVISTA" />}
+      </label>
+
+      <section className="payments-box full">
+        <div className="section-title">
+          <div>
+            <h3>Pagamenti</h3>
+            <p>Puoi registrare uno o più pagamenti per la stessa spesa.</p>
+          </div>
+          <button
+              type="button"
+              className="secondary-button"
+              onClick={addPaymentRow}
+              disabled={!canAddPayment}
+          >
+            ➕ Aggiungi pagamento
+          </button>
+        </div>
+        {payments.map((payment, index) => (
+            <div className="payment-row" key={payment.key}>
+              <input type="hidden" name="paymentId[]" value={payment.id ?? ""} />
+              <label>
+                Data pagamento
+                <input
+                    type="date"
+                    name="paymentDate[]"
+                    value={payment.paymentDate}
+                    onChange={(e) =>
+                        updatePayment(index, { paymentDate: e.target.value })
+                    }
+                />
+              </label>
+              <label>
+                Canale pagamento
+                <select
+                    name="paymentChannel[]"
+                    value={payment.channel}
+                    onChange={(e) =>
+                        updatePayment(index, { channel: e.target.value })
+                    }
+                >
+                  <option>Addebito</option>
+                  <option>Bonifico</option>
+                  <option>RID Bancario</option>
+                  <option>Modello F24</option>
+                  <option>Carta di Debito</option>
+                  <option>PayPal</option>
+                  <option>Mooney</option>
+                  <option>Cash</option>
+                </select>
+              </label>
+              <label>
+                {/*🏦 Banca*/}
+                Banca
+                <select
+                    name="paymentBankId[]"
+                    value={payment.bankId}
+                    onChange={(e) =>
+                        updatePayment(index, { bankId: e.target.value })
+                    }
+                >
+                  <option value="">-</option>
+                  {banks.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {bankIcons[b.name] ?? "🏦"} {b.name}
+                      </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Importo pagamento
+                <MoneyInput
+                    name="paymentAmount[]"
+                    value={payment.amount}
+                    onChange={(e) =>
+                        updatePayment(index, {
+                          amount: e.currentTarget.value,
+                          amountTouched: true,
+                        })
+                    }
+                />
+              </label>
+              <label>
+                Pagamento effettuato da
+                <select
+                    name="paymentPaidBy[]"
+                    value={payment.paidBy}
+                    onChange={(e) =>
+                        updatePayment(index, {
+                          paidBy: e.target.value as PaymentRow["paidBy"],
+                        })
+                    }
+                >
+                  <option value="HERBAL_MARKET">Herbal Market</option>
+                  <option value="ALTRO_OPERATORE">Altro Operatore</option>
+                </select>
+              </label>
+              <button
+                  type="button"
+                  className="remove-row"
+                  onClick={() => removePaymentRow(index)}
+                  disabled={payments.length === 1}
+              >
+                🗑️ Rimuovi
+              </button>
+            </div>
+        ))}
+
+        <div className="flex">
+          {!canAddPayment && (
+              <p className="inline-warning">
+                Per aggiungere un altro pagamento, completa prima l’ultima riga.
+              </p>
+          )}
+          <div className="field-note payment-note">
+            <span className="muted">Residuo da pagare &nbsp;</span>
+            <strong
+                className={
+                  residual > 0 || paymentStatus !== "COMPLETATO" ? "text-critical" : ""
+                }
+            >{formatEuro(residual)}
+            </strong>
+            {/*<div>*/}
+            {/*<small>Totale pagato: {formatEuro(paidAmountValue)}</small>*/}
+            {/*</div>*/}
+            {/*{paymentStatus !== "COMPLETATO" && <small>Stato non completato</small>}*/}
+          </div>
+        </div>
+      </section>
+
+      <label className="attachment-row-wrap">
+        Allegati
+        <div className="flex attachment-row">
+        <input
+          type="file"
+          name="attachments"
+          accept=".pdf,.jpg,.jpeg,.png,.webp,.xml,.p7m"
+          multiple
+          onChange={(e) =>
+            setAttachmentError(
+              (e.target.files?.length ?? 0) > 5
+                ? "Puoi caricare massimo 5 allegati."
+                : "",
+            )
+          }
+        />
+        <div className="field-note attachments-note">
+          <span className="attachments-wrap"><br/></span>
+          <span>Limite allegati &nbsp;</span>
+          <strong>5 file</strong>
+          <div>
+            <small>PDF, immagini, XML, P7M</small>
+          </div>
+        </div>
+        </div>
+      </label>
+
+      {attachmentError && (
+        <p className="inline-warning full">{attachmentError}</p>
+      )}
+      <label className="full">
+        Note
+        <textarea
+          name="notes"
+          rows={3}
+          placeholder="Note interne opzionali"
+          defaultValue={initialExpense?.notes ?? ""}
+        />
+      </label>
+      <div className="actions-row full form-actions-row">
+        <button className="button-standard" type="submit"><span className="btn-icon">✓</span> {submitLabel}</button>
+        {onCancel ? (
+          <button className="secondary-button button-standard" type="button" onClick={onCancel}><span className="btn-icon">×</span> Annulla</button>
+        ) : (
+          <a className="secondary-button button-standard" href={cancelHref ?? "/expenses"}><span className="btn-icon">×</span> Annulla</a>
+        )}
+      </div>
+    </form>
+  );
+}

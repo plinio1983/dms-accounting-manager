@@ -1,0 +1,196 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum CompanyCode {
+  HM
+  TS
+  OTHER
+}
+
+enum PaymentStatus {
+  DA_PAGARE
+  COMPLETATO
+  PAGATO_PARZIALMENTE
+}
+
+enum PaidBy {
+  HERBAL_MARKET
+  ALTRO_OPERATORE
+}
+
+enum InvoiceStatus {
+  NONE
+  YES
+  NO
+  OK
+  KO
+  NON_PREVISTA
+  IN_ATTESA
+  INVIATA_SDI
+  CONTESTAZIONE
+  RICEVUTA
+}
+
+model Company {
+  id        Int       @id @default(autoincrement())
+  code      CompanyCode @unique
+  name      String
+  expenses  Expense[]
+  revenues  MonthlyRevenue[]
+  createdAt DateTime @default(now())
+}
+
+model ExpenseCategory {
+  id        Int       @id @default(autoincrement())
+  code      String    @unique
+  name      String
+  expenses  Expense[]
+}
+
+model Bank {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  expenses  Expense[]
+  payments  ExpensePayment[]
+}
+
+model Supplier {
+  id             Int       @id @default(autoincrement())
+  businessName   String
+  email          String?
+  phone          String?
+  pec            String?
+  taxCodeSdi     String?
+  alias          String?
+  internalNotes  String?
+  expenses       Expense[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([businessName])
+  @@index([alias])
+}
+
+model Expense {
+  id                    Int       @id @default(autoincrement())
+  receivedDate          DateTime?
+  merchant              String
+  supplierId            Int?
+  supplier              Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  categoryId            Int?
+  category              ExpenseCategory? @relation(fields: [categoryId], references: [id])
+  description           String?
+  amount                Decimal   @db.Decimal(12, 2)
+  paymentDate           DateTime?
+  dueDate               DateTime?
+  vatRate               Decimal   @db.Decimal(5, 2) @default(22)
+  channel               String?
+  bankId                Int?
+  bank                  Bank?     @relation(fields: [bankId], references: [id])
+  isComplete            Boolean   @default(false)
+  isDeclared            Boolean   @default(true)
+  hasElectronicInvoice  Boolean   @default(true)
+  invoiceStatus         InvoiceStatus @default(IN_ATTESA)
+  companyId             Int?
+  company               Company?  @relation(fields: [companyId], references: [id])
+  paidByCurrentAccount  Boolean   @default(false)
+  month                 Int
+  year                  Int
+  notes                 String?
+
+  paymentStatus         PaymentStatus @default(DA_PAGARE)
+  paidAmount            Decimal   @db.Decimal(12, 2) @default(0)
+  paidBy                PaidBy    @default(HERBAL_MARKET)
+  invoiceDocumentPath   String?
+
+  payments              ExpensePayment[]
+  attachments           ExpenseAttachment[]
+
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([year, month])
+  @@index([merchant])
+}
+
+model ExpensePayment {
+  id          Int       @id @default(autoincrement())
+  expenseId   Int
+  expense     Expense   @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  paymentDate DateTime?
+  channel     String?
+  bankId      Int?
+  bank        Bank?     @relation(fields: [bankId], references: [id])
+  amount      Decimal   @db.Decimal(12, 2)
+  paidBy      PaidBy    @default(HERBAL_MARKET)
+  createdAt   DateTime  @default(now())
+
+  @@index([expenseId])
+  @@index([paymentDate])
+}
+
+model ExpenseAttachment {
+  id           Int       @id @default(autoincrement())
+  expenseId    Int
+  expense      Expense   @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  originalName String
+  path         String
+  mimeType     String?
+  sizeBytes    Int?
+  createdAt    DateTime  @default(now())
+
+  @@index([expenseId])
+}
+
+model MonthlyRevenue {
+  id              Int       @id @default(autoincrement())
+  companyId       Int
+  company         Company   @relation(fields: [companyId], references: [id])
+  month           Int
+  year            Int
+  webAmount       Decimal   @db.Decimal(12, 2) @default(0)
+  shopAmount      Decimal   @db.Decimal(12, 2) @default(0)
+  noInvoiceAmount Decimal   @db.Decimal(12, 2) @default(0)
+  totalOrders     Int?
+  inps            Decimal   @db.Decimal(12, 2) @default(0)
+  accountant      Decimal   @db.Decimal(12, 2) @default(0)
+  tari            Decimal   @db.Decimal(12, 2) @default(0)
+  taxRate         Decimal   @db.Decimal(5, 2) @default(28)
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([companyId, year, month])
+  @@index([year, month])
+}
+
+
+model Income {
+  id              Int       @id @default(autoincrement())
+  salesChannel    String
+  saleCategory    String    @default("B2C")
+  amount          Decimal   @db.Decimal(12, 2)
+  paymentMethod   String
+  creditChannel   String
+  creditDate      DateTime
+  billingMonth    Int       @default(1)
+  billingYear     Int       @default(2026)
+  isFiscal        Boolean   @default(true)
+  invoiceStatus   String?
+  vatRate         Decimal   @db.Decimal(5, 2) @default(22)
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([creditDate])
+  @@index([billingYear, billingMonth])
+  @@index([salesChannel])
+  @@index([saleCategory])
+  @@index([isFiscal])
+}

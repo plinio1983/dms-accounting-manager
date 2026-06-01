@@ -1,0 +1,45 @@
+@media (max-width: 576px) {
+    body { overflow-x: hidden !important;}
+
+    .form {
+        gap: 20px;
+    }
+
+    .form label,
+    .switch-toggle-field > span {
+        font-size: 20px;
+    }
+
+    .toggle-field-wrap {
+        display: flex;
+        width: 100% !important;
+    }
+
+    .toggle-field-wrap .switch-toggle-field {
+        width: 50%;
+    }
+
+    .payment-row {
+        grid-template-columns: 1fr;
+    }
+
+    .attachments-note {
+        text-align: right;
+        align-self: center;
+    }
+
+    .currency-input > span,
+    .vat-input > span {
+        height: 44px;
+        line-height: 46px;
+    }
+
+    .section-title {
+        flex-direction: column;
+    }
+
+    .grid-4, .grid-2, .form {
+        grid-template-columns: 1fr;
+    }
+
+}

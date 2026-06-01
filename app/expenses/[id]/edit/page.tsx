@@ -1,0 +1,92 @@
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import ExpenseForm from '@/components/ExpenseForm';
+import ModalBodyClass from '@/components/ModalBodyClass';
+
+const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
+const allowedCategoryOrder = [
+  'Servizi Bancari',
+  'Assicurazioni',
+  'Affitti/Utenze',
+  'Servizi Web',
+  'Spedizioni/Corrieri',
+  'Tasse/Imposte',
+  'Altri Servizi',
+  'Merce/Forniture',
+  'Articoli di Supporto',
+  'Prestazioni/Dipendenti',
+  'Rateizzazione'
+];
+
+export default async function EditExpensePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const { id } = await params;
+  const query = (await searchParams) ?? {};
+  const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
+  const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : `/expenses/${id}`;
+  const encodedReturnTo = encodeURIComponent(returnTo);
+  const [expense, categories, banks, suppliers] = await Promise.all([
+    prisma.expense.findUnique({ where: { id: Number(id) }, include: { payments: { orderBy: { id: 'asc' } }, supplier: true } }),
+    prisma.expenseCategory.findMany({ orderBy: { id: 'asc' } }),
+    prisma.bank.findMany(),
+    prisma.supplier.findMany({ orderBy: { businessName: 'asc' }, take: 100 })
+  ]);
+
+  if (!expense) notFound();
+
+  const orderedBanks = allowedBankOrder
+    .map(name => banks.find(bank => bank.name === name))
+    .filter(Boolean) as typeof banks;
+
+  const orderedCategories = allowedCategoryOrder
+    .map(name => categories.find(category => category.name === name))
+    .filter(Boolean) as typeof categories;
+
+  return <div className="modal-page-wrap">
+    <ModalBodyClass />
+    <div className="modal-card modal-card-wide modal-page-card">
+    <div className="toolbar-card modal-toolbar-card">
+      <div>
+        <h2>Modifica spesa #{expense.id}</h2>
+        <p className="muted">Aggiorna dati, pagamenti e nuovi allegati della spesa.</p>
+      </div>
+      <Link className="table-action secondary" href={returnTo}>↩ Annulla</Link>
+    </div>
+    <ExpenseForm
+      title="Modifica spesa"
+      cancelHref={returnTo}
+      submitLabel="Salva modifiche"
+      action={`/api/expenses/${expense.id}?returnTo=${encodedReturnTo}`}
+      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}
+      banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
+      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
+      initialExpense={{
+        id: expense.id,
+        receivedDate: expense.receivedDate,
+        dueDate: expense.dueDate,
+        merchant: expense.merchant,
+        supplierId: expense.supplierId,
+        categoryId: expense.categoryId,
+        description: expense.description,
+        amount: expense.amount.toString(),
+        vatRate: expense.vatRate.toString(),
+        paymentStatus: expense.paymentStatus,
+        month: expense.month,
+        year: expense.year,
+        hasElectronicInvoice: expense.hasElectronicInvoice,
+        invoiceStatus: expense.invoiceStatus,
+        isDeclared: expense.isDeclared,
+        notes: expense.notes,
+        payments: expense.payments.map(payment => ({
+          id: payment.id,
+          paymentDate: payment.paymentDate,
+          channel: payment.channel,
+          bankId: payment.bankId,
+          amount: payment.amount.toString(),
+          paidBy: payment.paidBy
+        }))
+      }}
+    />
+    </div>
+  </div>;
+}

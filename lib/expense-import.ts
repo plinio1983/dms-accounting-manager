@@ -1,0 +1,295 @@
+import XLSX from 'xlsx';
+import { prisma } from '@/lib/prisma';
+import type { InvoiceStatus, PaidBy, PaymentStatus } from '../generated/prisma/client';
+
+const fixedCategories = [
+  'Servizi Bancari',
+  'Assicurazioni',
+  'Affitti/Utenze',
+  'Servizi Web',
+  'Spedizioni/Corrieri',
+  'Tasse/Imposte',
+  'Altri Servizi',
+  'Merce/Forniture',
+  'Articoli di Supporto',
+  'Prestazioni/Dipendenti',
+  'Rateizzazione'
+];
+
+const fixedBanks = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
+
+const categoryAcronyms: Record<string, string> = {
+  'Servizi Bancari': 'SBANC',
+  'Assicurazioni': 'ASSIC',
+  'Affitti/Utenze': 'AFFUT',
+  'Servizi Web': 'WEB',
+  'Spedizioni/Corrieri': 'SPED',
+  'Tasse/Imposte': 'TAX',
+  'Altri Servizi': 'ALSRV',
+  'Merce/Forniture': 'MERCE',
+  'Articoli di Supporto': 'SUPP',
+  'Prestazioni/Dipendenti': 'PERS',
+  'Rateizzazione': 'RATE'
+};
+
+const categoryAliases: Record<string, string> = {
+  BANK: 'Servizi Bancari',
+  SBANC: 'Servizi Bancari',
+  ASS: 'Assicurazioni',
+  ASSIC: 'Assicurazioni',
+  'AFF/UT': 'Affitti/Utenze',
+  AFFUT: 'Affitti/Utenze',
+  WEBSRV: 'Servizi Web',
+  WEB: 'Servizi Web',
+  SPED: 'Spedizioni/Corrieri',
+  SPEDIZIONI: 'Spedizioni/Corrieri',
+  'TAX/IMP': 'Tasse/Imposte',
+  TAX: 'Tasse/Imposte',
+  RAT: 'Rateizzazione',
+  RATE: 'Rateizzazione',
+  MERCE: 'Merce/Forniture',
+  PROD: 'Merce/Forniture',
+  PRODOTTI: 'Merce/Forniture',
+  SUPP: 'Articoli di Supporto',
+  PERS: 'Prestazioni/Dipendenti'
+};
+
+export type ExpenseImportResult = {
+  imported: number;
+  skipped: number;
+  deleted: number;
+  suppliersCreated: number;
+  sheets: string[];
+};
+
+function normalizeCode(value: string) {
+  return value.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Z0-9]+/g, '_').replace(/^_|_$/g, '');
+}
+
+function categoryCode(name: string) {
+  return categoryAcronyms[name] ?? normalizeCode(name);
+}
+
+function normalizeHeader(value: string) {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function rowValue(row: Record<string, unknown>, names: string[]) {
+  const normalized = new Map(Object.entries(row).map(([key, value]) => [normalizeHeader(key), value]));
+  for (const name of names) {
+    const value = normalized.get(normalizeHeader(name));
+    if (value !== undefined && value !== null && String(value).trim() !== '') return value;
+  }
+  return null;
+}
+
+function parseMoney(value: unknown) {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  const text = String(value ?? '').replace(/€/g, '').replace(/\s/g, '').trim();
+  if (!text) return 0;
+  const decimal = text.includes(',') ? text.replace(/\./g, '').replace(',', '.') : text;
+  const parsed = Number(decimal.replace(/[^0-9.-]/g, ''));
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function parseDate(value: unknown) {
+  if (!value) return null;
+  if (value instanceof Date && !Number.isNaN(value.getTime())) return value;
+  if (typeof value === 'number') {
+    const parsed = XLSX.SSF.parse_date_code(value);
+    return parsed ? new Date(parsed.y, parsed.m - 1, parsed.d) : null;
+  }
+  const text = String(value).trim();
+  const italian = text.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+  if (italian) return new Date(Number(italian[3]), Number(italian[2]) - 1, Number(italian[1]));
+  const iso = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+  const date = new Date(text);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function addDays(date: Date, days: number) {
+  const copy = new Date(date);
+  copy.setDate(copy.getDate() + days);
+  return copy;
+}
+
+function parseBool(value: unknown) {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') return value !== 0;
+  const text = String(value ?? '').trim().toLowerCase();
+  return ['1', 'si', 'sì', 'yes', 'true', 'ok', 'x', 'completato', 'pagato'].includes(text);
+}
+
+function textValue(value: unknown) {
+  return String(value ?? '').trim();
+}
+
+function mapCategoryName(value: unknown) {
+  const text = textValue(value);
+  if (!text) return 'Altri Servizi';
+  const upper = text.toUpperCase().trim();
+  const alias = categoryAliases[upper];
+  if (alias) return alias;
+  if (text === 'Merce/Prodotti') return 'Merce/Forniture';
+  if (text === 'Spedizioni') return 'Spedizioni/Corrieri';
+  return fixedCategories.includes(text) ? text : 'Altri Servizi';
+}
+
+function mapBankName(value: unknown) {
+  const text = textValue(value);
+  return fixedBanks.includes(text) ? text : 'Altra Banca';
+}
+
+function mapChannel(value: unknown) {
+  const text = textValue(value);
+  const lower = text.toLowerCase();
+  if (!text) return null;
+  if (lower === 'rid') return 'RID Bancario';
+  if (lower.includes('mooney')) return 'Mooney';
+  if (lower.includes('bonifico')) return 'Bonifico';
+  if (lower.includes('paypal')) return 'PayPal';
+  if (lower.includes('addebito')) return 'Addebito';
+  if (lower.includes('f24')) return 'Modello F24';
+  if (lower.includes('cash') || lower.includes('contanti')) return 'Cash';
+  return text;
+}
+
+function mapPaidBy(value: unknown): PaidBy {
+  const text = textValue(value).toLowerCase();
+  return text.includes('altro') ? 'ALTRO_OPERATORE' : 'HERBAL_MARKET';
+}
+
+function mapInvoiceStatus(value: unknown, hasElectronicInvoice: boolean): InvoiceStatus {
+  const text = textValue(value).toLowerCase();
+  if (['non prevista', 'non previsto', 'nonprevista', 'n/a', 'na'].includes(text)) return 'NON_PREVISTA';
+  if (['ok', 'emessa', 'ricevuta'].includes(text)) return 'RICEVUTA';
+  if (['inviata sdi', 'sdi', 'emessa sdi'].includes(text)) return 'RICEVUTA';
+  if (text.includes('contest')) return 'CONTESTAZIONE';
+  return 'IN_ATTESA';
+}
+
+async function ensureReferenceData() {
+  await prisma.company.upsert({ where: { code: 'HM' }, update: { name: 'Herbal Market' }, create: { code: 'HM', name: 'Herbal Market' } });
+  await prisma.company.upsert({ where: { code: 'OTHER' }, update: { name: 'Altro Operatore' }, create: { code: 'OTHER', name: 'Altro Operatore' } });
+
+  for (const categoryName of fixedCategories) {
+    const code = categoryCode(categoryName);
+    await prisma.expenseCategory.upsert({ where: { code }, update: { name: categoryName }, create: { code, name: categoryName } });
+  }
+  for (const bankName of fixedBanks) {
+    await prisma.bank.upsert({ where: { name: bankName }, update: {}, create: { name: bankName } });
+  }
+
+  return {
+    categories: Object.fromEntries((await prisma.expenseCategory.findMany()).map(category => [category.name, category])),
+    banks: Object.fromEntries((await prisma.bank.findMany()).map(bank => [bank.name, bank]))
+  };
+}
+
+async function getOrCreateSupplier(businessNameRaw: unknown) {
+  const businessName = textValue(businessNameRaw) || 'Senza esercente';
+  const existing = await prisma.supplier.findFirst({ where: { businessName } });
+  if (existing) return { supplier: existing, created: false };
+  const supplier = await prisma.supplier.create({ data: { businessName } });
+  return { supplier, created: true };
+}
+
+function getTabularRows(workbook: XLSX.WorkBook) {
+  const result: Array<{ sheetName: string; row: Record<string, unknown> }> = [];
+  for (const sheetName of workbook.SheetNames) {
+    const sheet = workbook.Sheets[sheetName];
+    const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { raw: true, defval: null });
+    const hasExpectedHeaders = rows.some(row => rowValue(row, ['Data ordine', 'Fornitore', 'Esercente', 'Costo', 'Descrizione']) !== null);
+    if (!hasExpectedHeaders) continue;
+    for (const row of rows) result.push({ sheetName, row });
+  }
+  return result;
+}
+
+export async function importExpensesWorkbook(buffer: Buffer, options: { clearBeforeImport?: boolean } = {}): Promise<ExpenseImportResult> {
+  const workbook = XLSX.read(buffer, { type: 'buffer', cellDates: true });
+  const rows = getTabularRows(workbook);
+  const sheets = Array.from(new Set(rows.map(item => item.sheetName)));
+  let deleted = 0;
+
+  if (options.clearBeforeImport) {
+    const [, , deleteResult] = await prisma.$transaction([
+      prisma.expenseAttachment.deleteMany({}),
+      prisma.expensePayment.deleteMany({}),
+      prisma.expense.deleteMany({})
+    ]);
+    deleted = deleteResult.count;
+  }
+
+  const refs = await ensureReferenceData();
+  let imported = 0;
+  let skipped = 0;
+  let suppliersCreated = 0;
+
+  for (const { row } of rows) {
+    const amount = parseMoney(rowValue(row, ['Costo', 'Costo IVA inclusa', 'Importo']));
+    const supplierName = rowValue(row, ['Fornitore', 'Esercente']);
+    const description = textValue(rowValue(row, ['Descrizione', 'Prodotto/servizio', 'Prodotto / Servizio']));
+    const orderDate = parseDate(rowValue(row, ['Data ordine', 'Data Ricez', 'Data ricezione']));
+    if (!supplierName && !description && amount <= 0) {
+      skipped++;
+      continue;
+    }
+
+    const paymentDate = parseDate(rowValue(row, ['Data pagamento', 'Data Pag']));
+    const dueDate = parseDate(rowValue(row, ['Data scadenza', 'Scadenza'])) ?? (orderDate ? addDays(orderDate, 7) : null);
+    const vatRate = parseMoney(rowValue(row, ['Aliquota IVA', '% IVA', 'Applicazione IVA', 'IVA']));
+    const hasElectronicInvoice = parseBool(rowValue(row, ['Fattura elettronica', 'F. Elett.', 'Fattura Elettronica']));
+    const isDeclared = parseBool(rowValue(row, ['Detrazione', 'Dich.', 'Dichiarazione']));
+    const invoiceStatus = (!isDeclared && !hasElectronicInvoice) ? 'NON_PREVISTA' : mapInvoiceStatus(rowValue(row, ['Stato fattura', 'Fattura']), hasElectronicInvoice);
+    const categoryName = mapCategoryName(rowValue(row, ['Categoria']));
+    const category = refs.categories[categoryName] ?? refs.categories['Altri Servizi'];
+    const bankName = mapBankName(rowValue(row, ['Banca']));
+    const bank = refs.banks[bankName] ?? refs.banks['Altra Banca'];
+    const channel = mapChannel(rowValue(row, ['Canale Pagamento', 'Canale']));
+    const paidBy = mapPaidBy(rowValue(row, ['Pagamento effettuato da', 'Pagato da']));
+    const paidCompleted = parseBool(rowValue(row, ['Pagamento completato', 'Compl.', 'Completato']));
+    const explicitPaidAmount = parseMoney(rowValue(row, ['Importo pagamento', 'Importo pagato']));
+    const paidAmount = paidCompleted ? amount : explicitPaidAmount;
+    const paymentStatus: PaymentStatus = paidAmount >= amount && amount > 0 ? 'COMPLETATO' : paidAmount > 0 ? 'PAGATO_PARZIALMENTE' : 'DA_PAGARE';
+    const billingDate = parseDate(rowValue(row, ['Periodo fatturazione', 'Mese fatturazione', 'Periodo Fatt.'])) ?? orderDate ?? new Date();
+    const { supplier, created } = await getOrCreateSupplier(supplierName);
+    if (created) suppliersCreated++;
+
+    await prisma.expense.create({
+      data: {
+        receivedDate: orderDate,
+        dueDate,
+        merchant: supplier.businessName,
+        supplierId: supplier.id,
+        categoryId: category?.id ?? null,
+        description: description || null,
+        amount,
+        paymentDate: paymentStatus === 'DA_PAGARE' ? null : paymentDate,
+        vatRate,
+        channel,
+        bankId: bank?.id ?? null,
+        isComplete: paymentStatus === 'COMPLETATO',
+        isDeclared,
+        hasElectronicInvoice,
+        invoiceStatus,
+        paidByCurrentAccount: paidBy === 'HERBAL_MARKET',
+        paymentStatus,
+        paidAmount,
+        paidBy,
+        month: billingDate.getMonth() + 1,
+        year: billingDate.getFullYear(),
+        payments: paidAmount > 0 ? { create: [{ paymentDate, channel, bankId: bank?.id ?? null, amount: paidAmount, paidBy }] } : undefined
+      }
+    });
+    imported++;
+  }
+
+  return { imported, skipped, deleted, suppliersCreated, sheets };
+}

@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: dms-spese-ricavi-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dms_spese_ricavi
+      POSTGRES_USER: dms
+      POSTGRES_PASSWORD: dms
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:

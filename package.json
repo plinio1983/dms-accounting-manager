@@ -1,0 +1,40 @@
+{
+  "name": "dms-accounting-manager",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev --name init",
+    "db:seed": "prisma generate && tsx prisma/seed.ts",
+    "import:excel": "tsx scripts/import-excel.ts",
+    "db:push": "prisma db push && prisma generate",
+    "db:reset-local": "prisma migrate reset --force && prisma generate",
+    "db:sync": "prisma db push && prisma generate",
+    "import:expenses": "tsx scripts/import-expenses.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "dotenv": "^16.6.1",
+    "next": "^15.3.0",
+    "pg": "^8.16.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "xlsx": "^0.18.5",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/pg": "^8.15.5",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "prisma": "^7.8.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "type": "module"
+}

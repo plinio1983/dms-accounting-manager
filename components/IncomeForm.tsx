@@ -1,0 +1,184 @@
+"use client";
+
+import { useMemo, useState } from "react";
+
+type InitialIncome = {
+  id?: number;
+  salesChannel?: string | null;
+  saleCategory?: string | null;
+  amount?: string | number | { toString(): string } | null;
+  paymentMethod?: string | null;
+  creditChannel?: string | null;
+  creditDate?: string | Date | null;
+  billingMonth?: number | null;
+  billingYear?: number | null;
+  isFiscal?: boolean;
+  invoiceStatus?: string | null;
+  vatRate?: string | number | { toString(): string } | null;
+  notes?: string | null;
+};
+
+type Props = {
+  initialIncome?: InitialIncome;
+  action?: string;
+  title?: string;
+  submitLabel?: string;
+  onCancel?: () => void;
+  cancelHref?: string;
+};
+
+const today = new Date().toISOString().slice(0, 10);
+const currentMonth = new Date().toISOString().slice(0, 7);
+const salesChannels = ["Shop", "Online Shop", "Altro Canale"];
+const saleCategories = ["B2C", "B2B", "Altro"];
+const paymentMethods = ["Bonifico", "Carta di Debito/Credito", "Criptovaluta", "Stripe", "Cash"];
+const creditChannels = ["Cash", "Unicredit", "MyTu", "Wise"];
+const vatRates = ["0", "4", "10", "22"];
+
+function toDateInput(value?: string | Date | null) {
+  if (!value) return "";
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toISOString().slice(0, 10);
+}
+
+function toMonthInput(income?: InitialIncome) {
+  if (income?.billingMonth && income?.billingYear) {
+    return `${income.billingYear}-${String(income.billingMonth).padStart(2, "0")}`;
+  }
+  return currentMonth;
+}
+
+function normalizeMoney(value: unknown) {
+  if (value === null || value === undefined) return "";
+  return String(value).replace(",", ".");
+}
+
+function formatEuro(value: number) {
+  return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(value || 0);
+}
+
+function MoneyInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <div className="money-input">
+      <span>€</span>
+      <input type="number" step="0.01" min="0" {...props} />
+    </div>
+  );
+}
+
+export default function IncomeForm({
+  initialIncome,
+  action = "/api/incomes",
+  title = "Nuovo incasso",
+  submitLabel = "Salva incasso",
+  onCancel,
+  cancelHref,
+}: Props) {
+  const [amount, setAmount] = useState(normalizeMoney(initialIncome?.amount));
+  const [isFiscal, setIsFiscal] = useState(initialIncome?.isFiscal ?? true);
+  const [vatRate, setVatRate] = useState(normalizeMoney(initialIncome?.vatRate) || "22");
+  const amountValue = Number(amount || 0);
+  const activeVatRate = isFiscal ? Number(vatRate || 0) : 0;
+  const netAmount = useMemo(() => activeVatRate > 0 ? amountValue / (1 + activeVatRate / 100) : amountValue, [amountValue, activeVatRate]);
+
+  function toggleFiscal(nextValue: boolean) {
+    setIsFiscal(nextValue);
+    if (!nextValue) setVatRate("0");
+    else if (vatRate === "0") setVatRate("22");
+  }
+
+  return (
+    <form className="card form income-form" action={action} method="post">
+      <h2 className="full">{title}</h2>
+
+      <label>
+        Canale di vendita
+        <select name="salesChannel" defaultValue={initialIncome?.salesChannel ?? "Shop"} required>
+          {salesChannels.map(value => <option key={value} value={value}>{value}</option>)}
+        </select>
+      </label>
+
+      <label>
+        Categoria vendita
+        <select name="saleCategory" defaultValue={initialIncome?.saleCategory ?? "B2C"} required>
+          {saleCategories.map(value => <option key={value} value={value}>{value}</option>)}
+        </select>
+      </label>
+
+      <label>
+        Periodo Fatturazione
+        <input type="month" name="billingPeriod" required defaultValue={toMonthInput(initialIncome)} />
+      </label>
+
+      <label className="income-amount-field">
+        Importo
+        <div className="income-amount-row">
+          <MoneyInput name="amount" required value={amount} onChange={(event) => setAmount(event.currentTarget.value)} />
+          <span className="net-amount-inline"><span>IVA esclusa</span><strong>{formatEuro(netAmount)}</strong></span>
+        </div>
+      </label>
+
+      <label>
+        Metodo di pagamento
+        <select name="paymentMethod" defaultValue={initialIncome?.paymentMethod ?? "Bonifico"} required>
+          {paymentMethods.map(value => <option key={value} value={value}>{value}</option>)}
+        </select>
+      </label>
+
+      <label>
+        Canale di accredito
+        <select name="creditChannel" defaultValue={initialIncome?.creditChannel ?? "Cash"} required>
+          {creditChannels.map(value => <option key={value} value={value}>{value}</option>)}
+        </select>
+      </label>
+
+      <label>
+        Data accredito
+        <input type="date" name="creditDate" required defaultValue={toDateInput(initialIncome?.creditDate) || today} />
+      </label>
+
+      <label className="toggle-field fiscal-toggle-field">
+        <span>Fiscale</span>
+        <input type="hidden" name="isFiscal" value={isFiscal ? "true" : "false"} />
+        <div className="switch-with-label">
+          <button type="button" className={`switch-button ${isFiscal ? "on" : ""}`} onClick={() => toggleFiscal(!isFiscal)} aria-pressed={isFiscal}>
+            <span className="switch-knob" aria-hidden="true" />
+          </button>
+          <strong className={isFiscal ? "switch-state switch-state-on" : "switch-state switch-state-off"}>{isFiscal ? "Si" : "No"}</strong>
+        </div>
+      </label>
+
+      <label>
+        Stato fattura
+        <select name="invoiceStatus" defaultValue={initialIncome?.invoiceStatus ?? "NON_INVIATA"} disabled={!isFiscal}>
+          <option value="NON_INVIATA">Non inviata</option>
+          <option value="EMESSA">Emessa</option>
+        </select>
+        {!isFiscal && <input type="hidden" name="invoiceStatus" value="" />}
+      </label>
+
+      <label>
+        Imposta IVA
+        <select name="vatRate" value={isFiscal ? vatRate : "0"} onChange={(event) => setVatRate(event.target.value)} disabled={!isFiscal}>
+          {vatRates.map(value => <option key={value} value={value}>{value}%</option>)}
+        </select>
+        {!isFiscal && <input type="hidden" name="vatRate" value="0" />}
+      </label>
+
+      <label className="full">
+        Note
+        <textarea name="notes" rows={3} defaultValue={initialIncome?.notes ?? ""} />
+      </label>
+
+      <div className="actions-row full right-actions form-actions-row">
+        <button className="button-standard" type="submit"><span className="btn-icon">✓</span> {submitLabel}</button>
+        {onCancel ? (
+          <button className="secondary-button button-standard" type="button" onClick={onCancel}><span className="btn-icon">×</span> Annulla</button>
+        ) : (
+          <a className="secondary-button button-standard" href={cancelHref ?? "/incomes"}><span className="btn-icon">×</span> Annulla</a>
+        )}
+      </div>
+    </form>
+  );
+}
