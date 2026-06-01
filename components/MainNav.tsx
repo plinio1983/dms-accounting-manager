@@ -1,7 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
+
+const persistedFilterKeys: Record<string, string> = {
+  '/expenses': 'dmsAccounting.expenses.filters',
+  '/incomes': 'dmsAccounting.incomes.filters',
+};
+
+const transientParams = new Set(['new', 'copyId', 'returnTo']);
+
+function filterSearch(search: string) {
+  const params = new URLSearchParams(search);
+  transientParams.forEach((param) => params.delete(param));
+  const value = params.toString();
+  return value ? `?${value}` : '';
+}
 
 const links = [
   { href: '/', label: 'Dashboard', shortLabel: 'Home', icon: '⌂', match: (pathname: string) => pathname === '/' },
@@ -12,6 +27,36 @@ const links = [
 
 export default function MainNav() {
   const pathname = usePathname() || '/';
+  const searchParams = useSearchParams();
+  const [savedFilters, setSavedFilters] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const nextSavedFilters: Record<string, string> = {};
+
+    Object.entries(persistedFilterKeys).forEach(([path, storageKey]) => {
+      const saved = window.localStorage.getItem(storageKey);
+      if (saved) nextSavedFilters[path] = saved;
+    });
+
+    const storageKey = persistedFilterKeys[pathname];
+    if (storageKey) {
+      const search = searchParams.toString();
+      const filteredSearch = filterSearch(search ? `?${search}` : '');
+
+      if (filteredSearch) {
+        window.localStorage.setItem(storageKey, filteredSearch);
+        nextSavedFilters[pathname] = filteredSearch;
+      }
+    }
+
+    setSavedFilters(nextSavedFilters);
+  }, [pathname, searchParams]);
+
+  function navHref(baseHref: string) {
+    if (!persistedFilterKeys[baseHref]) return baseHref;
+    if (pathname === baseHref) return baseHref;
+    return `${baseHref}${savedFilters[baseHref] ?? ''}`;
+  }
 
   return (
     <>
@@ -21,7 +66,7 @@ export default function MainNav() {
           return (
             <Link
               key={link.href}
-              href={link.href}
+              href={navHref(link.href)}
               className={isActive ? 'nav-link-active' : undefined}
               aria-current={isActive ? 'page' : undefined}
             >
@@ -36,7 +81,7 @@ export default function MainNav() {
           return (
             <Link
               key={`mobile-${link.href}`}
-              href={link.href}
+              href={navHref(link.href)}
               className={isActive ? 'mobile-bottom-nav-active' : undefined}
               aria-current={isActive ? 'page' : undefined}
             >
