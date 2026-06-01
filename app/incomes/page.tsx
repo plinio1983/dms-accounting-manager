@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import BulkSelectionController from '@/components/BulkSelectionController';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import { prisma } from '@/lib/prisma';
 import { euro, moneyTone } from '@/lib/money';
@@ -429,6 +430,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
       </details>
 
       <ActiveFilterSummary items={activeFilterItems} />
+
+      <BulkSelectionController />
 
       <script dangerouslySetInnerHTML={{ __html: `
         (() => {

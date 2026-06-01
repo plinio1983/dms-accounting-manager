@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import BulkSelectionController from '@/components/BulkSelectionController';
 import { prisma } from '@/lib/prisma';
 import { euro, moneyTone } from '@/lib/money';
 import NewExpensePanel from '@/components/NewExpensePanel';
@@ -502,6 +503,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       </details>
 
       <ActiveFilterSummary items={activeFilterItems} />
+
+      <BulkSelectionController />
 
       <script dangerouslySetInnerHTML={{ __html: `
         (() => {
