@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import ExpenseForm from '@/components/ExpenseForm';
-import ModalBodyClass from '@/components/ModalBodyClass';
 
 const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
 const allowedCategoryOrder = [
@@ -43,7 +42,6 @@ export default async function EditExpensePage({ params, searchParams }: { params
     .filter(Boolean) as typeof categories;
 
   return <div className="modal-page-wrap">
-    <ModalBodyClass />
     <div className="modal-card modal-card-wide modal-page-card">
     <div className="toolbar-card modal-toolbar-card">
       <div>

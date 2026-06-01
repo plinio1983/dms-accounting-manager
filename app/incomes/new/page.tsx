@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import IncomeForm from '@/components/IncomeForm';
-import ModalBodyClass from '@/components/ModalBodyClass';
 
 export default async function NewIncomePage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const params = (await searchParams) ?? {};
@@ -13,7 +12,6 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
   const copyIncome = copyId ? await prisma.income.findUnique({ where: { id: copyId } }) : null;
 
   return <div className="modal-page-wrap">
-    <ModalBodyClass />
     <div className="modal-card modal-card-wide modal-page-card">
     <div className="toolbar-card modal-toolbar-card">
       <div>

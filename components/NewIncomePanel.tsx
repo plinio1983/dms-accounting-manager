@@ -8,16 +8,6 @@ export default function NewIncomePanel({ initialOpen = false }: { initialOpen?: 
   const [returnAction, setReturnAction] = useState('/api/incomes');
 
   useEffect(() => {
-    if (!isOpen) return;
-    document.body.classList.add('modal-open');
-    document.documentElement.classList.add('modal-open');
-    return () => {
-      document.body.classList.remove('modal-open');
-      document.documentElement.classList.remove('modal-open');
-    };
-  }, [isOpen]);
-
-  useEffect(() => {
     const url = new URL(window.location.href);
     url.searchParams.delete('new');
     const returnTo = `${url.pathname}${url.search}`;

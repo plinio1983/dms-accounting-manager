@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import IncomeForm from '@/components/IncomeForm';
-import ModalBodyClass from '@/components/ModalBodyClass';
 
 export default async function EditIncomePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const { id } = await params;
@@ -13,7 +12,6 @@ export default async function EditIncomePage({ params, searchParams }: { params:
   if (!income) notFound();
 
   return <div className="modal-page-wrap">
-    <ModalBodyClass />
     <div className="modal-card modal-card-wide modal-page-card">
     <IncomeForm
       initialIncome={income}

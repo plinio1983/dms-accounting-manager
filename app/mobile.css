@@ -42,4 +42,13 @@
         grid-template-columns: 1fr;
     }
 
+    .filter-group.filter-group-order-date,
+    .filter-group.filter-group-fiscal {
+        display: inherit;
+    }
+
+    .modal-card.modal-card-wide .income-form,
+    .modal-card.modal-card-wide .expense-form {
+        margin-bottom: 72px;
+    }
 }
