@@ -109,7 +109,7 @@ function formatEuro(value: number) {
 function emptyPaymentRow(key: number): PaymentRow {
   return {
     key,
-    paymentDate: "",
+    paymentDate: today,
     channel: defaultChannel,
     bankId: "",
     amount: "",
@@ -561,8 +561,10 @@ export default function ExpenseForm({
   const [payments, setPayments] = useState<PaymentRow[]>(
     initialExpense?.payments?.length
       ? initialExpense.payments.map(paymentRowFromInitial)
-      : [emptyPaymentRow(1)],
+      : [],
   );
+  const [openPaymentKey, setOpenPaymentKey] = useState<number | null>(null);
+  const openPaymentRef = useRef<HTMLDivElement | null>(null);
   const [attachmentError, setAttachmentError] = useState("");
   const [orderDate, setOrderDate] = useState(toDateInput(initialExpense?.receivedDate) || today);
   const [dueDate, setDueDate] = useState(
@@ -578,7 +580,8 @@ export default function ExpenseForm({
     0,
   );
   const residual = Math.max(0, amountValue - paidAmountValue);
-  const canAddPayment = isPaymentComplete(payments[payments.length - 1]);
+  const canAddPayment =
+    payments.length === 0 || isPaymentComplete(payments[payments.length - 1]);
   const initialBillingPeriod =
     initialExpense?.year && initialExpense?.month
       ? `${initialExpense.year}-${String(initialExpense.month).padStart(2, "0")}`
@@ -649,15 +652,52 @@ export default function ExpenseForm({
     );
   }
 
+  useEffect(() => {
+    if (!openPaymentKey) return;
+    window.requestAnimationFrame(() => {
+      openPaymentRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    });
+  }, [openPaymentKey]);
+
   function addPaymentRow() {
     if (!canAddPayment) return;
-    setPayments((rows) => [...rows, emptyPaymentRow(Date.now())]);
+    const key = Date.now();
+    setPayments((rows) => [...rows, emptyPaymentRow(key)]);
+    setOpenPaymentKey(key);
   }
 
   function removePaymentRow(index: number) {
-    setPayments((rows) =>
-      rows.length === 1 ? rows : rows.filter((_, i) => i !== index),
+    const payment = payments[index];
+    if (payment?.id && !window.confirm("Eliminare questo pagamento?")) return;
+    setPayments((rows) => rows.filter((_, i) => i !== index));
+    if (payment?.key === openPaymentKey) setOpenPaymentKey(null);
+  }
+
+  function renderPaymentHiddenInputs(payment: PaymentRow) {
+    return (
+      <>
+        <input type="hidden" name="paymentId[]" value={payment.id ?? ""} />
+        <input type="hidden" name="paymentDate[]" value={payment.paymentDate} />
+        <input type="hidden" name="paymentChannel[]" value={payment.channel} />
+        <input type="hidden" name="paymentBankId[]" value={payment.bankId} />
+        <input type="hidden" name="paymentAmount[]" value={payment.amount} />
+        <input type="hidden" name="paymentPaidBy[]" value={payment.paidBy} />
+      </>
     );
+  }
+
+  function paymentSummary(payment: PaymentRow) {
+    const bankName = banks.find((bank) => String(bank.id) === payment.bankId)?.name ?? "-";
+    return [
+      payment.paymentDate || "Data non impostata",
+      payment.channel || "Canale non impostato",
+      bankName,
+      formatEuro(Number(payment.amount || 0)),
+      payment.paidBy === "ALTRO_OPERATORE" ? "Altro Operatore" : "Herbal Market",
+    ].join(" · ");
   }
 
   return (
@@ -853,8 +893,41 @@ export default function ExpenseForm({
             ➕ Aggiungi pagamento
           </button>
         </div>
-        {payments.map((payment, index) => (
-            <div className="payment-row" key={payment.key}>
+        {payments.map((payment, index) => {
+          const isOpen = openPaymentKey === payment.key || !payment.id;
+
+          if (!isOpen) {
+            return (
+              <div className="payment-row" key={payment.key}>
+                {renderPaymentHiddenInputs(payment)}
+                <div className="span-2">
+                  <strong>Pagamento registrato</strong>
+                  <div className="muted">{paymentSummary(payment)}</div>
+                </div>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={() => setOpenPaymentKey(payment.key)}
+                >
+                  ✎ Modifica
+                </button>
+                <button
+                  type="button"
+                  className="remove-row"
+                  onClick={() => removePaymentRow(index)}
+                >
+                  🗑️ Elimina
+                </button>
+              </div>
+            );
+          }
+
+          return (
+            <div
+              className="payment-row"
+              key={payment.key}
+              ref={openPaymentKey === payment.key ? openPaymentRef : null}
+            >
               <input type="hidden" name="paymentId[]" value={payment.id ?? ""} />
               <label>
                 Data pagamento
@@ -936,12 +1009,12 @@ export default function ExpenseForm({
                   type="button"
                   className="remove-row"
                   onClick={() => removePaymentRow(index)}
-                  disabled={payments.length === 1}
               >
                 🗑️ Rimuovi
               </button>
             </div>
-        ))}
+          );
+        })}
 
         <div className="flex">
           {!canAddPayment && (
