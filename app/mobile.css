@@ -85,4 +85,9 @@
         padding: 0;
         border: none;
     }
+
+    .dashboard-top-actions .btn {
+        font-size: 14px;
+        padding: 8px;
+    }
 }

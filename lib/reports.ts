@@ -85,6 +85,7 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
 
   const speseTotali = expenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
   const speseInDetrazione = expenses.reduce((sum, expense) => expense.isDeclared ? sum + Number(expense.amount) : sum, 0);
+  const usciteNonFiscali = expenses.reduce((sum, expense) => expense.isDeclared ? sum : sum + Number(expense.amount), 0);
   const usciteFiscali = speseInDetrazione;
   const nonSaldato = expenses.reduce((sum, expense) => {
     const expenseAmount = Number(expense.amount);
@@ -133,6 +134,7 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
     incassoNonFiscale,
     speseInDetrazione,
     usciteFiscali,
+    usciteNonFiscali,
     nonSaldato,
     utileFiscale,
     previsioneImposte,
