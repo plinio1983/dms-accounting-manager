@@ -10,11 +10,6 @@
         font-size: 20px;
     }
 
-    .toggle-field-wrap {
-        display: flex;
-        width: 100% !important;
-    }
-
     .toggle-field-wrap .switch-toggle-field {
         width: 50%;
     }
@@ -50,5 +45,9 @@
     .modal-card.modal-card-wide .income-form,
     .modal-card.modal-card-wide .expense-form {
         margin-bottom: 72px;
+    }
+
+    .bulk-direct-link .btn-icon {
+        font-size: 20px;
     }
 }

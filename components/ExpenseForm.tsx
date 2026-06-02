@@ -804,7 +804,7 @@ export default function ExpenseForm({
       {/*  {paymentStatus !== "COMPLETATO" && <small>Stato non completato</small>}*/}
       {/*</div>*/}
 
-      {/*<div className="toggle-field-wrap">*/}
+      <div className="toggle-field-wrap">
       <div className="toggle-field switch-toggle-field">
         <span>Detrazione</span>
         <label className="switch">
@@ -848,7 +848,7 @@ export default function ExpenseForm({
           <span>{hasElectronicInvoice ? "Si" : "No"}</span>
         </label>
       </div>
-      {/*</div>*/}
+      </div>
       <label>
         🧾 Stato Fattura
         <select
@@ -903,8 +903,8 @@ export default function ExpenseForm({
             return (
               <div className="payment-row" key={payment.key}>
                 {renderPaymentHiddenInputs(payment)}
-                <div className="span-2 payment-summary-cell">
-                  <strong>Pagamento registrato</strong>
+                <div className="span-3 payment-summary-cell">
+                  <h4>Pagamento registrato</h4>
                   <div className="muted">{paymentSummary(payment)}</div>
                 </div>
                 <div className="payment-row-actions">
@@ -1031,7 +1031,13 @@ export default function ExpenseForm({
       </section>
 
       <label className="attachment-row-wrap">
-        Allegati
+        <div>
+          Allegati &nbsp;
+          <small className="text-warning">PDF, immagini, XML, P7M</small>
+          <div>
+
+          </div>
+        </div>
         <div className="flex attachment-row">
         <input
           type="file"
@@ -1047,12 +1053,8 @@ export default function ExpenseForm({
           }
         />
         <div className="field-note attachments-note">
-          <span className="attachments-wrap"><br/></span>
-          <span>Limite allegati &nbsp;</span>
+          Limite allegati &nbsp;<br/>
           <strong>5 file</strong>
-          <div>
-            <small>PDF, immagini, XML, P7M</small>
-          </div>
         </div>
         </div>
       </label>
