@@ -5218,3 +5218,151 @@ button.bulk-direct-danger {
         max-width: calc(100vw - 24px) !important;
     }
 }
+
+/* v076: definitive sticky list actions and non-table expense payment detail */
+.expenses-list-card {
+    overflow: visible !important;
+}
+
+/*
+  Sticky area sopra le tabelle:
+  - spese/incassi: bulk actions resta sempre accessibile
+  - fornitori: list heading/toolbar della card resta visibile sopra la tabella
+*/
+.expenses-list-card > .list-heading {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 900 !important;
+    margin-left: -1px;
+    margin-right: -1px;
+    padding: 10px 0 8px !important;
+    background: rgba(255, 255, 255, .97) !important;
+    backdrop-filter: blur(8px);
+}
+
+.expenses-list-card > .bulk-actions-bar {
+    position: sticky !important;
+    top: 58px !important;
+    z-index: 950 !important;
+    margin: 0 0 10px !important;
+    padding: 8px 0 !important;
+    background: rgba(255, 255, 255, .98) !important;
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(226, 232, 240, .95) !important;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, .06);
+}
+
+.expenses-list-card > .bulk-actions-bar .bulk-action-menu,
+.expenses-list-card > .bulk-actions-bar .bulk-direct-actions {
+    z-index: 960 !important;
+}
+
+.expenses-list-card > .bulk-actions-bar .bulk-action-menu-panel {
+    z-index: 99999 !important;
+}
+
+/* La tabella deve rimanere sotto la barra sticky e non coprire il menu. */
+.expenses-list-card .table-scroll,
+.expenses-list-card .incomes-table-scroll {
+    position: relative !important;
+    z-index: 1 !important;
+    overflow-x: auto;
+    overflow-y: visible;
+}
+
+/* Pagamenti dettaglio spesa: layout a griglia/card, niente tabella. */
+.expense-detail-payments-card {
+    overflow: visible !important;
+}
+
+.payment-detail-list {
+    display: grid;
+    gap: 8px;
+}
+
+.payment-detail-header,
+.payment-detail-row {
+    display: grid;
+    grid-template-columns: 130px minmax(110px, 1fr) minmax(140px, 1.2fr) 110px minmax(130px, 1fr);
+    gap: 10px;
+    align-items: center;
+}
+
+.payment-detail-header {
+    padding: 0 12px 4px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .025em;
+}
+
+.payment-detail-row {
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+}
+
+.payment-detail-row > div {
+    min-width: 0;
+}
+
+.payment-detail-row span {
+    display: none;
+}
+
+.payment-detail-row strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.payment-detail-row > div:nth-child(4) strong {
+    color: var(--accent);
+    font-weight: 900;
+}
+
+@media (max-width: 900px) {
+    .payment-detail-header {
+        display: none;
+    }
+
+    .payment-detail-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .payment-detail-row span {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 850;
+        text-transform: uppercase;
+        letter-spacing: .025em;
+    }
+
+    .payment-detail-row strong {
+        white-space: normal;
+    }
+}
+
+@media (max-width: 640px) {
+    .expenses-list-card > .list-heading {
+        top: 0 !important;
+        padding-top: 8px !important;
+    }
+
+    .expenses-list-card > .bulk-actions-bar {
+        top: 52px !important;
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .payment-detail-row {
+        grid-template-columns: 1fr;
+    }
+}

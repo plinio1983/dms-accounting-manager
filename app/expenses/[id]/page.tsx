@@ -84,17 +84,30 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       <div className="span-2"><span>Note</span><strong>{expense.notes ?? '-'}</strong></div>
     </div>
 
-    <div className="card">
+    <div className="card expense-detail-payments-card">
       <h2>Pagamenti</h2>
-      <div className="table-scroll"><table><thead><tr><th>Data pagamento</th><th>Canale</th><th>Banca</th><th>Importo</th><th>Effettuato da</th></tr></thead><tbody>
-        {expense.payments.length ? expense.payments.map(payment => <tr key={payment.id}>
-          <td>{dateLabel(payment.paymentDate)}</td>
-          <td>{payment.channel ?? '-'}</td>
-          <td>{payment.bank ? `${bankIcons[payment.bank.name] ?? '🏦'} ${payment.bank.name}` : '-'}</td>
-          <td>{euro(payment.amount.toString())}</td>
-          <td>{paidByLabel(payment.paidBy)}</td>
-        </tr>) : <tr><td colSpan={5}>Nessun pagamento registrato.</td></tr>}
-      </tbody></table></div>
+      {expense.payments.length ? (
+        <div className="payment-detail-list">
+          <div className="payment-detail-header" aria-hidden="true">
+            <span>Data pagamento</span>
+            <span>Canale</span>
+            <span>Banca</span>
+            <span>Importo</span>
+            <span>Effettuato da</span>
+          </div>
+          {expense.payments.map(payment => (
+            <div className="payment-detail-row" key={payment.id}>
+              <div><span>Data pagamento</span><strong>{dateLabel(payment.paymentDate)}</strong></div>
+              <div><span>Canale</span><strong>{payment.channel ?? '-'}</strong></div>
+              <div><span>Banca</span><strong>{payment.bank ? `${bankIcons[payment.bank.name] ?? '🏦'} ${payment.bank.name}` : '-'}</strong></div>
+              <div><span>Importo</span><strong>{euro(payment.amount.toString())}</strong></div>
+              <div><span>Effettuato da</span><strong>{paidByLabel(payment.paidBy)}</strong></div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="muted">Nessun pagamento registrato.</p>
+      )}
     </div>
 
     <div className="card">
