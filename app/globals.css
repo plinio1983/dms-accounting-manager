@@ -4619,3 +4619,205 @@ button.bulk-direct-link {
     border-radius: 12px;
     border: 1px solid #cacaca;
 }
+/* v073 UI polish: payment status summary + consistent form buttons */
+.payment-status-note {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+    text-align: left;
+}
+
+.payment-status-note > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: #fafbff;
+}
+
+.payment-status-note strong {
+    font-size: 16px;
+    white-space: nowrap;
+}
+
+.form .actions-row,
+.modal-form-actions,
+.form-actions-row,
+.filter-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.form .actions-row button,
+.form .actions-row a,
+.modal-form-actions button,
+.modal-form-actions a,
+.form-actions-row button,
+.form-actions-row a,
+.filter-actions button,
+.filter-actions a,
+.section-title button {
+    width: auto;
+    min-width: 132px;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.form .actions-row .secondary-button,
+.modal-form-actions .secondary-button,
+.form-actions-row .secondary-button {
+    order: 1;
+}
+
+.form .actions-row button:not(.secondary-button),
+.modal-form-actions button:not(.secondary-button),
+.form-actions-row button:not(.secondary-button) {
+    order: 2;
+}
+
+@media (max-width: 760px) {
+    .payment-status-note {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-status-note > div {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .form .actions-row,
+    .modal-form-actions,
+    .form-actions-row,
+    .filter-actions {
+        justify-content: flex-end;
+    }
+
+    .form .actions-row button,
+    .form .actions-row a,
+    .modal-form-actions button,
+    .modal-form-actions a,
+    .form-actions-row button,
+    .form-actions-row a,
+    .filter-actions button,
+    .filter-actions a {
+        min-width: 128px;
+    }
+}
+/* v073 fix: ricerca Spese desktop + riepilogo pagamento */
+.grouped-filters {
+    grid-template-columns: repeat(6, minmax(120px, 1fr));
+    align-items: end;
+}
+
+.grouped-filters .filter-group {
+    grid-column: span 3;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+}
+
+.grouped-filters .filter-group legend {
+    grid-column: 1 / -1;
+    padding: 0 4px;
+    font-weight: 900;
+    color: var(--text);
+}
+
+.payment-status-note {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+}
+
+.payment-status-note > div {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@media (max-width: 900px) {
+    .grouped-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .grouped-filters .filter-group {
+        grid-column: 1 / -1;
+        grid-template-columns: 1fr;
+    }
+
+    .payment-status-note {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* v073 fix: ricerca Spese desktop + riepilogo pagamento */
+.grouped-filters {
+    grid-template-columns: repeat(6, minmax(120px, 1fr));
+    align-items: end;
+}
+
+.grouped-filters .filter-group {
+    grid-column: span 3;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+}
+
+.grouped-filters .filter-group legend {
+    grid-column: 1 / -1;
+    padding: 0 4px;
+    font-weight: 900;
+    color: var(--text);
+}
+
+.payment-status-note {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+}
+
+.payment-status-note > div {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@media (max-width: 900px) {
+    .grouped-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .grouped-filters .filter-group {
+        grid-column: 1 / -1;
+        grid-template-columns: 1fr;
+    }
+
+    .payment-status-note {
+        grid-template-columns: 1fr;
+    }
+}

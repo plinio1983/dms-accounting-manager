@@ -88,12 +88,6 @@ function addDaysToDateInput(value: string, days: number) {
 const currentBillingPeriod = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
 const defaultChannel = "Bonifico";
 
-const paymentStatusOptions = [
-  ["DA_PAGARE", "⚪ Non pagato"],
-  ["COMPLETATO", "✅ Completato"],
-  ["PAGATO_PARZIALMENTE", "🟡 Pagato parzialmente"],
-];
-
 function normalizeMoney(value: unknown) {
   if (value === null || value === undefined) return "";
   return String(value).replace(",", ".");
@@ -549,9 +543,6 @@ export default function ExpenseForm({
   cancelHref,
 }: Props) {
   const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount));
-  const [paymentStatus, setPaymentStatus] = useState(
-    initialExpense?.paymentStatus ?? "DA_PAGARE",
-  );
   const [hasElectronicInvoice, setHasElectronicInvoice] = useState(
     initialExpense?.hasElectronicInvoice ?? true,
   );
@@ -580,6 +571,18 @@ export default function ExpenseForm({
     0,
   );
   const residual = Math.max(0, amountValue - paidAmountValue);
+  const computedPaymentStatus =
+    paidAmountValue <= 0
+      ? "DA_PAGARE"
+      : paidAmountValue >= amountValue && amountValue > 0
+        ? "COMPLETATO"
+        : "PAGATO_PARZIALMENTE";
+  const computedPaymentStatusInfo =
+    computedPaymentStatus === "COMPLETATO"
+      ? { icon: "✅", label: "Completato", className: "text-ok" }
+      : computedPaymentStatus === "PAGATO_PARZIALMENTE"
+        ? { icon: "🟡", label: "Pagato parzialmente", className: "text-warning" }
+        : { icon: "⚪", label: "Non pagato", className: "text-critical" };
   const canAddPayment =
     payments.length === 0 || isPaymentComplete(payments[payments.length - 1]);
   const initialBillingPeriod =
@@ -624,31 +627,11 @@ export default function ExpenseForm({
 
   function handleAmountChange(value: string) {
     setAmount(value);
-    if (paymentStatus === "COMPLETATO") {
-      setPayments((rows) =>
-        rows.map((row, index) =>
-          index === 0 && !row.amountTouched ? { ...row, amount: value } : row,
-        ),
-      );
-    }
   }
 
   function updatePayment(index: number, patch: Partial<PaymentRow>) {
     setPayments((rows) =>
       rows.map((row, i) => (i === index ? { ...row, ...patch } : row)),
-    );
-  }
-
-  function handlePaymentStatusChange(value: string) {
-    setPaymentStatus(value);
-    if (value === "DA_PAGARE") return;
-    setPayments((rows) =>
-      rows.map((row, index) => {
-        const next = { ...row, paymentDate: row.paymentDate || today };
-        if (value === "COMPLETATO" && index === 0 && !row.amountTouched)
-          next.amount = amount;
-        return next;
-      }),
     );
   }
 
@@ -665,7 +648,20 @@ export default function ExpenseForm({
   function addPaymentRow() {
     if (!canAddPayment) return;
     const key = Date.now();
-    setPayments((rows) => [...rows, emptyPaymentRow(key)]);
+    const currentPaidAmount = payments.reduce(
+      (sum, row) => sum + Number(row.amount || 0),
+      0,
+    );
+    const nextResidual = Math.max(0, Number(amount || 0) - currentPaidAmount);
+    const suggestedAmount = nextResidual > 0 ? nextResidual.toFixed(2) : "";
+    setPayments((rows) => [
+      ...rows,
+      {
+        ...emptyPaymentRow(key),
+        amount: suggestedAmount,
+        amountTouched: Boolean(suggestedAmount),
+      },
+    ]);
     setOpenPaymentKey(key);
   }
 
@@ -776,21 +772,7 @@ export default function ExpenseForm({
           <option value="22">22%</option>
         </select>
       </label>
-      <label>
-        {/*📌 Stato pagamento*/}
-        Stato pagamento
-        <select
-          name="paymentStatus"
-          value={paymentStatus}
-          onChange={(e) => handlePaymentStatusChange(e.target.value)}
-        >
-          {paymentStatusOptions.map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
-      </label>
+      <input type="hidden" name="paymentStatus" value={computedPaymentStatus} />
 
 
 
@@ -877,6 +859,21 @@ export default function ExpenseForm({
         </select>
         {invoiceNotExpected && <input type="hidden" name="invoiceStatus" value="NON_PREVISTA" />}
       </label>
+
+      <div className="field-note payment-note payment-status-note full">
+        <div>
+          <span className="muted">Stato pagamento &nbsp;</span>
+          <strong className={computedPaymentStatusInfo.className}>
+            {computedPaymentStatusInfo.icon} {computedPaymentStatusInfo.label}
+          </strong>
+        </div>
+        <div>
+          <span className="muted">Residuo da saldare &nbsp;</span>
+          <strong className={residual > 0 ? "text-critical" : "text-ok"}>
+            {formatEuro(residual)}
+          </strong>
+        </div>
+      </div>
 
       <section className="payments-box full">
         <div className="section-title">
@@ -1016,26 +1013,13 @@ export default function ExpenseForm({
           );
         })}
 
-        <div className="flex">
-          {!canAddPayment && (
-              <p className="inline-warning">
-                Per aggiungere un altro pagamento, completa prima l’ultima riga.
-              </p>
-          )}
-          <div className="field-note payment-note">
-            <span className="muted">Residuo da pagare &nbsp;</span>
-            <strong
-                className={
-                  residual > 0 || paymentStatus !== "COMPLETATO" ? "text-critical" : ""
-                }
-            >{formatEuro(residual)}
-            </strong>
-            {/*<div>*/}
-            {/*<small>Totale pagato: {formatEuro(paidAmountValue)}</small>*/}
-            {/*</div>*/}
-            {/*{paymentStatus !== "COMPLETATO" && <small>Stato non completato</small>}*/}
+        {!canAddPayment && (
+          <div className="flex">
+            <p className="inline-warning">
+              Per aggiungere un altro pagamento, completa prima l’ultima riga.
+            </p>
           </div>
-        </div>
+        )}
       </section>
 
       <label className="attachment-row-wrap">
