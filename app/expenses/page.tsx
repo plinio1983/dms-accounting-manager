@@ -518,13 +518,24 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         (() => {
           const storageKey = 'dmsAccounting.expenses.filters';
           const resetLink = document.querySelector('a[href="/expenses"].reset-button');
+          const sanitizedSearch = (search) => {
+            const params = new URLSearchParams(search || '');
+            params.delete('new');
+            const clean = params.toString();
+            return clean ? '?' + clean : '';
+          };
           if (resetLink) resetLink.addEventListener('click', () => localStorage.removeItem(storageKey));
-          const query = window.location.search;
+          const query = sanitizedSearch(window.location.search);
           const form = document.querySelector('form.expense-filters');
           if (query && query !== '?') localStorage.setItem(storageKey, query);
           else {
-            const saved = localStorage.getItem(storageKey);
-            if (saved) window.location.replace('/expenses' + saved);
+            const saved = sanitizedSearch(localStorage.getItem(storageKey) || '');
+            if (saved) {
+              localStorage.setItem(storageKey, saved);
+              window.location.replace('/expenses' + saved);
+            } else {
+              localStorage.removeItem(storageKey);
+            }
           }
           if (form) form.addEventListener('submit', () => {
             const billingFields = ['billingPeriodFrom', 'billingPeriodTo', 'billingPeriodQuick'].map(name => form.elements.namedItem(name)).filter(Boolean);
@@ -533,7 +544,11 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             const hasDate = dateFields.some(field => field.value);
             if (hasBilling) dateFields.forEach(field => { field.value = ''; });
             else if (hasDate) billingFields.forEach(field => { field.value = ''; });
-            setTimeout(() => localStorage.setItem(storageKey, window.location.search), 0);
+            setTimeout(() => {
+              const clean = sanitizedSearch(window.location.search);
+              if (clean) localStorage.setItem(storageKey, clean);
+              else localStorage.removeItem(storageKey);
+            }, 0);
           });
         })();
         document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-delete-form')) { const message = form.getAttribute('data-confirm') || 'Confermi la rimozione?'; if (!confirm(message)) event.preventDefault(); } });

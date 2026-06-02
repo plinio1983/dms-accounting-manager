@@ -73,6 +73,10 @@
     .bulk-direct-link .btn-icon {
         font-size: 20px;
     }
+    .floating-bulk-actions-inner .btn-icon {
+        font-size: 20px;
+    }
+
     .card form.expense-form {
         padding: 0;
         border: none;
