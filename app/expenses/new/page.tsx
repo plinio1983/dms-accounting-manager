@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
-import ExpenseForm from '@/components/ExpenseForm';
+import ExpenseCreationSwitcher from '@/components/ExpenseCreationSwitcher';
 
 const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
 const allowedCategoryOrder = [
@@ -44,11 +44,12 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
       </div>
       <Link className="table-action secondary" href={returnTo}>↩ Annulla</Link>
     </div>
-    <ExpenseForm
+    <ExpenseCreationSwitcher
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
       suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
-      action={`/api/expenses?returnTo=${encodedReturnTo}`}
+      expenseAction={`/api/expenses?returnTo=${encodedReturnTo}`}
+      recurringAction={`/api/recurring-expenses?returnTo=${encodedReturnTo}`}
       title={copyExpense ? 'Nuova spesa da copia' : 'Nuova spesa'}
       cancelHref={returnTo}
       submitLabel={copyExpense ? 'Crea spesa copiata' : 'Salva spesa'}

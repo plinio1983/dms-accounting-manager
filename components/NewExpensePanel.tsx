@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import ExpenseForm from '@/components/ExpenseForm';
+import ExpenseCreationSwitcher from '@/components/ExpenseCreationSwitcher';
 
 type Option = { id: number; code?: string; name: string };
 type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; phone?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
@@ -17,12 +17,14 @@ type Props = {
 export default function NewExpensePanel({ categories, banks, suppliers, initialOpen = false }: Props) {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [returnAction, setReturnAction] = useState('/api/expenses');
+  const [recurringAction, setRecurringAction] = useState('/api/recurring-expenses');
 
   useEffect(() => {
     const url = new URL(window.location.href);
     url.searchParams.delete('new');
     const returnTo = `${url.pathname}${url.search}`;
     setReturnAction(`/api/expenses?returnTo=${encodeURIComponent(returnTo)}`);
+    setRecurringAction(`/api/recurring-expenses?returnTo=${encodeURIComponent(returnTo)}`);
   }, []);
 
   return <div className="grid">
@@ -46,7 +48,7 @@ export default function NewExpensePanel({ categories, banks, suppliers, initialO
           </div>
           <button className="secondary-button modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
         </div>
-        <ExpenseForm categories={categories} banks={banks} suppliers={suppliers} action={returnAction} onCancel={() => setIsOpen(false)} />
+        <ExpenseCreationSwitcher categories={categories} banks={banks} suppliers={suppliers} expenseAction={returnAction} recurringAction={recurringAction} onCancel={() => setIsOpen(false)} />
       </div>
     </div> : null}
   </div>;

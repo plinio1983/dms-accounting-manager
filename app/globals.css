@@ -5944,3 +5944,22 @@ button.bulk-direct-danger {
         grid-column: 2;
     }
 }
+
+/* v089: recurring expenses corrected flow */
+.expense-type-toggle { display:flex; align-items:center; gap:8px; padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:#f8fafc; }
+.expense-type-toggle > span { margin-right:auto; color:var(--muted); font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:.04em; }
+.expense-type-toggle label { display:inline-flex; align-items:center; gap:6px; margin:0; font-weight:800; }
+.toggle-choice { min-height:36px; padding:0 14px; border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--text); font-weight:850; cursor:pointer; }
+.toggle-choice.is-active { border-color:rgba(37,99,235,.35); background:#2563eb; color:#fff; }
+.toggle-choice:disabled { opacity:.45; cursor:not-allowed; }
+.expense-form .expense-type-switch-in-form { margin-bottom:4px; border-color:rgba(37,99,235,.22); background:linear-gradient(135deg,#f8fbff 0%,#eef6ff 100%); }
+.recurring-expenses-list { display:grid; gap:10px; }
+.recurring-expense-row { display:grid; grid-template-columns:minmax(240px,1.6fr) repeat(6,minmax(110px,1fr)); gap:10px; align-items:center; padding:12px; border:1px solid var(--line); border-radius:16px; background:#fff; }
+.recurring-expense-row > div { min-width:0; }
+.recurring-expense-row span:not(.status-dot) { display:block; margin-bottom:4px; color:var(--muted); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.04em; }
+.recurring-expense-row strong { display:block; overflow:hidden; color:var(--text); font-size:13px; line-height:1.25; text-overflow:ellipsis; white-space:nowrap; }
+.recurring-expense-row small { display:block; overflow:hidden; margin-top:4px; color:var(--muted); font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
+.status-dot { display:inline-flex; width:9px; height:9px; margin-right:7px; border-radius:50%; background:#cbd5e1; }
+.status-dot.is-active { background:#22c55e; }
+@media (max-width:1100px) { .recurring-expense-row { grid-template-columns:repeat(2,minmax(0,1fr)); } .recurring-expense-row > div:first-child { grid-column:1/-1; } }
+@media (max-width:640px) { .expense-type-toggle { flex-wrap:wrap; } .expense-type-toggle > span { width:100%; margin-right:0; } .recurring-expense-row { grid-template-columns:1fr; } }

@@ -64,6 +64,7 @@ type Props = {
   submitLabel?: string;
   onCancel?: () => void;
   cancelHref?: string;
+  onSwitchToRecurring?: () => void;
 };
 
 function toDateInput(value?: string | Date | null) {
@@ -279,7 +280,7 @@ function SupplierAutocomplete({
         value={selected?.businessName ?? query}
       />
       <label>
-        Esercente/Fornitore
+        Esercente
         <div className="supplier-input-row">
           <input
             value={query}
@@ -323,7 +324,7 @@ function SupplierAutocomplete({
             ))
           ) : (
             <div className="empty-supplier-result">
-              Nessun esercente/fornitore trovato.
+              Nessun fornitore trovato.
             </div>
           )}
         </div>
@@ -547,6 +548,7 @@ export default function ExpenseForm({
   submitLabel = "Salva spesa",
   onCancel,
   cancelHref,
+  onSwitchToRecurring,
 }: Props) {
   const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount));
   const [hasElectronicInvoice, setHasElectronicInvoice] = useState(
@@ -710,6 +712,20 @@ export default function ExpenseForm({
       encType="multipart/form-data"
     >
       <h2 className="full">{title}</h2>
+
+      <div className="expense-type-toggle expense-type-switch-in-form full" role="radiogroup" aria-label="Tipo spesa">
+        <span>Tipo spesa</span>
+        <button type="button" className="toggle-choice is-active" aria-pressed="true">Singola</button>
+        <button
+          type="button"
+          className="toggle-choice"
+          onClick={onSwitchToRecurring}
+          disabled={!onSwitchToRecurring}
+          title={onSwitchToRecurring ? "Passa al form spesa ricorrente" : "Disponibile dal form di creazione spesa"}
+        >
+          Ricorrente
+        </button>
+      </div>
 
       <label>
         Data ordine

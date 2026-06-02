@@ -35,7 +35,7 @@ async function resolveSupplierReference(data: z.infer<typeof ExpenseSchema>) {
   }
 
   if (!submittedName) {
-    throw new Error('Esercente/Fornitore obbligatorio');
+    throw new Error('Esercente obbligatorio');
   }
 
   const existingByName = await prisma.supplier.findFirst({
