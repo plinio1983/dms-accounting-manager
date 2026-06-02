@@ -5503,3 +5503,442 @@ button.bulk-direct-danger {
         display: none;
     }
 }
+
+/* v079: professional expense detail layout */
+.expense-detail-page {
+    width: 100%;
+}
+
+.expense-detail-shell {
+    width: min(1280px, 100%);
+    margin: 0 auto;
+}
+
+.expense-detail-document {
+    overflow: hidden;
+    border: 1px solid rgba(226, 232, 240, .95);
+    border-radius: 28px;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    box-shadow: 0 24px 70px rgba(15, 23, 42, .08);
+}
+
+.expense-detail-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+    gap: 28px;
+    align-items: stretch;
+    padding: 28px;
+    background:
+        radial-gradient(circle at 12% 0%, rgba(63, 111, 255, .11), transparent 34%),
+        linear-gradient(135deg, #f8fbff 0%, #ffffff 62%);
+    border-bottom: 1px solid rgba(226, 232, 240, .9);
+}
+
+.expense-detail-back {
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
+    margin-bottom: 16px;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 850;
+    text-decoration: none;
+}
+
+.expense-detail-kicker {
+    margin: 0 0 8px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.expense-detail-title-block h1 {
+    max-width: 920px;
+    margin: 0;
+    color: var(--text);
+    font-size: clamp(28px, 4vw, 46px);
+    line-height: .98;
+    letter-spacing: -.045em;
+}
+
+.expense-detail-meta-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.expense-detail-meta-line span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 6px 10px;
+    border: 1px solid rgba(226, 232, 240, .9);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .72);
+    color: #475569;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.expense-detail-amount-panel {
+    display: grid;
+    align-content: center;
+    gap: 12px;
+    padding: 22px;
+    border: 1px solid rgba(226, 232, 240, .95);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, .88);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8);
+}
+
+.expense-detail-amount-panel > span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .055em;
+}
+
+.expense-detail-amount-panel > strong {
+    color: var(--text);
+    font-size: clamp(30px, 4vw, 42px);
+    line-height: 1;
+    letter-spacing: -.04em;
+}
+
+.expense-detail-badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.expense-detail-action-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 28px;
+    border-bottom: 1px solid rgba(226, 232, 240, .9);
+    background: #fff;
+}
+
+.expense-detail-status-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    border-bottom: 1px solid rgba(226, 232, 240, .9);
+    background: #fff;
+}
+
+.expense-detail-status-strip > div {
+    min-width: 0;
+    padding: 18px 22px;
+    border-right: 1px solid rgba(226, 232, 240, .85);
+}
+
+.expense-detail-status-strip > div:last-child {
+    border-right: 0;
+}
+
+.expense-detail-status-strip span {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .045em;
+}
+
+.expense-detail-status-strip strong {
+    display: block;
+    overflow: hidden;
+    font-size: 20px;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.expense-detail-progress {
+    height: 7px;
+    background: #eef2f7;
+}
+
+.expense-detail-progress span {
+    display: block;
+    height: 100%;
+    border-radius: 0 999px 999px 0;
+    background: linear-gradient(90deg, var(--accent), #22c55e);
+}
+
+.expense-detail-section {
+    padding: 26px 28px;
+    border-bottom: 1px solid rgba(226, 232, 240, .8);
+}
+
+.expense-detail-section:last-child {
+    border-bottom: 0;
+}
+
+.expense-detail-section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.expense-detail-section-heading h2 {
+    margin: 0;
+    font-size: 18px;
+    letter-spacing: -.02em;
+}
+
+.expense-detail-section-heading p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.expense-detail-info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.expense-detail-item {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid rgba(226, 232, 240, .9);
+    border-radius: 16px;
+    background: #fff;
+}
+
+.expense-detail-item-wide {
+    grid-column: span 2;
+}
+
+.expense-detail-item > span {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--muted);
+    font-size: 10.5px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.expense-detail-item > strong {
+    display: block;
+    min-height: 22px;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.expense-detail-two-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr);
+    gap: 26px;
+    align-items: start;
+}
+
+.expense-payment-timeline {
+    position: relative;
+    display: grid;
+    gap: 10px;
+}
+
+.expense-payment-card {
+    display: grid;
+    grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid rgba(226, 232, 240, .95);
+    border-radius: 18px;
+    background: #fff;
+}
+
+.expense-payment-date {
+    display: grid;
+    align-content: center;
+    gap: 6px;
+    padding-right: 14px;
+    border-right: 1px solid rgba(226, 232, 240, .9);
+}
+
+.expense-payment-date span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 850;
+}
+
+.expense-payment-date strong {
+    color: var(--accent);
+    font-size: 18px;
+    line-height: 1.1;
+}
+
+.expense-payment-data {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.expense-payment-data span {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.expense-payment-data strong {
+    display: block;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.expense-attachment-panel {
+    display: grid;
+    gap: 10px;
+}
+
+.expense-attachment-item {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid rgba(226, 232, 240, .95);
+    border-radius: 16px;
+    background: #fff;
+    text-decoration: none;
+}
+
+.expense-attachment-item > span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    background: #eef2ff;
+}
+
+.expense-attachment-item strong {
+    overflow: hidden;
+    color: var(--text);
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.expense-attachment-item small {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.expense-empty-panel {
+    padding: 18px;
+    border: 1px dashed rgba(148, 163, 184, .75);
+    border-radius: 18px;
+    background: #f8fafc;
+    color: var(--muted);
+    font-weight: 800;
+    text-align: center;
+}
+
+@media (max-width: 1020px) {
+    .expense-detail-hero,
+    .expense-detail-two-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .expense-detail-info-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .expense-detail-status-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .expense-detail-status-strip > div:nth-child(2) {
+        border-right: 0;
+    }
+
+    .expense-detail-status-strip > div:nth-child(-n+2) {
+        border-bottom: 1px solid rgba(226, 232, 240, .85);
+    }
+}
+
+@media (max-width: 700px) {
+    .expense-detail-document {
+        border-radius: 20px;
+    }
+
+    .expense-detail-hero,
+    .expense-detail-section {
+        padding: 18px;
+    }
+
+    .expense-detail-action-row {
+        justify-content: stretch;
+        padding: 12px 18px;
+    }
+
+    .expense-detail-action-row a {
+        flex: 1 1 0;
+    }
+
+    .expense-detail-info-grid,
+    .expense-detail-status-strip,
+    .expense-payment-card,
+    .expense-payment-data {
+        grid-template-columns: 1fr;
+    }
+
+    .expense-detail-item-wide {
+        grid-column: auto;
+    }
+
+    .expense-detail-status-strip > div {
+        border-right: 0;
+        border-bottom: 1px solid rgba(226, 232, 240, .85);
+    }
+
+    .expense-detail-status-strip > div:last-child {
+        border-bottom: 0;
+    }
+
+    .expense-payment-date {
+        padding-right: 0;
+        padding-bottom: 10px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(226, 232, 240, .9);
+    }
+
+    .expense-detail-section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .expense-attachment-item {
+        grid-template-columns: 34px minmax(0, 1fr);
+    }
+
+    .expense-attachment-item small {
+        grid-column: 2;
+    }
+}
