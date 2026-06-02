@@ -80,7 +80,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       <div><span>Residuo</span><strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong></div>
       <div><span>Fattura Elettronica</span>{booleanBadge(expense.hasElectronicInvoice)}</div>
       <div><span>Stato Fattura</span><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></div>
-      <div><span>Detrazione</span>{booleanBadge(expense.isDeclared)}</div>
+      <div><span>Fiscale</span>{booleanBadge(expense.isDeclared)}</div>
       <div className="span-2"><span>Note</span><strong>{expense.notes ?? '-'}</strong></div>
     </div>
 

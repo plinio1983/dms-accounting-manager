@@ -806,7 +806,7 @@ export default function ExpenseForm({
 
       <div className="toggle-field-wrap">
       <div className="toggle-field switch-toggle-field">
-        <span>Detrazione</span>
+        <span>Fiscale</span>
         <label className="switch">
           <input
               type="checkbox"
@@ -830,7 +830,7 @@ export default function ExpenseForm({
       </div>
 
       <div className="toggle-field switch-toggle-field">
-        <span>Fattura Elettronica</span>
+        <span>Fattura Elettr.</span>
         <label className="switch">
           <input
             type="checkbox"

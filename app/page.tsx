@@ -234,7 +234,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
       <div className="card-heading-row">
         <div>
           <h2>Report mensile {report.year}</h2>
-          <p className="muted">Dati mensili per l’anno fiscale selezionato in alto.</p>
+          <p className="muted">Dati mensili per l’anno fiscale selezionato.</p>
         </div>
       </div>
       <div className="table-scroll">

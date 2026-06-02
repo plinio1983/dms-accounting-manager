@@ -1,5 +1,28 @@
+@media (max-width: 760px) {
+    .shell .nav-links {
+        display: none;
+    }
+}
+
 @media (max-width: 576px) {
     body { overflow-x: hidden !important;}
+
+    input, select {
+        border: none;
+        border-bottom: 1px solid #616266;
+        border-radius: 0;
+    }
+
+    textarea {
+        border-color: #616266;
+    }
+
+    input:active, select:active,
+    input:focus, select:focus {
+        border: none;
+        border-bottom: 1px solid #2e2c7e;
+        border-radius: 0;
+    }
 
     .form {
         gap: 20px;
@@ -49,5 +72,9 @@
 
     .bulk-direct-link .btn-icon {
         font-size: 20px;
+    }
+    .card form.expense-form {
+        padding: 0;
+        border: none;
     }
 }

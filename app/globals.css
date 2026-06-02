@@ -2812,10 +2812,6 @@ button {
     align-self: start;
 }
 
-.dashboard-header-card .dashboard-top-actions .btn {
-    width: 100%;
-}
-
 .dashboard-header-card .dashboard-year-selector {
     grid-column: 1 / -1;
     justify-self: start;
@@ -5026,7 +5022,6 @@ button.bulk-direct-link {
 }
 
 .bulk-actions-bar {
-    position: relative;
     z-index: 40;
     display: flex !important;
     flex-direction: row !important;
@@ -5038,7 +5033,6 @@ button.bulk-direct-link {
     margin: 10px 0 12px !important;
     padding: 0 !important;
     border: 0 !important;
-    background: transparent !important;
 }
 
 .bulk-action-menu {
@@ -5232,7 +5226,6 @@ button.bulk-direct-danger {
 .expenses-list-card > .list-heading {
     position: sticky !important;
     top: 0 !important;
-    z-index: 900 !important;
     margin-left: -1px;
     margin-right: -1px;
     padding: 10px 0 8px !important;
@@ -5243,13 +5236,9 @@ button.bulk-direct-danger {
 .expenses-list-card > .bulk-actions-bar {
     position: sticky !important;
     top: 58px !important;
-    z-index: 950 !important;
+    z-index: 99 !important;
     margin: 0 0 10px !important;
     padding: 8px 0 !important;
-    background: rgba(255, 255, 255, .98) !important;
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid rgba(226, 232, 240, .95) !important;
-    box-shadow: 0 8px 18px rgba(15, 23, 42, .06);
 }
 
 .expenses-list-card > .bulk-actions-bar .bulk-action-menu,

@@ -446,7 +446,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     residualFilter && { label: 'Residuo', value: residualFilter === 'open' ? 'Con residuo' : 'Saldato' },
     electronicInvoiceFilter && { label: 'Fattura elettronica', value: electronicInvoiceFilter === 'yes' ? 'Si' : 'No' },
     (invoiceStatusFilter || invoiceStatusModeFilter) && { label: 'Stato fattura', value: optionLabel(invoiceStatusFilterLabels, invoiceStatusFilter || invoiceStatusModeFilter) },
-    declaredFilter && { label: 'Detrazione', value: declaredFilter === 'yes' ? 'Si' : 'No' },
+    declaredFilter && { label: 'Detrazione', value: declaredFilter === 'yes' ? 'Fiscale' : 'Non Fisc.' },
     attachmentsFilter && { label: 'Allegati', value: attachmentsFilter === 'with' ? 'Con allegati' : 'Senza allegati' }
   ].filter(Boolean) as Array<{ label: string; value: string }>;
 
@@ -665,7 +665,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       <div className="search-totals-row" aria-label="Totali risultati filtrati">
         <div><span>Risultati</span><strong>{filteredExpenses.length}</strong></div>
         <div><span>Spese filtrate</span><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></div>
-        <div><span>Detrazione</span><strong className={moneyTone(totals.declared)}>{euro(totals.declared)}</strong></div>
+        <div><span>Spesa Fiscale</span><strong className={moneyTone(totals.declared)}>{euro(totals.declared)}</strong></div>
         <div><span>Non saldato</span><strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong></div>
         <div className={totals.overdue > 0 ? 'search-total-critical' : ''}><span>Pag. scaduti</span><strong className={moneyTone(totals.overdue)}>{euro(totals.overdue)}</strong></div>
       </div>
@@ -694,9 +694,9 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         <th>Esercente</th>
         <th><span className="th-wrap">Stato<br />Pag.</span></th>
         <th>Importo</th>
-        <th>Detr.</th>
+        <th>Fiscale</th>
         <th className="expense-invoice-status-header"><span className="th-wrap">Stato<br />Fatt.</span></th>
-        <th><span className="th-wrap">Fatt.<br />Elettr.</span></th>
+        <th><span className="th-wrap">Fattura<br />Elettr.</span></th>
         <th>Descrizione</th>
         <th>Residuo</th>
       </tr></thead><tbody>
