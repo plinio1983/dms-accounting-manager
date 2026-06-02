@@ -118,6 +118,6 @@ export default function RecurringExpenseForm({ categories, banks, suppliers = []
 
     <label className="full">Note<textarea name="notes" rows={3} defaultValue={initialExpense?.notes ?? ""} /></label>
 
-    <div className="actions-row right-actions full">{onCancel ? <button type="button" className="secondary-button" onClick={onCancel}>Annulla</button> : cancelHref ? <a className="secondary-button" href={cancelHref}>Annulla</a> : null}<button type="submit">Salva spesa ricorrente</button></div>
+    <div className="actions-row right-actions full">{onCancel ? <button type="button" className="secondary-button" onClick={onCancel}>Annulla</button> : cancelHref ? <a className="secondary-button" href={cancelHref}> Annulla</a> : null}<button type="submit"> Salva</button></div>
   </form>;
 }
