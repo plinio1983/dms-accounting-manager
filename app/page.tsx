@@ -261,7 +261,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
             <td><Link href={periodLink('/expenses', [{ year: m.year, month: m.month }], { declared: 'yes' })}><MoneyCell value={m.totals.speseInDetrazione} /></Link></td>
             <td><MoneyCell value={m.totals.utileNetto} highlight /></td>
             <td><Link href={periodLink('/expenses', [{ year: m.year, month: m.month }], { paymentStatus: 'not_complete' })}><MoneyCell value={m.totals.nonSaldato} tone="money-warning" /></Link></td>
-            <td><Link href={periodLink('/expenses', [{ year: m.year, month: m.month }], { paymentStatus: 'overdue' })}><MoneyCell value={m.totals.fattureScadute} tone="money-critical" /></Link></td>
+            <td><Link className={m.totals.fattureScaduteCount > 0 ? 'count-critical' : 'count-muted'} href={periodLink('/expenses', [{ year: m.year, month: m.month }], { paymentStatus: 'overdue' })}>{m.totals.fattureScaduteCount}</Link></td>
             <td><MoneyCell value={m.totals.utileFiscale} highlight /></td>
             <td><MoneyCell value={m.totals.debitoIva} /></td>
           </tr>)}</tbody>

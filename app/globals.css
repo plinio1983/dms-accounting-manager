@@ -4866,3 +4866,63 @@ button.bulk-direct-link {
     grid-template-columns: 1fr;
   }
 }
+
+/* v41: dashboard overdue count and standalone form scroll fixes */
+.dashboard-report-table .count-critical,
+.dashboard-report-table .count-muted {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    min-height: 28px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+.dashboard-report-table .count-critical {
+    background: #fff1f1;
+    color: #a82020;
+    border: 1px solid #ffd1d1;
+}
+
+.dashboard-report-table .count-muted {
+    background: #f3f4f6;
+    color: var(--muted);
+    border: 1px solid #e5e7eb;
+}
+
+.modal-page-wrap {
+    width: 100%;
+}
+
+.modal-page-wrap .modal-page-card {
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+}
+
+.modal-page-wrap .expense-form,
+.modal-page-wrap .income-form {
+    max-height: none;
+    overflow: visible;
+}
+
+.payment-row .payment-summary-cell {
+    min-width: 0;
+}
+
+.payment-row .payment-row-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+
+.payment-row .payment-row-actions .secondary-button,
+.payment-row .payment-row-actions .remove-row {
+    flex: 0 0 auto;
+}

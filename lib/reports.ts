@@ -97,6 +97,11 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
     const paidAmount = (expense.payments ?? []).reduce((partial: number, payment: any) => partial + Number(payment.amount), 0);
     return sum + Math.max(expenseAmount - paidAmount, 0);
   }, 0);
+  const fattureScaduteCount = expenses.reduce((sum, expense) => {
+    if (!isExpenseOverdue(expense)) return sum;
+    const paidAmount = (expense.payments ?? []).reduce((partial: number, payment: any) => partial + Number(payment.amount), 0);
+    return Math.max(Number(expense.amount) - paidAmount, 0) > 0 ? sum + 1 : sum;
+  }, 0);
 
   const vatBalance = computeVatBalance(incomes, expenses, periods);
   const ivaGenerataIncassi = vatBalance.generated;
@@ -135,7 +140,8 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
     ivaVersataSpese,
     fattureNonInviate,
     fattureNonRicevute,
-    fattureScadute
+    fattureScadute,
+    fattureScaduteCount
   };
 }
 

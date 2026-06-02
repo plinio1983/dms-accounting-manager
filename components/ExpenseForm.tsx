@@ -897,24 +897,26 @@ export default function ExpenseForm({
             return (
               <div className="payment-row" key={payment.key}>
                 {renderPaymentHiddenInputs(payment)}
-                <div className="span-2">
+                <div className="span-2 payment-summary-cell">
                   <strong>Pagamento registrato</strong>
                   <div className="muted">{paymentSummary(payment)}</div>
                 </div>
-                <button
-                  type="button"
-                  className="secondary-button"
-                  onClick={() => setOpenPaymentKey(payment.key)}
-                >
-                  ✎ Modifica
-                </button>
-                <button
-                  type="button"
-                  className="remove-row"
-                  onClick={() => removePaymentRow(index)}
-                >
-                  🗑️ Elimina
-                </button>
+                <div className="payment-row-actions">
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={() => setOpenPaymentKey(payment.key)}
+                  >
+                    ✎ Modifica
+                  </button>
+                  <button
+                    type="button"
+                    className="remove-row"
+                    onClick={() => removePaymentRow(index)}
+                  >
+                    🗑️ Elimina
+                  </button>
+                </div>
               </div>
             );
           }
