@@ -5963,3 +5963,31 @@ button.bulk-direct-danger {
 .status-dot.is-active { background:#22c55e; }
 @media (max-width:1100px) { .recurring-expense-row { grid-template-columns:repeat(2,minmax(0,1fr)); } .recurring-expense-row > div:first-child { grid-column:1/-1; } }
 @media (max-width:640px) { .expense-type-toggle { flex-wrap:wrap; } .expense-type-toggle > span { width:100%; margin-right:0; } .recurring-expense-row { grid-template-columns:1fr; } }
+
+/* v090: recurring form parity with expense form */
+.recurring-expense-form .supplier-picker.span-2 {
+    grid-column: span 2;
+}
+
+.recurring-expense-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.recurring-expense-form .expense-type-switch-in-form {
+    display: flex;
+    flex-direction: column;
+    padding: 6px 12px;
+    border-radius: 12px;
+}
+
+.recurring-expense-form select:disabled,
+.recurring-expense-form input:disabled {
+    background: #f1f5f9;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+.recurring-accrual-toggle {
+    grid-column: 1 / -1;
+}
