@@ -4821,3 +4821,48 @@ button.bulk-direct-link {
         grid-template-columns: 1fr;
     }
 }
+
+/* v073 suppliers + dashboard mobile refinements */
+.supplier-filters {
+  grid-template-columns: repeat(3, minmax(160px, 1fr));
+}
+
+.supplier-linked-expenses-table {
+  min-width: 1180px;
+}
+
+.supplier-linked-expenses-table th,
+.supplier-linked-expenses-table td {
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .fiscal-summary-card .summary-metrics-grid,
+  .fiscal-summary-card .summary-metrics-grid-priority,
+  .fiscal-summary-card .fiscal-summary-metrics-ordered {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .fiscal-summary-card .summary-metric {
+    padding: 10px;
+    min-height: 84px;
+  }
+
+  .fiscal-summary-card .summary-metric span {
+    font-size: 10px;
+    line-height: 1.15;
+  }
+
+  .fiscal-summary-card .summary-metric strong {
+    font-size: 14px;
+    line-height: 1.15;
+    word-break: break-word;
+  }
+}
+
+@media (max-width: 520px) {
+  .supplier-filters {
+    grid-template-columns: 1fr;
+  }
+}

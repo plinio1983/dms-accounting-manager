@@ -13,6 +13,13 @@ function normalize(value: unknown) {
   return String(value ?? '').trim().toLowerCase();
 }
 
+function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: string }> }) {
+  return <div className="active-filter-summary">
+    <span className="active-filter-summary-title">Filtri attivi:</span>
+    {items.length ? items.map(item => <span className="active-filter-chip" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>) : <span className="active-filter-empty">nessun filtro impostato</span>}
+  </div>;
+}
+
 export default async function SuppliersPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const filters = (await searchParams) ?? {};
   const currentQuery = new URLSearchParams();
@@ -38,27 +45,31 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
     return { supplier, openExpensesCount: openExpenses.length, amountToPay };
   });
 
-  const filteredSupplierRows = supplierRows.filter(({ supplier, openExpensesCount, amountToPay }) => {
-    const businessNameFilter = normalize(inputDefault(filters, 'businessName'));
-    const aliasFilter = normalize(inputDefault(filters, 'alias'));
-    const emailFilter = normalize(inputDefault(filters, 'email'));
-    const phoneFilter = normalize(inputDefault(filters, 'phone'));
-    const pecFilter = normalize(inputDefault(filters, 'pec'));
-    const taxCodeSdiFilter = normalize(inputDefault(filters, 'taxCodeSdi'));
-    const openOrdersFilter = normalize(inputDefault(filters, 'openOrders'));
-    const amountToPayFilter = normalize(inputDefault(filters, 'amountToPay'));
+  const businessNameFilter = normalize(inputDefault(filters, 'businessName'));
+  const aliasFilter = normalize(inputDefault(filters, 'alias'));
+  const emailFilter = normalize(inputDefault(filters, 'email'));
+  const phoneFilter = normalize(inputDefault(filters, 'phone'));
+  const pecFilter = normalize(inputDefault(filters, 'pec'));
+  const taxCodeSdiFilter = normalize(inputDefault(filters, 'taxCodeSdi'));
 
+  const filteredSupplierRows = supplierRows.filter(({ supplier }) => {
     if (businessNameFilter && !normalize(supplier.businessName).includes(businessNameFilter)) return false;
     if (aliasFilter && !normalize(supplier.alias).includes(aliasFilter)) return false;
     if (emailFilter && !normalize(supplier.email).includes(emailFilter)) return false;
     if (phoneFilter && !normalize(supplier.phone).includes(phoneFilter)) return false;
     if (pecFilter && !normalize(supplier.pec).includes(pecFilter)) return false;
     if (taxCodeSdiFilter && !normalize(supplier.taxCodeSdi).includes(taxCodeSdiFilter)) return false;
-    if (openOrdersFilter && !String(openExpensesCount).includes(openOrdersFilter)) return false;
-    if (amountToPayFilter && !normalize(amountToPay.toFixed(2).replace('.', ',')).includes(amountToPayFilter.replace('.', ','))) return false;
-
     return true;
   });
+
+  const activeFilterItems = [
+    inputDefault(filters, 'businessName') && { label: 'Ragione sociale', value: inputDefault(filters, 'businessName') },
+    inputDefault(filters, 'alias') && { label: 'Alias', value: inputDefault(filters, 'alias') },
+    inputDefault(filters, 'email') && { label: 'Email', value: inputDefault(filters, 'email') },
+    inputDefault(filters, 'phone') && { label: 'Telefono', value: inputDefault(filters, 'phone') },
+    inputDefault(filters, 'pec') && { label: 'PEC', value: inputDefault(filters, 'pec') },
+    inputDefault(filters, 'taxCodeSdi') && { label: 'Codice SDI/C.F.', value: inputDefault(filters, 'taxCodeSdi') }
+  ].filter(Boolean) as Array<{ label: string; value: string }>;
 
   return <div className="grid">
     <div className="toolbar-card toolbar-card-wrap">
@@ -79,17 +90,20 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
         </div>
       </div>
 
-      <form className="expense-filters compact-filters" method="get">
-        <label>Ragione Sociale<input name="businessName" defaultValue={inputDefault(filters, 'businessName')} /></label>
-        <label>Alias<input name="alias" defaultValue={inputDefault(filters, 'alias')} /></label>
-        <label>Email<input name="email" type="email" defaultValue={inputDefault(filters, 'email')} /></label>
-        <label>Telefono<input name="phone" defaultValue={inputDefault(filters, 'phone')} /></label>
-        <label>PEC<input name="pec" defaultValue={inputDefault(filters, 'pec')} /></label>
-        <label>Codice SDI/C.F.<input name="taxCodeSdi" defaultValue={inputDefault(filters, 'taxCodeSdi')} /></label>
-        <label>Ordini da saldare<input name="openOrders" inputMode="numeric" defaultValue={inputDefault(filters, 'openOrders')} /></label>
-        <label>Importo da saldare<input name="amountToPay" inputMode="decimal" defaultValue={inputDefault(filters, 'amountToPay')} /></label>
-        <div className="filter-actions"><button className="button-standard primary-action" type="submit"><span className="btn-icon">🔎</span> Filtra</button><Link className="button-standard secondary-button reset-button" href="/suppliers"><span className="btn-icon">↺</span> Reset</Link></div>
-      </form>
+      <details className="filter-collapse">
+        <summary><span className="btn-icon">🔎</span>Filtri di ricerca</summary>
+        <form className="expense-filters compact-filters supplier-filters" method="get">
+          <label>Ragione Sociale<input name="businessName" defaultValue={inputDefault(filters, 'businessName')} /></label>
+          <label>Alias<input name="alias" defaultValue={inputDefault(filters, 'alias')} /></label>
+          <label>Email<input name="email" type="email" defaultValue={inputDefault(filters, 'email')} /></label>
+          {/*<label>Telefono<input name="phone" defaultValue={inputDefault(filters, 'phone')} /></label>*/}
+          <label>PEC<input name="pec" defaultValue={inputDefault(filters, 'pec')} /></label>
+          {/*<label>Codice SDI/C.F.<input name="taxCodeSdi" defaultValue={inputDefault(filters, 'taxCodeSdi')} /></label>*/}
+          <div className="filter-actions"><button className="button-standard primary-action" type="submit"><span className="btn-icon">🔎</span> Filtra</button><Link className="button-standard secondary-button reset-button" href="/suppliers"><span className="btn-icon">↺</span> Reset</Link></div>
+        </form>
+      </details>
+
+      <ActiveFilterSummary items={activeFilterItems} />
 
       <script dangerouslySetInnerHTML={{ __html: `
         (() => {

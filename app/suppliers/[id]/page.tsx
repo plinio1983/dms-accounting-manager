@@ -2,9 +2,31 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { euro } from '@/lib/money';
+import {
+  badgeClass,
+  categoryStyles,
+  invoiceStatusStyles,
+  paymentStatusStyles,
+  yesNoStyles
+} from '@/lib/expense-ui';
 
 function valueOrDash(value?: string | null) {
   return value && value.trim() ? value : '-';
+}
+
+function dateLabel(value?: Date | null) {
+  return value ? value.toLocaleDateString('it-IT') : '-';
+}
+
+function formatPeriod(month: number, year: number) {
+  const monthName = new Intl.DateTimeFormat('it-IT', { month: 'short' }).format(new Date(year, month - 1, 1));
+  const normalized = monthName.charAt(0).toUpperCase() + monthName.slice(1).replace('.', '');
+  return `${normalized} ${year}`;
+}
+
+function booleanBadge(value: boolean) {
+  const item = value ? yesNoStyles.yes : yesNoStyles.no;
+  return <span className={badgeClass(item.className)}>{item.icon} {item.label}</span>;
 }
 
 function CopyableField({ label, value }: { label: string; value?: string | null }) {
@@ -67,22 +89,37 @@ export default async function SupplierDetailPage({ params }: { params: Promise<{
 
     <div className="card">
       <h2>Spese collegate</h2>
-      <div className="table-scroll"><table><thead><tr><th>ID</th><th>Periodo</th><th>Categoria</th><th>Prodotto / Servizio</th><th>Importo</th><th>Residuo</th><th></th></tr></thead><tbody>
+      <div className="table-scroll"><table className="supplier-linked-expenses-table"><thead><tr>
+        <th>Data ordine</th>
+        <th>Periodo Fatt.</th>
+        <th>Categoria</th>
+        <th>Stato Pagam.</th>
+        <th>Importo</th>
+        <th>Dichiarazione</th>
+        <th>Stato Fattura</th>
+        <th>Fattura Elettr.</th>
+        <th>Descrizione</th>
+        <th></th>
+      </tr></thead><tbody>
         {supplier.expenses.map(expense => {
           const amount = Number(expense.amount.toString());
-          const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
-          const residual = Math.max(0, amount - paid);
+          const categoryStyle = expense.category?.name ? categoryStyles[expense.category.name] : undefined;
+          const paymentStyle = paymentStatusStyles[expense.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
+          const invoiceStyle = invoiceStatusStyles[expense.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
           return <tr key={expense.id}>
-            <td>#{expense.id}</td>
-            <td>{String(expense.month).padStart(2, '0')}/{expense.year}</td>
-            <td>{expense.category?.name ?? '-'}</td>
-            <td>{expense.description ?? '-'}</td>
-            <td>{euro(amount)}</td>
-            <td><strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong></td>
+            <td>{dateLabel(expense.receivedDate)}</td>
+            <td>{formatPeriod(expense.month, expense.year)}</td>
+            <td>{expense.category ? <span title={expense.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? expense.category.code}</span> : '-'}</td>
+            <td><span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span></td>
+            <td><strong>{euro(amount)}</strong></td>
+            <td>{booleanBadge(expense.isDeclared)}</td>
+            <td><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
+            <td>{booleanBadge(expense.hasElectronicInvoice)}</td>
+            <td className="cell-description" title={expense.description ?? ''}>{expense.description ?? '-'}</td>
             <td><Link className="table-action secondary icon-action" title="Dettaglio spesa" aria-label="Dettaglio spesa" href={`/expenses/${expense.id}`}>👁</Link></td>
           </tr>;
         })}
-        {!supplier.expenses.length && <tr><td colSpan={7}>Nessuna spesa collegata a questo fornitore.</td></tr>}
+        {!supplier.expenses.length && <tr><td colSpan={10}>Nessuna spesa collegata a questo fornitore.</td></tr>}
       </tbody></table></div>
     </div>
   </div>;
