@@ -6,6 +6,10 @@
     .floating-bulk-actions-inner {
         justify-content: flex-end;
     }
+
+    .app-footer {
+        display: none;
+    }
 }
 
 @media (max-width: 576px) {
@@ -98,5 +102,10 @@
     .dashboard-actions-bottom .actions-row .btn {
         padding: 7px;
         font-size: 14px;
+    }
+
+    .attachment-row-wrap .attachment-row-title {
+        display: flex;
+        flex-direction: column;
     }
 }

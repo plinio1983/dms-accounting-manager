@@ -292,9 +292,9 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
         <p className="muted">Inserisci rapidamente una nuova operazione.</p>
       </div>
       <div className="actions-row">
-        <Link className="btn primary-link" href="/expenses?new=1"><span className="btn-icon">＋</span> Inserisci spesa</Link>
-        <Link className="btn primary-link" href="/incomes?new=1"><span className="btn-icon">＋</span> Inserisci incasso</Link>
-        <Link className="btn primary-link" href="/suppliers?new=1"><span className="btn-icon">＋</span> Nuovo fornitore</Link>
+        <Link className="btn primary-link" href="/expenses?new=1"><span className="btn-icon">＋</span> Spesa</Link>
+        <Link className="btn primary-link" href="/incomes?new=1"><span className="btn-icon">＋</span> Incasso</Link>
+        <Link className="btn primary-link" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>
       </div>
     </div>
   </div>;

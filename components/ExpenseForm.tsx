@@ -1031,7 +1031,7 @@ export default function ExpenseForm({
       </section>
 
       <label className="attachment-row-wrap">
-        <div>
+        <div className="attachment-row-title">
           Allegati &nbsp;
           <small className="text-warning">PDF, immagini, XML, P7M</small>
           <div>
