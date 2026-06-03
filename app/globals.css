@@ -726,7 +726,8 @@ button {
 }
 
 .expense-filters label {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 5px;
     color: var(--muted);
     font-size: 12px;
@@ -825,7 +826,7 @@ button {
 /* v9: lista spese più compatta */
 .compact-filters {
     grid-template-columns: repeat(6, minmax(110px, 1fr));
-    gap: 8px;
+    gap: 12px;
     padding: 12px;
 }
 
@@ -1450,7 +1451,7 @@ table th, table td {
 .card-heading-row {
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 12px;
 }
 
@@ -2121,6 +2122,7 @@ button {
     min-height: 42px;
     align-items: center;
     justify-content: flex-start;
+    font-style: italic;
 }
 
 .income-form .fiscal-toggle-field {
