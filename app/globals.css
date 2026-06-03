@@ -5986,17 +5986,31 @@ button.bulk-direct-danger {
     align-items: flex-start;
 }
 
-.expense-toolbar-card {
-    display: flex;
+.expense-toolbar-card-title {
+
 }
 
-.expense-toolbar-card .expense-toolbar-card-content>h2 {
+.expense-toolbar-card {
+    display: flex;
+    align-items: flex-start;
     flex-grow: 1;
+    position: relative;
+}
+
+.expense-toolbar-card .expense-toolbar-actions {
+    justify-content: flex-end;
+    flex-wrap: nowrap;
 }
 
 .expense-toolbar-card .expense-toolbar-card-content {
     display: flex;
-    height: 28px;
+    margin-bottom: 0;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.expense-toolbar-card .expense-toolbar-card-content>h2 {
+    flex-grow: 1;
 }
 
 .expense-import-btn {
@@ -6066,4 +6080,36 @@ button.bulk-direct-danger {
     .dashboard-period-cards {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
+}
+
+/* v096: fiscal overdue counts, fiscal links and totals period labels */
+.toolbar-card > div:first-child,
+.toolbar-card-wrap > div:first-child {
+    min-width: 0;
+    display: grid;
+    gap: 4px;
+}
+
+.toolbar-card > div:first-child h2,
+.toolbar-card-wrap > div:first-child h2 {
+    margin: 0;
+    line-height: 1.15;
+}
+
+.toolbar-card > div:first-child .muted,
+.toolbar-card-wrap > div:first-child .muted {
+    display: block;
+    margin: 0;
+    line-height: 1.35;
+    white-space: normal;
+}
+
+.totals-period-note {
+    margin: 0 0 12px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: #f8fafc;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 750;
 }

@@ -37,6 +37,43 @@ function formatDateInputLabel(value: string) {
   return year && month && day ? `${day}/${month}/${year}` : value;
 }
 
+function formatMonthInputLabel(value: string) {
+  if (!value) return '';
+  const [year, month] = value.split('-');
+  if (!year || !month) return value;
+  const date = new Date(Number(year), Number(month) - 1, 1);
+  const monthName = new Intl.DateTimeFormat('it-IT', { month: 'long' }).format(date);
+  return `${monthName.charAt(0).toUpperCase()}${monthName.slice(1)} ${year}`;
+}
+
+function periodTotalsLabel({
+  useFiscalPeriodFilter,
+  billingPeriodFromFilter,
+  billingPeriodToFilter,
+  creditDateFromDefault,
+  creditDateToDefault,
+}: {
+  useFiscalPeriodFilter: boolean;
+  billingPeriodFromFilter: string;
+  billingPeriodToFilter: string;
+  creditDateFromDefault: string;
+  creditDateToDefault: string;
+}) {
+  if (useFiscalPeriodFilter) {
+    if (billingPeriodFromFilter && billingPeriodToFilter && billingPeriodFromFilter !== billingPeriodToFilter) {
+      return `Totali calcolati sul periodo fiscale dal ${formatMonthInputLabel(billingPeriodFromFilter)} al ${formatMonthInputLabel(billingPeriodToFilter)}`;
+    }
+    const value = billingPeriodFromFilter || billingPeriodToFilter;
+    return value ? `Totali calcolati sul periodo fiscale ${formatMonthInputLabel(value)}` : 'Totali calcolati sul periodo fiscale selezionato';
+  }
+
+  if (creditDateFromDefault && creditDateToDefault && creditDateFromDefault !== creditDateToDefault) {
+    return `Totali calcolati sulle date accredito dal ${formatDateInputLabel(creditDateFromDefault)} al ${formatDateInputLabel(creditDateToDefault)}`;
+  }
+  const value = creditDateFromDefault || creditDateToDefault;
+  return value ? `Totali calcolati sulla data accredito ${formatDateInputLabel(value)}` : 'Totali calcolati sulle date accredito selezionate';
+}
+
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
   const value = searchParams[key];
   return Array.isArray(value) ? value[0] ?? '' : value ?? '';
@@ -346,6 +383,13 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
 
   const periodTotals = summarizeIncomes(periodIncomes);
   const totals = summarizeIncomes(filteredIncomes);
+  const totalsPeriodLabel = periodTotalsLabel({
+    useFiscalPeriodFilter,
+    billingPeriodFromFilter,
+    billingPeriodToFilter,
+    creditDateFromDefault,
+    creditDateToDefault
+  });
 
   const incomesBySalesChannel = Array.from(filteredIncomes.reduce((map, income) => {
     const name = income.salesChannel ?? 'Senza canale';
@@ -404,6 +448,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
     </div>
 
     <div className="card expenses-list-card">
+      <p className="totals-period-note">{totalsPeriodLabel}</p>
       <div className="totals-row income-totals-row">
         <div className="total-card total-card-income"><span>Entrate totali</span><strong className={moneyTone(periodTotals.total)}>{euro(periodTotals.total)}</strong><small>Totale del periodo selezionato, senza altri filtri.</small></div>
         <div className="total-card total-card-fiscal"><span>Incasso fiscale</span><strong className={moneyTone(periodTotals.fiscal)}>{euro(periodTotals.fiscal)}</strong><small>Entrate fiscali del periodo selezionato.</small></div>

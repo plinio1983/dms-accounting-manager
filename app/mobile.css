@@ -92,6 +92,9 @@
 
     .expense-import-btn {
         display: block;
+        position: absolute;
+        right: 12px;
+        top: 17px;
     }
 
     .expense-import-btn-large {

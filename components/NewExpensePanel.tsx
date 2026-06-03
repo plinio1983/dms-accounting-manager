@@ -30,18 +30,22 @@ export default function NewExpensePanel({ categories, banks, suppliers, initialO
   return <div className="grid">
     <div className="toolbar-card expense-toolbar-card">
       <div className="expense-toolbar-card-content">
-        <h2>Spese</h2>
-        <Link className="button-standard secondary-action expense-import-btn" href="/expenses/import">
-          <span className="btn-icon">⬆</span>
-          <span className="expense-import-btn-text">Importa Excel</span>
-          <span className="expense-import-btn-text-compact">XLS</span>
-        </Link>
+        <div className="expense-toolbar-card-title">
+          <h2>Spese</h2>
+          <Link className="button-standard secondary-action expense-import-btn" href="/expenses/import">
+            <span className="btn-icon">⬆</span>
+            <span className="expense-import-btn-text"> Importa Excel</span>
+            <span className="expense-import-btn-text-compact"> XLS</span>
+          </Link>
+        </div>
+        <div className="expense-toolbar-card-text">
+          <p className="muted">Gestisci le spese registrate le spese ricorrenti.</p>
+        </div>
       </div>
-      <p className="muted">Gestisci le spese registrate e inserisci nuovi documenti quando necessario.</p>
-      <div className="toolbar-actions">
+      <div className="toolbar-actions expense-toolbar-actions">
         <Link className="button-standard secondary-action expense-import-btn-large" href="/expenses/import"><span className="btn-icon">⬆</span>Importa Excel</Link>
-        <button className="button-standard primary-action" type="button" onClick={() => setIsOpen(true)}><span className="btn-icon">+</span>Aggiungi spesa</button>
         <Link className="button-standard secondary-action" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>
+        <button className="button-standard primary-action" type="button" onClick={() => setIsOpen(true)}><span className="btn-icon">+</span>Aggiungi spesa</button>
       </div>
     </div>
 

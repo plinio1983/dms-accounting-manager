@@ -123,7 +123,7 @@ function FiscalSummaryCard({
         <SummaryMetric label="Uscite fiscali" value={totals.usciteFiscali} highlight href={expensesHref} />
         <SummaryMetric label="Utile fiscale" value={totals.utileFiscale} highlight />
         <SummaryMetric label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
-        <SummaryMetric label="Pagamenti scaduti" value={totals.fattureScadute} warning={totals.fattureScadute > 0} href={overdueExpensesHref} />
+        <CountMetric label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
         <SummaryMetric label="Previsione saldo IVA" value={totals.debitoIva} highlight vat />
         <CountMetric label="Fatture non inviate" value={totals.fattureNonInviate} warning={totals.fattureNonInviate > 0} href={invoicesNotSentHref} />
         <CountMetric label="Fatture non ricevute" value={totals.fattureNonRicevute} warning={totals.fattureNonRicevute > 0} href={invoicesNotReceivedHref} />
@@ -241,14 +241,14 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
   const trendOverdueExpensesHref = dateRangeLink('/expenses', selectedTrendMonth.year, selectedTrendMonth.month, { paymentStatus: 'overdue' });
   const trendIncomesHref = dateRangeLink('/incomes', selectedTrendMonth.year, selectedTrendMonth.month);
   const monthExpensesHref = periodLink('/expenses', report.currentFiscalMonth.periods);
-  const monthUnpaidExpensesHref = periodLink('/expenses', report.currentFiscalMonth.periods, { paymentStatus: 'not_complete' });
-  const monthOverdueExpensesHref = periodLink('/expenses', report.currentFiscalMonth.periods, { paymentStatus: 'overdue' });
+  const monthUnpaidExpensesHref = periodLink('/expenses', report.currentFiscalMonth.periods, { paymentStatus: 'not_complete', declared: 'yes' });
+  const monthOverdueExpensesHref = periodLink('/expenses', report.currentFiscalMonth.periods, { paymentStatus: 'overdue', declared: 'yes' });
   const monthIncomesHref = periodLink('/incomes', report.currentFiscalMonth.periods);
   const monthInvoicesNotSentHref = periodLink('/incomes', report.currentFiscalMonth.periods, { fiscal: 'yes', invoiceStatusMode: 'not_emitted' });
   const monthInvoicesNotReceivedHref = periodLink('/expenses', report.currentFiscalMonth.periods, { declared: 'yes', invoiceStatusMode: 'not_received' });
   const quarterExpensesHref = periodLink('/expenses', report.currentFiscalQuarter.periods);
-  const quarterUnpaidExpensesHref = periodLink('/expenses', report.currentFiscalQuarter.periods, { paymentStatus: 'not_complete' });
-  const quarterOverdueExpensesHref = periodLink('/expenses', report.currentFiscalQuarter.periods, { paymentStatus: 'overdue' });
+  const quarterUnpaidExpensesHref = periodLink('/expenses', report.currentFiscalQuarter.periods, { paymentStatus: 'not_complete', declared: 'yes' });
+  const quarterOverdueExpensesHref = periodLink('/expenses', report.currentFiscalQuarter.periods, { paymentStatus: 'overdue', declared: 'yes' });
   const quarterIncomesHref = periodLink('/incomes', report.currentFiscalQuarter.periods);
   const quarterInvoicesNotSentHref = periodLink('/incomes', report.currentFiscalQuarter.periods, { fiscal: 'yes', invoiceStatusMode: 'not_emitted' });
   const quarterInvoicesNotReceivedHref = periodLink('/expenses', report.currentFiscalQuarter.periods, { declared: 'yes', invoiceStatusMode: 'not_received' });

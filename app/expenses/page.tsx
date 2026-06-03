@@ -60,6 +60,43 @@ function formatDateInputLabel(value: string) {
   return year && month && day ? `${day}/${month}/${year}` : value;
 }
 
+function formatMonthInputLabel(value: string) {
+  if (!value) return '';
+  const [year, month] = value.split('-');
+  if (!year || !month) return value;
+  const date = new Date(Number(year), Number(month) - 1, 1);
+  const monthName = new Intl.DateTimeFormat('it-IT', { month: 'long' }).format(date);
+  return `${monthName.charAt(0).toUpperCase()}${monthName.slice(1)} ${year}`;
+}
+
+function periodTotalsLabel({
+  useFiscalPeriodFilter,
+  billingPeriodFromFilter,
+  billingPeriodToFilter,
+  orderDateFromDefault,
+  orderDateToDefault,
+}: {
+  useFiscalPeriodFilter: boolean;
+  billingPeriodFromFilter: string;
+  billingPeriodToFilter: string;
+  orderDateFromDefault: string;
+  orderDateToDefault: string;
+}) {
+  if (useFiscalPeriodFilter) {
+    if (billingPeriodFromFilter && billingPeriodToFilter && billingPeriodFromFilter !== billingPeriodToFilter) {
+      return `Totali calcolati sul periodo fiscale dal ${formatMonthInputLabel(billingPeriodFromFilter)} al ${formatMonthInputLabel(billingPeriodToFilter)}`;
+    }
+    const value = billingPeriodFromFilter || billingPeriodToFilter;
+    return value ? `Totali calcolati sul periodo fiscale ${formatMonthInputLabel(value)}` : 'Totali calcolati sul periodo fiscale selezionato';
+  }
+
+  if (orderDateFromDefault && orderDateToDefault && orderDateFromDefault !== orderDateToDefault) {
+    return `Totali calcolati sulle date ordine dal ${formatDateInputLabel(orderDateFromDefault)} al ${formatDateInputLabel(orderDateToDefault)}`;
+  }
+  const value = orderDateFromDefault || orderDateToDefault;
+  return value ? `Totali calcolati sulla data ordine ${formatDateInputLabel(value)}` : 'Totali calcolati sulle date ordine selezionate';
+}
+
 function booleanBadge(value: boolean) {
   const item = value ? yesNoStyles.yes : yesNoStyles.no;
   return <span className={badgeClass(item.className)}>{item.icon} {item.label}</span>;
@@ -442,6 +479,13 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
 
   const periodTotals = summarizeExpenses(periodExpenses);
   const totals = summarizeExpenses(filteredExpenses);
+  const totalsPeriodLabel = periodTotalsLabel({
+    useFiscalPeriodFilter,
+    billingPeriodFromFilter,
+    billingPeriodToFilter,
+    orderDateFromDefault,
+    orderDateToDefault
+  });
 
   const expensesByCategory = Array.from(filteredExpenses.reduce((map, expense) => {
     const name = expense.category?.name ?? 'Senza categoria';
@@ -480,6 +524,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     />
 
     <div className="card expenses-list-card">
+      <p className="totals-period-note">{totalsPeriodLabel}</p>
       <div className="totals-row">
         <div className="total-card total-card-expense"><span>Spese Totali<br />IVA inclusa</span><strong className={moneyTone(periodTotals.total)}>{euro(periodTotals.total)}</strong><small>Totale del periodo selezionato, senza altri filtri.</small></div>
         <div className="total-card total-card-vat"><span>IVA versata</span><strong className={moneyTone(periodTotals.paidVat)}>{euro(periodTotals.paidVat)}</strong><small>IVA del periodo calcolata sulle spese saldate.</small></div>
