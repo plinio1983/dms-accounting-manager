@@ -5982,6 +5982,35 @@ button.bulk-direct-danger {
     border-radius: 12px;
 }
 
+.expense-import-btn {
+    align-items: flex-start;
+}
+
+.expense-toolbar-card {
+    display: flex;
+}
+
+.expense-toolbar-card .expense-toolbar-card-content>h2 {
+    flex-grow: 1;
+}
+
+.expense-toolbar-card .expense-toolbar-card-content {
+    display: flex;
+    height: 28px;
+}
+
+.expense-import-btn {
+    display: none;
+}
+
+.expense-import-btn .expense-import-btn-text {
+    display: inline;
+}
+
+.expense-import-btn .expense-import-btn-text-compact {
+    display: none;
+}
+
 .recurring-expense-form select:disabled,
 .recurring-expense-form input:disabled {
     background: #f1f5f9;

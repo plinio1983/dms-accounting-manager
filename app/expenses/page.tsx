@@ -471,6 +471,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   ].filter(Boolean) as Array<{ label: string; value: string }>;
 
   return <div className="grid">
+    {/*<Link className="button-standard secondary-action" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>*/}
     <NewExpensePanel
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}

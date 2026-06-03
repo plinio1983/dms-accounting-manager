@@ -85,9 +85,25 @@
         font-size: 20px;
     }
 
-    .card form.expense-form {
+    .card .expense-form {
         padding: 0;
         border: none;
+    }
+
+    .expense-import-btn {
+        display: block;
+    }
+
+    .expense-import-btn-large {
+        display: none;
+    }
+
+    .expense-import-btn .expense-import-btn-text {
+        display: none !important;
+    }
+
+    .expense-import-btn .expense-import-btn-text-compact {
+        display: inline !important;
     }
 
     .dashboard-top-actions .btn {

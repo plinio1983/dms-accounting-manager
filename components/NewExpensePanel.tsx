@@ -28,14 +28,20 @@ export default function NewExpensePanel({ categories, banks, suppliers, initialO
   }, []);
 
   return <div className="grid">
-    <div className="toolbar-card">
-      <div>
+    <div className="toolbar-card expense-toolbar-card">
+      <div className="expense-toolbar-card-content">
         <h2>Spese</h2>
-        <p className="muted">Gestisci le spese registrate e inserisci nuovi documenti quando necessario.</p>
+        <Link className="button-standard secondary-action expense-import-btn" href="/expenses/import">
+          <span className="btn-icon">⬆</span>
+          <span className="expense-import-btn-text">Importa Excel</span>
+          <span className="expense-import-btn-text-compact">XLS</span>
+        </Link>
       </div>
+      <p className="muted">Gestisci le spese registrate e inserisci nuovi documenti quando necessario.</p>
       <div className="toolbar-actions">
-        <Link className="button-standard secondary-action" href="/expenses/import"><span className="btn-icon">⬆</span>Importa Excel</Link>
-        <button className="button-standard primary-action" type="button" onClick={() => setIsOpen(true)}><span className="btn-icon">+</span>Aggiungi nuova spesa</button>
+        <Link className="button-standard secondary-action expense-import-btn-large" href="/expenses/import"><span className="btn-icon">⬆</span>Importa Excel</Link>
+        <button className="button-standard primary-action" type="button" onClick={() => setIsOpen(true)}><span className="btn-icon">+</span>Aggiungi spesa</button>
+        <Link className="button-standard secondary-action" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>
       </div>
     </div>
 
@@ -44,7 +50,7 @@ export default function NewExpensePanel({ categories, banks, suppliers, initialO
         <div className="modal-title">
           <div>
             <h3>Nuova spesa</h3>
-            <p className="muted">Inserisci una nuova spesa senza uscire dalla lista.</p>
+            <p className="muted">Inserisci una nuova spesa.</p>
           </div>
           <button className="secondary-button modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
         </div>
