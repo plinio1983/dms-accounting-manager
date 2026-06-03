@@ -37,6 +37,7 @@ function normalizeInvoiceFields(data: z.infer<typeof ExpenseSchema>) {
   return {
     isDeclared: data.isDeclared,
     isRecurring: false,
+    isAutomaticPayment: false,
     hasElectronicInvoice: data.hasElectronicInvoice,
     invoiceStatus: data.invoiceStatus === 'INVIATA_SDI' ? 'RICEVUTA' as const : data.invoiceStatus,
   };

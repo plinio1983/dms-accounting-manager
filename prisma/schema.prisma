@@ -133,6 +133,7 @@ model Expense {
   isDeclared            Boolean   @default(true)
   hasElectronicInvoice  Boolean   @default(true)
   isRecurring          Boolean   @default(false)
+  isAutomaticPayment   Boolean   @default(false)
   invoiceStatus         InvoiceStatus @default(IN_ATTESA)
   companyId             Int?
   company               Company?  @relation(fields: [companyId], references: [id])
