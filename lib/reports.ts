@@ -156,6 +156,18 @@ export async function getPeriodSummary(periods: Array<{ year: number; month: num
   return summarizeRecords(incomes, expenses, periods);
 }
 
+export async function getOrderDateMonthSummary(year: number, month: number) {
+  const from = new Date(year, month - 1, 1);
+  const to = new Date(year, month, 1);
+
+  const [incomes, expenses] = await Promise.all([
+    prisma.income.findMany({ where: { creditDate: { gte: from, lt: to } } }),
+    prisma.expense.findMany({ where: { receivedDate: { gte: from, lt: to } }, include: { payments: true } })
+  ]);
+
+  return summarizeRecords(incomes, expenses);
+}
+
 export async function getAccountingDashboardReport(
   reportYear: number,
   now = new Date(),

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { AutoSubmitSelect } from '@/components/AutoSubmitSelect';
 import { euro, moneyTone, monthName } from '@/lib/money';
-import { getAccountingDashboardReport } from '@/lib/reports';
+import { getAccountingDashboardReport, getOrderDateMonthSummary } from '@/lib/reports';
 
 function fiscalQuarterLabel(periods: Array<{ year: number; month: number }>) {
   if (!periods.length) return '-';
@@ -52,6 +52,24 @@ function periodLink(path: '/expenses' | '/incomes', periods: Array<{ year: numbe
   return `${path}${qs ? `?${qs}` : ''}`;
 }
 
+function dateRangeForMonth(year: number, month: number) {
+  const from = new Date(year, month - 1, 1);
+  const to = new Date(year, month, 0);
+  return {
+    from: `${from.getFullYear()}-${String(from.getMonth() + 1).padStart(2, '0')}-${String(from.getDate()).padStart(2, '0')}`,
+    to: `${to.getFullYear()}-${String(to.getMonth() + 1).padStart(2, '0')}-${String(to.getDate()).padStart(2, '0')}`
+  };
+}
+
+function dateRangeLink(path: '/expenses' | '/incomes', year: number, month: number, extra?: Record<string, string>) {
+  const range = dateRangeForMonth(year, month);
+  const query = new URLSearchParams(path === '/expenses'
+    ? { orderDateFrom: range.from, orderDateTo: range.to }
+    : { creditDateFrom: range.from, creditDateTo: range.to });
+  Object.entries(extra ?? {}).forEach(([key, value]) => query.set(key, value));
+  return `${path}?${query.toString()}`;
+}
+
 
 function SummaryMetric({ label, value, highlight = false, warning = false, vat = false, href }: { label: string; value: number; highlight?: boolean; warning?: boolean; vat?: boolean; href?: string }) {
   const boxClass = ["summary-metric", href ? "summary-metric-link" : "", highlight ? "summary-metric-highlight" : "", warning ? "summary-metric-warning" : "", vat ? "summary-metric-vat" : ""].filter(Boolean).join(' ');
@@ -76,7 +94,8 @@ function FiscalSummaryCard({
   incomesHref,
   invoicesNotSentHref,
   invoicesNotReceivedHref,
-  overdueExpensesHref
+  overdueExpensesHref,
+  fiscalOnly = false
 }: {
   title: string;
   subtitle: string;
@@ -88,6 +107,7 @@ function FiscalSummaryCard({
   invoicesNotSentHref: string;
   invoicesNotReceivedHref: string;
   overdueExpensesHref: string;
+  fiscalOnly?: boolean;
 }) {
   return <div className="card fiscal-summary-card">
     <div className="card-heading-row">
@@ -98,15 +118,64 @@ function FiscalSummaryCard({
       {selector}
     </div>
     <div className="summary-metrics-grid summary-metrics-grid-priority fiscal-summary-metrics-ordered">
+      {fiscalOnly ? <>
+        <SummaryMetric label="Entrate fiscali" value={totals.incassoFiscale} highlight href={incomesHref} />
+        <SummaryMetric label="Uscite fiscali" value={totals.usciteFiscali} highlight href={expensesHref} />
+        <SummaryMetric label="Utile fiscale" value={totals.utileFiscale} highlight />
+        <SummaryMetric label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
+        <SummaryMetric label="Pagamenti scaduti" value={totals.fattureScadute} warning={totals.fattureScadute > 0} href={overdueExpensesHref} />
+        <SummaryMetric label="Previsione saldo IVA" value={totals.debitoIva} highlight vat />
+        <CountMetric label="Fatture non inviate" value={totals.fattureNonInviate} warning={totals.fattureNonInviate > 0} href={invoicesNotSentHref} />
+        <CountMetric label="Fatture non ricevute" value={totals.fattureNonRicevute} warning={totals.fattureNonRicevute > 0} href={invoicesNotReceivedHref} />
+      </> : <>
+        <SummaryMetric label="Entrate totali" value={totals.incassoTotale} highlight href={incomesHref} />
+        <SummaryMetric label="Utile netto" value={totals.utileNetto} highlight />
+        <SummaryMetric label="Utile fiscale" value={totals.utileFiscale} highlight />
+        <SummaryMetric label="Spese totali" value={totals.speseTotali} highlight href={expensesHref} />
+        <SummaryMetric label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
+        <SummaryMetric label="Pagamenti scaduti" value={totals.fattureScadute} warning={totals.fattureScadute > 0} href={overdueExpensesHref} />
+        <SummaryMetric label="Previsione saldo IVA" value={totals.debitoIva} highlight vat />
+        <CountMetric label="Fatture non inviate" value={totals.fattureNonInviate} warning={totals.fattureNonInviate > 0} href={invoicesNotSentHref} />
+        <CountMetric label="Fatture non ricevute" value={totals.fattureNonRicevute} warning={totals.fattureNonRicevute > 0} href={invoicesNotReceivedHref} />
+      </>}
+    </div>
+  </div>;
+}
+
+
+function MonthlyTrendCard({
+  title,
+  subtitle,
+  totals,
+  selector,
+  expensesHref,
+  unpaidExpensesHref,
+  incomesHref,
+  overdueExpensesHref
+}: {
+  title: string;
+  subtitle: string;
+  totals: any;
+  selector: ReactNode;
+  expensesHref: string;
+  unpaidExpensesHref: string;
+  incomesHref: string;
+  overdueExpensesHref: string;
+}) {
+  return <div className="card fiscal-summary-card monthly-trend-card">
+    <div className="card-heading-row">
+      <div>
+        <h2>{title}</h2>
+        <p className="muted">{subtitle}</p>
+      </div>
+      {selector}
+    </div>
+    <div className="summary-metrics-grid summary-metrics-grid-priority fiscal-summary-metrics-ordered">
       <SummaryMetric label="Entrate totali" value={totals.incassoTotale} highlight href={incomesHref} />
+      <SummaryMetric label="Uscite totali" value={totals.speseTotali} highlight href={expensesHref} />
       <SummaryMetric label="Utile netto" value={totals.utileNetto} highlight />
-      <SummaryMetric label="Utile fiscale" value={totals.utileFiscale} highlight />
-      <SummaryMetric label="Spese totali" value={totals.speseTotali} highlight href={expensesHref} />
       <SummaryMetric label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
-      <SummaryMetric label="Pagamenti scaduti" value={totals.fattureScadute} warning={totals.fattureScadute > 0} href={overdueExpensesHref} />
-      <SummaryMetric label="Previsione saldo IVA" value={totals.debitoIva} highlight vat />
-      <CountMetric label="Fatture non inviate" value={totals.fattureNonInviate} warning={totals.fattureNonInviate > 0} href={invoicesNotSentHref} />
-      <CountMetric label="Fatture non ricevute" value={totals.fattureNonRicevute} warning={totals.fattureNonRicevute > 0} href={invoicesNotReceivedHref} />
+      <CountMetric label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
     </div>
   </div>;
 }
@@ -148,19 +217,29 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
   const currentQuarterIndex = Math.floor((currentMonth - 1) / 3);
+  const trendMonthValue = Array.isArray(params.trendMonth) ? params.trendMonth[0] : params.trendMonth;
   const fiscalMonthValue = Array.isArray(params.fiscalMonth) ? params.fiscalMonth[0] : params.fiscalMonth;
   const fiscalQuarterValue = Array.isArray(params.fiscalQuarter) ? params.fiscalQuarter[0] : params.fiscalQuarter;
   const annualYearValue = Array.isArray(params.annualYear) ? params.annualYear[0] : params.annualYear;
   const annualYear = parseYearSelection(annualYearValue, currentYear);
   const annualFallbackMonth = annualYear === currentYear ? currentMonth : 1;
   const annualFallbackQuarter = annualYear === currentYear ? currentQuarterIndex : 0;
+  const rawSelectedTrendMonth = parseMonthSelection(trendMonthValue, annualYear, annualFallbackMonth);
   const rawSelectedMonth = parseMonthSelection(fiscalMonthValue, annualYear, annualFallbackMonth);
   const rawSelectedQuarter = parseQuarterSelection(fiscalQuarterValue, annualYear, annualFallbackQuarter);
+  const selectedTrendMonth = { ...rawSelectedTrendMonth, year: annualYear };
   const selectedMonth = { ...rawSelectedMonth, year: annualYear };
   const selectedQuarter = { ...rawSelectedQuarter, year: annualYear };
   const reportYear = annualYear;
-  const report = await getAccountingDashboardReport(reportYear, now, selectedMonth, selectedQuarter, annualYear);
+  const [report, monthlyTrendTotals] = await Promise.all([
+    getAccountingDashboardReport(reportYear, now, selectedMonth, selectedQuarter, annualYear),
+    getOrderDateMonthSummary(selectedTrendMonth.year, selectedTrendMonth.month)
+  ]);
   const fiscalMonth = report.currentFiscalMonth.periods[0];
+  const trendExpensesHref = dateRangeLink('/expenses', selectedTrendMonth.year, selectedTrendMonth.month);
+  const trendUnpaidExpensesHref = dateRangeLink('/expenses', selectedTrendMonth.year, selectedTrendMonth.month, { paymentStatus: 'not_complete' });
+  const trendOverdueExpensesHref = dateRangeLink('/expenses', selectedTrendMonth.year, selectedTrendMonth.month, { paymentStatus: 'overdue' });
+  const trendIncomesHref = dateRangeLink('/incomes', selectedTrendMonth.year, selectedTrendMonth.month);
   const monthExpensesHref = periodLink('/expenses', report.currentFiscalMonth.periods);
   const monthUnpaidExpensesHref = periodLink('/expenses', report.currentFiscalMonth.periods, { paymentStatus: 'not_complete' });
   const monthOverdueExpensesHref = periodLink('/expenses', report.currentFiscalMonth.periods, { paymentStatus: 'overdue' });
@@ -175,7 +254,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
   const quarterInvoicesNotReceivedHref = periodLink('/expenses', report.currentFiscalQuarter.periods, { declared: 'yes', invoiceStatusMode: 'not_received' });
   const monthOptionYear = selectedMonth.year || currentYear;
   const quarterOptionYear = selectedQuarter.year || currentYear;
-  const yearOptions = Array.from(new Set([currentYear + 1, currentYear, currentYear - 1, currentYear - 2, reportYear, annualYear, monthOptionYear, quarterOptionYear])).sort((a, b) => b - a);
+  const yearOptions = Array.from(new Set([currentYear + 1, currentYear, currentYear - 1, currentYear - 2, reportYear, annualYear, selectedTrendMonth.year, monthOptionYear, quarterOptionYear])).sort((a, b) => b - a);
   const monthOptions = Array.from({ length: 12 }, (_, index) => ({ year: monthOptionYear, month: index + 1 }));
   const quarterOptions = Array.from({ length: 4 }, (_, index) => ({ year: quarterOptionYear, quarterIndex: index }));
 
@@ -199,17 +278,30 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
     </div>
 
     <div className="grid grid-2 dashboard-period-cards">
+      <MonthlyTrendCard
+        title="Andamento mensile"
+        subtitle={`${monthName(selectedTrendMonth.month)} ${selectedTrendMonth.year} · filtro su Data ordine`}
+        totals={monthlyTrendTotals}
+        expensesHref={trendExpensesHref}
+        unpaidExpensesHref={trendUnpaidExpensesHref}
+        incomesHref={trendIncomesHref}
+        overdueExpensesHref={trendOverdueExpensesHref}
+        selector={<form className="period-selector" method="get"><input type="hidden" name="fiscalMonth" value={monthValue(fiscalMonth.year, fiscalMonth.month)} /><input type="hidden" name="fiscalQuarter" value={quarterValue(selectedQuarter.year, selectedQuarter.quarterIndex)} /><input type="hidden" name="annualYear" value={report.annualYear} /><AutoSubmitSelect name="trendMonth" defaultValue={monthValue(selectedTrendMonth.year, selectedTrendMonth.month)} aria-label="Andamento mensile">
+          {monthOptions.map(option => <option key={`trend-${monthValue(option.year, option.month)}`} value={monthValue(option.year, option.month)}>{monthName(option.month)} {option.year}</option>)}
+        </AutoSubmitSelect></form>}
+      />
       <FiscalSummaryCard
         title="Mese fiscale"
         subtitle={`${monthName(fiscalMonth.month)} ${fiscalMonth.year}`}
         totals={report.currentFiscalMonth.totals}
+        fiscalOnly
         expensesHref={monthExpensesHref}
         unpaidExpensesHref={monthUnpaidExpensesHref}
         incomesHref={monthIncomesHref}
         invoicesNotSentHref={monthInvoicesNotSentHref}
         invoicesNotReceivedHref={monthInvoicesNotReceivedHref}
         overdueExpensesHref={monthOverdueExpensesHref}
-        selector={<form className="period-selector" method="get"><input type="hidden" name="fiscalQuarter" value={quarterValue(selectedQuarter.year, selectedQuarter.quarterIndex)} /><input type="hidden" name="annualYear" value={report.annualYear} /><AutoSubmitSelect name="fiscalMonth" defaultValue={monthValue(fiscalMonth.year, fiscalMonth.month)} aria-label="Mese fiscale">
+        selector={<form className="period-selector" method="get"><input type="hidden" name="trendMonth" value={monthValue(selectedTrendMonth.year, selectedTrendMonth.month)} /><input type="hidden" name="fiscalQuarter" value={quarterValue(selectedQuarter.year, selectedQuarter.quarterIndex)} /><input type="hidden" name="annualYear" value={report.annualYear} /><AutoSubmitSelect name="fiscalMonth" defaultValue={monthValue(fiscalMonth.year, fiscalMonth.month)} aria-label="Mese fiscale">
           {monthOptions.map(option => <option key={monthValue(option.year, option.month)} value={monthValue(option.year, option.month)}>{monthName(option.month)} {option.year}</option>)}
         </AutoSubmitSelect></form>}
       />
@@ -223,7 +315,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
         invoicesNotSentHref={quarterInvoicesNotSentHref}
         invoicesNotReceivedHref={quarterInvoicesNotReceivedHref}
         overdueExpensesHref={quarterOverdueExpensesHref}
-        selector={<form className="period-selector" method="get"><input type="hidden" name="fiscalMonth" value={monthValue(fiscalMonth.year, fiscalMonth.month)} /><input type="hidden" name="annualYear" value={report.annualYear} /><AutoSubmitSelect name="fiscalQuarter" defaultValue={quarterValue(selectedQuarter.year, selectedQuarter.quarterIndex)} aria-label="Trimestre fiscale">
+        selector={<form className="period-selector" method="get"><input type="hidden" name="trendMonth" value={monthValue(selectedTrendMonth.year, selectedTrendMonth.month)} /><input type="hidden" name="fiscalMonth" value={monthValue(fiscalMonth.year, fiscalMonth.month)} /><input type="hidden" name="annualYear" value={report.annualYear} /><AutoSubmitSelect name="fiscalQuarter" defaultValue={quarterValue(selectedQuarter.year, selectedQuarter.quarterIndex)} aria-label="Trimestre fiscale">
           {quarterOptions.map(option => <option key={quarterValue(option.year, option.quarterIndex)} value={quarterValue(option.year, option.quarterIndex)}>T{option.quarterIndex + 1} {option.year}</option>)}
         </AutoSubmitSelect></form>}
       />

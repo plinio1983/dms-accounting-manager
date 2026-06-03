@@ -6028,3 +6028,42 @@ button.bulk-direct-danger {
     justify-content: space-between;
     min-height: 56px;
 }
+
+/* v093: expenses heading alignment and monthly trend dashboard */
+.expenses-list-card .list-heading,
+.expenses-list-card .card-heading-row {
+    align-items: flex-start;
+}
+
+.expenses-list-card .list-heading > div,
+.expenses-list-card .card-heading-row > div {
+    min-width: 0;
+    display: grid;
+    gap: 4px;
+}
+
+.expenses-list-card .list-heading h2,
+.expenses-list-card .card-heading-row h2 {
+    margin: 0;
+    line-height: 1.15;
+    white-space: normal;
+}
+
+.expenses-list-card .list-heading .muted,
+.expenses-list-card .card-heading-row .muted {
+    display: block;
+    margin: 0;
+    white-space: normal;
+    line-height: 1.35;
+}
+
+.monthly-trend-card {
+    border-color: rgba(37, 99, 235, .18);
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+@media (min-width: 980px) {
+    .dashboard-period-cards {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
