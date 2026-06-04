@@ -136,4 +136,8 @@
     .compact-filters {
         gap: 18px;
     }
+    .expense-detail-info-grid,
+    .expense-detail-status-strip {
+        grid-template-columns: 1fr 1fr;
+    }
 }

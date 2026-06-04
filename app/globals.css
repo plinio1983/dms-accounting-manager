@@ -4648,7 +4648,6 @@ button.bulk-direct-link {
     align-items: center;
     justify-content: flex-end;
     gap: 10px;
-    flex-wrap: wrap;
 }
 
 .form .actions-row button,

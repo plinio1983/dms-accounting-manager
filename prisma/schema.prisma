@@ -52,10 +52,6 @@ model ExpenseCategory {
   name      String
   expenses  Expense[]
   recurringExpenses RecurringExpense[]
-  recurringExpenseId    Int?
-  recurringExpense      RecurringExpense? @relation(fields: [recurringExpenseId], references: [id], onDelete: SetNull)
-  recurringExpensePeriodKey String?
-  @@unique([recurringExpenseId, recurringExpensePeriodKey])
 }
 
 model Bank {
