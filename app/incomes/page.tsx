@@ -61,17 +61,17 @@ function periodTotalsLabel({
 }) {
   if (useFiscalPeriodFilter) {
     if (billingPeriodFromFilter && billingPeriodToFilter && billingPeriodFromFilter !== billingPeriodToFilter) {
-      return `Totali calcolati sul periodo fiscale dal ${formatMonthInputLabel(billingPeriodFromFilter)} al ${formatMonthInputLabel(billingPeriodToFilter)}`;
+      return `Totali periodo fiscale dal ${formatMonthInputLabel(billingPeriodFromFilter)} al ${formatMonthInputLabel(billingPeriodToFilter)}`;
     }
     const value = billingPeriodFromFilter || billingPeriodToFilter;
-    return value ? `Totali calcolati sul periodo fiscale ${formatMonthInputLabel(value)}` : 'Totali calcolati sul periodo fiscale selezionato';
+    return value ? `Totali periodo fiscale ${formatMonthInputLabel(value)}` : 'Totali periodo fiscale selezionato';
   }
 
   if (creditDateFromDefault && creditDateToDefault && creditDateFromDefault !== creditDateToDefault) {
-    return `Totali calcolati sulle date accredito dal ${formatDateInputLabel(creditDateFromDefault)} al ${formatDateInputLabel(creditDateToDefault)}`;
+    return `Totali andamento dal ${formatDateInputLabel(creditDateFromDefault)} al ${formatDateInputLabel(creditDateToDefault)}`;
   }
   const value = creditDateFromDefault || creditDateToDefault;
-  return value ? `Totali calcolati sulla data accredito ${formatDateInputLabel(value)}` : 'Totali calcolati sulle date accredito selezionate';
+  return value ? `Totali andamento ${formatDateInputLabel(value)}` : 'Totali andamento date selezionate';
 }
 
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {

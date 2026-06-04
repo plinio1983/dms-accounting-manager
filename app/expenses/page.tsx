@@ -91,10 +91,10 @@ function periodTotalsLabel({
   }
 
   if (orderDateFromDefault && orderDateToDefault && orderDateFromDefault !== orderDateToDefault) {
-    return `Totali calcolati sulle date ordine dal ${formatDateInputLabel(orderDateFromDefault)} al ${formatDateInputLabel(orderDateToDefault)}`;
+    return `Totali andamento dal ${formatDateInputLabel(orderDateFromDefault)} al ${formatDateInputLabel(orderDateToDefault)}`;
   }
   const value = orderDateFromDefault || orderDateToDefault;
-  return value ? `Totali calcolati sulla data ordine ${formatDateInputLabel(value)}` : 'Totali calcolati sulle date ordine selezionate';
+  return value ? `Totali andamento ${formatDateInputLabel(value)}` : 'Totali andamento date selezionate';
 }
 
 function booleanBadge(value: boolean) {
