@@ -226,6 +226,17 @@ function isExpenseOverdue(expense: any) {
   return expenseResidualAmount(expense) > 0;
 }
 
+function isExpensePastDueForBadge(expense: any) {
+  if (!expense.dueDate) return false;
+  if (expenseResidualAmount(expense) <= 0) return false;
+  const due = new Date(expense.dueDate);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  due.setHours(0, 0, 0, 0);
+  return due < today;
+}
+
+
 function vatAmountFromGross(amount: number, vatRate: number) {
   if (!vatRate) return 0;
   return amount * (vatRate / (100 + vatRate));
@@ -788,7 +799,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           const categoryStyle = e.category?.name ? categoryStyles[e.category.name] : undefined;
           const paymentStyle = paymentStatusStyles[e.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
           const invoiceStyle = invoiceStatusStyles[e.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
-          const overdue = isExpenseOverdue(e);
+          const overdue = isExpensePastDueForBadge(e);
           return <tr key={e.id}>
             <td className="cell-center"><input form="expenseBulkForm" type="checkbox" name="ids" value={e.id} aria-label={`Seleziona spesa ${e.id}`} /></td>
             <td><Link title="Dettaglio" aria-label="Dettaglio" className="table-action secondary icon-action" href={`/expenses/${e.id}?returnTo=${returnTo}`}>👁</Link></td>
