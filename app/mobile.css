@@ -140,4 +140,12 @@
     .expense-detail-status-strip {
         grid-template-columns: 1fr 1fr;
     }
+
+    .modal-card-wide .form,
+    .modal-page-card .form,
+    .modal-card-wide .income-form,
+    .modal-page-card .income-form,
+    .modal-card-wide .supplier-form {
+        grid-template-columns: 1fr;
+    }
 }

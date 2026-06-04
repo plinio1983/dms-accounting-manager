@@ -630,6 +630,14 @@ button {
     padding-left: 30px;
 }
 
+.income-form .net-amount-inline {
+    width: 40%;
+}
+
+.income-form .money-input {
+    width: 60%;
+}
+
 .actions-row {
     display: flex;
     gap: 10px;
@@ -1280,11 +1288,11 @@ table th, table td {
 
 @media (max-width: 900px) {
     .income-form {
-        grid-template-columns:1fr;
+        grid-template-columns: 1fr 1fr;
     }
 
     .income-totals-row {
-        grid-template-columns:1fr;
+        grid-template-columns: 1fr;
     }
 }
 
@@ -2981,8 +2989,8 @@ button {
 }
 
 .income-amount-row {
-    display: grid;
-    grid-template-columns:minmax(0, 1fr) auto;
+    display: flex;
+    /*grid-template-columns:minmax(0, 1fr) auto;*/
     gap: 10px;
     align-items: center;
 }
@@ -4597,7 +4605,7 @@ button.bulk-direct-link {
     .modal-card-wide .income-form,
     .modal-page-card .income-form,
     .modal-card-wide .supplier-form {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
 
     .modal-page-wrap + .app-footer {
