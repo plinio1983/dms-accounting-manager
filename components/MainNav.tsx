@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import {useEffect, useState, Suspense} from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 const persistedFilterKeys: Record<string, string> = {
@@ -25,7 +25,7 @@ const links = [
   { href: '/suppliers', label: 'Fornitori', shortLabel: 'Fornitori', icon: '◇', match: (pathname: string) => pathname.startsWith('/suppliers') },
 ];
 
-export default function MainNav() {
+function MainNavContent() {
   const pathname = usePathname() || '/';
   const searchParams = useSearchParams();
   const [savedFilters, setSavedFilters] = useState<Record<string, string>>({});
@@ -94,3 +94,12 @@ export default function MainNav() {
     </>
   );
 }
+
+export default function MainNavSuspenseWrapper() {
+  return (
+    <Suspense fallback={null}>
+      <MainNavContent />
+    </Suspense>
+  );
+}
+// dms-searchparams-suspense-wrapper
