@@ -483,12 +483,13 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     const amount = Number(expense.amount.toString());
     const vatRate = Number(expense.vatRate.toString());
     const paid = Math.min(amount, expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0));
+    const residualAmount = Math.max(0, amount - paid);
+    const overdueResidualAmount = residualAmount > 0 && isExpenseOverdue(expense) ? residualAmount : 0;
 
     acc.total += amount;
     acc.paidVat += vatAmountFromGross(paid, vatRate);
-    const residualAmount = expenseResidualAmount(expense);
     acc.toPay += residualAmount;
-    if (isExpenseOverdue(expense)) acc.overdue += residualAmount;
+    acc.overdue += overdueResidualAmount;
     if (expense.isDeclared) {
       acc.declared += amount;
       if (!['RICEVUTA', 'INVIATA_SDI'].includes(String(expense.invoiceStatus))) acc.invoicesNotReceived += 1;
