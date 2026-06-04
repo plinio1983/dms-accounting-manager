@@ -37,8 +37,9 @@
     }
 
     .form label,
+    .field-note,
     .switch-toggle-field > span {
-        font-size: 20px;
+        font-size: 16px;
     }
 
     .toggle-field-wrap .switch-toggle-field {
@@ -126,5 +127,13 @@
     .attachment-row-wrap .attachment-row-title {
         display: flex;
         flex-direction: column;
+    }
+
+    .grouped-filters .filter-group {
+        gap: 18px;
+    }
+
+    .compact-filters {
+        gap: 18px;
     }
 }
