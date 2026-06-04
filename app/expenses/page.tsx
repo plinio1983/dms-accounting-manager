@@ -100,6 +100,11 @@ function booleanBadge(value: boolean) {
   const item = value ? yesNoStyles.yes : yesNoStyles.no;
   return <span className={badgeClass(item.className)}>{item.icon} {item.label}</span>;
 }
+function fiscalBadge(value: boolean) {
+  const item = value ? yesNoStyles.yes : yesNoStyles.no;
+  const label = value ? 'Fisc.' : 'N.F.';
+  return <span className={badgeClass(item.className)}>{label}</span>;
+}
 function electronicInvoiceBadge(value: boolean) {
   if (!value) return <span className="muted">-</span>;
   return <span className={badgeClass(yesNoStyles.yes.className)}>e-Fatt.</span>;
@@ -758,7 +763,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       ` }} />
 
       <div className="search-totals-row" aria-label="Totali risultati filtrati">
-        <div><span>Risultati</span><strong>{filteredExpenses.length}</strong></div>
+        {/*<div><span>Risultati</span><strong>{filteredExpenses.length}</strong></div>*/}
         <div><span>Spese filtrate</span><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></div>
         <div><span>Spesa Fiscale</span><strong className={moneyTone(totals.declared)}>{euro(totals.declared)}</strong></div>
         <div><span>Non saldato</span><strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong></div>
@@ -812,7 +817,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             <td className="cell-compact" title={e.merchant ?? ''}>{e.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${e.supplierId}`}>{e.merchant}</Link> : e.merchant}</td>
             <td>{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>
             <td><strong className={moneyTone(amount)}>{euro(e.amount.toString())}</strong></td>
-            <td>{booleanBadge(e.isDeclared)}</td>
+            <td>{fiscalBadge(e.isDeclared)}</td>
             <td className="expense-invoice-status-cell"><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
             <td>{electronicInvoiceBadge(e.hasElectronicInvoice)}</td>
             <td className="cell-description" title={e.description ?? ''}>{e.description}</td>
