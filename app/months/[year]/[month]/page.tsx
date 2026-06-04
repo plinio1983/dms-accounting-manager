@@ -1,9 +1,10 @@
 import { getMonthlyReport } from '@/lib/reports';
 import { euro, monthName } from '@/lib/money';
 
-export default async function MonthPage({ params }: { params: { year: string; month: string } }) {
-  const year = Number(params.year);
-  const month = Number(params.month);
+export default async function MonthPage({ params }: { params: Promise<{ year: string; month: string }> }) {
+  const resolvedParams = await params;
+  const year = Number(resolvedParams.year);
+  const month = Number(resolvedParams.month);
   const report = await getMonthlyReport(year, month);
   return <div className="grid">
     <div className="card">

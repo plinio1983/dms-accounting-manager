@@ -565,9 +565,10 @@ export default function ExpenseForm({
   const [openPaymentKey, setOpenPaymentKey] = useState<number | null>(null);
   const openPaymentRef = useRef<HTMLDivElement | null>(null);
   const [attachmentError, setAttachmentError] = useState("");
-  const [orderDate, setOrderDate] = useState(toDateInput(initialExpense?.receivedDate) || today);
+  const initialOrderDate = toDateInput(initialExpense?.receivedDate) || today;
+  const [orderDate, setOrderDate] = useState(initialOrderDate);
   const [dueDate, setDueDate] = useState(
-    initialExpense ? toDateInput(initialExpense.dueDate) : addDaysToDateInput(toDateInput(initialExpense?.receivedDate) || today, 7),
+    initialExpense ? toDateInput(initialExpense.dueDate) : addDaysToDateInput(initialOrderDate, 7),
   );
   const [invoiceStatus, setInvoiceStatus] = useState(
     initialExpense?.invoiceStatus ?? "IN_ATTESA",

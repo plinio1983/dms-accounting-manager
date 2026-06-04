@@ -29,7 +29,6 @@ const allowedCategoryOrder = [
 ];
 
 const paymentStatusOptions = [
-  ['not_complete', 'Non completo'],
   ['overdue', 'Scaduto'],
   ['DA_PAGARE', 'Non pagato'],
   ['COMPLETATO', 'Completato'],

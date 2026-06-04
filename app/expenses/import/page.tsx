@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
 
 function param(params: Record<string, string | string[] | undefined>, key: string) {
@@ -5,7 +6,7 @@ function param(params: Record<string, string | string[] | undefined>, key: strin
   return Array.isArray(value) ? value[0] : value;
 }
 
-export default async function ImportExpensesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const params = (await searchParams) ?? {};
   const imported = param(params, 'imported');
   const skipped = param(params, 'skipped');
@@ -72,3 +73,13 @@ export default async function ImportExpensesPage({ searchParams }: { searchParam
     </div>
   </div>;
 }
+
+
+export default function ImportExpensesPage() {
+  return (
+    <Suspense fallback={<div className="card"><p className="muted">Caricamento importazione...</p></div>}>
+      <ImportExpensesContent />
+    </Suspense>
+  );
+}
+
