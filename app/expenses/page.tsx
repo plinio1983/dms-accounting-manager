@@ -100,6 +100,10 @@ function booleanBadge(value: boolean) {
   const item = value ? yesNoStyles.yes : yesNoStyles.no;
   return <span className={badgeClass(item.className)}>{item.icon} {item.label}</span>;
 }
+function electronicInvoiceBadge(value: boolean) {
+  if (!value) return <span className="muted">-</span>;
+  return <span className={badgeClass(yesNoStyles.yes.className)}>e-Fatt.</span>;
+}
 function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: string }> }) {
   return <div className="active-filter-summary">
     <span className="active-filter-summary-title">Filtri attivi:</span>
@@ -810,7 +814,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             <td><strong className={moneyTone(amount)}>{euro(e.amount.toString())}</strong></td>
             <td>{booleanBadge(e.isDeclared)}</td>
             <td className="expense-invoice-status-cell"><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
-            <td>{booleanBadge(e.hasElectronicInvoice)}</td>
+            <td>{electronicInvoiceBadge(e.hasElectronicInvoice)}</td>
             <td className="cell-description" title={e.description ?? ''}>{e.description}</td>
             <td><strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong></td>
           </tr>;

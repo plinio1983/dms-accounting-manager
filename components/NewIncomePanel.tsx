@@ -15,11 +15,18 @@ export default function NewIncomePanel({ initialOpen = false }: { initialOpen?: 
   }, []);
 
   return (
-    <>
-      <button className="button-standard primary-action" type="button" onClick={() => setIsOpen(true)}>
-        <span className="btn-icon">+</span> Aggiungi nuovo incasso
-      </button>
-      {isOpen && <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Aggiungi nuovo incasso" onMouseDown={() => setIsOpen(false)}>
+    <div className="grid">
+      <div className="toolbar-card">
+        <div>
+          <h2>Incassi</h2>
+          <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
+        </div>
+        <button className="button-standard primary-action" type="button" onClick={() => setIsOpen(true)}>
+          <span className="btn-icon">+</span>Aggiungi nuovo incasso
+        </button>
+      </div>
+
+      {isOpen ? <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Aggiungi nuovo incasso" onMouseDown={() => setIsOpen(false)}>
         <div className="modal-card modal-card-wide" onMouseDown={(event) => event.stopPropagation()}>
           <div className="modal-title">
             <div>
@@ -30,7 +37,7 @@ export default function NewIncomePanel({ initialOpen = false }: { initialOpen?: 
           </div>
           <IncomeForm action={returnAction} onCancel={() => setIsOpen(false)} />
         </div>
-      </div>}
-    </>
+      </div> : null}
+    </div>
   );
 }

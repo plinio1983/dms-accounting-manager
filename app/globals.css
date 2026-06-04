@@ -744,7 +744,7 @@ button {
 
 .expense-filters input, .expense-filters select {
     padding: 8px 9px;
-    border-radius: 10px;
+    /*border-radius: 10px;*/
     font-size: 13px;
 }
 
@@ -5258,6 +5258,7 @@ button.bulk-direct-danger {
     z-index: 1 !important;
     overflow-x: auto;
     overflow-y: visible;
+    min-height: 230px;
 }
 
 /* Pagamenti dettaglio spesa: layout a griglia/card, niente tabella. */

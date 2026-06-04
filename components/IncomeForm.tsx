@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type InitialIncome = {
   id?: number;
@@ -67,6 +67,12 @@ function MoneyInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   );
 }
 
+function getInitialCreditChannel(paymentMethod: string, creditChannel?: string | null) {
+  if (paymentMethod === "Cash") return "Cash";
+  if (!creditChannel || creditChannel === "Cash") return "Unicredit";
+  return creditChannel;
+}
+
 export default function IncomeForm({
   initialIncome,
   action = "/api/incomes",
@@ -75,12 +81,23 @@ export default function IncomeForm({
   onCancel,
   cancelHref,
 }: Props) {
+  const initialPaymentMethod = initialIncome?.paymentMethod ?? "Bonifico";
   const [amount, setAmount] = useState(normalizeMoney(initialIncome?.amount));
+  const [paymentMethod, setPaymentMethod] = useState(initialPaymentMethod);
+  const [creditChannel, setCreditChannel] = useState(getInitialCreditChannel(initialPaymentMethod, initialIncome?.creditChannel));
   const [isFiscal, setIsFiscal] = useState(initialIncome?.isFiscal ?? true);
   const [vatRate, setVatRate] = useState(normalizeMoney(initialIncome?.vatRate) || "22");
   const amountValue = Number(amount || 0);
   const activeVatRate = isFiscal ? Number(vatRate || 0) : 0;
   const netAmount = useMemo(() => activeVatRate > 0 ? amountValue / (1 + activeVatRate / 100) : amountValue, [amountValue, activeVatRate]);
+
+  useEffect(() => {
+    if (paymentMethod === "Cash") {
+      if (creditChannel !== "Cash") setCreditChannel("Cash");
+      return;
+    }
+    if (creditChannel === "Cash") setCreditChannel("Unicredit");
+  }, [paymentMethod, creditChannel]);
 
   function toggleFiscal(nextValue: boolean) {
     setIsFiscal(nextValue);
@@ -121,16 +138,19 @@ export default function IncomeForm({
 
       <label>
         Metodo di pagamento
-        <select name="paymentMethod" defaultValue={initialIncome?.paymentMethod ?? "Bonifico"} required>
+        <select name="paymentMethod" value={paymentMethod} onChange={(event) => setPaymentMethod(event.currentTarget.value)} required>
           {paymentMethods.map(value => <option key={value} value={value}>{value}</option>)}
         </select>
       </label>
 
       <label>
         Canale di accredito
-        <select name="creditChannel" defaultValue={initialIncome?.creditChannel ?? "Cash"} required>
-          {creditChannels.map(value => <option key={value} value={value}>{value}</option>)}
+        <select name="creditChannel" value={paymentMethod === "Cash" ? "Cash" : creditChannel} onChange={(event) => setCreditChannel(event.currentTarget.value)} disabled={paymentMethod === "Cash"} required>
+          {creditChannels.map(value => (
+            <option key={value} value={value} disabled={paymentMethod !== "Cash" && value === "Cash"}>{value}</option>
+          ))}
         </select>
+        {paymentMethod === "Cash" && <input type="hidden" name="creditChannel" value="Cash" />}
       </label>
 
       <label>
