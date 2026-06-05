@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { fiscalQuarterMonthsByIndex, getPeriodSummary } from '@/lib/reports';
+import { fiscalQuarterMonthsByIndex, getOrderDateMonthSummary, getPeriodSummary } from '@/lib/reports';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -8,6 +8,16 @@ export async function GET(request: Request) {
 
   if (!Number.isInteger(year)) {
     return NextResponse.json({ error: 'Anno non valido' }, { status: 400 });
+  }
+
+  if (type === 'trend') {
+    const month = Number(searchParams.get('month'));
+    if (!Number.isInteger(month) || month < 1 || month > 12) {
+      return NextResponse.json({ error: 'Mese non valido' }, { status: 400 });
+    }
+
+    const totals = await getOrderDateMonthSummary(year, month);
+    return NextResponse.json({ year, month, totals });
   }
 
   if (type === 'month') {

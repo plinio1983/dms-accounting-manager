@@ -8,11 +8,15 @@ type Period = { year: number; month: number };
 type MonthOption = { year: number; month: number };
 type QuarterOption = { year: number; quarterIndex: number };
 type Totals = {
+  incassoTotale: number;
+  speseTotali: number;
+  utileNetto: number;
+  usciteNonFiscali: number;
+  nonSaldato: number;
+  fattureScaduteCount: number;
   incassoFiscale: number;
   usciteFiscali: number;
   utileFiscale: number;
-  nonSaldato: number;
-  fattureScaduteCount: number;
   debitoIva: number;
   fattureNonInviate: number;
   fattureNonRicevute: number;
@@ -20,6 +24,12 @@ type Totals = {
 
 type FiscalState = {
   periods: Period[];
+  totals: Totals;
+};
+
+type TrendState = {
+  year: number;
+  month: number;
   totals: Totals;
 };
 
@@ -55,6 +65,24 @@ function periodLink(path: '/expenses' | '/incomes', periods: Period[], extra?: R
   return `${path}${qs ? `?${qs}` : ''}`;
 }
 
+function dateRangeForMonth(year: number, month: number) {
+  const from = new Date(year, month - 1, 1);
+  const to = new Date(year, month, 0);
+  return {
+    from: `${from.getFullYear()}-${String(from.getMonth() + 1).padStart(2, '0')}-${String(from.getDate()).padStart(2, '0')}`,
+    to: `${to.getFullYear()}-${String(to.getMonth() + 1).padStart(2, '0')}-${String(to.getDate()).padStart(2, '0')}`
+  };
+}
+
+function dateRangeLink(path: '/expenses' | '/incomes', year: number, month: number, extra?: Record<string, string>) {
+  const range = dateRangeForMonth(year, month);
+  const query = new URLSearchParams(path === '/expenses'
+    ? { orderDateFrom: range.from, orderDateTo: range.to }
+    : { creditDateFrom: range.from, creditDateTo: range.to });
+  Object.entries(extra ?? {}).forEach(([key, value]) => query.set(key, value));
+  return `${path}?${query.toString()}`;
+}
+
 function SummaryMetric({ label, value, highlight = false, warning = false, vat = false, href }: { label: string; value: number; highlight?: boolean; warning?: boolean; vat?: boolean; href?: string }) {
   const boxClass = ["summary-metric", href ? "summary-metric-link" : "", highlight ? "summary-metric-highlight" : "", warning ? "summary-metric-warning" : "", vat ? "summary-metric-vat" : ""].filter(Boolean).join(' ');
   const valueClass = [highlight ? 'money-highlight' : '', warning ? 'money-warning' : '', vat ? 'money-vat' : ''].filter(Boolean).join(' ');
@@ -68,11 +96,45 @@ function CountMetric({ label, value, warning = false, href }: { label: string; v
   return href ? <Link className={boxClass} href={href}>{content}</Link> : <div className={boxClass}>{content}</div>;
 }
 
-function updateUrlParam(key: 'fiscalMonth' | 'fiscalQuarter', value: string, annualYear: number) {
+function updateUrlParam(key: 'trendMonth' | 'fiscalMonth' | 'fiscalQuarter', value: string, annualYear: number) {
   const url = new URL(window.location.href);
   url.searchParams.set(key, value);
   url.searchParams.set('annualYear', String(annualYear));
   window.history.replaceState(null, '', `${url.pathname}?${url.searchParams.toString()}`);
+}
+
+function MonthlyTrendCard({
+  state,
+  selector,
+  loading = false
+}: {
+  state: TrendState;
+  selector: React.ReactNode;
+  loading?: boolean;
+}) {
+  const totals = state.totals;
+  const expensesHref = dateRangeLink('/expenses', state.year, state.month);
+  const unpaidExpensesHref = dateRangeLink('/expenses', state.year, state.month, { paymentStatus: 'not_complete' });
+  const incomesHref = dateRangeLink('/incomes', state.year, state.month);
+  const overdueExpensesHref = dateRangeLink('/expenses', state.year, state.month, { paymentStatus: 'overdue' });
+
+  return <div className={`card fiscal-summary-card monthly-trend-card ${loading ? 'is-loading' : ''}`}>
+    <div className="card-heading-row">
+      <div>
+        <h2>Andamento mensile</h2>
+        <p className="muted">{monthName(state.month)} {state.year} · filtro su Data ordine</p>
+      </div>
+      {selector}
+    </div>
+    <div className="summary-metrics-grid summary-metrics-grid-priority fiscal-summary-metrics-ordered">
+      <SummaryMetric label="Entrate totali" value={totals.incassoTotale} highlight href={incomesHref} />
+      <SummaryMetric label="Uscite totali" value={totals.speseTotali} highlight href={expensesHref} />
+      <SummaryMetric label="Utile netto" value={totals.utileNetto} highlight />
+      <SummaryMetric label="Spese non fiscali" value={totals.usciteNonFiscali} warning={totals.usciteNonFiscali > 0} href={expensesHref} />
+      <SummaryMetric label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
+      <CountMetric label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
+    </div>
+  </div>;
 }
 
 function FiscalSummaryCard({
@@ -122,26 +184,44 @@ export default function DashboardFiscalAjax({
   annualYear,
   monthOptions,
   quarterOptions,
+  initialTrend,
   initialMonth,
   initialQuarter
 }: {
   annualYear: number;
   monthOptions: MonthOption[];
   quarterOptions: QuarterOption[];
+  initialTrend: TrendState;
   initialMonth: FiscalState;
   initialQuarter: FiscalState;
 }) {
+  const [trendState, setTrendState] = useState(initialTrend);
   const [monthState, setMonthState] = useState(initialMonth);
   const [quarterState, setQuarterState] = useState(initialQuarter);
+  const [trendLoading, setTrendLoading] = useState(false);
   const [monthLoading, setMonthLoading] = useState(false);
   const [quarterLoading, setQuarterLoading] = useState(false);
 
+  const selectedTrendValue = monthValue(trendState.year, trendState.month);
   const selectedMonthValue = monthState.periods[0] ? monthValue(monthState.periods[0].year, monthState.periods[0].month) : '';
   const selectedQuarterValue = useMemo(() => {
     const first = quarterState.periods[0];
     if (!first) return '';
     return quarterValue(first.year, Math.floor((first.month - 1) / 3));
   }, [quarterState.periods]);
+
+  async function loadTrend(value: string) {
+    const [year, month] = value.split('-').map(Number);
+    setTrendLoading(true);
+    try {
+      const response = await fetch(`/api/dashboard/fiscal-summary?type=trend&year=${year}&month=${month}`, { cache: 'no-store' });
+      if (!response.ok) throw new Error('Errore nel caricamento dell’andamento mensile');
+      setTrendState(await response.json());
+      updateUrlParam('trendMonth', value, annualYear);
+    } finally {
+      setTrendLoading(false);
+    }
+  }
 
   async function loadMonth(value: string) {
     const [year, month] = value.split('-').map(Number);
@@ -173,6 +253,16 @@ export default function DashboardFiscalAjax({
   }
 
   return <>
+    <MonthlyTrendCard
+      state={trendState}
+      loading={trendLoading}
+      selector={<form className="period-selector" onSubmit={(event) => event.preventDefault()}>
+        <select name="trendMonth" value={selectedTrendValue} aria-label="Andamento mensile" onChange={(event) => loadTrend(event.currentTarget.value)}>
+          {monthOptions.map(option => <option key={`trend-${monthValue(option.year, option.month)}`} value={monthValue(option.year, option.month)}>{monthName(option.month)} {option.year}</option>)}
+        </select>
+      </form>}
+    />
+
     <FiscalSummaryCard
       title="Mese fiscale"
       subtitle={monthState.periods[0] ? `${monthName(monthState.periods[0].month)} ${monthState.periods[0].year}` : '-'}

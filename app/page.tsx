@@ -280,22 +280,11 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
     </div>
 
     <div className="grid grid-2 dashboard-period-cards">
-      <MonthlyTrendCard
-        title="Andamento mensile"
-        subtitle={`${monthName(selectedTrendMonth.month)} ${selectedTrendMonth.year} · filtro su Data ordine`}
-        totals={monthlyTrendTotals}
-        expensesHref={trendExpensesHref}
-        unpaidExpensesHref={trendUnpaidExpensesHref}
-        incomesHref={trendIncomesHref}
-        overdueExpensesHref={trendOverdueExpensesHref}
-        selector={<form className="period-selector" method="get"><input type="hidden" name="fiscalMonth" value={monthValue(fiscalMonth.year, fiscalMonth.month)} /><input type="hidden" name="fiscalQuarter" value={quarterValue(selectedQuarter.year, selectedQuarter.quarterIndex)} /><input type="hidden" name="annualYear" value={report.annualYear} /><AutoSubmitSelect name="trendMonth" defaultValue={monthValue(selectedTrendMonth.year, selectedTrendMonth.month)} aria-label="Andamento mensile">
-          {monthOptions.map(option => <option key={`trend-${monthValue(option.year, option.month)}`} value={monthValue(option.year, option.month)}>{monthName(option.month)} {option.year}</option>)}
-        </AutoSubmitSelect></form>}
-      />
       <DashboardFiscalAjax
         annualYear={report.annualYear}
         monthOptions={monthOptions}
         quarterOptions={quarterOptions}
+        initialTrend={{ year: selectedTrendMonth.year, month: selectedTrendMonth.month, totals: monthlyTrendTotals }}
         initialMonth={{ periods: report.currentFiscalMonth.periods, totals: report.currentFiscalMonth.totals }}
         initialQuarter={{ periods: report.currentFiscalQuarter.periods, totals: report.currentFiscalQuarter.totals }}
       />
