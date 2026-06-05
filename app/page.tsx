@@ -174,6 +174,7 @@ function MonthlyTrendCard({
       <SummaryMetric label="Entrate totali" value={totals.incassoTotale} highlight href={incomesHref} />
       <SummaryMetric label="Uscite totali" value={totals.speseTotali} highlight href={expensesHref} />
       <SummaryMetric label="Utile netto" value={totals.utileNetto} highlight />
+      <SummaryMetric label="Spese non fiscali" value={totals.usciteNonFiscali} warning={totals.usciteNonFiscali > 0} href={expensesHref} />
       <SummaryMetric label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
       <CountMetric label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
     </div>
