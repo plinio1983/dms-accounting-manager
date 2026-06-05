@@ -82,6 +82,16 @@ function isExpenseOverdue(expense: any) {
   return expenseResidualAmount(expense) > 0;
 }
 
+function isExpensePastDue(expense: any) {
+  if (!expense.dueDate) return false;
+  if (expenseResidualAmount(expense) <= 0) return false;
+  const due = new Date(expense.dueDate);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  due.setHours(0, 0, 0, 0);
+  return due < today;
+}
+
 function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ year: number; month: number }>, options: SummaryOptions = {}) {
   const incassoTotale = incomes.reduce((sum, income) => sum + Number(income.amount), 0);
   const incassoFiscale = incomes.reduce((sum, income) => income.isFiscal ? sum + Number(income.amount) : sum, 0);
@@ -94,10 +104,10 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
   const openTotalExpenses = options.declaredExpensesOnlyForOpenTotals ? expenses.filter(expense => expense.isDeclared) : expenses;
   const nonSaldato = openTotalExpenses.reduce((sum, expense) => sum + expenseResidualAmount(expense), 0);
   const fattureScadute = openTotalExpenses.reduce((sum, expense) => {
-    if (!isExpenseOverdue(expense)) return sum;
+    if (!isExpensePastDue(expense)) return sum;
     return sum + expenseResidualAmount(expense);
   }, 0);
-  const fattureScaduteCount = openTotalExpenses.reduce((sum, expense) => isExpenseOverdue(expense) ? sum + 1 : sum, 0);
+  const fattureScaduteCount = openTotalExpenses.reduce((sum, expense) => isExpensePastDue(expense) ? sum + 1 : sum, 0);
 
   const vatBalance = computeVatBalance(incomes, expenses, periods);
   const ivaGenerataIncassi = vatBalance.generated;
