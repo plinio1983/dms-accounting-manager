@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { AutoSubmitSelect } from '@/components/AutoSubmitSelect';
 import { euro, moneyTone, monthName } from '@/lib/money';
 import { getAccountingDashboardReport, getOrderDateMonthSummary } from '@/lib/reports';
+import DashboardFiscalAjax from '@/components/DashboardFiscalAjax';
 
 function fiscalQuarterLabel(periods: Array<{ year: number; month: number }>) {
   if (!periods.length) return '-';
@@ -291,35 +292,12 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
           {monthOptions.map(option => <option key={`trend-${monthValue(option.year, option.month)}`} value={monthValue(option.year, option.month)}>{monthName(option.month)} {option.year}</option>)}
         </AutoSubmitSelect></form>}
       />
-      <FiscalSummaryCard
-        title="Mese fiscale"
-        subtitle={`${monthName(fiscalMonth.month)} ${fiscalMonth.year}`}
-        totals={report.currentFiscalMonth.totals}
-        fiscalOnly
-        expensesHref={monthExpensesHref}
-        unpaidExpensesHref={monthUnpaidExpensesHref}
-        incomesHref={monthIncomesHref}
-        invoicesNotSentHref={monthInvoicesNotSentHref}
-        invoicesNotReceivedHref={monthInvoicesNotReceivedHref}
-        overdueExpensesHref={monthOverdueExpensesHref}
-        selector={<form className="period-selector" method="get"><input type="hidden" name="trendMonth" value={monthValue(selectedTrendMonth.year, selectedTrendMonth.month)} /><input type="hidden" name="fiscalQuarter" value={quarterValue(selectedQuarter.year, selectedQuarter.quarterIndex)} /><input type="hidden" name="annualYear" value={report.annualYear} /><AutoSubmitSelect name="fiscalMonth" defaultValue={monthValue(fiscalMonth.year, fiscalMonth.month)} aria-label="Mese fiscale">
-          {monthOptions.map(option => <option key={monthValue(option.year, option.month)} value={monthValue(option.year, option.month)}>{monthName(option.month)} {option.year}</option>)}
-        </AutoSubmitSelect></form>}
-      />
-      <FiscalSummaryCard
-        title="Trimestre fiscale"
-        subtitle={fiscalQuarterLabel(report.currentFiscalQuarter.periods)}
-        totals={report.currentFiscalQuarter.totals}
-        fiscalOnly
-        expensesHref={quarterExpensesHref}
-        unpaidExpensesHref={quarterUnpaidExpensesHref}
-        incomesHref={quarterIncomesHref}
-        invoicesNotSentHref={quarterInvoicesNotSentHref}
-        invoicesNotReceivedHref={quarterInvoicesNotReceivedHref}
-        overdueExpensesHref={quarterOverdueExpensesHref}
-        selector={<form className="period-selector" method="get"><input type="hidden" name="trendMonth" value={monthValue(selectedTrendMonth.year, selectedTrendMonth.month)} /><input type="hidden" name="fiscalMonth" value={monthValue(fiscalMonth.year, fiscalMonth.month)} /><input type="hidden" name="annualYear" value={report.annualYear} /><AutoSubmitSelect name="fiscalQuarter" defaultValue={quarterValue(selectedQuarter.year, selectedQuarter.quarterIndex)} aria-label="Trimestre fiscale">
-          {quarterOptions.map(option => <option key={quarterValue(option.year, option.quarterIndex)} value={quarterValue(option.year, option.quarterIndex)}>T{option.quarterIndex + 1} {option.year}</option>)}
-        </AutoSubmitSelect></form>}
+      <DashboardFiscalAjax
+        annualYear={report.annualYear}
+        monthOptions={monthOptions}
+        quarterOptions={quarterOptions}
+        initialMonth={{ periods: report.currentFiscalMonth.periods, totals: report.currentFiscalMonth.totals }}
+        initialQuarter={{ periods: report.currentFiscalQuarter.periods, totals: report.currentFiscalQuarter.totals }}
       />
     </div>
 

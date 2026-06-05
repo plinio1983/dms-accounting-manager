@@ -6128,3 +6128,8 @@ button.bulk-direct-danger {
     font-size: 13px;
     font-weight: 750;
 }
+
+.fiscal-summary-card.is-loading {
+    opacity: .65;
+    pointer-events: none;
+}
