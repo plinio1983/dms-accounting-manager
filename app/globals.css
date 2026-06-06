@@ -4426,7 +4426,7 @@ button.bulk-direct-link {
         position: fixed;
         left: 10px;
         right: 10px;
-        bottom: 10px;
+        bottom: 1px;
         z-index: 200;
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -6220,6 +6220,7 @@ button.bulk-direct-danger {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    align-items: center;
 }
 
 .expense-mobile-subtitle div:nth-child(2) {
@@ -6239,7 +6240,7 @@ button.bulk-direct-danger {
 .expense-mobile-meta span {
     display: inline-flex;
     align-items: center;
-    min-height: 22px;
+    /*min-height: 22px;*/
     /*padding: 3px 7px;*/
     border-radius: 999px;
     /*background: #f4f6fa;*/
@@ -6314,4 +6315,26 @@ button.bulk-direct-danger {
         flex-wrap: wrap;
         gap: 6px;
     }
+}
+
+/* Recurring/single expense badges */
+.recurring-expense-badge {
+    background: #ede9fe;
+    color: #6d28d9;
+    border-color: #ddd6fe;
+}
+
+.single-expense-badge {
+    background: #ecfdf5;
+    color: #047857;
+    border-color: #bbf7d0;
+}
+
+.expense-mobile-title-row > .recurring-expense-badge,
+.expense-mobile-title-row > .single-expense-badge {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    /*min-width: 28px;*/
+    justify-content: center;
+    text-align: center;
 }

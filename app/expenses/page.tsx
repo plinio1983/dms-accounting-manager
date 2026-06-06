@@ -820,7 +820,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
                 <div className="expense-mobile-meta">
                   <div className="expense-mobile-meta-left">
                     {e.category ? <span title={e.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? e.category.code}</span> : null}
-                    <span>{electronicInvoiceBadge(e.hasElectronicInvoice, e.invoiceStatus)}</span>
+                    {electronicInvoiceBadge(e.hasElectronicInvoice, e.invoiceStatus)}
                     <span className="expense-mobile-date">
                       {formatPeriod(e.month, e.year)}
                     </span>
@@ -831,6 +831,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
                   </div>
                 </div>
                 <div className="expense-mobile-title-row">
+                  <span className={e.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{e.isRecurring ? 'R' : 'S'}</span>
                   <div className="expense-mobile-title-left">
                     <strong>{e.merchant}</strong>
                   </div>
@@ -872,6 +873,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         <th><span className="th-wrap">Periodo<br />Fatt.</span></th>
         <th className="expense-order-date-header"><span className="th-wrap">Data<br />ordine</span></th>
         <th>Cat.</th>
+        <th><span className="th-wrap">Ric.</span></th>
         <th>Esercente</th>
         <th><span className="th-wrap">Stato Pag.</span></th>
         <th>Importo</th>
@@ -895,6 +897,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             <td>{formatPeriod(e.month, e.year)}</td>
             <td className="expense-order-date-cell">{dateLabel(e.receivedDate)}</td>
             <td>{e.category ? <span title={e.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? e.category.code}</span> : '-'}</td>
+            <td><span className={e.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{e.isRecurring ? 'Ric.' : 'Sing.'}</span></td>
             <td className="cell-compact" title={e.merchant ?? ''}>{e.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${e.supplierId}`}>{e.merchant}</Link> : e.merchant}</td>
             <td>{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>
             <td><strong className={moneyTone(amount)}>{euro(e.amount.toString())}</strong></td>
