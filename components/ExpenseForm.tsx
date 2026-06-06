@@ -796,27 +796,29 @@ export default function ExpenseForm({
       <ProductServiceAutocomplete
           initialValue={initialExpense?.description ?? ""}
       />
-      <label>
-        Costo IVA inclusa
-        <MoneyInput
-          name="amount"
-          required
-          value={amount}
-          onChange={(e) => handleAmountChange(e.currentTarget.value)}
-        />
-      </label>
-      <label>
-        IVA
-        <select
-          name="vatRate"
-          defaultValue={normalizeMoney(initialExpense?.vatRate) || "22"}
-        >
-          <option value="0">0%</option>
-          <option value="4">4%</option>
-          <option value="10">10%</option>
-          <option value="22">22%</option>
-        </select>
-      </label>
+      <div className="amount-vat-row full">
+        <label>
+          Costo IVA inclusa
+          <MoneyInput
+            name="amount"
+            required
+            value={amount}
+            onChange={(e) => handleAmountChange(e.currentTarget.value)}
+          />
+        </label>
+        <label>
+          IVA
+          <select
+            name="vatRate"
+            defaultValue={normalizeMoney(initialExpense?.vatRate) || "22"}
+          >
+            <option value="0">0%</option>
+            <option value="4">4%</option>
+            <option value="10">10%</option>
+            <option value="22">22%</option>
+          </select>
+        </label>
+      </div>
       <input type="hidden" name="paymentStatus" value={computedPaymentStatus} />
         </div>
       </details>
@@ -1065,13 +1067,22 @@ export default function ExpenseForm({
                   <option value="ALTRO_OPERATORE">Altro Operatore</option>
                 </select>
               </label>
-              <button
-                  type="button"
-                  className="remove-row"
-                  onClick={() => removePaymentRow(index)}
-              >
-                🗑️ Rimuovi
-              </button>
+              <div className="payment-edit-actions">
+                <button
+                    type="button"
+                    className="remove-row"
+                    onClick={() => removePaymentRow(index)}
+                >
+                  🗑️ Rimuovi
+                </button>
+                <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={() => payment.id ? setOpenPaymentKey(null) : removePaymentRow(index)}
+                >
+                  × Annulla
+                </button>
+              </div>
             </div>
           );
         })}

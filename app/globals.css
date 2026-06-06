@@ -5683,6 +5683,8 @@ button.bulk-direct-danger {
 .expense-detail-section {
     padding: 26px 28px;
     border-bottom: 1px solid rgba(226, 232, 240, .8);
+    display: grid;
+    gap: 16px;
 }
 
 .expense-detail-section:last-child {
@@ -5694,7 +5696,7 @@ button.bulk-direct-danger {
     align-items: flex-end;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
 }
 
 .expense-detail-section-heading h2 {
@@ -6648,7 +6650,10 @@ button.bulk-direct-danger {
 }
 
 .expense-form .form-section > summary small {
-    max-width: 46%;
+    /*max-width: 46%;*/
+    align-items: flex-start;
+    text-align: left;
+    flex-grow: 1;
     line-height: 1.25;
 }
 
@@ -6752,11 +6757,11 @@ button.bulk-direct-danger {
 }
 
 .expense-form .attachment-row-title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    /*display: flex;*/
+    /*align-items: center;*/
+    /*justify-content: space-between;*/
     gap: 10px;
-    margin-bottom: 10px;
+    /*margin-bottom: 10px;*/
     font-weight: 900;
 }
 
@@ -6907,5 +6912,45 @@ button.bulk-direct-danger {
 
     .expense-form .form-sticky-actions {
         grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Expense form amount/VAT row and payment edit actions */
+.expense-form .amount-vat-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 140px;
+    gap: 14px;
+    align-items: end;
+}
+
+.expense-form .payment-edit-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 2px;
+}
+
+.expense-form .payment-edit-actions .remove-row,
+.expense-form .payment-edit-actions .secondary-button {
+    min-width: 130px;
+}
+
+@media (max-width: 760px) {
+    .expense-form .amount-vat-row {
+        grid-template-columns: minmax(0, 1fr) 112px;
+        gap: 10px;
+    }
+
+    .expense-form .payment-edit-actions {
+        /*display: grid;*/
+        /*grid-template-columns: 1fr 1fr;*/
+    }
+
+    .expense-form .payment-edit-actions .remove-row,
+    .expense-form .payment-edit-actions .secondary-button {
+        min-width: 0;
+        width: 100%;
+        justify-content: center;
     }
 }
