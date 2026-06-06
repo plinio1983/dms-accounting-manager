@@ -787,6 +787,57 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         </div>
       </form>
 
+      <div className="expense-mobile-list" aria-label="Lista spese mobile">
+        {filteredExpenses.map(e => {
+          const amount = Number(e.amount.toString());
+          const paid = e.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
+          const residual = Math.max(0, amount - paid);
+          const categoryStyle = e.category?.name ? categoryStyles[e.category.name] : undefined;
+          const paymentStyle = paymentStatusStyles[e.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
+          const invoiceStyle = invoiceStatusStyles[e.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
+          const overdue = isExpensePastDueForBadge(e);
+          const statusStyle = overdue ? paymentStatusStyles.SCADUTO : paymentStyle;
+          const detailHref = `/expenses/${e.id}?returnTo=${returnTo}`;
+
+          return <div className={overdue ? "expense-mobile-item expense-mobile-item-overdue" : "expense-mobile-item"} key={`mobile-${e.id}`}>
+            <div className="expense-mobile-select">
+              <input form="expenseBulkForm" type="checkbox" name="ids" value={e.id} aria-label={`Seleziona spesa ${e.id}`} />
+            </div>
+            <Link className="expense-mobile-link" href={detailHref}>
+              <div className="expense-mobile-main">
+                <div className="expense-mobile-title-row">
+                  <strong>{e.merchant}</strong>
+                  <span className={moneyTone(amount)}>{euro(e.amount.toString())}</span>
+                </div>
+                <div className="expense-mobile-subtitle">
+                  <div>{e.description || 'Spesa senza descrizione'}</div>
+                  <div>
+                    {/*<span className={badgeClass(statusStyle.className)}>{statusStyle.icon} {statusStyle.label}</span>*/}
+                    <span className={badgeClass(statusStyle.className)}> {statusStyle.label}</span>
+                  </div>
+                </div>
+                <div className="expense-mobile-meta">
+                  <span>{dateLabel(e.receivedDate)}</span>
+                  <span>Scad. {dateLabel(e.dueDate)}</span>
+                  {/*<span>{formatPeriod(e.month, e.year)}</span>*/}
+                </div>
+                <div className="expense-mobile-badges">
+                  {e.category ? <span title={e.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? e.category.code}</span> : null}
+                  {/*<span className={badgeClass(statusStyle.className)}>{statusStyle.icon} {statusStyle.label}</span>*/}
+                  {fiscalBadge(e.isDeclared)}
+                  <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>
+                </div>
+                <div className="expense-mobile-footer">
+                  <span>{electronicInvoiceBadge(e.hasElectronicInvoice)}</span>
+                  <span>{formatPeriod(e.month, e.year)}</span>
+                  {/*<strong className={residual > 0 ? 'text-warning' : 'text-ok'}>Residuo {euro(residual)}</strong>*/}
+                </div>
+              </div>
+            </Link>
+          </div>;
+        })}
+      </div>
+
       <div className="table-scroll"><table className="expenses-table compact-expenses-table"><thead><tr>
         <th className="cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="expenseBulkForm" aria-label="Seleziona tutte le spese" /></th>
         <th><span className="sr-only">Dettaglio</span></th>
