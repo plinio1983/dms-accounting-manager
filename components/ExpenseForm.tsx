@@ -923,13 +923,13 @@ export default function ExpenseForm({
 
       <div className="field-note payment-note payment-status-note full">
         <div>
-          <span className="muted">Stato pagamento &nbsp;</span>
+          <span className="muted">Stato &nbsp;</span>
           <strong className={computedPaymentStatusInfo.className}>
             {computedPaymentStatusInfo.icon} {computedPaymentStatusInfo.label}
           </strong>
         </div>
         <div>
-          <span className="muted">Residuo da saldare &nbsp;</span>
+          <span className="muted">Residuo &nbsp;</span>
           <strong className={residual > 0 ? "text-critical" : "text-ok"}>
             {formatEuro(residual)}
           </strong>
