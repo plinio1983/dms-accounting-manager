@@ -2585,6 +2585,12 @@ button {
     margin-top: 4px;
 }
 
+.active-filter-summary .reset-btn {
+    font-weight: 600;
+    font-style: italic;
+    font-size: 14px;
+}
+
 .active-filter-summary {
     margin-top: 0;
     padding: 12px 14px;
@@ -6337,4 +6343,24 @@ button.bulk-direct-danger {
     /*min-width: 28px;*/
     justify-content: center;
     text-align: center;
+}
+
+/* Mobile-first supplier list cards */
+.supplier-mobile-list {
+    display: none;
+}
+
+.supplier-mobile-link:active {
+    background: #eef2ff;
+}
+
+@media (max-width: 760px) {
+    .compact-suppliers-table {
+        display: none;
+    }
+
+    .supplier-mobile-list {
+        display: grid;
+        margin-top: 12px;
+    }
 }

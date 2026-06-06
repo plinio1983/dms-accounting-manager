@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import BulkSelectionController from '@/components/BulkSelectionController';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import { prisma } from '@/lib/prisma';
 import { euro } from '@/lib/money';
@@ -17,6 +18,7 @@ function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: s
   return <div className="active-filter-summary">
     <span className="active-filter-summary-title">Filtri attivi:</span>
     {items.length ? items.map(item => <span className="active-filter-chip" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>) : <span className="active-filter-empty">nessun filtro impostato</span>}
+    <Link className="button-standard secondary-action reset-btn" href="/suppliers"><span className="">↺</span> Reset</Link>
   </div>;
 }
 
@@ -29,6 +31,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
   });
   const currentQueryString = currentQuery.toString();
   const supplierListHref = `/suppliers${currentQueryString ? `?${currentQueryString}` : ''}`;
+  const returnTo = encodeURIComponent(supplierListHref);
 
   const suppliers = await prisma.supplier.findMany({
     orderBy: { businessName: 'asc' },
@@ -117,13 +120,121 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
             if (saved) window.location.replace('/suppliers' + saved);
           }
         })();
+        document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-bulk-form')) { const selected = form.querySelectorAll('input[name="ids"]:checked').length || document.querySelectorAll('input[form="' + form.id + '"][name="ids"]:checked').length; if (!selected) { alert('Seleziona almeno una riga.'); event.preventDefault(); return; } const submitter = event.submitter; const action = submitter && submitter.getAttribute ? submitter.getAttribute('value') : ''; if (!action) { alert('Seleziona un’azione bulk.'); event.preventDefault(); return; } const label = submitter && submitter.textContent ? submitter.textContent.trim() : 'questa azione'; const message = 'Confermi di eseguire "' + label + '" sui fornitori selezionati?'; if (!confirm(message)) event.preventDefault(); } });
+        (() => {
+          const syncBulkMenus = () => {
+            document.querySelectorAll('[data-bulk-menu]').forEach(menu => {
+              const formId = menu.getAttribute('data-bulk-form');
+              const selected = formId ? document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked').length : 0;
+              menu.classList.toggle('bulk-action-menu-disabled', selected === 0);
+              if (selected === 0) menu.removeAttribute('open');
+            });
+            document.querySelectorAll('[data-bulk-direct-actions]').forEach(group => {
+              const formId = group.getAttribute('data-bulk-form');
+              const selectedInputs = formId ? Array.from(document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked')) : [];
+              const selected = selectedInputs.length;
+              const firstId = selectedInputs[0] ? selectedInputs[0].value : '';
+              const returnTo = group.getAttribute('data-return-to') || '';
+              const edit = group.querySelector('[data-bulk-edit]');
+              const copy = group.querySelector('[data-bulk-copy]');
+              const del = group.querySelector('[data-bulk-delete]');
+              const singleEnabled = selected === 1;
+              const anyEnabled = selected > 0;
+              if (edit) {
+                edit.classList.toggle('is-disabled', !singleEnabled);
+                edit.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
+                edit.href = singleEnabled ? (group.getAttribute('data-edit-base') + firstId + '/edit?returnTo=' + returnTo) : '#';
+              }
+              if (copy) {
+                copy.classList.toggle('is-disabled', !singleEnabled);
+                copy.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
+                copy.href = singleEnabled ? (group.getAttribute('data-copy-base') + firstId + '&returnTo=' + returnTo) : '#';
+              }
+              if (del) del.disabled = !anyEnabled;
+            });
+          };
+          document.addEventListener('change', function(event) {
+            const target = event.target;
+            if (target && target.classList && target.classList.contains('bulk-select-all')) {
+              const formId = target.getAttribute('data-bulk-target');
+              if (!formId) return;
+              document.querySelectorAll('input[form="' + formId + '"][name="ids"]').forEach(input => { input.checked = target.checked; });
+            }
+            if (target && target.matches && (target.matches('input[name="ids"]') || target.classList.contains('bulk-select-all'))) syncBulkMenus();
+          });
+          document.addEventListener('click', function(event) {
+            document.querySelectorAll('[data-bulk-menu][open]').forEach(menu => {
+              if (!menu.contains(event.target)) menu.removeAttribute('open');
+            });
+          });
+          document.addEventListener('click', function(event) {
+            const link = event.target.closest && event.target.closest('.bulk-direct-link.is-disabled');
+            if (link) event.preventDefault();
+          });
+          document.addEventListener('toggle', function(event) {
+            const menu = event.target;
+            if (menu && menu.matches && menu.matches('[data-bulk-menu][open]')) {
+              const formId = menu.getAttribute('data-bulk-form');
+              const selected = formId ? document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked').length : 0;
+              if (!selected) menu.removeAttribute('open');
+            }
+          }, true);
+          syncBulkMenus();
+        })();
       ` }} />
 
+      <BulkSelectionController />
+
+      <form id="supplierBulkForm" action={`/api/suppliers/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
+        <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="supplierBulkForm">
+          <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label">Bulk actions</span></summary>
+          <div className="bulk-action-menu-panel">
+            <button type="submit" name="bulkAction" value="delete"><span className="btn-icon">🗑</span><span className="bulk-label">Elimina selezionati</span></button>
+          </div>
+        </details>
+        <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="supplierBulkForm" data-edit-base="/suppliers/" data-copy-base="/suppliers/new?copyId=" data-return-to={returnTo}>
+          <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
+          <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">＋</span><span className="bulk-label">Copia</span></a>
+          <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
+        </div>
+      </form>
+
+      <div className="supplier-mobile-list expense-mobile-list" aria-label="Lista fornitori mobile">
+        {filteredSupplierRows.map(({ supplier, openExpensesCount, amountToPay }) => {
+          const detailHref = `/suppliers/${supplier.id}?returnTo=${encodeURIComponent(supplierListHref)}`;
+          return <div className={amountToPay > 0 ? "supplier-mobile-item expense-mobile-item expense-mobile-item-overdue" : "supplier-mobile-item expense-mobile-item"} key={`mobile-supplier-${supplier.id}`}>
+            <div className="expense-mobile-select">
+              <input form="supplierBulkForm" type="checkbox" name="ids" value={supplier.id} aria-label={`Seleziona fornitore ${supplier.businessName}`} />
+            </div>
+            <Link className="expense-mobile-link supplier-mobile-link" href={detailHref}>
+              <div className="expense-mobile-main">
+                <div className="expense-mobile-title-row">
+                  <div className="expense-mobile-title-left">
+                    <strong>{supplier.businessName}</strong>
+                  </div>
+                  <div className="expense-mobile-title-right">
+                    <span className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</span>
+                  </div>
+                </div>
+                <div className="expense-mobile-subtitle">{supplier.alias || 'Nessun alias'}</div>
+                <div className="expense-mobile-meta">
+                  <span>{openExpensesCount} ordini da saldare</span>
+                  {supplier.email ? <span>{supplier.email}</span> : null}
+                  {supplier.pec ? <span>PEC</span> : null}
+                </div>
+              </div>
+            </Link>
+          </div>;
+        })}
+        {!filteredSupplierRows.length && <div className="expense-empty-panel">Nessun fornitore trovato.</div>}
+      </div>
+
       <div className="table-scroll"><table className="suppliers-table compact-suppliers-table"><thead><tr>
-        <th>Ragione Sociale</th><th>Alias</th><th className="text-center">Ordini da saldare</th><th className="text-right supplier-amount-header">Importo da saldare</th><th></th><th></th><th></th>
+        <th className="cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="supplierBulkForm" aria-label="Seleziona tutti i fornitori" /></th><th>Ragione Sociale</th><th>Alias</th><th className="text-center">Ordini da saldare</th><th className="text-right supplier-amount-header">Importo da saldare</th><th></th><th></th><th></th>
       </tr></thead><tbody>
         {filteredSupplierRows.map(({ supplier, openExpensesCount, amountToPay }) => {
           return <tr key={supplier.id}>
+            <td className="cell-center"><input form="supplierBulkForm" type="checkbox" name="ids" value={supplier.id} aria-label={`Seleziona fornitore ${supplier.businessName}`} /></td>
             <td><strong>{supplier.businessName}</strong></td>
             <td>{supplier.alias ?? '-'}</td>
             <td className="text-center"><strong>{openExpensesCount}</strong></td>
@@ -133,7 +244,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
             <td><DeleteActionButton action={`/api/suppliers/${supplier.id}`} confirmMessage="Confermi la rimozione del fornitore? Le spese collegate resteranno registrate senza fornitore selezionato." /></td>
           </tr>;
         })}
-        {!filteredSupplierRows.length && <tr><td colSpan={7}>Nessun fornitore trovato.</td></tr>}
+        {!filteredSupplierRows.length && <tr><td colSpan={8}>Nessun fornitore trovato.</td></tr>}
       </tbody></table></div>
     </div>
   </div>;

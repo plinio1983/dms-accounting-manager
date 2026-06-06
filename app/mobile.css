@@ -180,12 +180,15 @@
     }
 
     .expense-mobile-meta .expense-mobile-meta-left {
-        font-weight: 400;
+        display: flex;
+        gap: 2px;
         flex-grow: 1;
+        font-weight: 400;
     }
 
     .expense-mobile-meta .expense-mobile-meta-right {
-        /*font-weight: 400;*/
+        display: flex;
+        gap: 2px;
         text-align: right;
     }
 }
