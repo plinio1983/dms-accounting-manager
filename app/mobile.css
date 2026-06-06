@@ -16,20 +16,23 @@
     body { overflow-x: hidden !important;}
 
     input, select {
-        border: none;
-        border-bottom: 1px solid #616266;
-        border-radius: 0;
+        /*border: none;*/
+        /*border-bottom: 1px solid #616266;*/
+        /*border-radius: 0;*/
+        font-weight: 400;
     }
 
     textarea {
-        border-color: #616266;
+        /*border-color: #616266;*/
+        font-weight: 400;
     }
 
     input:active, select:active,
     input:focus, select:focus {
-        border: none;
-        border-bottom: 1px solid #2e2c7e;
-        border-radius: 0;
+        /*border: none;*/
+        /*border-bottom: 1px solid #2e2c7e;*/
+        /*border-radius: 0;*/
+        font-weight: 400;
     }
 
     .form {
@@ -194,12 +197,12 @@
 
     .form-section-stack > .full {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         padding: 0;
         background: #fafbff;
     }
     .form-section-stack > .full > div {
-        display: flex;
-        flex-direction: column;
+        /*display: flex;*/
+        /*flex-direction: column;*/
     }
 }

@@ -806,7 +806,7 @@ export default function ExpenseForm({
         />
       </label>
       <label>
-        Applicazione IVA
+        IVA
         <select
           name="vatRate"
           defaultValue={normalizeMoney(initialExpense?.vatRate) || "22"}
@@ -829,7 +829,7 @@ export default function ExpenseForm({
         <div className="form-section-grid">
 
       <label>
-        Periodo Fatturazione
+        Periodo Contabile
         <input
           type="month"
           name="billingPeriod"
@@ -939,7 +939,7 @@ export default function ExpenseForm({
       <section className="payments-box full">
         <div className="section-title">
           <div>
-            <h3>Pagamenti</h3>
+            {/*<h3>Pagamenti</h3>*/}
             <p>Puoi registrare uno o più pagamenti per la stessa spesa.</p>
           </div>
           <button

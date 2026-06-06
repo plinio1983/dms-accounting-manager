@@ -446,7 +446,7 @@ export default function RecurringExpenseForm({
           </label>
         </div>
         <div className="toggle-field switch-toggle-field">
-          <span>Fattura Elettr.</span>
+          <span>Fatt.Elet.</span>
           <label className="switch">
             <input
               type="checkbox"

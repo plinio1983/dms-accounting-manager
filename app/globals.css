@@ -4637,6 +4637,7 @@ button.bulk-direct-link {
     border-radius: 14px;
     background: #fff;
     text-align: left;
+    display: none !important;
 }
 
 .payment-status-note > div {
@@ -6573,5 +6574,338 @@ button.bulk-direct-danger {
     body:has(.app-form-modal) .mobile-bottom-nav,
     body:has(.modal-backdrop) .mobile-bottom-nav {
         z-index: 10;
+    }
+}
+
+/* Form polish: clearer hierarchy, spacing and mobile usability */
+.expense-form {
+    gap: 16px;
+}
+
+.expense-form h2.full {
+    margin-bottom: 2px;
+    font-size: clamp(22px, 3vw, 30px);
+    letter-spacing: -.04em;
+}
+
+.expense-form label {
+    display: grid;
+    align-content: start;
+    gap: 7px;
+    min-width: 0;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 850;
+}
+
+.expense-form label > input,
+.expense-form label > select,
+.expense-form label > textarea,
+.expense-form label .money-input,
+.expense-form .suggestion-field input {
+    width: 100%;
+}
+
+.expense-form input,
+.expense-form select,
+.expense-form textarea {
+    border-radius: 14px;
+    border-color: #dbe3ee;
+    background: #fff;
+}
+
+.expense-form textarea {
+    resize: vertical;
+    min-height: 96px;
+}
+
+.expense-form input:hover,
+.expense-form select:hover,
+.expense-form textarea:hover {
+    border-color: #bfdbfe;
+}
+
+.expense-form .form-section {
+    border-color: #e2e8f0;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, .045);
+}
+
+.expense-form .form-section > summary {
+    min-height: 60px;
+    padding: 16px 18px;
+    background:
+        linear-gradient(135deg, rgba(239, 246, 255, .88), rgba(255, 255, 255, .96));
+}
+
+.expense-form .form-section > summary span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    letter-spacing: -.02em;
+}
+
+.expense-form .form-section > summary small {
+    max-width: 46%;
+    line-height: 1.25;
+}
+
+.expense-form .form-section-grid {
+    padding: 18px;
+    gap: 16px;
+}
+
+.expense-form .form-section-stack {
+    padding: 18px;
+    gap: 16px;
+}
+
+.expense-form .toggle-field-wrap {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.expense-form .toggle-field,
+.expense-form .field-note {
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #f8fafc;
+    padding: 12px 14px;
+}
+
+.expense-form .toggle-field {
+    min-height: 58px;
+    align-items: center;
+}
+
+.expense-form .payment-status-note {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    background: linear-gradient(135deg, #f8fafc, #ffffff);
+}
+
+.expense-form .payment-status-note > div {
+    display: grid;
+    gap: 4px;
+}
+
+.expense-form .payment-status-note strong {
+    font-size: 18px;
+}
+
+.expense-form .payments-box {
+    /*border: 1px solid #e2e8f0;*/
+    /*border-radius: 18px;*/
+    /*background: #f8fafc;*/
+    /*padding: 14px;*/
+}
+
+.expense-form .payments-box .section-title {
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.expense-form .payments-box .section-title h3 {
+    margin: 0;
+    font-size: 17px;
+    letter-spacing: -.02em;
+}
+
+.expense-form .payments-box .section-title p {
+    margin: 3px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.expense-form .payment-row {
+    border: 1px solid #dbe3ee;
+    border-radius: 18px;
+    background: #ffffff;
+    padding: 14px;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, .04);
+}
+
+.expense-form .payment-row + .payment-row {
+    margin-top: 12px;
+}
+
+.expense-form .payment-summary-cell h4 {
+    margin: 0 0 4px;
+    font-size: 14px;
+}
+
+.expense-form .payment-row-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.expense-form .attachment-row-wrap {
+    border: 1px dashed #cbd5e1;
+    border-radius: 18px;
+    background: #f8fafc;
+    padding: 14px;
+}
+
+.expense-form .attachment-row-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-weight: 900;
+}
+
+.expense-form .attachment-row {
+    align-items: center;
+    gap: 12px;
+}
+
+.expense-form input[type="file"] {
+    min-height: auto;
+    padding: 12px;
+    border-style: dashed;
+    background: #fff;
+}
+
+.expense-form .attachments-note {
+    min-width: 130px;
+    text-align: center;
+}
+
+.expense-form .form-sticky-summary {
+    top: 8px;
+    border-color: #bfdbfe;
+    border-radius: 18px;
+    background:
+        linear-gradient(135deg, rgba(239, 246, 255, .98), rgba(255, 255, 255, .98));
+}
+
+.expense-form .form-sticky-summary .muted {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.expense-form .form-sticky-actions {
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.expense-form .form-sticky-actions .button-standard,
+.expense-form .form-sticky-actions .secondary-button {
+    min-width: 150px;
+}
+
+.expense-form .suggestion-results {
+    border-radius: 14px;
+    border: 1px solid #dbe3ee;
+    box-shadow: 0 18px 38px rgba(15, 23, 42, .12);
+    overflow: hidden;
+}
+
+.expense-form .suggestion-results button {
+    min-height: 40px;
+    padding: 10px 12px;
+    text-align: left;
+}
+
+@media (min-width: 900px) {
+    .expense-form .form-section-grid label:nth-child(1),
+    .expense-form .form-section-grid label:nth-child(2) {
+        align-self: end;
+    }
+}
+
+@media (max-width: 760px) {
+    .expense-form {
+        gap: 12px;
+    }
+
+    .expense-form h2.full {
+        font-size: 22px;
+    }
+
+    .expense-form .form-section {
+        border-radius: 18px;
+    }
+
+    .expense-form .form-section > summary {
+        min-height: 54px;
+        padding: 13px 12px;
+    }
+
+    .expense-form .form-section > summary span {
+        font-size: 15px;
+    }
+
+    .expense-form .form-section-grid,
+    .expense-form .form-section-stack {
+        padding: 12px;
+        gap: 13px;
+    }
+
+    .expense-form .toggle-field-wrap {
+        display: flex;
+    }
+
+    .expense-form .payment-status-note {
+        grid-template-columns: 1fr;
+    }
+
+    .expense-form .toggle-field {
+        min-height: 54px;
+    }
+
+    .expense-form .payments-box {
+        padding: 12px;
+    }
+
+    .expense-form .payments-box .section-title {
+        display: grid;
+        gap: 10px;
+    }
+
+    .expense-form .payments-box .section-title .secondary-button {
+        width: 100%;
+    }
+
+    .expense-form .payment-row {
+        padding: 12px;
+    }
+
+    .expense-form .payment-row-actions {
+        display: flex;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .expense-form .attachment-row-title,
+    .expense-form .attachment-row {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .expense-form .attachments-note {
+        min-width: 0;
+        text-align: left;
+    }
+
+    .expense-form .form-sticky-summary {
+        top: 0;
+        grid-column: 1 / -1;
+    }
+
+    .expense-form .form-sticky-actions .button-standard,
+    .expense-form .form-sticky-actions .secondary-button {
+        min-width: 0;
+    }
+
+    .expense-form .form-sticky-actions {
+        grid-template-columns: 1fr 1fr;
     }
 }
