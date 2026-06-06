@@ -49,7 +49,13 @@ const invoiceStatusFilterLabels = [
 
 function dateLabel(value?: Date | null) {
   return value
-    ? new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(value)
+    ? new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' }).format(value)
+    : '-';
+}
+
+function mobileDateLabel(value?: Date | null) {
+  return value
+    ? new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(value).replace('.', '')
     : '-';
 }
 
@@ -105,9 +111,15 @@ function fiscalBadge(value: boolean) {
   const label = value ? 'Fisc.' : 'N.F.';
   return <span className={badgeClass(item.className)}>{label}</span>;
 }
-function electronicInvoiceBadge(value: boolean) {
+function fiscalBadgeMobile(value: boolean) {
+  const item = value ? yesNoStyles.yes : yesNoStyles.no;
+  const label = value ? 'D' : 'ND';
+  return <span className={badgeClass(item.className)}>{label}</span>;
+}
+function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
   if (!value) return <span className="muted">-</span>;
-  return <span className={badgeClass(yesNoStyles.yes.className)}>e-Fatt.</span>;
+  const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
+  return <span className={badgeClass(style.className)}>@fatt</span>;
 }
 function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: string }> }) {
   return <div className="active-filter-summary">
@@ -805,9 +817,26 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             </div>
             <Link className="expense-mobile-link" href={detailHref}>
               <div className="expense-mobile-main">
+                <div className="expense-mobile-meta">
+                  <div className="expense-mobile-meta-left">
+                    {e.category ? <span title={e.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? e.category.code}</span> : null}
+                    <span>{electronicInvoiceBadge(e.hasElectronicInvoice, e.invoiceStatus)}</span>
+                    <span className="expense-mobile-date">
+                      {formatPeriod(e.month, e.year)}
+                    </span>
+                  </div>
+                  <div className="expense-mobile-meta-right">
+                    <span className="expense-mobile-date">{mobileDateLabel(e.dueDate)}</span>
+                    {fiscalBadgeMobile(e.isDeclared)}
+                  </div>
+                </div>
                 <div className="expense-mobile-title-row">
-                  <strong>{e.merchant}</strong>
-                  <span className={moneyTone(amount)}>{euro(e.amount.toString())}</span>
+                  <div className="expense-mobile-title-left">
+                    <strong>{e.merchant}</strong>
+                  </div>
+                  <div className="expense-mobile-title-right">
+                    <span className={moneyTone(amount)}>{euro(e.amount.toString())}</span>
+                  </div>
                 </div>
                 <div className="expense-mobile-subtitle">
                   <div>{e.description || 'Spesa senza descrizione'}</div>
@@ -816,22 +845,21 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
                     <span className={badgeClass(statusStyle.className)}> {statusStyle.label}</span>
                   </div>
                 </div>
-                <div className="expense-mobile-meta">
-                  <span>{dateLabel(e.receivedDate)}</span>
-                  <span>Scad. {dateLabel(e.dueDate)}</span>
+                {/*<div className="expense-mobile-meta">*/}
+                  {/*<span>{mobileDateLabel(e.receivedDate)}</span>*/}
+                  {/*<span>Scad. {mobileDateLabel(e.dueDate)}</span>*/}
                   {/*<span>{formatPeriod(e.month, e.year)}</span>*/}
-                </div>
-                <div className="expense-mobile-badges">
-                  {e.category ? <span title={e.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? e.category.code}</span> : null}
+                {/*</div>*/}
+                {/*<div className="expense-mobile-badges">*/}
+                  {/*{e.category ? <span title={e.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? e.category.code}</span> : null}*/}
                   {/*<span className={badgeClass(statusStyle.className)}>{statusStyle.icon} {statusStyle.label}</span>*/}
-                  {fiscalBadge(e.isDeclared)}
-                  <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>
-                </div>
-                <div className="expense-mobile-footer">
-                  <span>{electronicInvoiceBadge(e.hasElectronicInvoice)}</span>
-                  <span>{formatPeriod(e.month, e.year)}</span>
+                  {/*{fiscalBadge(e.isDeclared)}*/}
+                {/*</div>*/}
+                {/*<div className="expense-mobile-footer">*/}
+                  {/*<span>{electronicInvoiceBadge(e.hasElectronicInvoice, e.invoiceStatus)}</span>*/}
+                  {/*<span>{formatPeriod(e.month, e.year)}</span>*/}
                   {/*<strong className={residual > 0 ? 'text-warning' : 'text-ok'}>Residuo {euro(residual)}</strong>*/}
-                </div>
+                {/*</div>*/}
               </div>
             </Link>
           </div>;
@@ -845,7 +873,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         <th className="expense-order-date-header"><span className="th-wrap">Data<br />ordine</span></th>
         <th>Cat.</th>
         <th>Esercente</th>
-        <th><span className="th-wrap">Stato<br />Pag.</span></th>
+        <th><span className="th-wrap">Stato Pag.</span></th>
         <th>Importo</th>
         <th>Fiscale</th>
         <th className="expense-invoice-status-header"><span className="th-wrap">Stato<br />Fatt.</span></th>

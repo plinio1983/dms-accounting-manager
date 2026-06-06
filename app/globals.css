@@ -5348,7 +5348,7 @@ button.bulk-direct-danger {
 
     .expenses-list-card > .bulk-actions-bar {
         top: 52px !important;
-        overflow-x: auto !important;
+        /*overflow-x: auto !important;*/
         overflow-y: visible !important;
         -webkit-overflow-scrolling: touch;
     }
@@ -5481,7 +5481,7 @@ button.bulk-direct-danger {
 
     .floating-bulk-actions-inner {
         max-width: calc(100vw - 16px);
-        overflow-x: auto;
+        /*overflow-x: auto;*/
         overflow-y: visible;
     }
 
@@ -6142,8 +6142,8 @@ button.bulk-direct-danger {
 .expense-mobile-item {
     display: grid;
     grid-template-columns: 34px minmax(0, 1fr);
-    gap: 10px;
-    padding: 12px 0;
+    gap: 6px;
+    padding: 8px 0;
     border-bottom: 1px solid var(--line);
 }
 
@@ -6157,7 +6157,7 @@ button.bulk-direct-danger {
 
 .expense-mobile-select {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
     padding-top: 4px;
 }
@@ -6172,7 +6172,7 @@ button.bulk-direct-danger {
     min-width: 0;
     display: block;
     border-radius: 14px;
-    padding: 4px 2px;
+    padding: 4px 0;
 }
 
 .expense-mobile-link:active {
@@ -6186,7 +6186,7 @@ button.bulk-direct-danger {
 
 .expense-mobile-main {
     display: grid;
-    gap: 4px;
+    gap: 7px;
     min-width: 0;
 }
 
@@ -6195,7 +6195,7 @@ button.bulk-direct-danger {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 10px;
+    gap: 4px;
 }
 
 .expense-mobile-title-row strong {
@@ -6203,18 +6203,13 @@ button.bulk-direct-danger {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .expense-mobile-title-row span {
     flex: 0 0 auto;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 900;
-}
-
-.expense-mobile-subtitle .badge {
-    padding: 2px 9px;
-    border: none;
 }
 
 .expense-mobile-subtitle {
@@ -6234,10 +6229,10 @@ button.bulk-direct-danger {
 
 .expense-mobile-meta {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 6px;
     color: var(--muted);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
 }
 
@@ -6245,9 +6240,9 @@ button.bulk-direct-danger {
     display: inline-flex;
     align-items: center;
     min-height: 22px;
-    padding: 3px 7px;
+    /*padding: 3px 7px;*/
     border-radius: 999px;
-    background: #f4f6fa;
+    /*background: #f4f6fa;*/
 }
 
 .expense-mobile-badges {

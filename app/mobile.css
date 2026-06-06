@@ -148,4 +148,44 @@
     .modal-card-wide .supplier-form {
         grid-template-columns: 1fr;
     }
+
+    .expense-mobile-title-left {
+        display: flex;
+        flex-direction: column;
+        font-weight: 400;
+        flex-grow: 1;
+    }
+
+    .expense-mobile-title-right {
+        display: flex;
+        flex-direction: column;
+        font-weight: 400;
+    }
+
+    .expense-mobile-title-right .expense-mobile-date {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 400;
+        padding-bottom: 1px;
+    }
+
+    .expense-mobile-main {
+        gap: 4px;
+    }
+
+    .expense-mobile-link .badge {
+        padding: 2px 6px;
+        border: none;
+        font-size: 13px;
+    }
+
+    .expense-mobile-meta .expense-mobile-meta-left {
+        font-weight: 400;
+        flex-grow: 1;
+    }
+
+    .expense-mobile-meta .expense-mobile-meta-right {
+        /*font-weight: 400;*/
+        text-align: right;
+    }
 }
