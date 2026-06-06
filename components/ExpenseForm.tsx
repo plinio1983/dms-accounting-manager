@@ -714,6 +714,24 @@ export default function ExpenseForm({
     >
       <h2 className="full">{title}</h2>
 
+      <div className="form-sticky-summary full">
+        <div>
+          <span className="muted">Residuo</span>
+          <strong className={residual > 0 ? "text-critical" : "text-ok"}>{formatEuro(residual)}</strong>
+        </div>
+        <div>
+          <span className="muted">Stato</span>
+          <strong className={computedPaymentStatusInfo.className}>{computedPaymentStatusInfo.label}</strong>
+        </div>
+      </div>
+
+      <details className="form-section full" open>
+        <summary>
+          <span>Documento</span>
+          <small>Dati principali della spesa</small>
+        </summary>
+        <div className="form-section-grid">
+
       <div className="toggle-field switch-toggle-field expense-type-switch-in-form full">
         <span>Tipo spesa: Singola</span>
         <label className="switch">
@@ -800,8 +818,15 @@ export default function ExpenseForm({
         </select>
       </label>
       <input type="hidden" name="paymentStatus" value={computedPaymentStatus} />
+        </div>
+      </details>
 
-
+      <details className="form-section full" open>
+        <summary>
+          <span>Fiscale</span>
+          <small>IVA, detrazione e fattura elettronica</small>
+        </summary>
+        <div className="form-section-grid">
 
       <label>
         Periodo Fatturazione
@@ -886,6 +911,15 @@ export default function ExpenseForm({
         </select>
         {invoiceNotExpected && <input type="hidden" name="invoiceStatus" value="NON_PREVISTA" />}
       </label>
+        </div>
+      </details>
+
+      <details className="form-section full" open>
+        <summary>
+          <span>Pagamenti</span>
+          <small>Stato, residuo e movimenti registrati</small>
+        </summary>
+        <div className="form-section-stack">
 
       <div className="field-note payment-note payment-status-note full">
         <div>
@@ -1050,6 +1084,15 @@ export default function ExpenseForm({
           </div>
         )}
       </section>
+        </div>
+      </details>
+
+      <details className="form-section full">
+        <summary>
+          <span>Allegati e note</span>
+          <small>File, XML, P7M e note interne</small>
+        </summary>
+        <div className="form-section-stack">
 
       <label className="attachment-row-wrap">
         <div className="attachment-row-title">
@@ -1092,7 +1135,10 @@ export default function ExpenseForm({
           defaultValue={initialExpense?.notes ?? ""}
         />
       </label>
-      <div className="actions-row full form-actions-row">
+        </div>
+      </details>
+
+      <div className="actions-row full form-actions-row form-sticky-actions">
         <button className="button-standard" type="submit"><span className="btn-icon">✓</span> {submitLabel}</button>
         {onCancel ? (
           <button className="secondary-button button-standard" type="button" onClick={onCancel}><span className="btn-icon">×</span> Annulla</button>
