@@ -4602,6 +4602,10 @@ button.bulk-direct-link {
         padding: 12px;
     }
 
+    .modal-toolbar-card h2 {
+        margin-top: 0;
+    }
+
     .modal-title {
         align-items: flex-start;
     }
