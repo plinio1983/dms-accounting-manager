@@ -6493,6 +6493,7 @@ button.bulk-direct-danger {
 
     .form-section-stack {
         padding: 12px;
+        background: #fafbff;
     }
 
     .form-section > summary {
@@ -6700,13 +6701,6 @@ button.bulk-direct-danger {
 
 .expense-form .payment-status-note strong {
     font-size: 18px;
-}
-
-.expense-form .payments-box {
-    /*border: 1px solid #e2e8f0;*/
-    /*border-radius: 18px;*/
-    /*background: #f8fafc;*/
-    /*padding: 14px;*/
 }
 
 .expense-form .payments-box .section-title {
@@ -6940,11 +6934,6 @@ button.bulk-direct-danger {
     .expense-form .amount-vat-row {
         grid-template-columns: minmax(0, 1fr) 112px;
         gap: 10px;
-    }
-
-    .expense-form .payment-edit-actions {
-        /*display: grid;*/
-        /*grid-template-columns: 1fr 1fr;*/
     }
 
     .expense-form .payment-edit-actions .remove-row,

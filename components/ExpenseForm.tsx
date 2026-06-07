@@ -878,7 +878,7 @@ export default function ExpenseForm({
       </div>
 
       <div className="toggle-field switch-toggle-field">
-        <span>Fattura Elettr.</span>
+        <span>Fatt. Elett.</span>
         <label className="switch">
           <input
             type="checkbox"
