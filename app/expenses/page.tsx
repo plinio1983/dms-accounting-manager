@@ -522,6 +522,12 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     orderDateToDefault
   });
 
+  const mobileSortedExpenses = [...filteredExpenses].sort((a, b) => {
+    const aTime = a.dueDate ? new Date(a.dueDate).getTime() : -Infinity;
+    const bTime = b.dueDate ? new Date(b.dueDate).getTime() : -Infinity;
+    return bTime - aTime;
+  });
+
   const expensesByCategory = Array.from(filteredExpenses.reduce((map, expense) => {
     const name = expense.category?.name ?? 'Senza categoria';
     const code = expense.category?.code ?? 'ND';
@@ -813,7 +819,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       />
 
       <div className="expense-mobile-list" aria-label="Lista spese mobile">
-        {filteredExpenses.map(e => {
+        {mobileSortedExpenses.map(e => {
           const amount = Number(e.amount.toString());
           const paid = e.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
           const residual = Math.max(0, amount - paid);

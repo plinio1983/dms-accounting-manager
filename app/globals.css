@@ -6234,6 +6234,7 @@ button.bulk-direct-danger {
     text-overflow: ellipsis;
     white-space: nowrap;
     align-items: center;
+    padding-left: 4px;
 }
 
 .expense-mobile-subtitle div:nth-child(2) {
