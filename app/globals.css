@@ -6779,19 +6779,8 @@ button.bulk-direct-danger {
     gap: 8px;
 }
 
-.expense-form .attachment-row-wrap {
-    border: 1px dashed #cbd5e1;
-    border-radius: 18px;
-    background: #f8fafc;
-    padding: 14px;
-}
-
 .expense-form .attachment-row-title {
-    /*display: flex;*/
-    /*align-items: center;*/
-    /*justify-content: space-between;*/
     gap: 10px;
-    /*margin-bottom: 10px;*/
     font-weight: 900;
 }
 

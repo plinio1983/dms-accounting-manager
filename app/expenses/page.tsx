@@ -691,7 +691,9 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
               if (copy) {
                 copy.classList.toggle('is-disabled', !singleEnabled);
                 copy.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
-                copy.href = singleEnabled ? (group.getAttribute('data-copy-base') + firstId + '&returnTo=' + returnTo) : '#';
+                copy.href = '#';
+                if (singleEnabled) copy.setAttribute('data-expense-copy-id', firstId);
+                else copy.removeAttribute('data-expense-copy-id');
               }
               if (del) del.disabled = !anyEnabled;
             });

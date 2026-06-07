@@ -62,18 +62,25 @@ function selectedExpenseIdFromBulk() {
 
 export default function ExpenseEditModalController({ categories, banks, suppliers, listHref }: Props) {
   const [expense, setExpense] = useState<EditExpense | null>(null);
+  const [mode, setMode] = useState<"edit" | "copy">("edit");
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const [error, setError] = useState("");
 
-  async function openExpense(id: number) {
+  async function openExpense(id: number, nextMode: "edit" | "copy" = "edit") {
     setError("");
+    setMode(nextMode);
     setLoadingId(id);
 
     try {
       const response = await fetch(`/api/expenses/${id}/edit-data`, { cache: "no-store" });
       if (!response.ok) throw new Error("Impossibile caricare la spesa.");
       const payload = await response.json();
-      setExpense(payload.expense);
+      const loadedExpense = payload.expense as EditExpense;
+      setExpense(nextMode === "copy" ? {
+        ...loadedExpense,
+        paymentStatus: "DA_PAGARE",
+        payments: [],
+      } : loadedExpense);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Errore nel caricamento della spesa.");
     } finally {
@@ -86,10 +93,13 @@ export default function ExpenseEditModalController({ categories, banks, supplier
       const target = event.target as HTMLElement | null;
       if (!target) return;
 
-      const trigger = target.closest<HTMLElement>("[data-expense-edit-id]");
+      const editTrigger = target.closest<HTMLElement>("[data-expense-edit-id]");
+      const copyTrigger = target.closest<HTMLElement>("[data-expense-copy-id]");
+      const trigger = editTrigger ?? copyTrigger;
       if (!trigger) return;
 
-      let id = Number(trigger.dataset.expenseEditId || 0);
+      const nextMode = copyTrigger ? "copy" : "edit";
+      let id = Number((copyTrigger ? copyTrigger.dataset.expenseCopyId : editTrigger?.dataset.expenseEditId) || 0);
       if (!Number.isInteger(id) || id <= 0) {
         id = selectedExpenseIdFromBulk() ?? 0;
       }
@@ -98,7 +108,7 @@ export default function ExpenseEditModalController({ categories, banks, supplier
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
-      openExpense(id);
+      openExpense(id, nextMode);
     };
 
     document.addEventListener("click", handler, true);
@@ -109,21 +119,21 @@ export default function ExpenseEditModalController({ categories, banks, supplier
     {loadingId ? <div className="inline-modal-loading">Caricamento spesa #{loadingId}…</div> : null}
     {error ? <div className="inline-modal-error">{error}</div> : null}
 
-    {expense ? <div className="modal-backdrop app-form-modal edit-expense-client-modal" role="dialog" aria-modal="true" aria-label={`Modifica spesa ${expense.id}`} onMouseDown={() => setExpense(null)}>
+    {expense ? <div className="modal-backdrop app-form-modal edit-expense-client-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia spesa ${expense.id}` : `Modifica spesa ${expense.id}`} onMouseDown={() => setExpense(null)}>
       <div className="modal-card modal-card-wide" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-title">
           <div>
-            <h3>Modifica spesa #{expense.id}</h3>
-            <p className="muted">Aggiorna dati e pagamenti senza uscire dalla lista.</p>
+            <h3>{mode === "copy" ? `Copia spesa #${expense.id}` : `Modifica spesa #${expense.id}`}</h3>
+            <p className="muted">{mode === "copy" ? "I dati sono precompilati, pagamenti e stato pagamento restano azzerati." : "Aggiorna dati e pagamenti senza uscire dalla lista."}</p>
           </div>
           <button className="secondary-button modal-close-button" type="button" onClick={() => setExpense(null)}>×</button>
         </div>
         <ExpenseForm
-          title="Modifica spesa"
+          title={mode === "copy" ? "Nuova spesa da copia" : "Modifica spesa"}
           cancelHref={listHref}
           onCancel={() => setExpense(null)}
-          submitLabel="Salva modifiche"
-          action={`/api/expenses/${expense.id}?returnTo=${encodeURIComponent(listHref)}`}
+          submitLabel={mode === "copy" ? "Crea spesa copiata" : "Salva modifiche"}
+          action={mode === "copy" ? `/api/expenses?returnTo=${encodeURIComponent(listHref)}` : `/api/expenses/${expense.id}?returnTo=${encodeURIComponent(listHref)}`}
           categories={categories}
           banks={banks}
           suppliers={suppliers}

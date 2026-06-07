@@ -52,7 +52,7 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
       recurringAction={`/api/recurring-expenses?returnTo=${encodedReturnTo}`}
       title={copyExpense ? 'Nuova spesa da copia' : 'Nuova spesa'}
       cancelHref={returnTo}
-      submitLabel={copyExpense ? 'Crea spesa copiata' : 'Salva spesa'}
+      submitLabel={copyExpense ? 'Salve spesa copiata' : 'Salva spesa'}
       initialExpense={copyExpense ? {
         receivedDate: copyExpense.receivedDate,
         dueDate: copyExpense.dueDate,

@@ -54,7 +54,7 @@ export default function NewExpensePanel({ categories, banks, suppliers, initialO
         <div className="modal-title">
           <div>
             <h3>Nuova spesa</h3>
-            <p className="muted">Inserisci una nuova spesa.</p>
+            <p className="muted">Inserisci una nuova spesa singola o ricorrente.</p>
           </div>
           <button className="secondary-button modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
         </div>
