@@ -81,12 +81,14 @@ export default function ExpenseDetailEditModalController({ categories, banks, su
     const handler = (event: MouseEvent) => {
       const target = event.target as HTMLElement | null;
       const editTrigger = target?.closest<HTMLElement>("[data-expense-detail-edit-id]");
-      const copyTrigger = target?.closest<HTMLElement>("[data-expense-detail-copy-id]");
+      const detailCopyTrigger = target?.closest<HTMLElement>("[data-expense-detail-copy-id]");
+      const genericCopyTrigger = target?.closest<HTMLElement>("[data-expense-copy-id]");
+      const copyTrigger = detailCopyTrigger ?? genericCopyTrigger;
       const trigger = editTrigger ?? copyTrigger;
       if (!trigger) return;
 
       const nextMode = copyTrigger ? "copy" : "edit";
-      const id = Number(copyTrigger ? copyTrigger.dataset.expenseDetailCopyId : editTrigger?.dataset.expenseDetailEditId);
+      const id = Number(copyTrigger ? (detailCopyTrigger?.dataset.expenseDetailCopyId ?? genericCopyTrigger?.dataset.expenseCopyId) : editTrigger?.dataset.expenseDetailEditId);
       if (!Number.isInteger(id) || id <= 0) return;
 
       event.preventDefault();
