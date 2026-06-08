@@ -380,8 +380,12 @@ export default function RecurringExpenseForm({
 
   return (
     <form className="card form expense-form recurring-expense-form" action={action} method="post">
-      <h2 className="full">Nuova spesa ricorrente</h2>
-
+      <details className="form-section full recurring-form-section" open>
+        <summary>
+          <span>Documento</span>
+          <small>Dati principali della spesa ricorrente</small>
+        </summary>
+        <div className="form-section-grid recurring-form-section-grid">
       <div className="toggle-field switch-toggle-field expense-type-switch-in-form full">
         <span>Tipo spesa: Ricorrente</span>
         <label className="switch">
@@ -425,8 +429,16 @@ export default function RecurringExpenseForm({
 
       <label>Costo IVA inclusa<MoneyInput name="amount" defaultValue={normalizeMoney(initialExpense?.amount)} required /></label>
       <label>Applicazione IVA<select name="vatRate" defaultValue={normalizeMoney(initialExpense?.vatRate) || "22"}><option value="0">0%</option><option value="4">4%</option><option value="10">10%</option><option value="22">22%</option></select></label>
+        </div>
+      </details>
 
-      <div className="toggle-field-wrap">
+      <details className="form-section full recurring-form-section" open>
+        <summary>
+          <span>Fiscale</span>
+          <small>Detrazione, fattura elettronica e periodo fatturazione</small>
+        </summary>
+        <div className="form-section-grid recurring-form-section-grid">
+      <div className="toggle-field-wrap full">
         <div className="toggle-field switch-toggle-field">
           <span>Fiscale</span>
           <label className="switch">
@@ -464,8 +476,16 @@ export default function RecurringExpenseForm({
 
       <label>Periodo Fatturazione<select name="billingPeriodMode" value={billingPeriodMode} disabled={!isDeclared} onChange={(e) => setBillingPeriodMode(e.currentTarget.value)}><option value="SAME_MONTH">Stesso mese</option><option value="NEXT_MONTH">Mese successivo</option><option value="CUSTOM_MONTH">Imposta mese</option></select></label>
       {!isDeclared && <input type="hidden" name="billingPeriodMode" value="SAME_MONTH" />}
-      {billingPeriodMode === "CUSTOM_MONTH" && isDeclared ? <label>Mese fatturazione<select name="billingMonth" defaultValue={initialExpense?.billingMonth ?? new Date().getMonth() + 1}>{monthOptions.map(([v, l]) => <option value={v} key={v}>{l}</option>)}</select></label> : null}
+      {billingPeriodMode === "CUSTOM_MONTH" && isDeclared ? <label>Mese contabile<select name="billingMonth" defaultValue={initialExpense?.billingMonth ?? new Date().getMonth() + 1}>{monthOptions.map(([v, l]) => <option value={v} key={v}>{l}</option>)}</select></label> : null}
+        </div>
+      </details>
 
+      <details className="form-section full recurring-form-section" open>
+        <summary>
+          <span>Pagamento</span>
+          <small>Automazione, canale e banca</small>
+        </summary>
+        <div className="form-section-grid recurring-form-section-grid">
       <div className="toggle-field switch-toggle-field full recurring-accrual-toggle">
         <span>Tipo pagamento: {isAutomaticAccrual ? "Automatico" : "Manuale"}</span>
         <input type="hidden" name="accrualType" value={isAutomaticAccrual ? "AUTOMATICO" : "MANUALE"} />
@@ -482,12 +502,26 @@ export default function RecurringExpenseForm({
 
       <label>Canale di pagamento<select name="paymentChannel" defaultValue={initialExpense?.paymentChannel ?? ""} disabled={!isAutomaticAccrual} required={isAutomaticAccrual}><option value="">Seleziona canale</option>{paymentChannels.map(c => <option key={c} value={c}>{c}</option>)}</select></label>
       <label>Banca<select name="bankId" defaultValue={initialExpense?.bankId ?? ""} disabled={!isAutomaticAccrual} required={isAutomaticAccrual}><option value="">Seleziona banca</option>{banks.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}</select></label>
+        </div>
+      </details>
 
+      <details className="form-section full recurring-form-section">
+        <summary>
+          <span>Note</span>
+          <small>Note interne opzionali</small>
+        </summary>
+        <div className="form-section-stack">
       <label className="full">Note<textarea name="notes" rows={3} defaultValue={initialExpense?.notes ?? ""} /></label>
+        </div>
+      </details>
 
-      <div className="actions-row right-actions full">
-        {onCancel ? <button type="button" className="secondary-button" onClick={onCancel}>↩ Annulla</button> : cancelHref ? <a className="secondary-button" href={cancelHref}>↩ Annulla</a> : null}
-        <button type="submit">✓ Salva spesa ricorrente</button>
+      <div className="actions-row full form-actions-row form-sticky-actions">
+        <button className="button-standard" type="submit"><span className="btn-icon">✓</span> Salva spesa ricorrente</button>
+        {onCancel ? (
+          <button type="button" className="secondary-button button-standard" onClick={onCancel}><span className="btn-icon">×</span> Annulla</button>
+        ) : cancelHref ? (
+          <a className="secondary-button button-standard" href={cancelHref}><span className="btn-icon">×</span> Annulla</a>
+        ) : null}
       </div>
     </form>
   );

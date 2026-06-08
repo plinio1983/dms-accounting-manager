@@ -175,6 +175,95 @@ button {
     grid-column: 1 / -1;
 }
 
+/* spese ricorrenti: sezioni collassabili coerenti con ExpenseForm */
+.recurring-expense-form .recurring-form-section {
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #fff;
+    overflow: visible;
+}
+
+.recurring-expense-form .recurring-form-section > summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 16px;
+    border-radius: 16px;
+    font-weight: 900;
+}
+
+.recurring-expense-form .recurring-form-section > summary::-webkit-details-marker {
+    display: none;
+}
+
+.recurring-expense-form .recurring-form-section > summary::after {
+    content: "⌄";
+    color: var(--muted);
+    font-size: 18px;
+}
+
+.recurring-expense-form .recurring-form-section[open] > summary {
+    border-bottom: 1px solid var(--line);
+    border-radius: 16px 16px 0 0;
+}
+
+.recurring-expense-form .recurring-form-section[open] > summary::after {
+    transform: rotate(180deg);
+}
+
+.recurring-expense-form .recurring-form-section > summary small {
+    color: var(--muted);
+    font-weight: 650;
+}
+
+.recurring-expense-form .recurring-form-section-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    padding: 16px;
+}
+
+.recurring-expense-form .form-section-stack {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+}
+
+.recurring-expense-form .form-actions-row {
+    justify-content: flex-end;
+}
+
+@media (max-width: 900px) {
+    .recurring-expense-form .recurring-form-section-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 576px) {
+    .recurring-expense-form .recurring-form-section-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .recurring-expense-form .form-actions-row {
+        position: sticky;
+        bottom: 0;
+        z-index: 20;
+        margin: 0 -14px -14px;
+        padding: 12px 14px;
+        background: rgba(246, 247, 251, .96);
+        border-top: 1px solid var(--line);
+        backdrop-filter: blur(8px);
+    }
+
+    .recurring-expense-form .form-actions-row .button-standard {
+        flex: 1 1 auto;
+    }
+}
+
 @media (max-width: 900px) {
     .grid-4, .grid-2, .form {
         grid-template-columns: 1fr 1fr;
