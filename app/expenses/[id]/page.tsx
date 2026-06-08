@@ -31,7 +31,16 @@ const allowedCategoryOrder = [
 ];
 
 function dateLabel(value?: Date | null) {
-  return value ? value.toLocaleDateString('it-IT') : '-';
+  if (!value) return '-';
+  const formatted = new Intl.DateTimeFormat('it-IT', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).format(value);
+  return formatted.replace(
+    /\b([a-zàèéìòù])/,
+    (match) => match.toUpperCase()
+  );
 }
 
 function paidByLabel(value: string) {
@@ -80,6 +89,18 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
   const vatStyle = vatStyles[vatKey(expense.vatRate)] ?? vatStyles['22'];
   const vatRate = Number(expense.vatRate.toString());
   const paidVat = vatRate ? Math.min(amount, paid) * (vatRate / (100 + vatRate)) : 0;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dueDate = expense.dueDate ? new Date(expense.dueDate) : null;
+  dueDate?.setHours(0, 0, 0, 0);
+  const isOverdue = residual > 0 && dueDate !== null && dueDate < today;
+  const paymentHeroClass = isOverdue
+    ? 'expense-detail-hero-side-overdue'
+    : expense.paymentStatus === 'COMPLETATO'
+      ? 'expense-detail-hero-side-paid'
+      : expense.paymentStatus === 'DA_PAGARE'
+        ? 'expense-detail-hero-side-unpaid'
+        : 'expense-detail-hero-side-partial';
 
   return <div className="grid">
     <ExpenseDetailEditModalController
@@ -102,7 +123,9 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
         <div className="expense-detail-hero-meta">
           {/*<span>{formatPeriod(expense.month, expense.year)}</span>*/}
           <span>{expense.category ? `${categoryStyle?.icon ?? '•'} ${expense.category.name}` : 'Senza categoria'}</span>
-          {/*<span>Ordine {dateLabel(expense.receivedDate)}</span>*/}
+          <span className="expense-detail-hero-order-date">Data ordine:<br/>
+            <strong>{dateLabel(expense.receivedDate)}</strong>
+          </span>
         </div>
       </div>
       <div className="expense-detail-hero-side-wrap">
@@ -128,6 +151,9 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       <div className="expense-detail-priority-card supplier-card">
         <span>Fornitore</span>
         <strong>{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}`}>{expense.merchant}</Link> : expense.merchant}</strong>
+        <div className="expense-detail-supplier">
+          <span>{expense.description ?? 'Spesa senza descrizione'}</span>
+        </div>
         <small>{expense.category ? <span className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {expense.category.name}</span> : 'Senza categoria'}</small>
       </div>
       <div className="expense-detail-priority-card amount-card">

@@ -858,7 +858,7 @@ button {
 
 .expense-detail-hero-side-wrap {
     display: grid;
-    gap: 10px;
+    gap: 8px;
 }
 
 .expense-detail-hero-side-wrap .text-pre {
@@ -866,7 +866,7 @@ button {
     color: var(--muted);
     font-size: 12px;
     font-weight: 900;
-    text-transform: uppercase;
+    /*text-transform: uppercase;*/
     letter-spacing: .06em;
     padding-right: 12px;
 }
@@ -908,9 +908,12 @@ button {
 }
 
 .expense-detail-hero-meta {
-    /*display: flex;*/
-    /*gap: 8px;*/
-    /*flex-wrap: wrap;*/
+    display: grid;
+    gap: 8px;
+}
+
+.expense-detail-hero-meta .expense-detail-hero-order-date {
+    font-weight: 400;
 }
 
 .expense-detail-hero-meta span {
@@ -5853,7 +5856,7 @@ button.bulk-direct-danger {
 .expense-detail-hero {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
-    gap: 28px;
+    gap: 16px;
     align-items: stretch;
     padding: 28px;
     background:
