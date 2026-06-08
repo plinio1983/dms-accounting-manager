@@ -145,7 +145,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       </div>
       <div className="actions-row expense-detail-actions">
         <Link className="table-action secondary" href={returnTo}>↩ Torna alla lista</Link>
-        <Link className="table-action secondary" href={`/expenses/new?copyId=${expense.id}&returnTo=${encodedCurrentDetailReturnTo}`}>⧉ Copia spesa</Link>
+        <Link className="table-action secondary" href="#" data-expense-detail-copy-id={expense.id}>⧉ Copia spesa</Link>
         <Link className="table-action" href="#" data-expense-detail-edit-id={expense.id}>✎ Modifica</Link>
       </div>
     </section>
