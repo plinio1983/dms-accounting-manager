@@ -1,18 +1,12 @@
 import './globals.css';
 import './mobile.css';
-import { Suspense } from 'react';
-import MainNav from '@/components/MainNav';
+import ShellChrome from '@/components/ShellChrome';
 
 export const metadata = { title: 'DMS Accounting Manager', description: 'Gestionale interno per incassi, spese, fornitori e report mensili' };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return <html lang="it"><body><main className="shell">
-    <div className="nav">
-      <div><h1>DMS Accounting Manager</h1><div className="muted">Gestionale web per incassi, spese, fornitori e report mensili</div></div>
-      <Suspense fallback={null}>
-        <MainNav />
-      </Suspense>
-    </div>
+    <ShellChrome slot="header" />
 
     <script dangerouslySetInnerHTML={{ __html: String.raw`
       (() => {
@@ -72,10 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         new MutationObserver(initAllTables).observe(document.body, { childList: true, subtree: true });
       })();
     ` }} />
-    <Suspense fallback={null}>{children}</Suspense>{/* dms-root-suspense-boundary */}
-    <footer className="app-footer">
-      <div>DMS Accounting Manager</div>
-      <div className="muted">Footer generico — contenuti e link da definire.</div>
-    </footer>
+    {children}{/* dms-root-suspense-boundary */}
+    <ShellChrome slot="footer" />
   </main></body></html>;
 }
