@@ -101,6 +101,9 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       : expense.paymentStatus === 'DA_PAGARE'
         ? 'expense-detail-hero-side-unpaid'
         : 'expense-detail-hero-side-partial';
+  const paymentHeroLabel = isOverdue
+    ? `${paymentStatusStyles.SCADUTO.icon} ${paymentStatusStyles.SCADUTO.label}`
+    : `${paymentStyle.icon} ${paymentStyle.label}`;
 
   return <div className="grid">
     <ExpenseDetailEditModalController
@@ -130,12 +133,12 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       </div>
       <div className="expense-detail-hero-side-wrap">
         <span className="text-pre">{dateLabel(expense.dueDate)}</span>
-        <div className="expense-detail-hero-side">
+        <div className={`expense-detail-hero-side ${paymentHeroClass}`}>
           <span className="expense-detail-side-label">Importo</span>
           <strong>{euro(expense.amount.toString())}</strong>
           <div className="detail-money-row">
             {/*<span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span>*/}
-            <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>
+            <span className="expense-detail-hero-side-status">{paymentHeroLabel}</span>
             <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>
           </div>
         </div>
