@@ -89,47 +89,121 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       returnTo={currentDetailReturnTo}
     />
 
-    <div className="toolbar-card">
-      <div>
-        <h2>Dettaglio spesa #{expense.id}</h2>
-        <p className="muted">{expense.merchant} · {formatPeriod(expense.month, expense.year)}</p>
+    <section className="expense-detail-hero card">
+      <div className="expense-detail-hero-main">
+        <div className="expense-detail-hero-main-meta">
+          <div className={expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{expense.isRecurring ? 'R' : 'S'}</div>
+          <div className="expense-detail-eyebrow">Dettaglio spesa #{expense.id}</div>
+        </div>
+        <h2>{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}`}>{expense.merchant}</Link> : expense.merchant}</h2>
+        <div className="expense-detail-supplier">
+          <span>{expense.description ?? 'Spesa senza descrizione'}</span>
+        </div>
+        <div className="expense-detail-hero-meta">
+          {/*<span>{formatPeriod(expense.month, expense.year)}</span>*/}
+          <span>{expense.category ? `${categoryStyle?.icon ?? '•'} ${expense.category.name}` : 'Senza categoria'}</span>
+          {/*<span>Ordine {dateLabel(expense.receivedDate)}</span>*/}
+        </div>
       </div>
-      <div className="actions-row">
+      <div className="expense-detail-hero-side-wrap">
+        <span className="text-pre">{dateLabel(expense.dueDate)}</span>
+        <div className="expense-detail-hero-side">
+          <span className="expense-detail-side-label">Importo</span>
+          <strong>{euro(expense.amount.toString())}</strong>
+          <div className="detail-money-row">
+            {/*<span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span>*/}
+            <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>
+            <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>
+          </div>
+        </div>
+      </div>
+      <div className="actions-row expense-detail-actions">
         <Link className="table-action secondary" href={returnTo}>↩ Torna alla lista</Link>
         <Link className="table-action secondary" href={`/expenses/new?copyId=${expense.id}&returnTo=${encodedCurrentDetailReturnTo}`}>⧉ Copia spesa</Link>
         <Link className="table-action" href="#" data-expense-detail-edit-id={expense.id}>✎ Modifica</Link>
       </div>
-    </div>
+    </section>
 
-    <div className="card detail-grid">
-      <div><span>Periodo Fatturazione</span><strong>{formatPeriod(expense.month, expense.year)}</strong></div>
-      <div><span>Data ordine</span><strong>{dateLabel(expense.receivedDate)}</strong></div>
-      <div><span>Data scadenza</span><strong>{dateLabel(expense.dueDate)}</strong></div>
-      <div><span>Categoria</span>{expense.category ? <span className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {expense.category.name}</span> : '-'}</div>
-      <div><span>Esercente</span><strong>{expense.merchant}</strong></div>
-      <div className="span-2"><span>Prodotto / Servizio</span><strong>{expense.description ?? '-'}</strong></div>
-      <div><span>Importo</span><div className="detail-money-row"><strong className="detail-amount">{euro(expense.amount.toString())}</strong><span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span></div></div>
-      <div><span>IVA pagata</span><strong className="detail-amount iva-paid">{euro(paidVat)}</strong></div>
-      <div><span>Stato Pagamento</span><span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span></div>
-      <div><span>Residuo</span><strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong></div>
-      <div><span>Fattura Elettronica</span>{booleanBadge(expense.hasElectronicInvoice)}</div>
-      <div><span>Stato Fattura</span><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></div>
-      <div><span>Detrazione</span>{booleanBadge(expense.isDeclared)}</div>
-      <div className="span-2"><span>Note</span><strong>{expense.notes ?? '-'}</strong></div>
-    </div>
+    <section className="expense-detail-priority-grid">
+      <div className="expense-detail-priority-card supplier-card">
+        <span>Fornitore</span>
+        <strong>{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}`}>{expense.merchant}</Link> : expense.merchant}</strong>
+        <small>{expense.category ? <span className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {expense.category.name}</span> : 'Senza categoria'}</small>
+      </div>
+      <div className="expense-detail-priority-card amount-card">
+        <span>Importo</span>
+        <strong>{euro(expense.amount.toString())}</strong>
+        <small>di cui IVA: {euro(paidVat)}
+          &nbsp;&nbsp;<span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span>
+        </small>
+      </div>
+      <div className="expense-detail-priority-card status-card">
+        <span>Stato Pagamento</span>
+        <strong><span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span></strong>
+        <small>Residuo: <b className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</b></small>
+      </div>
+      <div className="expense-detail-priority-card due-card">
+        <span>Scadenza</span>
+        <strong>{dateLabel(expense.dueDate)}</strong>
+        <small>Data ordine: {dateLabel(expense.receivedDate)}</small>
+        <small>Periodo contabile:&nbsp;&nbsp;
+          <span className="badge">{formatPeriod(expense.month, expense.year)}</span>
+        </small>
+      </div>
+      <div className="expense-detail-priority-card declared-card">
+        <span>Detrazione:&nbsp;&nbsp;
+          <strong>{booleanBadge(expense.isDeclared)}</strong>
+        </span>
+        <span>Fattura Elett:&nbsp;&nbsp;
+          {booleanBadge(expense.hasElectronicInvoice)}
+        </span>
+        <span>Stato Fattura: <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></span>
+      </div>
+    </section>
 
     <div className="card">
-      <h2>Pagamenti</h2>
-      <div className="table-scroll"><table><thead><tr><th>Data pagamento</th><th>Canale</th><th>Banca</th><th>Importo</th><th>Effettuato da</th></tr></thead><tbody>
-        {expense.payments.length ? expense.payments.map(payment => <tr key={payment.id}>
-          <td>{dateLabel(payment.paymentDate)}</td>
-          <td>{payment.channel ?? '-'}</td>
-          <td>{payment.bank ? `${bankIcons[payment.bank.name] ?? '🏦'} ${payment.bank.name}` : '-'}</td>
-          <td>{euro(payment.amount.toString())}</td>
-          <td>{paidByLabel(payment.paidBy)}</td>
-        </tr>) : <tr><td colSpan={5}>Nessun pagamento registrato.</td></tr>}
-      </tbody></table></div>
+      <h2>Note</h2>
+      <div className="detail-grid expense-detail-secondary-grid">
+        <strong>{expense.notes ?? '-'}</strong>
+      </div>
     </div>
+
+    <section className="card expense-detail-payments-card">
+      <div className="expense-detail-section-title">
+        <div>
+          <h2>Pagamenti</h2>
+          <p className="muted">Movimenti registrati per questa spesa.</p>
+        </div>
+        <span className="badge">{expense.payments.length} record</span>
+      </div>
+
+      <div className="table-scroll expense-payments-desktop">
+        <table className="expense-payments-table">
+          <thead><tr><th>Data pagamento</th><th>Canale</th><th>Banca</th><th>Importo</th><th>Effettuato da</th></tr></thead>
+          <tbody>
+            {expense.payments.length ? expense.payments.map(payment => <tr key={payment.id}>
+              <td>{dateLabel(payment.paymentDate)}</td>
+              <td>{payment.channel ?? '-'}</td>
+              <td>{payment.bank ? `${bankIcons[payment.bank.name] ?? '🏦'} ${payment.bank.name}` : '-'}</td>
+              <td><strong>{euro(payment.amount.toString())}</strong></td>
+              <td>{paidByLabel(payment.paidBy)}</td>
+            </tr>) : <tr><td colSpan={5}>Nessun pagamento registrato.</td></tr>}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="expense-payments-mobile">
+        {expense.payments.length ? expense.payments.map(payment => <article className="expense-payment-mobile-card" key={`mobile-payment-${payment.id}`}>
+          <div className="expense-payment-mobile-top">
+            <strong>{euro(payment.amount.toString())}</strong>
+            <span>{dateLabel(payment.paymentDate)}</span>
+          </div>
+          <div className="expense-payment-mobile-row"><span>Canale</span><b>{payment.channel ?? '-'}</b></div>
+          <div className="expense-payment-mobile-row"><span>Banca</span><b>{payment.bank ? `${bankIcons[payment.bank.name] ?? '🏦'} ${payment.bank.name}` : '-'}</b></div>
+          <div className="expense-payment-mobile-row"><span>Effettuato da</span><b>{paidByLabel(payment.paidBy)}</b></div>
+        </article>) : <p className="muted">Nessun pagamento registrato.</p>}
+      </div>
+    </section>
 
     <div className="card">
       <h2>Allegati ({expense.attachments.length})</h2>

@@ -815,6 +815,321 @@ button {
     border-color: #cfe8ff;
 }
 
+/* v074: dettaglio spesa con gerarchia reale e pagamenti responsive */
+.expense-detail-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(260px, .75fr);
+    gap: 18px;
+    align-items: stretch;
+    padding: 22px;
+    background:
+        radial-gradient(circle at top right, rgba(38, 86, 217, .10), transparent 34%),
+        linear-gradient(135deg, #ffffff 0%, #f7f9ff 100%);
+}
+
+.expense-detail-hero-main {
+    display: grid;
+    gap: 12px;
+}
+
+.expense-detail-eyebrow,
+.expense-detail-side-label,
+.expense-detail-priority-card > span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.expense-detail-hero h2 {
+    margin: 0;
+    font-size: clamp(24px, 3.4vw, 38px);
+    line-height: 1.04;
+    letter-spacing: -.04em;
+    padding-top: 8px;
+}
+
+.expense-detail-hero-main-meta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.expense-detail-hero-side-wrap {
+    display: grid;
+    gap: 10px;
+}
+
+.expense-detail-hero-side-wrap .text-pre {
+    text-align: right;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    padding-right: 12px;
+}
+
+.expense-detail-hero-main .badge {
+    border-radius: 50%;
+    min-width: 26px;
+    height: 26px;
+    line-height: 25px;
+    padding: 0;
+    text-align: center;
+    font-size: 14px;
+}
+
+.expense-detail-supplier {
+    /*display: grid;*/
+    /*gap: 3px;*/
+    /*padding: 13px 15px;*/
+    /*border: 1px solid #dbe3ff;*/
+    /*border-radius: 16px;*/
+    background: rgba(255, 255, 255, .78);
+    width: fit-content;
+    max-width: 100%;
+}
+
+.expense-detail-supplier span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.expense-detail-supplier strong {
+    font-size: 18px;
+}
+
+.expense-detail-supplier a,
+.expense-detail-priority-card a {
+    color: var(--accent);
+}
+
+.expense-detail-hero-meta {
+    /*display: flex;*/
+    /*gap: 8px;*/
+    /*flex-wrap: wrap;*/
+}
+
+.expense-detail-hero-meta span {
+    padding: 6px 10px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    color: #47506a;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.expense-detail-hero-side {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: 18px;
+    padding: 20px;
+    border-radius: 18px;
+    /*background: #16181d;*/
+    /*background: linear-gradient(180deg, rgba(22, 24, 29, 1) 0%, rgba(9, 9, 121, 1) 100%, rgba(38, 73, 184, 1) 100%);*/
+    /*color: #fff;*/
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+    border: 1px solid #2656d9;
+}
+
+.expense-detail-hero-side strong {
+    font-size: clamp(30px, 4vw, 46px);
+    line-height: 1;
+    letter-spacing: -.05em;
+}
+
+.expense-detail-hero-side .badge {
+    /*background: rgba(255,255,255,.10);*/
+    /*border-color: rgba(255,255,255,.18);*/
+    /*color: #fff;*/
+}
+
+.expense-detail-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+    padding-top: 2px;
+}
+
+.expense-detail-priority-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.expense-detail-priority-card {
+    min-height: 150px;
+    display: grid;
+    align-content: space-between;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 10px 28px rgba(20, 30, 60, .05);
+}
+
+.expense-detail-priority-card strong {
+    font-size: 20px;
+    line-height: 1.12;
+}
+
+.expense-detail-priority-card small {
+    color: var(--muted);
+    font-weight: 750;
+    line-height: 1.35;
+}
+
+.expense-detail-priority-card.amount-card {
+    background: linear-gradient(160deg, #eef2ff, #ffffff);
+    border-color: #dbe3ff;
+}
+
+.expense-detail-priority-card.amount-card strong {
+    color: #2649b8;
+    font-size: 26px;
+}
+
+.expense-detail-priority-card.status-card {
+    background: linear-gradient(160deg, #fff8df, #ffffff);
+}
+
+.expense-detail-priority-card.due-card {
+    background: linear-gradient(160deg, #fff4e8, #ffffff);
+}
+
+.expense-detail-priority-card.declared-card {
+    background: linear-gradient(160deg, #eaf8ef, #ffffff);
+}
+
+.expense-detail-section-title {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.expense-detail-section-title h2 {
+    margin: 0;
+}
+
+.expense-detail-section-title p {
+    margin: 4px 0 0;
+}
+
+.expense-detail-secondary-grid > div {
+    background: #fff;
+}
+
+.expense-payments-table {
+    min-width: 760px;
+}
+
+.expense-payments-table td strong {
+    font-size: 15px;
+}
+
+.expense-payments-mobile {
+    display: none;
+}
+
+.expense-payment-mobile-card {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #fff;
+}
+
+.expense-payment-mobile-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: baseline;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+}
+
+.expense-payment-mobile-top strong {
+    color: #2649b8;
+    font-size: 22px;
+}
+
+.expense-payment-mobile-top span,
+.expense-payment-mobile-row span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 850;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.expense-payment-mobile-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.expense-payment-mobile-row b {
+    text-align: right;
+}
+
+@media (max-width: 1120px) {
+    .expense-detail-priority-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .expense-detail-priority-card.supplier-card {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 760px) {
+    .expense-detail-hero {
+        grid-template-columns: 1fr;
+        padding: 18px;
+    }
+
+    .expense-detail-hero-side {
+        padding: 18px 12px;
+    }
+
+    .expense-detail-actions {
+        justify-content: stretch;
+    }
+
+    .expense-detail-actions .table-action {
+        flex: 1 1 auto;
+    }
+
+    .expense-detail-priority-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .expense-detail-priority-card {
+        min-height: 118px;
+    }
+
+    .expense-detail-section-title {
+        flex-direction: column;
+    }
+
+    .expense-payments-desktop {
+        display: none;
+    }
+
+    .expense-payments-mobile {
+        display: grid;
+        gap: 12px;
+    }
+}
+
 @media (max-width: 1100px) {
     .expense-filters {
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -5908,7 +6223,7 @@ button.bulk-direct-danger {
 
     .expense-detail-hero,
     .expense-detail-section {
-        padding: 18px;
+        padding: 18px 12px;
     }
 
     .expense-detail-action-row {
