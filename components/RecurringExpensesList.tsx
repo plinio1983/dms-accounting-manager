@@ -18,6 +18,32 @@ function dueLabel(item: any) {
   return '-';
 }
 
+function inputDefault(filters: Record<string, string | string[] | undefined>, key: string) {
+  const value = filters[key];
+  return Array.isArray(value) ? value[0] ?? '' : value ?? '';
+}
+
+function optionLabel(options: FilterOption[], value: string) {
+  const id = Number(value);
+  return options.find(option => option.id === id)?.name ?? value;
+}
+
+const activeLabels: Record<string, string> = {
+  true: 'Attive',
+  false: 'Disattivate'
+};
+
+const paymentChannelLabels: Record<string, string> = {
+  Addebito: 'Addebito',
+  Bonifico: 'Bonifico',
+  'RID Bancario': 'RID Bancario',
+  'Modello F24': 'Modello F24',
+  'Carta di Debito': 'Carta di Debito',
+  PayPal: 'PayPal',
+  Mooney: 'Mooney',
+  Cash: 'Cash'
+};
+
 type FilterOption = { id: number; name: string };
 
 export default function RecurringExpensesList({
@@ -32,6 +58,19 @@ export default function RecurringExpensesList({
   banks: FilterOption[];
 }) {
   const itemCount = items.length;
+  const currentFilters = filters ?? {};
+  const activeFilterItems = [
+    inputDefault(currentFilters, 'merchant') ? `Fornitore: ${inputDefault(currentFilters, 'merchant')}` : '',
+    inputDefault(currentFilters, 'description') ? `Descrizione: ${inputDefault(currentFilters, 'description')}` : '',
+    inputDefault(currentFilters, 'categoryId') ? `Categoria: ${optionLabel(categories, inputDefault(currentFilters, 'categoryId'))}` : '',
+    inputDefault(currentFilters, 'isActive') ? `Stato: ${activeLabels[inputDefault(currentFilters, 'isActive')] ?? inputDefault(currentFilters, 'isActive')}` : '',
+    inputDefault(currentFilters, 'cadence') ? `Cadenza: ${cadenceLabels[inputDefault(currentFilters, 'cadence')] ?? inputDefault(currentFilters, 'cadence')}` : '',
+    inputDefault(currentFilters, 'billingPeriodMode') ? `Periodo: ${billingLabels[inputDefault(currentFilters, 'billingPeriodMode')] ?? inputDefault(currentFilters, 'billingPeriodMode')}` : '',
+    inputDefault(currentFilters, 'paymentChannel') ? `Pagamento: ${paymentChannelLabels[inputDefault(currentFilters, 'paymentChannel')] ?? inputDefault(currentFilters, 'paymentChannel')}` : '',
+    inputDefault(currentFilters, 'bankId') ? `Banca: ${optionLabel(banks, inputDefault(currentFilters, 'bankId'))}` : '',
+    inputDefault(currentFilters, 'amountMin') ? `Importo min: ${inputDefault(currentFilters, 'amountMin')}` : '',
+    inputDefault(currentFilters, 'amountMax') ? `Importo max: ${inputDefault(currentFilters, 'amountMax')}` : '',
+  ].filter(Boolean);
   return <div className="card recurring-expenses-card">
     <div className="list-heading recurring-list-heading">
       <div>
@@ -41,6 +80,16 @@ export default function RecurringExpensesList({
         <RecurringExpenseFiltersDrawer filters={filters ?? {}} categories={categories} banks={banks} />
       </div>
     </div>
+    {activeFilterItems.length ? <div className="recurring-active-filters">
+      <div>
+        <span className="recurring-active-filters-title">Filtri attivi</span>
+        <div className="recurring-active-filter-tags">
+          {activeFilterItems.map(item => <span className="badge" key={item}>{item}</span>)}
+        </div>
+      </div>
+      <Link className="table-action secondary recurring-active-filters-reset" href="/recurring-expenses">↺ Reset</Link>
+    </div> : null}
+
     <BulkSelectionController />
     <form id="recurringExpenseBulkForm" action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses" method="post" className="bulk-actions-bar confirm-bulk-form recurring-bulk-actions-bar">
       <p className="muted">Risultati mostrati: {itemCount}</p>

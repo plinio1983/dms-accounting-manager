@@ -460,6 +460,48 @@ button {
     justify-content: flex-end !important;
 }
 
+.recurring-active-filters {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #dbe3ff;
+    border-radius: 16px;
+    background: #fafbff;
+}
+
+.recurring-active-filters-title {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.recurring-active-filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.recurring-active-filters-reset {
+    white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+    .recurring-active-filters {
+        display: grid;
+    }
+
+    .recurring-active-filters-reset {
+        width: fit-content;
+    }
+}
+
 .recurring-expense-row-with-select {
     grid-template-columns: 34px repeat(7, minmax(0, 1fr));
     align-items: center;
