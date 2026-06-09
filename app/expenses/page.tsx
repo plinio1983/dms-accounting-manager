@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { euro, moneyTone } from '@/lib/money';
 import NewExpensePanel from '@/components/NewExpensePanel';
 import ExpenseEditModalController from '@/components/ExpenseEditModalController';
+import ExpenseFiltersDrawer from '@/components/ExpenseFiltersDrawer';
 import SupplierFilterInput from '@/components/SupplierFilterInput';
 import {
   badgeClass,
