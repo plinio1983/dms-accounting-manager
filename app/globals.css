@@ -1249,6 +1249,126 @@ button {
     border-color: #cfe8ff;
 }
 
+/* dettaglio incasso: gerarchia visiva allineata a dettaglio spesa */
+.income-detail-page {
+
+    /*gap: 18px;*/
+    /*padding-bottom: 28px;*/
+}
+
+.income-detail-hero {
+    margin-top: 2px;
+}
+
+.income-detail-badge {
+    background: #ecfeff;
+    color: #155e75;
+    border: 1px solid #a5f3fc;
+}
+
+.income-detail-hero .expense-detail-hero-side::before {
+    background: linear-gradient(135deg, #155e75 0%, #0f766e 100%);
+}
+
+/*.income-detail-hero .expense-detail-hero-side .badge {*/
+/*    background: rgba(255, 255, 255, .18);*/
+/*    color: #fff;*/
+/*    border: 1px solid rgba(255, 255, 255, .24);*/
+/*}*/
+
+.income-detail-hero-badges {
+    align-items: center;
+}
+
+.income-detail-hero-net {
+    display: grid;
+    gap: 2px;
+    padding-top: 2px;
+}
+
+.income-detail-hero-net span {
+    color: rgba(255, 255, 255, .72);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.income-detail-hero-net strong {
+    font-size: clamp(23px, 4vw, 46px) !important;
+}
+
+.income-detail-summary-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.income-detail-summary-strip > div {
+    display: grid;
+    gap: 6px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(20, 30, 60, .04);
+}
+
+.income-detail-summary-strip span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.income-detail-summary-strip strong {
+    font-size: 18px;
+}
+
+.income-detail-summary-strip small {
+    color: var(--muted);
+    font-weight: 750;
+}
+
+.income-detail-grid-card {
+    margin-top: 2px;
+}
+
+.income-detail-grid-card .detail-grid > div {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px;
+    background: #fff;
+}
+
+@media (max-width: 1120px) {
+    .income-detail-summary-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    /*.income-detail-page {*/
+    /*    gap: 12px;*/
+    /*    padding: 0 2px 22px;*/
+    /*}*/
+
+    .income-detail-hero {
+        padding: 16px;
+        border-radius: 18px;
+    }
+
+    .income-detail-summary-strip {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .income-detail-grid-card {
+        padding: 14px;
+    }
+}
+
 /* v074: dettaglio spesa con gerarchia reale e pagamenti responsive */
 .expense-detail-hero {
     display: grid;

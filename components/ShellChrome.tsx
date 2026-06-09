@@ -8,14 +8,14 @@ type Props = {
   slot: 'header' | 'footer';
 };
 
-function isExpenseDetailPath(pathname: string) {
-  return /^\/expenses\/\d+$/.test(pathname);
+function isCompactDetailPath(pathname: string) {
+  return /^\/expenses\/\d+$/.test(pathname) || /^\/incomes\/\d+$/.test(pathname);
 }
 
 export default function ShellChrome({ slot }: Props) {
   const pathname = usePathname() || '/';
 
-  if (isExpenseDetailPath(pathname)) {
+  if (isCompactDetailPath(pathname)) {
     if (slot === 'footer') return null;
 
     return <div className="expense-detail-mobile-nav-only">

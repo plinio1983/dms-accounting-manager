@@ -41,7 +41,6 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : '/incomes';
   const encodedReturnTo = encodeURIComponent(returnTo);
   const currentDetailReturnTo = `/incomes/${id}?returnTo=${encodedReturnTo}`;
-  const encodedCurrentDetailReturnTo = encodeURIComponent(currentDetailReturnTo);
   const income = await prisma.income.findUnique({ where: { id: Number(id) } });
   if (!income) notFound();
 
@@ -56,37 +55,77 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
   const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
   const vatStyle = vatStyles[String(vatRate)] ?? vatStyles['0'];
 
-  return <div className="grid detail-page-no-site-header">
+  return <div className="grid income-detail-page">
     <IncomeEditModalController returnTo={currentDetailReturnTo} />
 
-    <div className="toolbar-card">
-      <div>
-        <h2>Dettaglio incasso #{income.id}</h2>
-        <p className="muted">Dati completi dell’entrata registrata.</p>
+    <section className="expense-detail-hero card income-detail-hero">
+      <div className="expense-detail-hero-main">
+        <div className="expense-detail-hero-main-meta">
+          <div className="badge color-badge income-detail-badge">I</div>
+          <div className="expense-detail-eyebrow">Dettaglio incasso #{income.id}</div>
+        </div>
+        <h2>{income.description || `${income.salesChannel}`}</h2>
+        <div className="expense-detail-supplier">
+          <span>{income.description ? `${income.salesChannel} · ${income.saleCategory}` : 'Incasso senza descrizione'}</span>
+        </div>
+        <div className="expense-detail-hero-meta">
+          {/*<span>{salesStyle?.icon ?? '•'} {income.salesChannel}</span>*/}
+          <span>{categoryStyle?.icon ?? '•'} {income.saleCategory}</span>
+          <span>Data accredito:<br /><strong>{dateLabel(income.creditDate)}</strong></span>
+          <span>Periodo contabile:<br /><strong>{formatPeriod(income.billingMonth, income.billingYear)}</strong></span>
+        </div>
       </div>
-      <div className="actions-row right-actions">
+      <div className="expense-detail-hero-side-wrap">
+        {/*<span className="text-pre">{paymentStyle?.icon ?? '•'} {income.paymentMethod} · {creditStyle?.icon ?? '•'} {income.creditChannel}</span>*/}
+        <span className="text-pre">{dateLabel(income.creditDate)}</span>
+        <div className="expense-detail-hero-side income-detail-hero-side">
+          <span className="expense-detail-side-label">Importo incasso</span>
+          <strong>{euro(amount)}</strong>
+          <div className="detail-money-row income-detail-hero-badges">
+            <span className={badgeClass(income.isFiscal ? 'tone-yes' : 'tone-neutral')}>{income.isFiscal ? 'DF' : 'NF'}</span>
+            <span className={badgeClass(vatStyle.className)}>IVA {vatRate}%</span>
+            <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>
+          </div>
+          <div className="income-detail-hero-net">
+            <span>IVA esclusa</span>
+            <strong>{euro(netAmount)}</strong>
+          </div>
+        </div>
+      </div>
+      <div className="actions-row expense-detail-actions">
         <Link className="table-action secondary" href={returnTo}>↩ Lista incassi</Link>
         <Link className="table-action" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
       </div>
-    </div>
+    </section>
 
-    <div className="card detail-grid">
-      <div><span>Importo</span><strong className="detail-amount">{euro(amount)}</strong></div>
-      <div><span>IVA incasso</span><span className={badgeClass(vatStyle.className)}>{vatRate}% - {euro(vatAmount)}</span></div>
-      <div><span>Importo IVA esclusa</span><strong>{euro(netAmount)}</strong></div>
-      <div><span>Periodo Fatturazione</span><strong>{formatPeriod(income.billingMonth, income.billingYear)}</strong></div>
-      <div><span>Data accredito</span><strong>{dateLabel(income.creditDate)}</strong></div>
-      <div><span>Canale vendita</span><span className={badgeClass(salesStyle?.className)}>{salesStyle?.icon ?? '•'} {income.salesChannel}</span></div>
-      <div><span>Categoria vendita</span><span className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {income.saleCategory}</span></div>
-      <div className="full"><span>Descrizione</span><strong>{income.description ?? '-'}</strong></div>
-      <div><span>Metodo pagamento</span><span className={badgeClass(paymentStyle?.className)}>{paymentStyle?.icon ?? '•'} {income.paymentMethod}</span></div>
-      <div><span>Canale accredito</span><span className={badgeClass(creditStyle?.className)}>{creditStyle?.icon ?? '•'} {income.creditChannel}</span></div>
-      <div><span>Fiscale</span>{booleanBadge(income.isFiscal)}</div>
-      <div><span>Stato fattura</span><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></div>
-      <div><span>Creato</span><strong>{dateLabel(income.createdAt)}</strong></div>
-      <div><span>Aggiornato</span><strong>{dateLabel(income.updatedAt)}</strong></div>
-    </div>
+    <section className="income-detail-summary-strip">
+      {/*<div>*/}
+      {/*  <span>IVA incasso</span>*/}
+      {/*  <strong>{euro(vatAmount)}</strong>*/}
+      {/*  <small><span className={badgeClass(vatStyle.className)}>{vatRate}%</span></small>*/}
+      {/*</div>*/}
+      <div>
+        <span>Canale pagamento</span>
+        <strong>{income.paymentMethod}</strong>
+        <small>{income.creditChannel}</small>
+      </div>
+      <div>
+        <span>Fattura</span>
+        <strong><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></strong>
+        <small>{income.isFiscal ? 'Incasso fiscale' : 'Incasso non fiscale'}</small>
+      </div>
+    </section>
 
-    {income.notes && <div className="card"><h2>Note</h2><p>{income.notes}</p></div>}
+    <section className="card income-detail-grid-card">
+      <div className="expense-detail-section-title">
+        <div>
+          <h2>Note</h2>
+          <p className="muted">Annotazioni interne associate all’incasso.</p>
+        </div>
+      </div>
+      <div className="detail-grid expense-detail-secondary-grid">
+        <div className="full"><span>Note</span><strong>{income.notes ?? '-'}</strong></div>
+      </div>
+    </section>
   </div>;
 }

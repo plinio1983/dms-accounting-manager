@@ -223,10 +223,6 @@ export default function IncomeForm({
             {!isFiscal && <input type="hidden" name="invoiceStatus" value="" />}
           </label>
 
-          <div className="field-note income-tax-note">
-            <span className="muted">IVA esclusa</span><br />
-            <strong>{formatEuro(netAmount)}</strong>
-          </div>
         </div>
       </details>
 
