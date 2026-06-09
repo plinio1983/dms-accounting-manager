@@ -518,7 +518,7 @@ export default function RecurringExpenseForm({
       </details>
 
       <div className="actions-row full form-actions-row form-sticky-actions">
-        <button className="button-standard" type="submit"><span className="btn-icon">✓</span> Salva spesa ricorrente</button>
+        <button className="button-standard" type="submit"><span className="btn-icon">✓</span> Salva spesa</button>
         {onCancel ? (
           <button type="button" className="secondary-button button-standard" onClick={onCancel}><span className="btn-icon">×</span> Annulla</button>
         ) : cancelHref ? (
