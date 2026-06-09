@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { euro, moneyTone } from '@/lib/money';
 import NewIncomePanel from '@/components/NewIncomePanel';
 import IncomeEditModalController from '@/components/IncomeEditModalController';
+import IncomeFiltersDrawer from '@/components/IncomeFiltersDrawer';
 import {
   badgeClass,
   creditChannelStyles,
@@ -462,46 +463,33 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         <div className="total-card total-card-warning"><span>Fatture non inviate</span><strong>{periodTotals.invoicesNotSent}</strong><small>Incassi fiscali del periodo con fattura non emessa.</small></div>
       </div>
 
-      <div className="list-heading">
+      <div className="list-heading recurring-list-heading">
         <div>
           <h2>Lista incassi</h2>
           <p className="muted">Risultati mostrati: {filteredIncomes.length}</p>
         </div>
+        <div>
+          <IncomeFiltersDrawer
+            filters={filters}
+            quickDateFilter={quickDateFilter}
+            creditDateFromDefault={creditDateFromDefault}
+            creditDateToDefault={creditDateToDefault}
+            quickBillingPeriodFilter={quickBillingPeriodFilter}
+            billingPeriodFromFilter={billingPeriodFromFilter}
+            billingPeriodToFilter={billingPeriodToFilter}
+          />
+        </div>
       </div>
 
-      <details className="filter-collapse">
-        <summary><span className="btn-icon">🔎</span>Filtri di ricerca</summary>
-        <form className="expense-filters compact-filters grouped-filters" method="get">
-        <fieldset className="filter-group filter-group-fiscal">
-          <legend>Periodo fiscale</legend>
-          <label>Periodo Fatt. da<input id="incomeBillingPeriodFrom" name="billingPeriodFrom" type="month" defaultValue={billingPeriodFromFilter} /></label>
-          <label>Periodo Fatt. a<input id="incomeBillingPeriodTo" name="billingPeriodTo" type="month" defaultValue={billingPeriodToFilter} /></label>
-          <label>Periodo fiscale rapido<select id="incomeBillingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter}>
-            <option value="">Periodo personalizzato</option>
-            {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-          </select></label>
-        </fieldset>
-        <fieldset className="filter-group filter-group-order-date">
-          <legend>Date accredito</legend>
-          <label>Data accredito da<input id="creditDateFrom" name="creditDateFrom" type="date" defaultValue={creditDateFromDefault} /></label>
-          <label>Data accredito a<input id="creditDateTo" name="creditDateTo" type="date" defaultValue={creditDateToDefault} /></label>
-          <label>Selezione rapida data<select id="incomeDateQuick" name="dateQuick" defaultValue={quickDateFilter}>
-            <option value="">Periodo personalizzato</option>{quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-          </select></label>
-        </fieldset>
-        <label>Canale vendita<select name="salesChannel" defaultValue={inputDefault(filters, 'salesChannel')}><option value="">Tutti</option>{salesChannelOptions.map(value => <option key={value} value={value}>{value}</option>)}</select></label>
-        <label>Categoria vendita<select name="saleCategory" defaultValue={inputDefault(filters, 'saleCategory')}><option value="">Tutte</option>{saleCategoryOptions.map(value => <option key={value} value={value}>{value}</option>)}</select></label>
-        <label>Importo<input name="amount" inputMode="decimal" defaultValue={inputDefault(filters, 'amount')} /></label>
-        <label>Metodo pagamento<select name="paymentMethod" defaultValue={inputDefault(filters, 'paymentMethod')}><option value="">Tutti</option>{paymentMethodOptions.map(value => <option key={value} value={value}>{value}</option>)}</select></label>
-        <label>Canale accredito<select name="creditChannel" defaultValue={inputDefault(filters, 'creditChannel')}><option value="">Tutti</option>{creditChannelOptions.map(value => <option key={value} value={value}>{value}</option>)}</select></label>
-        <label>Fiscale<select name="fiscal" defaultValue={inputDefault(filters, 'fiscal')}><option value="">Tutti</option><option value="yes">Si</option><option value="no">No</option></select></label>
-        <label>Stato fattura<select name="invoiceStatus" defaultValue={inputDefault(filters, 'invoiceStatus') || inputDefault(filters, 'invoiceStatusMode')}><option value="">Tutti</option>{invoiceStatusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-        <label>IVA<select name="vatRate" defaultValue={inputDefault(filters, 'vatRate')}><option value="">Tutte</option><option value="0">0%</option><option value="4">4%</option><option value="10">10%</option><option value="22">22%</option></select></label>
-        <div className="filter-actions"><button className="button-standard primary-action" type="submit"><span className="btn-icon">🔎</span> Filtra</button><Link className="button-standard secondary-button reset-button" href="/incomes"><span className="btn-icon">↺</span> Reset</Link></div>
-        </form>
-      </details>
-
-      <ActiveFilterSummary items={activeFilterItems} />
+      {activeFilterItems.length ? <div className="recurring-active-filters">
+        <div>
+          <span className="recurring-active-filters-title">Filtri attivi</span>
+          <div className="recurring-active-filter-tags">
+            {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
+          </div>
+        </div>
+        <Link className="table-action secondary recurring-active-filters-reset reset-button" href="/incomes">↺ Reset</Link>
+      </div> : null}
 
       <BulkSelectionController />
 
