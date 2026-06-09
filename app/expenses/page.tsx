@@ -576,49 +576,34 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         <div className={`total-card ${periodTotals.overdueCount > 0 ? 'total-card-critical' : 'total-card-neutral'}`}><span>Pagamenti scaduti</span><strong>{periodTotals.overdueCount}</strong><small>Spese scadute con residuo nel periodo selezionato.</small></div>
       </div>
 
-      <div className="list-heading">
+      <div className="list-heading recurring-list-heading">
         <div>
           <h2>Lista spese</h2>
           <p className="muted">Risultati mostrati: {filteredExpenses.length}</p>
         </div>
+        <div>
+          <ExpenseFiltersDrawer
+            filters={filters}
+            categories={orderedCategories.map(category => ({ id: category.id, code: category.code, name: category.name }))}
+            quickDateFilter={quickDateFilter}
+            orderDateFromDefault={orderDateFromDefault}
+            orderDateToDefault={orderDateToDefault}
+            quickBillingPeriodFilter={quickBillingPeriodFilter}
+            billingPeriodFromFilter={billingPeriodFromFilter}
+            billingPeriodToFilter={billingPeriodToFilter}
+          />
+        </div>
       </div>
 
-      <details className="filter-collapse">
-        <summary><span className="btn-icon">🔎</span>Filtri di ricerca</summary>
-        <form className="expense-filters compact-filters grouped-filters" method="get">
-        <fieldset className="filter-group filter-group-fiscal">
-          <legend>Periodo fiscale</legend>
-          <label>Periodo Fatt. da<input id="billingPeriodFrom" name="billingPeriodFrom" type="month" defaultValue={billingPeriodFromFilter} /></label>
-          <label>Periodo Fatt. a<input id="billingPeriodTo" name="billingPeriodTo" type="month" defaultValue={billingPeriodToFilter} /></label>
-          <label>Periodo fiscale rapido<select id="billingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter}>
-            <option value="">Periodo personalizzato</option>
-            {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-          </select></label>
-        </fieldset>
-        <fieldset className="filter-group filter-group-order-date">
-          <legend>Date ordine</legend>
-          <label>Data ordine da<input id="orderDateFrom" name="orderDateFrom" type="date" defaultValue={orderDateFromDefault} /></label>
-          <label>Data ordine a<input id="orderDateTo" name="orderDateTo" type="date" defaultValue={orderDateToDefault} /></label>
-          <label>Selezione rapida data<select id="dateQuick" name="dateQuick" defaultValue={quickDateFilter}>
-            <option value="">Periodo personalizzato</option>
-            {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-          </select></label>
-        </fieldset>
-        <label>Categoria<select name="category" defaultValue={inputDefault(filters, 'category')}><option value="">Tutte</option>{orderedCategories.map(category => <option key={category.id} value={category.name}>{categoryStyles[category.name]?.acronym ?? category.code} - {category.name}</option>)}</select></label>
-        <SupplierFilterInput initialValue={inputDefault(filters, 'merchant')} />
-        <label>Descrizione<input name="product" defaultValue={inputDefault(filters, 'product')} /></label>
-        <label>Importo<input name="amount" inputMode="decimal" defaultValue={inputDefault(filters, 'amount')} /></label>
-        <label>Stato Pagamento<select name="paymentStatus" defaultValue={inputDefault(filters, 'paymentStatus')}><option value="">Tutti</option>{paymentStatusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-        <label>Residuo<select name="residual" defaultValue={inputDefault(filters, 'residual')}><option value="">Tutti</option><option value="open">Con residuo</option><option value="closed">Saldato</option></select></label>
-        <label>Fattura Elettronica<select name="electronicInvoice" defaultValue={inputDefault(filters, 'electronicInvoice')}><option value="">Tutte</option><option value="yes">Si</option><option value="no">No</option></select></label>
-        <label>Stato Fattura<select name="invoiceStatus" defaultValue={inputDefault(filters, 'invoiceStatus') || inputDefault(filters, 'invoiceStatusMode')}><option value="">Tutti</option>{invoiceStatusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-        <label>Detrazione<select name="declared" defaultValue={inputDefault(filters, 'declared')}><option value="">Tutte</option><option value="yes">Si</option><option value="no">No</option></select></label>
-        <label>Allegati<select name="attachments" defaultValue={inputDefault(filters, 'attachments')}><option value="">Tutti</option><option value="with">Con allegati</option><option value="without">Senza allegati</option></select></label>
-        <div className="filter-actions"><button className="button-standard primary-action" type="submit"><span className="btn-icon">🔎</span> Filtra</button><Link className="button-standard secondary-button reset-button" href="/expenses"><span className="btn-icon">↺</span> Reset</Link></div>
-        </form>
-      </details>
-
-      <ActiveFilterSummary items={activeFilterItems} />
+      {activeFilterItems.length ? <div className="recurring-active-filters">
+        <div>
+          <span className="recurring-active-filters-title">Filtri attivi</span>
+          <div className="recurring-active-filter-tags">
+            {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
+          </div>
+        </div>
+        <Link className="table-action secondary recurring-active-filters-reset reset-button" href="/expenses">↺ Reset</Link>
+      </div> : null}
 
       <BulkSelectionController />
 

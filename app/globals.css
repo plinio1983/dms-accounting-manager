@@ -333,6 +333,24 @@ button {
     }
 }
 
+.expense-drawer-filters .filter-group {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fafbff;
+}
+
+.expense-drawer-filters .filter-group legend {
+    padding: 0 6px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
 /* spese ricorrenti: sezioni collassabili coerenti con ExpenseForm */
 .recurring-expense-form .recurring-form-section {
     padding: 0;
