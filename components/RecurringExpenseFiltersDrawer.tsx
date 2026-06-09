@@ -23,7 +23,17 @@ const cadenceOptions = [
 const billingOptions = [
   ["SAME_MONTH", "Stesso mese"],
   ["NEXT_MONTH", "Mese successivo"],
-  ["CUSTOM_MONTH", "Mese impostato"],
+];
+
+const paymentChannelOptions = [
+  "Addebito",
+  "Bonifico",
+  "RID Bancario",
+  "Modello F24",
+  "Carta di Debito",
+  "PayPal",
+  "Mooney",
+  "Cash",
 ];
 
 function inputDefault(filters: Record<string, string | string[] | undefined>, key: string) {
@@ -110,7 +120,10 @@ export default function RecurringExpenseFiltersDrawer({ filters, categories, ban
 
           <label>
             Canale pagamento
-            <input name="paymentChannel" defaultValue={inputDefault(filters, "paymentChannel")} placeholder="Bonifico, Carta..." />
+            <select name="paymentChannel" defaultValue={inputDefault(filters, "paymentChannel")}>
+              <option value="">Tutti</option>
+              {paymentChannelOptions.map(value => <option key={value} value={value}>{value}</option>)}
+            </select>
           </label>
 
           <label>
