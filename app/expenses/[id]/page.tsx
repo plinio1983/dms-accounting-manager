@@ -105,7 +105,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
     ? `${paymentStatusStyles.SCADUTO.icon} ${paymentStatusStyles.SCADUTO.label}`
     : `${paymentStyle.icon} ${paymentStyle.label}`;
 
-  return <div className="grid">
+  return <div className="grid expense-detail-page">
     <ExpenseDetailEditModalController
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}

@@ -830,7 +830,9 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           const invoiceStyle = invoiceStatusStyles[e.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
           const overdue = isExpensePastDueForBadge(e);
           const statusStyle = overdue ? paymentStatusStyles.SCADUTO : paymentStyle;
-          const detailHref = `/expenses/${e.id}?returnTo=${returnTo}`;
+          const detailHref = e.recurringExpenseId
+            ? `/recurring-expenses/${e.recurringExpenseId}?returnTo=${returnTo}`
+            : `/expenses/${e.id}?returnTo=${returnTo}`;
 
           return <div className={overdue ? "expense-mobile-item expense-mobile-item-overdue" : "expense-mobile-item"} key={`mobile-${e.id}`}>
             <div className="expense-mobile-select">

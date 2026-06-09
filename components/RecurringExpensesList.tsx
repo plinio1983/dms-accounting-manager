@@ -41,7 +41,8 @@ export default function RecurringExpensesList({ items }: { items: any[] }) {
           const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
           const supplier = item.supplier?.businessName || item.merchant || 'Fornitore non impostato';
           const payment = item.paymentChannel ? `${item.paymentChannel}${item.bank ? ` · ${item.bank.name}` : ''}` : 'Pagamento manuale';
-          return <article className={item.isActive ? "recurring-mobile-item recurring-mobile-item-active" : "recurring-mobile-item recurring-mobile-item-disabled"} key={`mobile-recurring-${item.id}`}>
+          return <Link className="recurring-mobile-item-link" href={`/recurring-expenses/${item.id}`} key={`mobile-recurring-${item.id}`}>
+            <article className={item.isActive ? "recurring-mobile-item recurring-mobile-item-active" : "recurring-mobile-item recurring-mobile-item-disabled"}>
             <div className="recurring-mobile-top">
               <div className="recurring-mobile-main-title">
                 <span className={item.isActive ? 'recurring-mobile-status is-active' : 'recurring-mobile-status'}>{item.isActive ? 'ON' : 'OFF'}</span>
@@ -67,7 +68,8 @@ export default function RecurringExpensesList({ items }: { items: any[] }) {
               <div><span>Periodo fatt.</span><strong>{billing}</strong></div>
               <div><span>Inizio</span><strong>{dateLabel(item.startDate)}</strong></div>
             </div>
-          </article>;
+          </article>
+          </Link>;
         })}
       </div>
     </> : <p className="muted">Nessuna spesa ricorrente configurata.</p>}

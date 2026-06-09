@@ -1126,6 +1126,10 @@ button {
     gap: 4px;
 }
 
+.recurring-detail-hero .expense-detail-hero-side-wrap .badge {
+    width: fit-content;
+}
+
 .expense-detail-hero-side-wrap {
     display: grid;
     gap: 8px;
@@ -1196,6 +1200,18 @@ button {
     font-weight: 800;
 }
 
+
+.recurring-detail-hero .expense-detail-hero-side,
+.recurring-detail-hero .expense-detail-hero-side .expense-detail-side-label,
+.recurring-detail-hero .expense-detail-hero-side .expense-detail-side-label .badge {
+    /*color: var(--text) !important;*/
+    color: initial;
+}
+
+.recurring-detail-hero .expense-detail-hero-side::before {
+    background: none !important;
+}
+
 .expense-detail-hero-side {
     position: relative;
     display: grid;
@@ -1237,8 +1253,8 @@ button {
     letter-spacing: -.05em;
 }
 
-.expense-detail-hero-side .badge,
-.expense-detail-hero-side-status {
+.expense-detail-page .expense-detail-hero-side .badge,
+.expense-detail-page .expense-detail-hero-side-status {
     display: inline-flex;
     width: fit-content;
     align-items: center;
@@ -5274,6 +5290,60 @@ button.bulk-direct-link {
     display: flex;
     border-radius: 12px;
     border: 1px solid #cacaca;
+}
+
+/* recurring detail: mobile cards clickable + detail page */
+.recurring-mobile-item-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.recurring-mobile-item-link .recurring-mobile-item {
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+
+.recurring-mobile-item-link:hover .recurring-mobile-item,
+.recurring-mobile-item-link:focus-visible .recurring-mobile-item {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(20, 30, 60, .10);
+    border-color: #b8c7ff;
+}
+
+.recurring-detail-hero .expense-detail-hero-side-paid::before {
+    background: linear-gradient(135deg, #1f7a3f 0%, #14532d 100%);
+}
+
+.recurring-detail-priority-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.recurring-detail-grid-card .detail-grid > div {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px;
+    background: #fff;
+}
+
+.recurring-generated-table {
+    min-width: 760px;
+}
+
+.recurring-generated-mobile-card {
+    color: inherit;
+    text-decoration: none;
+}
+
+@media (max-width: 1120px) {
+    .recurring-detail-priority-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .recurring-detail-priority-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* v073 UI polish: payment status summary + consistent form buttons */
