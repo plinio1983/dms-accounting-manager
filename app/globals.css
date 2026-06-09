@@ -175,6 +175,169 @@ button {
     grid-column: 1 / -1;
 }
 
+/* incassi: sezioni collassabili coerenti con ExpenseForm */
+.income-form.income-form,
+.income-form.expense-form {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.income-form .income-form-section {
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #fff;
+    overflow: visible;
+}
+
+.income-form .income-form-section > summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 16px;
+    border-radius: 16px;
+    font-weight: 900;
+}
+
+.income-form .income-form-section > summary::-webkit-details-marker {
+    display: none;
+}
+
+.income-form .income-form-section > summary::after {
+    content: "⌄";
+    color: var(--muted);
+    font-size: 18px;
+}
+
+.income-form .income-form-section[open] > summary {
+    border-bottom: 1px solid var(--line);
+    border-radius: 16px 16px 0 0;
+}
+
+.income-form .income-form-section[open] > summary::after {
+    transform: rotate(180deg);
+}
+
+.income-form .income-form-section > summary small {
+    color: var(--muted);
+    font-weight: 650;
+}
+
+.income-form .income-form-section-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    padding: 16px;
+}
+
+.income-form .income-form-section-stack {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+}
+
+.income-form .income-amount-vat-row {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(140px, .55fr);
+    gap: 12px;
+}
+
+.income-form .income-amount-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.income-form .money-input {
+    width: auto;
+    flex: 1 1 auto;
+}
+
+.income-form .net-amount-inline {
+    min-width: 150px;
+    width: auto;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 1px 10px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fafbff;
+}
+
+.income-form .net-amount-inline span {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.income-form .income-tax-note strong {
+    color: var(--text);
+    font-size: 17px;
+}
+
+.income-form .form-actions-row {
+    justify-content: flex-end;
+}
+
+@media (max-width: 900px) {
+    .income-form .income-form-section-grid,
+    .income-form .income-amount-vat-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .income-form .income-amount-field,
+    .income-form .income-amount-row {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 576px) {
+    .income-form .income-form-section-grid,
+    .income-form .income-amount-vat-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .income-form .income-form-section-grid > *,
+    .income-form .income-form-section-stack > *,
+    .income-form .span-2,
+    .income-form .span-3,
+    .income-form .full {
+        grid-column: 1 / -1 !important;
+        min-width: 0;
+    }
+
+    .income-form .income-amount-row {
+        /*display: grid;*/
+        /*grid-template-columns: minmax(0, 1fr);*/
+    }
+
+    .income-form .net-amount-inline {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .income-form .form-actions-row {
+        position: sticky;
+        bottom: 0;
+        z-index: 20;
+        margin: 0 -14px -14px;
+        padding: 12px 14px;
+        background: rgba(246, 247, 251, .96);
+        border-top: 1px solid var(--line);
+        backdrop-filter: blur(8px);
+    }
+
+    .income-form .form-actions-row .button-standard {
+        flex: 1 1 auto;
+    }
+}
+
 /* spese ricorrenti: sezioni collassabili coerenti con ExpenseForm */
 .recurring-expense-form .recurring-form-section {
     padding: 0;
@@ -3674,9 +3837,9 @@ button {
 
 .net-amount-inline strong {
     display: block;
-    margin-top: 2px;
+    /*margin-top: 2px;*/
     color: var(--text);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 900;
 }
 
@@ -7505,7 +7668,6 @@ button.bulk-direct-danger {
 .expense-form label > input,
 .expense-form label > select,
 .expense-form label > textarea,
-.expense-form label .money-input,
 .expense-form .suggestion-field input {
     width: 100%;
 }

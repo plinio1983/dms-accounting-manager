@@ -107,97 +107,143 @@ export default function IncomeForm({
   }
 
   return (
-    <form className="card form income-form" action={action} method="post">
-      <h2 className="full">{title}</h2>
+    <form className="card form income-form expense-form" action={action} method="post">
+      {/*<h2 className="full">{title}</h2>*/}
 
-      <label>
-        Canale di vendita
-        <select name="salesChannel" defaultValue={initialIncome?.salesChannel ?? "Shop"} required>
-          {salesChannels.map(value => <option key={value} value={value}>{value}</option>)}
-        </select>
-      </label>
+      <details className="form-section full income-form-section" open>
+        <summary>
+          <span>Documento</span>
+          <small>Dati principali dell'incasso</small>
+        </summary>
+        <div className="form-section-grid income-form-section-grid">
+          <label>
+            Canale di vendita
+            <select name="salesChannel" defaultValue={initialIncome?.salesChannel ?? "Shop"} required>
+              {salesChannels.map(value => <option key={value} value={value}>{value}</option>)}
+            </select>
+          </label>
 
-      <label>
-        Categoria vendita
-        <select name="saleCategory" defaultValue={initialIncome?.saleCategory ?? "B2C"} required>
-          {saleCategories.map(value => <option key={value} value={value}>{value}</option>)}
-        </select>
-      </label>
+          <label>
+            Categoria vendita
+            <select name="saleCategory" defaultValue={initialIncome?.saleCategory ?? "B2C"} required>
+              {saleCategories.map(value => <option key={value} value={value}>{value}</option>)}
+            </select>
+          </label>
 
-      <label className="full">
-        Descrizione
-        <input name="description" defaultValue={initialIncome?.description ?? ""} placeholder="Descrizione dell'incasso" />
-      </label>
+          <label>
+            Periodo Fatturazione
+            <input type="month" name="billingPeriod" required defaultValue={toMonthInput(initialIncome)} />
+          </label>
 
-      <label>
-        Periodo Fatturazione
-        <input type="month" name="billingPeriod" required defaultValue={toMonthInput(initialIncome)} />
-      </label>
+          <label>
+            Data accredito
+            <input type="date" name="creditDate" required defaultValue={toDateInput(initialIncome?.creditDate) || today} />
+          </label>
 
-      <label className="income-amount-field">
-        Importo
-        <div className="income-amount-row">
-          <MoneyInput name="amount" required value={amount} onChange={(event) => setAmount(event.currentTarget.value)} />
-          <span className="net-amount-inline"><span>IVA esclusa</span><strong>{formatEuro(netAmount)}</strong></span>
+          <label className="full">
+            Descrizione
+            <input name="description" defaultValue={initialIncome?.description ?? ""} placeholder="Descrizione dell'incasso" />
+          </label>
+
+          <div className="amount-vat-row full income-amount-vat-row">
+            <label className="income-amount-field">
+              Importo IVA inclusa
+              <div className="income-amount-row">
+                <MoneyInput name="amount" required value={amount} onChange={(event) => setAmount(event.currentTarget.value)} />
+                <span className="net-amount-inline"><span>IVA esclusa</span><strong>{formatEuro(netAmount)}</strong></span>
+              </div>
+            </label>
+
+            <label>
+              IVA
+              <select name="vatRate" value={isFiscal ? vatRate : "0"} onChange={(event) => setVatRate(event.target.value)} disabled={!isFiscal}>
+                {vatRates.map(value => <option key={value} value={value}>{value}%</option>)}
+              </select>
+              {!isFiscal && <input type="hidden" name="vatRate" value="0" />}
+            </label>
+          </div>
         </div>
-      </label>
+      </details>
 
-      <label>
-        Metodo di pagamento
-        <select name="paymentMethod" value={paymentMethod} onChange={(event) => setPaymentMethod(event.currentTarget.value)} required>
-          {paymentMethods.map(value => <option key={value} value={value}>{value}</option>)}
-        </select>
-      </label>
+      <details className="form-section full income-form-section" open>
+        <summary>
+          <span>Pagamento</span>
+          <small>Metodo, accredito e conto di destinazione</small>
+        </summary>
+        <div className="form-section-grid income-form-section-grid">
+          <label>
+            Metodo di pagamento
+            <select name="paymentMethod" value={paymentMethod} onChange={(event) => setPaymentMethod(event.currentTarget.value)} required>
+              {paymentMethods.map(value => <option key={value} value={value}>{value}</option>)}
+            </select>
+          </label>
 
-      <label>
-        Canale di accredito
-        <select name="creditChannel" value={paymentMethod === "Cash" ? "Cash" : creditChannel} onChange={(event) => setCreditChannel(event.currentTarget.value)} disabled={paymentMethod === "Cash"} required>
-          {creditChannels.map(value => (
-            <option key={value} value={value} disabled={paymentMethod !== "Cash" && value === "Cash"}>{value}</option>
-          ))}
-        </select>
-        {paymentMethod === "Cash" && <input type="hidden" name="creditChannel" value="Cash" />}
-      </label>
-
-      <label>
-        Data accredito
-        <input type="date" name="creditDate" required defaultValue={toDateInput(initialIncome?.creditDate) || today} />
-      </label>
-
-      <label className="toggle-field fiscal-toggle-field">
-        <span>Fiscale</span>
-        <input type="hidden" name="isFiscal" value={isFiscal ? "true" : "false"} />
-        <div className="switch-with-label">
-          <button type="button" className={`switch-button ${isFiscal ? "on" : ""}`} onClick={() => toggleFiscal(!isFiscal)} aria-pressed={isFiscal}>
-            <span className="switch-knob" aria-hidden="true" />
-          </button>
-          <strong className={isFiscal ? "switch-state switch-state-on" : "switch-state switch-state-off"}>{isFiscal ? "Si" : "No"}</strong>
+          <label>
+            Canale di accredito
+            <select name="creditChannel" value={paymentMethod === "Cash" ? "Cash" : creditChannel} onChange={(event) => setCreditChannel(event.currentTarget.value)} disabled={paymentMethod === "Cash"} required>
+              {creditChannels.map(value => (
+                <option key={value} value={value} disabled={paymentMethod !== "Cash" && value === "Cash"}>{value}</option>
+              ))}
+            </select>
+            {paymentMethod === "Cash" && <input type="hidden" name="creditChannel" value="Cash" />}
+          </label>
         </div>
-      </label>
+      </details>
 
-      <label>
-        Stato fattura
-        <select name="invoiceStatus" defaultValue={initialIncome?.invoiceStatus ?? "NON_INVIATA"} disabled={!isFiscal}>
-          <option value="NON_INVIATA">Non inviata</option>
-          <option value="EMESSA">Emessa</option>
-        </select>
-        {!isFiscal && <input type="hidden" name="invoiceStatus" value="" />}
-      </label>
+      <details className="form-section full income-form-section" open>
+        <summary>
+          <span>Fiscale</span>
+          <small>Fiscalità, fattura e aliquota IVA</small>
+        </summary>
+        <div className="form-section-grid income-form-section-grid">
+          <div className="toggle-field-wrap full">
+            <div className="toggle-field switch-toggle-field">
+              <span>Fiscale</span>
+              <input type="hidden" name="isFiscal" value="false" />
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  name="isFiscal"
+                  value="true"
+                  checked={isFiscal}
+                  onChange={(event) => toggleFiscal(event.currentTarget.checked)}
+                />
+                <span className="slider" />
+                <span>{isFiscal ? "Si" : "No"}</span>
+              </label>
+            </div>
+          </div>
 
-      <label>
-        Imposta IVA
-        <select name="vatRate" value={isFiscal ? vatRate : "0"} onChange={(event) => setVatRate(event.target.value)} disabled={!isFiscal}>
-          {vatRates.map(value => <option key={value} value={value}>{value}%</option>)}
-        </select>
-        {!isFiscal && <input type="hidden" name="vatRate" value="0" />}
-      </label>
+          <label>
+            Stato fattura
+            <select name="invoiceStatus" defaultValue={initialIncome?.invoiceStatus ?? "NON_INVIATA"} disabled={!isFiscal}>
+              <option value="NON_INVIATA">Non inviata</option>
+              <option value="EMESSA">Emessa</option>
+            </select>
+            {!isFiscal && <input type="hidden" name="invoiceStatus" value="" />}
+          </label>
 
-      <label className="full">
-        Note
-        <textarea name="notes" rows={3} defaultValue={initialIncome?.notes ?? ""} />
-      </label>
+          <div className="field-note income-tax-note">
+            <span className="muted">IVA esclusa</span><br />
+            <strong>{formatEuro(netAmount)}</strong>
+          </div>
+        </div>
+      </details>
 
-      <div className="actions-row full right-actions form-actions-row">
+      <details className="form-section full income-form-section">
+        <summary>
+          <span>Note</span>
+          <small>Note interne opzionali</small>
+        </summary>
+        <div className="form-section-stack income-form-section-stack">
+          <label className="full">
+            Note
+            <textarea name="notes" rows={3} defaultValue={initialIncome?.notes ?? ""} placeholder="Note interne opzionali" />
+          </label>
+        </div>
+      </details>
+
+      <div className="actions-row full form-actions-row form-sticky-actions">
         <button className="button-standard" type="submit"><span className="btn-icon">✓</span> {submitLabel}</button>
         {onCancel ? (
           <button className="secondary-button button-standard" type="button" onClick={onCancel}><span className="btn-icon">×</span> Annulla</button>
