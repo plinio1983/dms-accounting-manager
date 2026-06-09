@@ -20,7 +20,7 @@ export default function RecurringExpensesList({ items }: { items: any[] }) {
   return <div className="card recurring-expenses-card">
     <div className="list-heading">
       <div>
-        <h2>Lista spese</h2>
+        <h2>Lista spese ricorrenti</h2>
         <p className="muted">Risultati mostrati: </p>
       </div>
     </div>
