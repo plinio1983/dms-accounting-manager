@@ -75,6 +75,7 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
       <div><span>Data accredito</span><strong>{dateLabel(income.creditDate)}</strong></div>
       <div><span>Canale vendita</span><span className={badgeClass(salesStyle?.className)}>{salesStyle?.icon ?? '•'} {income.salesChannel}</span></div>
       <div><span>Categoria vendita</span><span className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {income.saleCategory}</span></div>
+      <div className="full"><span>Descrizione</span><strong>{income.description ?? '-'}</strong></div>
       <div><span>Metodo pagamento</span><span className={badgeClass(paymentStyle?.className)}>{paymentStyle?.icon ?? '•'} {income.paymentMethod}</span></div>
       <div><span>Canale accredito</span><span className={badgeClass(creditStyle?.className)}>{creditStyle?.icon ?? '•'} {income.creditChannel}</span></div>
       <div><span>Fiscale</span>{booleanBadge(income.isFiscal)}</div>

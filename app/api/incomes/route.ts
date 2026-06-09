@@ -7,6 +7,7 @@ const BooleanFromForm = z.preprocess((value) => value === true || value === 'tru
 const IncomeSchema = z.object({
   salesChannel: z.enum(['Shop', 'Online Shop', 'Altro Canale']),
   saleCategory: z.enum(['B2C', 'B2B', 'Altro']).default('B2C'),
+  description: z.string().optional().nullable(),
   amount: z.coerce.number().nonnegative(),
   paymentMethod: z.enum(['Bonifico', 'Carta di Debito/Credito', 'Criptovaluta', 'Stripe', 'Cash']),
   creditChannel: z.enum(['Cash', 'Unicredit', 'MyTu', 'Wise']),
@@ -53,6 +54,7 @@ export async function POST(request: Request) {
     data: {
       salesChannel: parsed.salesChannel,
       saleCategory: parsed.saleCategory,
+      description: parsed.description || null,
       amount: parsed.amount,
       paymentMethod: parsed.paymentMethod,
       creditChannel: parsed.creditChannel,

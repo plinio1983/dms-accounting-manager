@@ -672,7 +672,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
                   <strong>{income.salesChannel}</strong>
                   <span className={moneyTone(amount)}>{euro(income.amount.toString())}</span>
                 </div>
-                <div className="expense-mobile-subtitle">{income.saleCategory} · {income.paymentMethod}</div>
+                <div className="expense-mobile-subtitle">{income.description ? `${income.description} · ` : ''}{income.saleCategory} · {income.paymentMethod}</div>
                 <div className="expense-mobile-meta">
                   <span>{mobileDateLabel(income.creditDate)}</span>
                   <span>{formatPeriod(income.billingMonth, income.billingYear)}</span>
@@ -703,6 +703,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         <col className="income-col-date" />
         <col className="income-col-channel" />
         <col className="income-col-category" />
+        <col className="income-col-description" />
         <col className="income-col-amount" />
         <col className="income-col-method" />
         <col className="income-col-credit" />
@@ -717,6 +718,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         <th className="cell-left"><span className="th-wrap">Data<br />accr.</span></th>
         <th className="cell-left"><span className="th-wrap">Canale<br />vendita</span></th>
         <th className="cell-center">Cat.</th>
+        <th className="cell-left">Descrizione</th>
         <th className="cell-right">Importo</th>
         <th className="cell-left"><span className="th-wrap">Metodo<br />pag.</span></th>
         <th className="cell-left"><span className="th-wrap">Canale<br />accr.</span></th>
@@ -739,6 +741,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             <td className="cell-left nowrap-cell">{dateLabel(income.creditDate)}</td>
             <td className="cell-left"><span title={income.salesChannel} className={`${badgeClass(salesStyle?.className)} income-badge-compact`}>{salesStyle?.icon ?? '•'} {income.salesChannel}</span></td>
             <td className="cell-center"><span title={income.saleCategory} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{catStyle?.icon ?? '•'} {income.saleCategory}</span></td>
+            <td className="cell-left income-description-cell" title={income.description ?? ''}>{income.description ?? '-'}</td>
             <td className="cell-right nowrap-cell"><strong className={moneyTone(Number(income.amount.toString()))}>{euro(income.amount.toString())}</strong></td>
             <td className="cell-left"><span title={income.paymentMethod} className={`${badgeClass(paymentStyle?.className)} income-badge-compact`}>{paymentStyle?.icon ?? '•'} {income.paymentMethod}</span></td>
             <td className="cell-left"><span title={income.creditChannel} className={`${badgeClass(creditStyle?.className)} income-badge-compact`}>{creditStyle?.icon ?? '•'} {income.creditChannel}</span></td>
@@ -748,7 +751,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             {/*<td className="cell-center"><DeleteActionButton action={`/api/incomes/${income.id}?returnTo=${returnTo}`} confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata." /></td>*/}
           </tr>;
         })}
-        {!filteredIncomes.length && <tr><td colSpan={13}>Nessun incasso trovato con i filtri selezionati.</td></tr>}
+        {!filteredIncomes.length && <tr><td colSpan={14}>Nessun incasso trovato con i filtri selezionati.</td></tr>}
       </tbody></table></div>
 
       <div className="charts-grid"><IncomeBreakdownChart title="Grafico entrate per canale di vendita" description="Distribuzione degli incassi per canale di vendita sui risultati filtrati." data={incomesBySalesChannel} /><IncomeBreakdownChart title="Grafico entrate fiscale Si/No" description="Distribuzione degli incassi fiscali e non fiscali sui risultati filtrati." data={incomesByFiscalStatus} /></div>

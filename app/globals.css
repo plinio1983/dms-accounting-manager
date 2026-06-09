@@ -4213,6 +4213,12 @@ button {
     white-space: nowrap;
 }
 
+.compact-incomes-table .income-description-cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .compact-incomes-table .income-badge-compact {
     max-width: 100%;
     min-width: 0;
@@ -4261,6 +4267,10 @@ button {
 
 .compact-incomes-table col.income-col-category {
     width: 54px;
+}
+
+.compact-incomes-table col.income-col-description {
+    width: 150px;
 }
 
 .compact-incomes-table col.income-col-amount {

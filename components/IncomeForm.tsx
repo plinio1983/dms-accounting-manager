@@ -6,6 +6,7 @@ type InitialIncome = {
   id?: number;
   salesChannel?: string | null;
   saleCategory?: string | null;
+  description?: string | null;
   amount?: string | number | { toString(): string } | null;
   paymentMethod?: string | null;
   creditChannel?: string | null;
@@ -121,6 +122,11 @@ export default function IncomeForm({
         <select name="saleCategory" defaultValue={initialIncome?.saleCategory ?? "B2C"} required>
           {saleCategories.map(value => <option key={value} value={value}>{value}</option>)}
         </select>
+      </label>
+
+      <label className="full">
+        Descrizione
+        <input name="description" defaultValue={initialIncome?.description ?? ""} placeholder="Descrizione dell'incasso" />
       </label>
 
       <label>
