@@ -98,22 +98,22 @@ export default function ExpenseFiltersDrawer({
         <form className="expense-filters recurring-drawer-filters expense-drawer-filters" action="/expenses" method="get">
           <fieldset className="filter-group filter-group-fiscal">
             <legend>Periodo fiscale</legend>
-            <label>Periodo Fatt. da<input id="billingPeriodFrom" name="billingPeriodFrom" type="month" defaultValue={billingPeriodFromFilter} /></label>
-            <label>Periodo Fatt. a<input id="billingPeriodTo" name="billingPeriodTo" type="month" defaultValue={billingPeriodToFilter} /></label>
             <label>Periodo fiscale rapido<select id="billingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter}>
               <option value="">Periodo personalizzato</option>
               {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select></label>
+            <label>Periodo Fatt. da<input id="billingPeriodFrom" name="billingPeriodFrom" type="month" defaultValue={billingPeriodFromFilter} /></label>
+            <label>Periodo Fatt. a<input id="billingPeriodTo" name="billingPeriodTo" type="month" defaultValue={billingPeriodToFilter} /></label>
           </fieldset>
 
           <fieldset className="filter-group filter-group-order-date">
             <legend>Date ordine</legend>
-            <label>Data ordine da<input id="orderDateFrom" name="orderDateFrom" type="date" defaultValue={orderDateFromDefault} /></label>
-            <label>Data ordine a<input id="orderDateTo" name="orderDateTo" type="date" defaultValue={orderDateToDefault} /></label>
             <label>Selezione rapida data<select id="dateQuick" name="dateQuick" defaultValue={quickDateFilter}>
               <option value="">Periodo personalizzato</option>
               {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select></label>
+            <label>Data ordine da<input id="orderDateFrom" name="orderDateFrom" type="date" defaultValue={orderDateFromDefault} /></label>
+            <label>Data ordine a<input id="orderDateTo" name="orderDateTo" type="date" defaultValue={orderDateToDefault} /></label>
           </fieldset>
 
           <label>Categoria<select name="category" defaultValue={inputDefault(filters, "category")}>
