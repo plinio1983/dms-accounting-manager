@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import RecurringExpenseDetailEditModalController from '@/components/RecurringExpenseDetailEditModalController';
 import { euro } from '@/lib/money';
 import {
   badgeClass,
@@ -64,8 +65,10 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
   const query = (await searchParams) ?? {};
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : '/recurring-expenses';
+  const currentDetailReturnTo = `/recurring-expenses/${id}?returnTo=${encodeURIComponent(returnTo)}`;
 
-  const item = await prisma.recurringExpense.findUnique({
+  const [item, categories, banks, suppliers] = await Promise.all([
+    prisma.recurringExpense.findUnique({
     where: { id: Number(id) },
     include: {
       supplier: true,
@@ -77,7 +80,11 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
         take: 24
       }
     }
-  });
+  }),
+    prisma.expenseCategory.findMany({ orderBy: { id: 'asc' } }),
+    prisma.bank.findMany(),
+    prisma.supplier.findMany({ orderBy: { businessName: 'asc' }, take: 100 })
+  ]);
 
   if (!item) notFound();
 
@@ -88,6 +95,13 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
   const activeClass = item.isActive ? 'tone-yes' : 'tone-critical';
 
   return <div className="grid">
+    <RecurringExpenseDetailEditModalController
+      categories={categories.map(category => ({ id: category.id, code: category.code, name: category.name }))}
+      banks={banks.map(bank => ({ id: bank.id, name: bank.name }))}
+      suppliers={suppliers.map(supplier => ({ id: supplier.id, businessName: supplier.businessName, alias: supplier.alias, email: supplier.email, phone: supplier.phone, pec: supplier.pec, taxCodeSdi: supplier.taxCodeSdi, internalNotes: supplier.internalNotes }))}
+      returnTo={currentDetailReturnTo}
+    />
+
     <section className="expense-detail-hero card recurring-detail-hero">
       <div className="expense-detail-hero-main">
         <div className="expense-detail-hero-main-meta">
@@ -117,6 +131,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
       </div>
       <div className="actions-row expense-detail-actions">
         <Link className="table-action secondary" href={returnTo}>↩ Torna alla lista</Link>
+        <Link className="table-action" href="#" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</Link>
       </div>
     </section>
 

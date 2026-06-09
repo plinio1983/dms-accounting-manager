@@ -1608,7 +1608,7 @@ table th, table td {
 }
 
 .compact-expenses-table th:nth-child(3), .compact-expenses-table td:nth-child(3) {
-    width: 74px;
+    width: 61px;
 }
 
 .compact-expenses-table th:nth-child(6), .compact-expenses-table td:nth-child(6),
@@ -2113,7 +2113,7 @@ table th, table td {
 .card-heading-row {
     display: flex;
     align-items: flex-start;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: 12px;
 }
 
@@ -3841,7 +3841,7 @@ button {
 }
 
 .compact-expenses-table th:nth-child(12), .compact-expenses-table td:nth-child(12) {
-    width: 98px !important;
+    width: 58px !important;
 }
 
 .compact-expenses-table th:nth-last-child(-n+3),
@@ -4480,7 +4480,7 @@ button {
 
 .compact-expenses-table th:nth-child(6),
 .compact-expenses-table td:nth-child(6) {
-    width: 132px;
+    width: 40px;
     text-align: left;
 }
 
@@ -4492,7 +4492,7 @@ button {
 
 .compact-expenses-table th:nth-child(8),
 .compact-expenses-table td:nth-child(8) {
-    width: 54px;
+    width: 78px;
     white-space: nowrap;
 }
 
@@ -4523,7 +4523,7 @@ button {
 
 .compact-expenses-table th:nth-child(13),
 .compact-expenses-table td:nth-child(13) {
-    width: 54px;
+    width: 118px;
     text-align: center;
 }
 
@@ -4533,7 +4533,7 @@ button {
 .compact-expenses-table td:nth-child(15),
 .compact-expenses-table th:nth-child(16),
 .compact-expenses-table td:nth-child(16) {
-    width: 31px;
+    width: 66px;
     text-align: center;
     padding-left: 2px;
     padding-right: 2px;
@@ -4885,7 +4885,7 @@ button {
 .compact-expenses-table th:nth-child(10),
 .compact-expenses-table td:nth-child(10),
 .compact-expenses-table .cell-description {
-    width: 76px !important;
+    width: 48px !important;
     max-width: 134px !important;
     text-align: left !important;
     overflow: hidden;

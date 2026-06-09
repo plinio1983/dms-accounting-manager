@@ -123,7 +123,7 @@ function MonthlyTrendCard({
     <div className="card-heading-row">
       <div>
         <h2>Andamento mensile</h2>
-        <p className="muted">{monthName(state.month)} {state.year} · filtro su Data ordine</p>
+        <p className="muted">{monthName(state.month)} {state.year}</p>
       </div>
       {selector}
     </div>
