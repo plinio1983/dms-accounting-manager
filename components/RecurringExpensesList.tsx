@@ -18,14 +18,58 @@ function dueLabel(item: any) {
 
 export default function RecurringExpensesList({ items }: { items: any[] }) {
   return <div className="card recurring-expenses-card">
-    {items.length ? <div className="recurring-expenses-list">{items.map(item => <div className="recurring-expense-row" key={item.id}>
-      <div><span className={item.isActive ? 'status-dot is-active' : 'status-dot'} /><strong>{item.description}</strong><small>{item.supplier?.businessName || item.merchant} · {item.category?.name ?? 'Senza categoria'}</small></div>
-      <div><span>Cadenza</span><strong>{cadenceLabels[item.cadence] ?? item.cadence}</strong></div>
-      <div><span>Scadenza</span><strong>{dueLabel(item)}</strong></div>
-      <div><span>Periodo fatt.</span><strong>{billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}{item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}</strong></div>
-      <div><span>Pagamento</span><strong>{item.paymentChannel ?? '-'}{item.bank ? ` · ${item.bank.name}` : ''}</strong></div>
-      <div><span>Inizio</span><strong>{dateLabel(item.startDate)}</strong></div>
-      <div><span>Importo</span><strong>{euro(item.amount.toString())}</strong></div>
-    </div>)}</div> : <p className="muted">Nessuna spesa ricorrente configurata.</p>}
+    <div className="list-heading">
+      <div>
+        <h2>Lista spese</h2>
+        <p className="muted">Risultati mostrati: </p>
+      </div>
+    </div>
+    {items.length ? <>
+      <div className="recurring-expenses-list recurring-expenses-desktop-list">{items.map(item => <div className="recurring-expense-row" key={item.id}>
+        <div><span className={item.isActive ? 'status-dot is-active' : 'status-dot'} /><strong>{item.description}</strong><small>{item.supplier?.businessName || item.merchant} · {item.category?.name ?? 'Senza categoria'}</small></div>
+        <div><span>Cadenza</span><strong>{cadenceLabels[item.cadence] ?? item.cadence}</strong></div>
+        <div><span>Scadenza</span><strong>{dueLabel(item)}</strong></div>
+        <div><span>Periodo fatt.</span><strong>{billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}{item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}</strong></div>
+        <div><span>Pagamento</span><strong>{item.paymentChannel ?? '-'}{item.bank ? ` · ${item.bank.name}` : ''}</strong></div>
+        <div><span>Inizio</span><strong>{dateLabel(item.startDate)}</strong></div>
+        <div><span>Importo</span><strong>{euro(item.amount.toString())}</strong></div>
+      </div>)}</div>
+
+      <div className="recurring-expenses-mobile-list" aria-label="Lista spese ricorrenti mobile">
+        {items.map(item => {
+          const cadence = cadenceLabels[item.cadence] ?? item.cadence;
+          const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
+          const supplier = item.supplier?.businessName || item.merchant || 'Fornitore non impostato';
+          const payment = item.paymentChannel ? `${item.paymentChannel}${item.bank ? ` · ${item.bank.name}` : ''}` : 'Pagamento manuale';
+          return <article className={item.isActive ? "recurring-mobile-item recurring-mobile-item-active" : "recurring-mobile-item recurring-mobile-item-disabled"} key={`mobile-recurring-${item.id}`}>
+            <div className="recurring-mobile-top">
+              <div className="recurring-mobile-main-title">
+                <span className={item.isActive ? 'recurring-mobile-status is-active' : 'recurring-mobile-status'}>{item.isActive ? 'ON' : 'OFF'}</span>
+                <span className="badge">{cadence}</span>
+                <span className="badge">{dueLabel(item)}</span>
+              </div>
+              <strong className="recurring-mobile-amount">{euro(item.amount.toString())}</strong>
+            </div>
+            <div className="recurring-mobile-top">
+              <strong>{supplier}</strong>
+              <div><span className="badge">{item.category?.name ?? 'Senza categoria'}</span></div>
+            </div>
+
+            <div className="recurring-mobile-description">{item.description || 'Spesa ricorrente senza descrizione'}</div>
+
+            {/*<div className="recurring-mobile-badges">*/}
+              {/*<span>{cadence}</span>*/}
+              {/*<span>Scad. {dueLabel(item)}</span>*/}
+            {/*</div>*/}
+
+            <div className="recurring-mobile-meta">
+              <div><span>Pagamento</span><strong>{payment}</strong></div>
+              <div><span>Periodo fatt.</span><strong>{billing}</strong></div>
+              <div><span>Inizio</span><strong>{dateLabel(item.startDate)}</strong></div>
+            </div>
+          </article>;
+        })}
+      </div>
+    </> : <p className="muted">Nessuna spesa ricorrente configurata.</p>}
   </div>;
 }

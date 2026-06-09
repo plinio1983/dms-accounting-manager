@@ -286,6 +286,155 @@ button {
     }
 }
 
+/* spese ricorrenti: lista desktop separata e cards mobile dedicate */
+.recurring-expenses-mobile-list {
+    display: none;
+}
+
+.recurring-expenses-desktop-list {
+    display: grid;
+}
+
+.recurring-mobile-item {
+    display: grid;
+    gap: 9px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 22px rgba(20, 30, 60, .05);
+}
+
+.recurring-mobile-item-disabled {
+    opacity: .72;
+    background: #f8fafc;
+}
+
+.recurring-mobile-top,
+.recurring-mobile-meta {
+    display: grid;
+    gap: 8px;
+}
+
+.recurring-mobile-top {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+}
+
+.recurring-mobile-main-title {
+    display: flex;
+    gap: 2px;
+}
+
+.recurring-mobile-top {
+
+}
+
+.recurring-mobile-main-title strong,
+.recurring-mobile-description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.recurring-mobile-main-title strong {
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.18;
+}
+
+.recurring-mobile-status {
+    width: fit-content;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #4b5563;
+    font-size: 11px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+}
+
+.recurring-mobile-top .badge {
+    font-size: 11px;
+}
+
+.recurring-mobile-status.is-active {
+    background: #eaf8ef;
+    color: #19733b;
+}
+
+.recurring-mobile-amount {
+    color: #2649b8;
+    font-size: 16px;
+    white-space: nowrap;
+    padding-top: 2px;
+}
+
+.recurring-mobile-description {
+    color: #374151;
+    font-size: 13px;
+    line-height: 1.25;
+    white-space: nowrap;
+}
+
+.recurring-mobile-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.recurring-mobile-badges span {
+    padding: 3px 7px;
+    border: 1px solid #dbe3ff;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #2649b8;
+    font-size: 11px;
+    font-weight: 850;
+}
+
+.recurring-mobile-meta {
+    grid-template-columns: 1fr;
+    padding-top: 2px;
+}
+
+.recurring-mobile-meta > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.recurring-mobile-meta span {
+    font-weight: 800;
+}
+
+.recurring-mobile-meta strong {
+    color: var(--text);
+    font-size: 12px;
+    text-align: right;
+}
+
+@media (max-width: 760px) {
+    .recurring-expenses-card {
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        background: var(--card);
+    }
+
+    .recurring-expenses-desktop-list {
+        display: none !important;
+    }
+
+    .recurring-expenses-mobile-list {
+        display: grid;
+        gap: 10px;
+    }
+}
+
 @media (max-width: 900px) {
     .grid-4, .grid-2, .form {
         grid-template-columns: 1fr 1fr;
