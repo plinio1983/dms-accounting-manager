@@ -69,6 +69,8 @@ export default async function SupplierDetailPage({ params }: { params: Promise<{
     return { expense, residual: Math.max(0, amount - paid) };
   }).filter(item => item.residual > 0);
   const amountToPay = openExpenses.reduce((sum, item) => sum + item.residual, 0);
+  const supplierDetailHref = `/suppliers/${supplier.id}`;
+  const encodedSupplierDetailHref = encodeURIComponent(supplierDetailHref);
 
   return <div className="grid">
     <div className="toolbar-card">
@@ -133,7 +135,7 @@ export default async function SupplierDetailPage({ params }: { params: Promise<{
           }
           const recordClass = `expense-mobile-item ${recordAddClass}`;
           return <div className={recordClass} key={`mobile-linked-expense-${expense.id}`}>
-            <Link className="expense-mobile-link" href={`/expenses/${expense.id}`}>
+            <Link className="expense-mobile-link" href={`/expenses/${expense.id}?returnTo=${encodedSupplierDetailHref}`}>
               <div className="expense-mobile-main">
                 <div className="expense-mobile-meta">
                   <div className="expense-mobile-meta-left">
@@ -197,7 +199,7 @@ export default async function SupplierDetailPage({ params }: { params: Promise<{
             <td><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
             <td>{booleanBadge(expense.hasElectronicInvoice)}</td>
             <td className="cell-description" title={expense.description ?? ''}>{expense.description ?? '-'}</td>
-            <td><Link className="table-action secondary icon-action" title="Dettaglio spesa" aria-label="Dettaglio spesa" href={`/expenses/${expense.id}`}>👁</Link></td>
+            <td><Link className="table-action secondary icon-action" title="Dettaglio spesa" aria-label="Dettaglio spesa" href={`/expenses/${expense.id}?returnTo=${encodedSupplierDetailHref}`}>👁</Link></td>
           </tr>;
         })}
         {!supplier.expenses.length && <tr><td colSpan={10}>Nessuna spesa collegata a questo fornitore.</td></tr>}
