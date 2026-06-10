@@ -6,6 +6,7 @@ import { euro, moneyTone } from '@/lib/money';
 import NewIncomePanel from '@/components/NewIncomePanel';
 import IncomeEditModalController from '@/components/IncomeEditModalController';
 import IncomeFiltersDrawer from '@/components/IncomeFiltersDrawer';
+import IncomeTrendSelectors from '@/components/IncomeTrendSelectors';
 import {
   badgeClass,
   creditChannelStyles,
@@ -453,6 +454,11 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
     <IncomeEditModalController returnTo={listHref} />
 
     <div className="card expenses-list-card">
+      <IncomeTrendSelectors
+        dateQuick={quickDateFilter}
+        billingPeriodQuick={quickBillingPeriodFilter}
+        useFiscalPeriodFilter={useFiscalPeriodFilter}
+      />
       <p className="totals-period-note">{totalsPeriodLabel}</p>
       <div className="totals-row income-totals-row">
         <div className="total-card total-card-income"><span>Entrate totali</span><strong className={moneyTone(periodTotals.total)}>{euro(periodTotals.total)}</strong><small>Totale del periodo selezionato, senza altri filtri.</small></div>
