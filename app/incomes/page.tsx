@@ -46,6 +46,15 @@ function formatDateInputLabel(value: string) {
   return year && month && day ? `${day}/${month}/${year}` : value;
 }
 
+function formatDateTextInputLabel(value: string) {
+  if (!value) return '';
+  const [year, month, day] = value.split('-');
+  if (!year || !month || !day) return value;
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+  const label = new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
 function formatMonthInputLabel(value: string) {
   if (!value) return '';
   const [year, month] = value.split('-');
@@ -77,10 +86,10 @@ function periodTotalsLabel({
   }
 
   if (creditDateFromDefault && creditDateToDefault && creditDateFromDefault !== creditDateToDefault) {
-    return `Totali andamento dal ${formatDateInputLabel(creditDateFromDefault)} al ${formatDateInputLabel(creditDateToDefault)}`;
+    return `Andamento complessivo\n dal ${formatDateTextInputLabel(creditDateFromDefault)} al ${formatDateTextInputLabel(creditDateToDefault)}`;
   }
   const value = creditDateFromDefault || creditDateToDefault;
-  return value ? `Totali andamento ${formatDateInputLabel(value)}` : 'Totali andamento date selezionate';
+  return value ? `Andamento complessivo ${formatDateTextInputLabel(value)}` : 'Totali andamento date selezionate';
 }
 
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
