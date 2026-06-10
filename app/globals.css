@@ -580,6 +580,41 @@ button {
     min-width: 0;
 }
 
+.expense-trend-selectors {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 12px;
+    border: 1px solid #dbe3ff;
+    border-radius: 16px;
+    background: #fafbff;
+}
+
+.expense-trend-selectors label {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+}
+
+.expense-trend-selectors span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.expense-trend-selectors select {
+    width: 100%;
+}
+
+@media (max-width: 760px) {
+    .expense-trend-selectors {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* drawer filtri laterale spese ricorrenti */
 body.drawer-open {
     overflow: hidden;

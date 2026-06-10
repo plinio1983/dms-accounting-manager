@@ -5,6 +5,7 @@ import { euro, moneyTone } from '@/lib/money';
 import NewExpensePanel from '@/components/NewExpensePanel';
 import ExpenseEditModalController from '@/components/ExpenseEditModalController';
 import ExpenseFiltersDrawer from '@/components/ExpenseFiltersDrawer';
+import ExpenseTrendSelectors from '@/components/ExpenseTrendSelectors';
 import SupplierFilterInput from '@/components/SupplierFilterInput';
 import {
   badgeClass,
@@ -566,6 +567,11 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     />
 
     <div className="card expenses-list-card">
+      <ExpenseTrendSelectors
+        dateQuick={quickDateFilter}
+        billingPeriodQuick={quickBillingPeriodFilter}
+        useFiscalPeriodFilter={useFiscalPeriodFilter}
+      />
       <p className="totals-period-note">{totalsPeriodLabel}</p>
       <div className="totals-row">
         <div className="total-card total-card-expense"><span>Spese Totali<br />IVA inclusa</span><strong className={moneyTone(periodTotals.total)}>{euro(periodTotals.total)}</strong><small>Totale del periodo selezionato, senza altri filtri.</small></div>
