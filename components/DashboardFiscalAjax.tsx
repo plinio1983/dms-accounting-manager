@@ -131,16 +131,18 @@ function MonthlyTrendCard({
       </div>
       {selector}
     </div>
-    <table className="dashboard-statement-table">
-      <tbody>
-        <StatementMoneyRow label="Entrate totali" value={totals.incassoTotale} href={incomesHref} />
-        <StatementMoneyRow label="Uscite totali" value={totals.speseTotali} href={expensesHref} />
-        <StatementMoneyRow label="Utile netto" value={totals.utileNetto} highlight />
-        <StatementMoneyRow label="Spese non fiscali" value={totals.usciteNonFiscali} warning={totals.usciteNonFiscali > 0} href={nonFiscalExpensesHref} />
-        <StatementMoneyRow label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
-        <StatementCountRow label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
-      </tbody>
-    </table>
+    <div className="dashboard-statement-body">
+      <table className="dashboard-statement-table">
+        <tbody>
+          <StatementMoneyRow label="Entrate totali" value={totals.incassoTotale} href={incomesHref} />
+          <StatementMoneyRow label="Uscite totali" value={totals.speseTotali} href={expensesHref} />
+          <StatementMoneyRow label="Utile netto" value={totals.utileNetto} highlight />
+          <StatementMoneyRow label="Spese non fiscali" value={totals.usciteNonFiscali} warning={totals.usciteNonFiscali > 0} href={nonFiscalExpensesHref} />
+          <StatementMoneyRow label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
+          <StatementCountRow label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
+        </tbody>
+      </table>
+    </div>
   </section>;
 }
 
@@ -174,18 +176,20 @@ function FiscalSummaryCard({
       </div>
       {selector}
     </div>
-    <table className="dashboard-statement-table">
-      <tbody>
-        <StatementMoneyRow label="Entrate fiscali" value={totals.incassoFiscale} href={incomesHref} />
-        <StatementMoneyRow label="Uscite fiscali" value={totals.usciteFiscali} href={fiscalExpensesHref} />
-        <StatementMoneyRow label="Utile fiscale" value={totals.utileFiscale} highlight />
-        <StatementMoneyRow label="Previsione saldo IVA" value={totals.debitoIva} vat />
-        <StatementMoneyRow label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
-        <StatementCountRow label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
-        <StatementCountRow label="Fatture non inviate" value={totals.fattureNonInviate} warning={totals.fattureNonInviate > 0} href={invoicesNotSentHref} />
-        <StatementCountRow label="Fatture non ricevute" value={totals.fattureNonRicevute} warning={totals.fattureNonRicevute > 0} href={invoicesNotReceivedHref} />
-      </tbody>
-    </table>
+    <div className="dashboard-statement-body">
+      <table className="dashboard-statement-table">
+        <tbody>
+          <StatementMoneyRow label="Entrate fiscali" value={totals.incassoFiscale} href={incomesHref} />
+          <StatementMoneyRow label="Uscite fiscali" value={totals.usciteFiscali} href={fiscalExpensesHref} />
+          <StatementMoneyRow label="Utile fiscale" value={totals.utileFiscale} highlight />
+          <StatementMoneyRow label="Previsione saldo IVA" value={totals.debitoIva} vat />
+          <StatementMoneyRow label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
+          <StatementCountRow label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
+          <StatementCountRow label="Fatture non inviate" value={totals.fattureNonInviate} warning={totals.fattureNonInviate > 0} href={invoicesNotSentHref} />
+          <StatementCountRow label="Fatture non ricevute" value={totals.fattureNonRicevute} warning={totals.fattureNonRicevute > 0} href={invoicesNotReceivedHref} />
+        </tbody>
+      </table>
+    </div>
   </section>;
 }
 
