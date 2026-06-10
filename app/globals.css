@@ -1894,10 +1894,10 @@ body.drawer-open {
     background: transparent;
 }
 
-.income-mobile-item.income-row-warning {
-    background: #f5d49d;
-    background: linear-gradient(90deg, #FCF5D8FF, #fff)
-}
+/*.income-mobile-item.income-row-warning {*/
+/*    background: #f5d49d;*/
+/*    background: linear-gradient(90deg, #FCF5D8FF, #fff)*/
+/*}*/
 
 /* v074: dettaglio spesa con gerarchia reale e pagamenti responsive */
 .expense-detail-hero {
@@ -3205,9 +3205,14 @@ table th, table td {
     align-items: start;
 }
 
+.dashboard-statement-body {
+    /*margin: 0 12px;*/
+}
+
+
 .dashboard-statement-panel {
     padding: 14px 16px;
-    box-shadow: none;
+    /*box-shadow: none;*/
 }
 
 .dashboard-statement-panel.is-loading {
@@ -3237,6 +3242,10 @@ table th, table td {
     padding: 8px 10px;
 }
 
+.dashboard-statement-table .money-vat {
+    background: #f8faff;
+}
+
 .dashboard-statement-table {
     width: 100%;
     font-size: 13px;
@@ -3244,7 +3253,7 @@ table th, table td {
 }
 
 .dashboard-statement-table td {
-    padding: 8px 0;
+    padding: 8px 8px;
     border-bottom: 1px solid var(--line);
     vertical-align: middle;
 }
@@ -3264,7 +3273,7 @@ table th, table td {
 }
 
 .dashboard-statement-table strong {
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .dashboard-statement-result td {
@@ -3877,7 +3886,7 @@ button {
 
 @media (max-width: 700px) {
     .annual-totals-grid {
-        grid-template-columns:1fr;
+        grid-template-columns:1fr 1fr;
     }
 
     .toolbar-card .button-standard,
@@ -7976,6 +7985,12 @@ button.bulk-direct-danger {
 
 .expense-mobile-item-overdue {
     background: linear-gradient(90deg, rgba(255, 241, 241, .9), transparent 62%);
+}
+
+.row-warning,
+.income-mobile-item.income-row-warning,
+.expense-mobile-item-unpaid {
+    background: linear-gradient(90deg, rgba(255, 248, 223, 0.76), transparent 62%);
 }
 
 .expense-mobile-select {

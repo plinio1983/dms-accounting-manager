@@ -86,7 +86,9 @@ function dateRangeLink(path: '/expenses' | '/incomes', year: number, month: numb
 function StatementMoneyRow({ label, value, highlight = false, warning = false, vat = false, href }: { label: string; value: number; highlight?: boolean; warning?: boolean; vat?: boolean; href?: string }) {
   const valueClass = [highlight ? 'money-highlight' : '', warning ? 'money-warning' : '', vat ? 'money-vat' : ''].filter(Boolean).join(' ');
   const valueNode = <strong className={moneyTone(value, valueClass)}>{euro(value)}</strong>;
-  return <tr className={highlight ? 'dashboard-statement-result' : ''}>
+
+  const recordAddClass = warning ? `row-warning` : '';
+  return <tr className={highlight ? `dashboard-statement-result ${recordAddClass}` : `${recordAddClass}`} title={valueClass}>
     <td>{label}</td>
     <td>{href ? <Link href={href}>{valueNode}</Link> : valueNode}</td>
   </tr>;
@@ -94,7 +96,8 @@ function StatementMoneyRow({ label, value, highlight = false, warning = false, v
 
 function StatementCountRow({ label, value, warning = false, href }: { label: string; value: number; warning?: boolean; href?: string }) {
   const valueNode = <strong className={warning ? 'money-warning' : ''}>{value}</strong>;
-  return <tr>
+
+  return <tr className={warning ? 'row-warning' : ''}>
     <td>{label}</td>
     <td>{href ? <Link href={href}>{valueNode}</Link> : valueNode}</td>
   </tr>;
@@ -182,8 +185,8 @@ function FiscalSummaryCard({
           <StatementMoneyRow label="Entrate fiscali" value={totals.incassoFiscale} href={incomesHref} />
           <StatementMoneyRow label="Uscite fiscali" value={totals.usciteFiscali} href={fiscalExpensesHref} />
           <StatementMoneyRow label="Utile fiscale" value={totals.utileFiscale} highlight />
-          <StatementMoneyRow label="Previsione saldo IVA" value={totals.debitoIva} vat />
           <StatementMoneyRow label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
+          <StatementMoneyRow label="Previsione saldo IVA" value={totals.debitoIva} vat />
           <StatementCountRow label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
           <StatementCountRow label="Fatture non inviate" value={totals.fattureNonInviate} warning={totals.fattureNonInviate > 0} href={invoicesNotSentHref} />
           <StatementCountRow label="Fatture non ricevute" value={totals.fattureNonRicevute} warning={totals.fattureNonRicevute > 0} href={invoicesNotReceivedHref} />

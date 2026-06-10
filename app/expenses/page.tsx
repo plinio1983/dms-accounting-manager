@@ -832,12 +832,22 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           const paymentStyle = paymentStatusStyles[e.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
           const invoiceStyle = invoiceStatusStyles[e.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
           const overdue = isExpensePastDueForBadge(e);
+          const upaid = isExpenseOverdue(e);
           const statusStyle = overdue ? paymentStatusStyles.SCADUTO : paymentStyle;
           const detailHref = e.recurringExpenseId
             ? `/recurring-expenses/${e.recurringExpenseId}?returnTo=${returnTo}`
             : `/expenses/${e.id}?returnTo=${returnTo}`;
+          // const recordClass = overdue ? `expense-mobile-item expense-mobile-item-overdue` : "expense-mobile-item";
+          let recordAddClass = "";
+          if (overdue) {
+            recordAddClass = "expense-mobile-item-overdue";
+          } else if (upaid) {
+            recordAddClass = "expense-mobile-item-unpaid";
+          }
+          const recordClass = `expense-mobile-item ${recordAddClass}`;
 
-          return <div className={overdue ? "expense-mobile-item expense-mobile-item-overdue" : "expense-mobile-item"} key={`mobile-${e.id}`}>
+          // return <div className={overdue ? "expense-mobile-item expense-mobile-item-overdue" : "expense-mobile-item"} key={`mobile-${e.id}`}>
+          return <div className={recordClass} key={`mobile-${e.id}`}>
             <div className="expense-mobile-select">
               <input form="expenseBulkForm" type="checkbox" name="ids" value={e.id} aria-label={`Seleziona spesa ${e.id}`} />
             </div>
