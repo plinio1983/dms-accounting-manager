@@ -1267,7 +1267,8 @@ body.drawer-open {
 }
 
 .import-clear-option input {
-    width: auto;
+    width: 18px;
+    height: 18px;
     margin-top: 4px;
 }
 
@@ -1306,6 +1307,27 @@ body.drawer-open {
 
 .import-template-note {
     margin: 0;
+}
+
+.import-type-selector {
+    display: grid;
+    gap: 10px;
+    min-width: 260px;
+}
+
+.import-type-selector label {
+    display: grid;
+    gap: 6px;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.import-type-selector select {
+    width: 100%;
+}
+
+.import-type-selector .import-template-download {
+    margin-top: 4px;
 }
 
 .import-result-grid {
@@ -9069,4 +9091,8 @@ body:has(.detail-page-no-site-header) .shell {
 
 .supplier-linked-expenses-mobile-list .expense-mobile-item .expense-mobile-link {
     flex-grow: 1;
+}
+
+.supplier-mobile-item .expense-mobile-subtitle {
+    padding-left: 0;
 }

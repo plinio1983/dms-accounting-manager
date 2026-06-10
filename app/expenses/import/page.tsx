@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
+import ExpenseImportTypeSelector from '@/components/ExpenseImportTypeSelector';
 
 function param(params: Record<string, string | string[] | undefined>, key: string) {
   const value = params[key];
@@ -24,7 +25,7 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
         <p className="muted">Carica un file compilato con le colonne supportate. Puoi partire dal modello di esempio, modificarlo e importarlo direttamente in Tabularium.</p>
       </div>
       <div className="import-hero-actions">
-        <a className="button-standard primary-action" href="/templates/import-spese-template.xlsx" download><span className="btn-icon">⬇</span>Scarica modello XLSX</a>
+        <ExpenseImportTypeSelector />
       </div>
     </div>
 
@@ -57,21 +58,21 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
             <h3>Nuova importazione</h3>
             <p className="muted">Sono accettati file .xlsx, .xls e .ods.</p>
           </div>
-          <span className="badge">Step 1</span>
+          {/*<span className="badge">Step 1</span>*/}
         </div>
 
         <label className="import-file-drop">
           <span className="import-file-icon">📄</span>
           <strong>Seleziona il file da importare</strong>
-          <small className="muted">Usa il modello XLSX oppure un file compatibile con intestazioni equivalenti.</small>
+          <small className="muted">Usa il modello XLSX corretto per il tipo di importazione selezionato.</small>
           <input type="file" name="file" accept=".xlsx,.xls,.ods" required />
         </label>
 
         <label className="import-clear-option">
           <input type="checkbox" name="clearBeforeImport" />
           <span>
-            <strong>Elimina tutte le spese prima di importare</strong>
-            <small className="muted">Rimuove solo le spese già presenti. Fornitori, incassi e configurazioni restano invariati.</small>
+            <strong>Elimina i record esistenti prima di importare</strong>
+            <small className="muted">Per le spese singole elimina le spese. Per le definizioni ricorrenti elimina solo le regole ricorrenti, senza generare o cancellare incassi.</small>
           </span>
         </label>
 
@@ -89,14 +90,7 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
           </div>
           <span className="badge">XLSX</span>
         </div>
-        <a className="import-template-download" href="/templates/import-spese-template.xlsx" download>
-          <span className="import-template-icon">⬇</span>
-          <span>
-            <strong>Scarica file di esempio</strong>
-            <small>import-spese-template.xlsx</small>
-          </span>
-        </a>
-        <p className="muted import-template-note">Il modello contiene intestazioni già compatibili con metadati fornitore, pagamento, fatturazione e note.</p>
+        <p className="muted import-template-note">La selezione del tipo importazione aggiorna automaticamente il modello XLSX da scaricare.</p>
       </div>
     </div>
 
@@ -107,6 +101,7 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
         <li><strong>Stato fattura = Ok</strong>, <strong>Emessa</strong> o <strong>Ricevuta</strong> viene importato come <strong>RICEVUTA</strong>.</li>
         <li>Le banche non presenti nella configurazione vengono importate come <strong>Altra Banca</strong>.</li>
         <li>I fornitori non ancora presenti vengono creati automaticamente e aggiornati con eventuali metadati presenti nel file.</li>
+        <li>Con <strong>Definizioni spese ricorrenti</strong> vengono create solo le regole ricorrenti: nessun record spesa viene generato dall’importazione.</li>
       </ul>
     </div>
   </div>;

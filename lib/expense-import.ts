@@ -235,6 +235,145 @@ function getTabularRows(workbook: XLSX.WorkBook) {
   return result;
 }
 
+function getRecurringDefinitionRows(workbook: XLSX.WorkBook) {
+  const result: Array<{ sheetName: string; row: Record<string, unknown> }> = [];
+  for (const sheetName of workbook.SheetNames) {
+    const sheet = workbook.Sheets[sheetName];
+    const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { raw: true, defval: null });
+    const hasExpectedHeaders = rows.some(row => rowValue(row, ['Data inizio', 'Fornitore', 'Esercente', 'Importo', 'Cadenza']) !== null);
+    if (!hasExpectedHeaders) continue;
+    for (const row of rows) result.push({ sheetName, row });
+  }
+  return result;
+}
+
+function parseInteger(value: unknown) {
+  const parsed = Math.trunc(parseMoney(value));
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+function mapCadence(value: unknown) {
+  const text = textValue(value).toLowerCase();
+  if (text.includes('2') || text.includes('bimes')) return 'EVERY_2_MONTHS';
+  if (text.includes('3') || text.includes('trim')) return 'EVERY_3_MONTHS';
+  if (text.includes('6') || text.includes('semes')) return 'EVERY_6_MONTHS';
+  if (text.includes('bien')) return 'EVERY_2_YEARS';
+  if (text.includes('ann')) return 'YEARLY';
+  return 'MONTHLY';
+}
+
+function mapBillingPeriodMode(value: unknown) {
+  const text = textValue(value).toLowerCase();
+  if (text.includes('success')) return 'NEXT_MONTH';
+  if (text.includes('custom') || text.includes('impost') || text.includes('specific')) return 'CUSTOM_MONTH';
+  return 'SAME_MONTH';
+}
+
+function mapAccrualType(value: unknown) {
+  const text = textValue(value).toLowerCase();
+  return text.includes('auto') ? 'AUTOMATICA' : 'MANUALE';
+}
+
+export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, options: { clearBeforeImport?: boolean } = {}): Promise<ExpenseImportResult> {
+  const workbook = XLSX.read(buffer, { type: 'buffer', cellDates: true });
+  const rows = getRecurringDefinitionRows(workbook);
+  const sheets = Array.from(new Set(rows.map(item => item.sheetName)));
+  let deleted = 0;
+
+  if (options.clearBeforeImport) {
+    const deleteResult = await prisma.recurringExpense.deleteMany({});
+    deleted = deleteResult.count;
+  }
+
+  const refs = await ensureReferenceData();
+  let imported = 0;
+  let skipped = 0;
+  let suppliersCreated = 0;
+
+  for (const { row } of rows) {
+    const amount = parseMoney(rowValue(row, ['Importo', 'Costo', 'Costo IVA inclusa']));
+    const supplierName = rowValue(row, ['Fornitore', 'Esercente']);
+    const description = textValue(rowValue(row, ['Descrizione', 'Prodotto/servizio', 'Prodotto / Servizio']));
+    const startDate = parseDate(rowValue(row, ['Data inizio', 'Inizio', 'Start date']));
+    if (!supplierName && !description && amount <= 0) {
+      skipped++;
+      continue;
+    }
+    if (!startDate || amount <= 0) {
+      skipped++;
+      continue;
+    }
+
+    const categoryName = mapCategoryName(rowValue(row, ['Categoria']));
+    const category = refs.categories[categoryName] ?? refs.categories['Altri Servizi'];
+    const bankName = mapBankName(rowValue(row, ['Banca']));
+    const bank = refs.banks[bankName] ?? refs.banks['Altra Banca'];
+    const channel = mapChannel(rowValue(row, ['Canale Pagamento', 'Canale']));
+    const vatRate = parseMoney(rowValue(row, ['Aliquota IVA', '% IVA', 'Applicazione IVA', 'IVA']));
+    const isDeclared = parseBool(rowValue(row, ['Detrazione', 'Dich.', 'Dichiarazione']));
+    const hasElectronicInvoice = parseBool(rowValue(row, ['Fattura elettronica', 'F. Elett.', 'Fattura Elettronica']));
+    const cadence = mapCadence(rowValue(row, ['Cadenza', 'Frequenza', 'Ricorrenza']));
+    const dueDay = parseInteger(rowValue(row, ['Giorno scadenza', 'Giorno pagamento', 'Scadenza giorno']));
+    const dueMonth = parseInteger(rowValue(row, ['Mese scadenza', 'Scadenza mese']));
+    const billingPeriodMode = mapBillingPeriodMode(rowValue(row, ['Competenza', 'Periodo fatturazione', 'Modalità periodo fatturazione']));
+    const billingMonth = parseInteger(rowValue(row, ['Mese competenza', 'Mese fatturazione']));
+    const accrualType = mapAccrualType(rowValue(row, ['Generazione pagamento', 'Tipo generazione', 'Accrual']));
+    const notes = textValue(rowValue(row, ['Note', 'Annotazioni', 'Memo']));
+    const isActive = rowValue(row, ['Attiva', 'Attivo', 'Active']) === null ? true : parseBool(rowValue(row, ['Attiva', 'Attivo', 'Active']));
+    const { supplier, created } = await getOrCreateSupplier(supplierName, {
+      alias: textValue(rowValue(row, ['Alias fornitore', 'Alias'])),
+      email: textValue(rowValue(row, ['Email fornitore', 'Email'])),
+      phone: textValue(rowValue(row, ['Telefono fornitore', 'Telefono', 'Phone'])),
+      pec: textValue(rowValue(row, ['PEC fornitore', 'PEC'])),
+      taxCodeSdi: textValue(rowValue(row, ['Codice SDI', 'SDI', 'Codice destinatario', 'Codice fiscale/SDI'])),
+      internalNotes: textValue(rowValue(row, ['Note fornitore', 'Note interne fornitore']))
+    });
+    if (created) suppliersCreated++;
+
+    const existing = await prisma.recurringExpense.findFirst({
+      where: {
+        supplierId: supplier.id,
+        categoryId: category?.id ?? null,
+        description: description || null,
+        amount,
+        cadence,
+        startDate
+      }
+    });
+    if (existing) {
+      skipped++;
+      continue;
+    }
+
+    await prisma.recurringExpense.create({
+      data: {
+        startDate,
+        cadence,
+        dueDay,
+        dueMonth,
+        accrualType,
+        billingPeriodMode,
+        billingMonth: billingPeriodMode === 'CUSTOM_MONTH' ? billingMonth : null,
+        merchant: supplier.businessName,
+        supplierId: supplier.id,
+        categoryId: category?.id ?? null,
+        description: description || null,
+        amount,
+        vatRate,
+        isDeclared,
+        hasElectronicInvoice,
+        paymentChannel: channel,
+        bankId: bank?.id ?? null,
+        notes: notes || null,
+        isActive
+      }
+    });
+    imported++;
+  }
+
+  return { imported, skipped, deleted, suppliersCreated, sheets };
+}
+
 export async function importExpensesWorkbook(buffer: Buffer, options: { clearBeforeImport?: boolean } = {}): Promise<ExpenseImportResult> {
   const workbook = XLSX.read(buffer, { type: 'buffer', cellDates: true });
   const rows = getTabularRows(workbook);
