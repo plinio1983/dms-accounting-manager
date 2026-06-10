@@ -3201,6 +3201,10 @@ html, body {
     gap: 16px;
 }
 
+.expense-category-chart-card h2 {
+    font-size: 18px;
+}
+
 .category-chart-list {
     display: grid;
     gap: 10px;
