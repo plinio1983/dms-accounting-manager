@@ -1,6 +1,6 @@
 import XLSX from 'xlsx';
 import { prisma } from '@/lib/prisma';
-import type { InvoiceStatus, PaidBy, PaymentStatus } from '../generated/prisma/client';
+import type { CompanyCode, InvoiceStatus, PaidBy, PaymentStatus } from '../generated/prisma/client';
 
 const fixedCategories = [
   'Servizi Bancari',
@@ -165,6 +165,13 @@ function mapPaidBy(value: unknown): PaidBy {
   return text.includes('altro') ? 'ALTRO_OPERATORE' : 'HERBAL_MARKET';
 }
 
+function mapCompanyCode(value: unknown): CompanyCode {
+  const text = textValue(value).toLowerCase();
+  if (text.includes('altro') || text.includes('other')) return 'OTHER';
+  if (text === 'ts') return 'TS';
+  return 'HM';
+}
+
 function mapInvoiceStatus(value: unknown, hasElectronicInvoice: boolean): InvoiceStatus {
   const text = textValue(value).toLowerCase();
   if (['non prevista', 'non previsto', 'nonprevista', 'n/a', 'na'].includes(text)) return 'NON_PREVISTA';
@@ -188,15 +195,31 @@ async function ensureReferenceData() {
 
   return {
     categories: Object.fromEntries((await prisma.expenseCategory.findMany()).map(category => [category.name, category])),
-    banks: Object.fromEntries((await prisma.bank.findMany()).map(bank => [bank.name, bank]))
+    banks: Object.fromEntries((await prisma.bank.findMany()).map(bank => [bank.name, bank])),
+    companies: Object.fromEntries((await prisma.company.findMany()).map(company => [company.code, company]))
   };
 }
 
-async function getOrCreateSupplier(businessNameRaw: unknown) {
+async function getOrCreateSupplier(businessNameRaw: unknown, metadata: { alias?: string; email?: string; phone?: string; pec?: string; taxCodeSdi?: string; internalNotes?: string } = {}) {
   const businessName = textValue(businessNameRaw) || 'Senza esercente';
+  const data = {
+    alias: metadata.alias || null,
+    email: metadata.email || null,
+    phone: metadata.phone || null,
+    pec: metadata.pec || null,
+    taxCodeSdi: metadata.taxCodeSdi || null,
+    internalNotes: metadata.internalNotes || null
+  };
   const existing = await prisma.supplier.findFirst({ where: { businessName } });
-  if (existing) return { supplier: existing, created: false };
-  const supplier = await prisma.supplier.create({ data: { businessName } });
+  if (existing) {
+    const updateData = Object.fromEntries(Object.entries(data).filter(([, value]) => value));
+    if (Object.keys(updateData).length) {
+      const supplier = await prisma.supplier.update({ where: { id: existing.id }, data: updateData });
+      return { supplier, created: false };
+    }
+    return { supplier: existing, created: false };
+  }
+  const supplier = await prisma.supplier.create({ data: { businessName, ...data } });
   return { supplier, created: true };
 }
 
@@ -236,14 +259,16 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
     const amount = parseMoney(rowValue(row, ['Costo', 'Costo IVA inclusa', 'Importo']));
     const supplierName = rowValue(row, ['Fornitore', 'Esercente']);
     const description = textValue(rowValue(row, ['Descrizione', 'Prodotto/servizio', 'Prodotto / Servizio']));
-    const orderDate = parseDate(rowValue(row, ['Data ordine', 'Data Ricez', 'Data ricezione']));
+    const orderDateRaw = parseDate(rowValue(row, ['Data ordine', 'Data Ricez', 'Data ricezione']));
+    const dueDateRaw = parseDate(rowValue(row, ['Data scadenza', 'Scadenza']));
+    const orderDate = orderDateRaw ?? dueDateRaw;
     if (!supplierName && !description && amount <= 0) {
       skipped++;
       continue;
     }
 
     const paymentDate = parseDate(rowValue(row, ['Data pagamento', 'Data Pag']));
-    const dueDate = parseDate(rowValue(row, ['Data scadenza', 'Scadenza'])) ?? (orderDate ? addDays(orderDate, 7) : null);
+    const dueDate = dueDateRaw ?? orderDateRaw;
     const vatRate = parseMoney(rowValue(row, ['Aliquota IVA', '% IVA', 'Applicazione IVA', 'IVA']));
     const hasElectronicInvoice = parseBool(rowValue(row, ['Fattura elettronica', 'F. Elett.', 'Fattura Elettronica']));
     const isDeclared = parseBool(rowValue(row, ['Detrazione', 'Dich.', 'Dichiarazione']));
@@ -259,7 +284,19 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
     const paidAmount = paidCompleted ? amount : explicitPaidAmount;
     const paymentStatus: PaymentStatus = paidAmount >= amount && amount > 0 ? 'COMPLETATO' : paidAmount > 0 ? 'PAGATO_PARZIALMENTE' : 'DA_PAGARE';
     const billingDate = parseDate(rowValue(row, ['Periodo fatturazione', 'Mese fatturazione', 'Periodo Fatt.'])) ?? orderDate ?? new Date();
-    const { supplier, created } = await getOrCreateSupplier(supplierName);
+    const companyCode = mapCompanyCode(rowValue(row, ['Società', 'Societa', 'Azienda', 'Company', 'Operatore']));
+    const company = refs.companies[companyCode] ?? refs.companies.HM;
+    const notes = textValue(rowValue(row, ['Note', 'Annotazioni', 'Memo']));
+    const isRecurring = parseBool(rowValue(row, ['Ricorrente', 'Spesa ricorrente', 'Recurring']));
+    const isAutomaticPayment = parseBool(rowValue(row, ['Pagamento automatico', 'Automatico', 'Addebito automatico']));
+    const { supplier, created } = await getOrCreateSupplier(supplierName, {
+      alias: textValue(rowValue(row, ['Alias fornitore', 'Alias'])),
+      email: textValue(rowValue(row, ['Email fornitore', 'Email'])),
+      phone: textValue(rowValue(row, ['Telefono fornitore', 'Telefono', 'Phone'])),
+      pec: textValue(rowValue(row, ['PEC fornitore', 'PEC'])),
+      taxCodeSdi: textValue(rowValue(row, ['Codice SDI', 'SDI', 'Codice destinatario', 'Codice fiscale/SDI'])),
+      internalNotes: textValue(rowValue(row, ['Note fornitore', 'Note interne fornitore']))
+    });
     if (created) suppliersCreated++;
 
     await prisma.expense.create({
@@ -278,7 +315,11 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
         isComplete: paymentStatus === 'COMPLETATO',
         isDeclared,
         hasElectronicInvoice,
+        isRecurring,
+        isAutomaticPayment,
         invoiceStatus,
+        companyId: company?.id ?? null,
+        notes: notes || null,
         paidByCurrentAccount: paidBy === 'HERBAL_MARKET',
         paymentStatus,
         paidAmount,

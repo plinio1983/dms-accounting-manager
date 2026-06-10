@@ -1692,10 +1692,8 @@ body.drawer-open {
 }
 
 .income-mobile-item.income-row-warning {
-    /*border-color: #f59e0b;*/
-    /*box-shadow: inset 4px 0 0 #f59e0b;*/
     background: #f5d49d;
-    background: linear-gradient(90deg, rgb(255 243 188) 0%, rgb(255, 255, 255) 100%);
+    background: linear-gradient(90deg, #FCF5D8FF, #fff)
 }
 
 /* v074: dettaglio spesa con gerarchia reale e pagamenti responsive */
