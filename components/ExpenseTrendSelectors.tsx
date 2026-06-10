@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 type Props = {
   dateQuick: string;
   billingPeriodQuick: string;
@@ -32,8 +34,7 @@ function goWithQuick(type: "date" | "fiscal", value: string) {
     params.delete("period");
     params.delete("orderDateFrom");
     params.delete("orderDateTo");
-    if (value) params.set("dateQuick", value);
-    else params.delete("dateQuick");
+    params.set("dateQuick", value || "this_month");
   } else {
     params.delete("orderDateFrom");
     params.delete("orderDateTo");
@@ -41,8 +42,7 @@ function goWithQuick(type: "date" | "fiscal", value: string) {
     params.delete("billingPeriodFrom");
     params.delete("billingPeriodTo");
     params.delete("period");
-    if (value) params.set("billingPeriodQuick", value);
-    else params.delete("billingPeriodQuick");
+    params.set("billingPeriodQuick", value || "this_month");
   }
 
   const query = params.toString();
@@ -50,24 +50,43 @@ function goWithQuick(type: "date" | "fiscal", value: string) {
 }
 
 export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, useFiscalPeriodFilter }: Props) {
-  const andamentoComplessivoValue = useFiscalPeriodFilter ? "" : dateQuick;
-  const andamentoFiscaleValue = useFiscalPeriodFilter ? billingPeriodQuick : "";
+  const [mode, setMode] = useState<"date" | "fiscal">(useFiscalPeriodFilter ? "fiscal" : "date");
+  const andamentoComplessivoValue = !useFiscalPeriodFilter ? (dateQuick || "this_month") : "this_month";
+  const andamentoFiscaleValue = useFiscalPeriodFilter ? (billingPeriodQuick || "this_month") : "this_month";
 
-  return <div className="expense-trend-selectors" aria-label="Selettori andamento spese">
-    <label>
-      <span>Andamento complessivo</span>
+  function changeMode(nextMode: "date" | "fiscal") {
+    setMode(nextMode);
+    goWithQuick(nextMode, "this_month");
+  }
+
+  return <div className="expense-trend-selectors expense-trend-selectors-switch" aria-label="Selettori andamento spese">
+    <span>Andamento</span>
+    <div className="expense-trend-mode-toggle" role="group" aria-label="Tipo andamento">
+      <button
+        type="button"
+        className={mode === "date" ? "expense-trend-mode-button is-active" : "expense-trend-mode-button"}
+        onClick={() => changeMode("date")}
+      >
+        Complessivo
+      </button>
+      <button
+        type="button"
+        className={mode === "fiscal" ? "expense-trend-mode-button is-active" : "expense-trend-mode-button"}
+        onClick={() => changeMode("fiscal")}
+      >
+        Fiscale
+      </button>
+    </div>
+
+    {mode === "date" ? <label>
       <select value={andamentoComplessivoValue} onChange={(event) => goWithQuick("date", event.currentTarget.value)}>
-        <option value="">Periodo personalizzato</option>
         {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
       </select>
-    </label>
-
-    <label>
-      <span>Andamento fiscale</span>
+    </label> : <label>
+      <span>Periodo andamento fiscale</span>
       <select value={andamentoFiscaleValue} onChange={(event) => goWithQuick("fiscal", event.currentTarget.value)}>
-        <option value="">Periodo personalizzato</option>
         {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
       </select>
-    </label>
+    </label>}
   </div>;
 }

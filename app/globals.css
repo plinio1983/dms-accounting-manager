@@ -582,8 +582,9 @@ button {
 
 .expense-trend-selectors {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(260px, .9fr) minmax(240px, 1fr);
     gap: 12px;
+    align-items: end;
     margin-bottom: 12px;
     padding: 12px;
     border: 1px solid #dbe3ff;
@@ -609,10 +610,44 @@ button {
     width: 100%;
 }
 
+.expense-trend-mode-toggle {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.expense-trend-mode-button {
+    border: 0;
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 900;
+    cursor: pointer;
+    width: 50%;
+    max-width: 50%;
+}
+
+.expense-trend-mode-button.is-active {
+    background: #1d4ed8;
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(29, 78, 216, .22);
+}
+
 @media (max-width: 760px) {
     .expense-trend-selectors {
         grid-template-columns: 1fr;
     }
+
+    /*.expense-trend-mode-toggle {*/
+    /*    grid-template-columns: 1fr;*/
+    /*}*/
 }
 
 /* drawer filtri laterale spese ricorrenti */
