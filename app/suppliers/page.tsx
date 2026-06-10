@@ -4,6 +4,7 @@ import DeleteActionButton from '@/components/DeleteActionButton';
 import { prisma } from '@/lib/prisma';
 import { euro } from '@/lib/money';
 import NewSupplierPanel from '@/components/NewSupplierPanel';
+import SupplierFiltersDrawer from '@/components/SupplierFiltersDrawer';
 
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
   const value = searchParams[key];
@@ -86,39 +87,62 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
     <script dangerouslySetInnerHTML={{ __html: `document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-delete-form')) { const message = form.getAttribute('data-confirm') || 'Confermi la rimozione?'; if (!confirm(message)) event.preventDefault(); } });` }} />
 
     <div className="card expenses-list-card">
-      <div className="list-heading">
+      <div className="list-heading recurring-list-heading">
         <div>
           <h2>Lista fornitori</h2>
           <p className="muted">Risultati mostrati: {filteredSupplierRows.length}</p>
         </div>
+        <div>
+          <SupplierFiltersDrawer filters={filters} />
+        </div>
       </div>
 
-      <details className="filter-collapse">
-        <summary><span className="btn-icon">🔎</span>Filtri di ricerca</summary>
-        <form className="expense-filters compact-filters supplier-filters" method="get">
-          <label>Ragione Sociale<input name="businessName" defaultValue={inputDefault(filters, 'businessName')} /></label>
-          <label>Alias<input name="alias" defaultValue={inputDefault(filters, 'alias')} /></label>
-          <label>Email<input name="email" type="email" defaultValue={inputDefault(filters, 'email')} /></label>
-          {/*<label>Telefono<input name="phone" defaultValue={inputDefault(filters, 'phone')} /></label>*/}
-          <label>PEC<input name="pec" defaultValue={inputDefault(filters, 'pec')} /></label>
-          {/*<label>Codice SDI/C.F.<input name="taxCodeSdi" defaultValue={inputDefault(filters, 'taxCodeSdi')} /></label>*/}
-          <div className="filter-actions"><button className="button-standard primary-action" type="submit"><span className="btn-icon">🔎</span> Filtra</button><Link className="button-standard secondary-button reset-button" href="/suppliers"><span className="btn-icon">↺</span> Reset</Link></div>
-        </form>
-      </details>
-
-      <ActiveFilterSummary items={activeFilterItems} />
+      {activeFilterItems.length ? <div className="recurring-active-filters">
+        <div>
+          <span className="recurring-active-filters-title">Filtri attivi</span>
+          <div className="recurring-active-filter-tags">
+            {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
+          </div>
+        </div>
+        <Link className="table-action secondary recurring-active-filters-reset reset-button" href="/suppliers">↺ Reset</Link>
+      </div> : null}
 
       <script dangerouslySetInnerHTML={{ __html: `
         (() => {
           const storageKey = 'dmsAccounting.suppliers.filters';
           const resetLink = document.querySelector('a[href="/suppliers"].reset-button');
+          const sanitizedSearch = (search) => {
+            const params = new URLSearchParams(search || '');
+            params.delete('new');
+            Array.from(params.keys()).forEach(key => {
+              if (!params.get(key)) params.delete(key);
+            });
+            const clean = params.toString();
+            return clean ? '?' + clean : '';
+          };
           if (resetLink) resetLink.addEventListener('click', () => localStorage.removeItem(storageKey));
-          const query = window.location.search;
+          const query = sanitizedSearch(window.location.search);
+          const form = document.querySelector('form.supplier-filters');
           if (query && query !== '?') localStorage.setItem(storageKey, query);
           else {
-            const saved = localStorage.getItem(storageKey);
-            if (saved) window.location.replace('/suppliers' + saved);
+            const saved = sanitizedSearch(localStorage.getItem(storageKey) || '');
+            if (saved) {
+              localStorage.setItem(storageKey, saved);
+              window.location.replace('/suppliers' + saved);
+            } else {
+              localStorage.removeItem(storageKey);
+            }
           }
+          if (form) form.addEventListener('submit', () => {
+            Array.from(form.elements).forEach(field => {
+              if (field && field.name && 'value' in field && !field.value) field.disabled = true;
+            });
+            setTimeout(() => {
+              const clean = sanitizedSearch(window.location.search);
+              if (clean) localStorage.setItem(storageKey, clean);
+              else localStorage.removeItem(storageKey);
+            }, 0);
+          });
         })();
         document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-bulk-form')) { const selected = form.querySelectorAll('input[name="ids"]:checked').length || document.querySelectorAll('input[form="' + form.id + '"][name="ids"]:checked').length; if (!selected) { alert('Seleziona almeno una riga.'); event.preventDefault(); return; } const submitter = event.submitter; const action = submitter && submitter.getAttribute ? submitter.getAttribute('value') : ''; if (!action) { alert('Seleziona un’azione bulk.'); event.preventDefault(); return; } const label = submitter && submitter.textContent ? submitter.textContent.trim() : 'questa azione'; const message = 'Confermi di eseguire "' + label + '" sui fornitori selezionati?'; if (!confirm(message)) event.preventDefault(); } });
         (() => {
