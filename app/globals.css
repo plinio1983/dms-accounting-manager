@@ -8701,3 +8701,7 @@ body:has(.page-no-site-header) .shell,
 body:has(.detail-page-no-site-header) .shell {
     padding-top: 0;
 }
+
+.totals-period-note {
+    white-space: pre-line;
+}

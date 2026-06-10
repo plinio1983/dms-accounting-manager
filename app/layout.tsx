@@ -2,7 +2,7 @@ import './globals.css';
 import './mobile.css';
 import ShellChrome from '@/components/ShellChrome';
 
-export const metadata = { title: 'DMS Accounting Manager', description: 'Gestionale interno per incassi, spese, fornitori e report mensili' };
+export const metadata = { title: 'Tabularium', description: 'Gestionale interno per incassi, spese, fornitori e report mensili' };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return <html lang="it"><body><main className="shell">

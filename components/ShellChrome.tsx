@@ -27,7 +27,7 @@ export default function ShellChrome({ slot }: Props) {
 
   if (slot === 'header') {
     return <div className="nav">
-      <div><h1>DMS Accounting Manager</h1><div className="muted">Gestionale web per incassi, spese, fornitori e report mensili</div></div>
+      <div><h1>Tabularium</h1><div className="muted">Gestionale web per incassi, spese, fornitori e report mensili</div></div>
       <Suspense fallback={null}>
         <MainNav />
       </Suspense>
@@ -35,7 +35,7 @@ export default function ShellChrome({ slot }: Props) {
   }
 
   return <footer className="app-footer">
-    <div>DMS Accounting Manager</div>
+    <div>Tabularium</div>
     <div className="muted">Footer generico — contenuti e link da definire.</div>
   </footer>;
 }
