@@ -15,22 +15,32 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
   const sheets = param(params, 'sheets');
   const error = param(params, 'error');
 
-  return <div className="grid">
-    <div className="toolbar-card">
+  return <div className="grid import-page">
+    <div className="toolbar-card import-hero-card">
       <div>
-        <h2>Importa spese da Excel</h2>
-        <p className="muted">Carica un file .xlsx, .xls o .ods con le colonne usate nel tuo file di importazione.</p>
+        {/*<span className="badge">Importazione dati</span>*/}
+        <Link className="table-action secondary" href="/expenses">↩ Torna alle spese</Link>
+        <h2>Importa spese da Excel / ODS</h2>
+        <p className="muted">Carica un file compilato con le colonne supportate. Puoi partire dal modello di esempio, modificarlo e importarlo direttamente in Tabularium.</p>
       </div>
-      <Link className="table-action secondary" href="/expenses">↩ Torna alle spese</Link>
+      <div className="import-hero-actions">
+        <a className="button-standard primary-action" href="/templates/import-spese-template.xlsx" download><span className="btn-icon">⬇</span>Scarica modello XLSX</a>
+      </div>
     </div>
 
     {error ? <div className="card import-status-card error-card">
       <strong>Importazione non completata.</strong>
-      <p className="muted">Controlla che il file sia valido e che contenga almeno le colonne Data ordine, Fornitore/Esercente, Categoria, Descrizione e Costo.</p>
+      <p className="muted">Controlla che il file sia valido e che contenga almeno fornitore/esercente, descrizione e importo.</p>
     </div> : null}
 
     {imported ? <div className="card import-status-card success-card">
-      <h3>Importazione completata</h3>
+      <div className="import-status-heading">
+        <div>
+          <span className="badge">Completata</span>
+          <h3>Importazione completata</h3>
+        </div>
+        <Link className="button-standard primary-action" href="/expenses"><span className="btn-icon">↗</span>Vai alla lista spese</Link>
+      </div>
       <div className="import-result-grid">
         <div><span>Spese importate</span><strong>{imported}</strong></div>
         <div><span>Righe saltate</span><strong>{skipped ?? 0}</strong></div>
@@ -38,37 +48,65 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
         <div><span>Fornitori creati</span><strong>{suppliers ?? 0}</strong></div>
       </div>
       {sheets ? <p className="muted">Fogli letti: {sheets}</p> : null}
-      <Link className="button-standard primary-action" href="/expenses"><span className="btn-icon">↗</span>Vai alla lista spese</Link>
     </div> : null}
 
-    <form action="/api/expenses/import" method="post" encType="multipart/form-data" className="card import-form-card">
-      <h3>Nuova importazione</h3>
-      <div className="form-grid">
-        <label className="span-2">
-          File Excel / ODS
+    <div className="import-layout-grid">
+      <form action="/api/expenses/import" method="post" encType="multipart/form-data" className="card import-form-card">
+        <div className="import-card-heading">
+          <div>
+            <h3>Nuova importazione</h3>
+            <p className="muted">Sono accettati file .xlsx, .xls e .ods.</p>
+          </div>
+          <span className="badge">Step 1</span>
+        </div>
+
+        <label className="import-file-drop">
+          <span className="import-file-icon">📄</span>
+          <strong>Seleziona il file da importare</strong>
+          <small className="muted">Usa il modello XLSX oppure un file compatibile con intestazioni equivalenti.</small>
           <input type="file" name="file" accept=".xlsx,.xls,.ods" required />
         </label>
-        <label className="switch-field span-2 import-clear-switch">
-          <span>
-            Elimina tutte le spese prima di importare
-            <small className="muted">Rimuove tutte le voci spesa già presenti. Fornitori, incassi e configurazioni restano invariati.</small>
-          </span>
-          <input type="checkbox" name="clearBeforeImport" />
-        </label>
-      </div>
-      <div className="actions-row right-actions">
-        <Link className="secondary-button" href="/expenses">✕ Annulla</Link>
-        <button type="submit" className="button-standard primary-action"><span className="btn-icon">⬆</span>Importa spese</button>
-      </div>
-    </form>
 
-    <div className="card">
+        <label className="import-clear-option">
+          <input type="checkbox" name="clearBeforeImport" />
+          <span>
+            <strong>Elimina tutte le spese prima di importare</strong>
+            <small className="muted">Rimuove solo le spese già presenti. Fornitori, incassi e configurazioni restano invariati.</small>
+          </span>
+        </label>
+
+        <div className="actions-row right-actions">
+          <Link className="table-action secondary" href="/expenses">✕ Annulla</Link>
+          <button type="submit" className="button-standard primary-action"><span className="btn-icon">⬆</span>Importa spese</button>
+        </div>
+      </form>
+
+      <div className="card import-template-card">
+        <div className="import-card-heading">
+          <div>
+            <h3>Modello compilabile</h3>
+            <p className="muted">Scarica il file di esempio, compila le righe e ricaricalo da questa pagina.</p>
+          </div>
+          <span className="badge">XLSX</span>
+        </div>
+        <a className="import-template-download" href="/templates/import-spese-template.xlsx" download>
+          <span className="import-template-icon">⬇</span>
+          <span>
+            <strong>Scarica file di esempio</strong>
+            <small>import-spese-template.xlsx</small>
+          </span>
+        </a>
+        <p className="muted import-template-note">Il modello contiene intestazioni già compatibili con metadati fornitore, pagamento, fatturazione e note.</p>
+      </div>
+    </div>
+
+    <div className="card import-rules-card">
       <h3>Regole applicate</h3>
       <ul className="muted import-rules-list">
-        <li><strong>Stato fattura = Ok</strong> viene importato sempre come <strong>Emessa</strong>.</li>
-        <li>Se manca la data scadenza, viene impostata a <strong>Data ordine + 7 giorni</strong>.</li>
+        <li>Se è valorizzata solo una tra <strong>Data ordine</strong> e <strong>Data scadenza</strong>, quella data viene usata per entrambi i campi.</li>
+        <li><strong>Stato fattura = Ok</strong>, <strong>Emessa</strong> o <strong>Ricevuta</strong> viene importato come <strong>RICEVUTA</strong>.</li>
         <li>Le banche non presenti nella configurazione vengono importate come <strong>Altra Banca</strong>.</li>
-        <li>I fornitori non ancora presenti vengono creati automaticamente.</li>
+        <li>I fornitori non ancora presenti vengono creati automaticamente e aggiornati con eventuali metadati presenti nel file.</li>
       </ul>
     </div>
   </div>;
