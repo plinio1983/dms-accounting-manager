@@ -83,17 +83,21 @@ function dateRangeLink(path: '/expenses' | '/incomes', year: number, month: numb
   return `${path}?${query.toString()}`;
 }
 
-function SummaryMetric({ label, value, highlight = false, warning = false, vat = false, href }: { label: string; value: number; highlight?: boolean; warning?: boolean; vat?: boolean; href?: string }) {
-  const boxClass = ["summary-metric", href ? "summary-metric-link" : "", highlight ? "summary-metric-highlight" : "", warning ? "summary-metric-warning" : "", vat ? "summary-metric-vat" : ""].filter(Boolean).join(' ');
+function StatementMoneyRow({ label, value, highlight = false, warning = false, vat = false, href }: { label: string; value: number; highlight?: boolean; warning?: boolean; vat?: boolean; href?: string }) {
   const valueClass = [highlight ? 'money-highlight' : '', warning ? 'money-warning' : '', vat ? 'money-vat' : ''].filter(Boolean).join(' ');
-  const content = <><span>{label}</span><strong className={moneyTone(value, valueClass)}>{euro(value)}</strong></>;
-  return href ? <Link className={boxClass} href={href}>{content}</Link> : <div className={boxClass}>{content}</div>;
+  const valueNode = <strong className={moneyTone(value, valueClass)}>{euro(value)}</strong>;
+  return <tr className={highlight ? 'dashboard-statement-result' : ''}>
+    <td>{label}</td>
+    <td>{href ? <Link href={href}>{valueNode}</Link> : valueNode}</td>
+  </tr>;
 }
 
-function CountMetric({ label, value, warning = false, href }: { label: string; value: number; warning?: boolean; href?: string }) {
-  const boxClass = ["summary-metric", href ? "summary-metric-link" : "", warning ? "summary-metric-warning" : ""].filter(Boolean).join(' ');
-  const content = <><span>{label}</span><strong className={warning ? 'money-warning' : ''}>{value}</strong></>;
-  return href ? <Link className={boxClass} href={href}>{content}</Link> : <div className={boxClass}>{content}</div>;
+function StatementCountRow({ label, value, warning = false, href }: { label: string; value: number; warning?: boolean; href?: string }) {
+  const valueNode = <strong className={warning ? 'money-warning' : ''}>{value}</strong>;
+  return <tr>
+    <td>{label}</td>
+    <td>{href ? <Link href={href}>{valueNode}</Link> : valueNode}</td>
+  </tr>;
 }
 
 function updateUrlParam(key: 'trendMonth' | 'fiscalMonth' | 'fiscalQuarter', value: string, annualYear: number) {
@@ -119,23 +123,25 @@ function MonthlyTrendCard({
   const incomesHref = dateRangeLink('/incomes', state.year, state.month);
   const overdueExpensesHref = dateRangeLink('/expenses', state.year, state.month, { paymentStatus: 'overdue' });
 
-  return <div className={`card fiscal-summary-card monthly-trend-card ${loading ? 'is-loading' : ''}`}>
-    <div className="card-heading-row">
+  return <section className={`card dashboard-statement-panel monthly-trend-card ${loading ? 'is-loading' : ''}`}>
+    <div className="dashboard-statement-heading">
       <div>
         <h2>Andamento mensile</h2>
         <p className="muted">{monthName(state.month)} {state.year}</p>
       </div>
       {selector}
     </div>
-    <div className="summary-metrics-grid summary-metrics-grid-priority fiscal-summary-metrics-ordered">
-      <SummaryMetric label="Entrate totali" value={totals.incassoTotale} highlight href={incomesHref} />
-      <SummaryMetric label="Uscite totali" value={totals.speseTotali} highlight href={expensesHref} />
-      <SummaryMetric label="Utile netto" value={totals.utileNetto} highlight />
-      <SummaryMetric label="Spese non fiscali" value={totals.usciteNonFiscali} warning={totals.usciteNonFiscali > 0} href={nonFiscalExpensesHref} />
-      <SummaryMetric label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
-      <CountMetric label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
-    </div>
-  </div>;
+    <table className="dashboard-statement-table">
+      <tbody>
+        <StatementMoneyRow label="Entrate totali" value={totals.incassoTotale} href={incomesHref} />
+        <StatementMoneyRow label="Uscite totali" value={totals.speseTotali} href={expensesHref} />
+        <StatementMoneyRow label="Utile netto" value={totals.utileNetto} highlight />
+        <StatementMoneyRow label="Spese non fiscali" value={totals.usciteNonFiscali} warning={totals.usciteNonFiscali > 0} href={nonFiscalExpensesHref} />
+        <StatementMoneyRow label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
+        <StatementCountRow label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
+      </tbody>
+    </table>
+  </section>;
 }
 
 function FiscalSummaryCard({
@@ -153,7 +159,6 @@ function FiscalSummaryCard({
 }) {
   const periods = state.periods;
   const totals = state.totals;
-  const expensesHref = periodLink('/expenses', periods);
   const fiscalExpensesHref = periodLink('/expenses', periods, { declared: 'yes' });
   const unpaidExpensesHref = periodLink('/expenses', periods, { paymentStatus: 'not_complete', declared: 'yes' });
   const incomesHref = periodLink('/incomes', periods);
@@ -161,25 +166,27 @@ function FiscalSummaryCard({
   const invoicesNotReceivedHref = periodLink('/expenses', periods, { declared: 'yes', invoiceStatusMode: 'not_received' });
   const overdueExpensesHref = periodLink('/expenses', periods, { paymentStatus: 'overdue', declared: 'yes' });
 
-  return <div className={`card fiscal-summary-card ${loading ? 'is-loading' : ''}`}>
-    <div className="card-heading-row">
+  return <section className={`card dashboard-statement-panel ${loading ? 'is-loading' : ''}`}>
+    <div className="dashboard-statement-heading">
       <div>
         <h2>{title}</h2>
         <p className="muted">{subtitle}</p>
       </div>
       {selector}
     </div>
-    <div className="summary-metrics-grid summary-metrics-grid-priority fiscal-summary-metrics-ordered">
-      <SummaryMetric label="Entrate fiscali" value={totals.incassoFiscale} highlight href={incomesHref} />
-      <SummaryMetric label="Uscite fiscali" value={totals.usciteFiscali} highlight href={fiscalExpensesHref} />
-      <SummaryMetric label="Utile fiscale" value={totals.utileFiscale} highlight />
-      <SummaryMetric label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
-      <CountMetric label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
-      <SummaryMetric label="Previsione saldo IVA" value={totals.debitoIva} highlight vat />
-      <CountMetric label="Fatture non inviate" value={totals.fattureNonInviate} warning={totals.fattureNonInviate > 0} href={invoicesNotSentHref} />
-      <CountMetric label="Fatture non ricevute" value={totals.fattureNonRicevute} warning={totals.fattureNonRicevute > 0} href={invoicesNotReceivedHref} />
-    </div>
-  </div>;
+    <table className="dashboard-statement-table">
+      <tbody>
+        <StatementMoneyRow label="Entrate fiscali" value={totals.incassoFiscale} href={incomesHref} />
+        <StatementMoneyRow label="Uscite fiscali" value={totals.usciteFiscali} href={fiscalExpensesHref} />
+        <StatementMoneyRow label="Utile fiscale" value={totals.utileFiscale} highlight />
+        <StatementMoneyRow label="Previsione saldo IVA" value={totals.debitoIva} vat />
+        <StatementMoneyRow label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
+        <StatementCountRow label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
+        <StatementCountRow label="Fatture non inviate" value={totals.fattureNonInviate} warning={totals.fattureNonInviate > 0} href={invoicesNotSentHref} />
+        <StatementCountRow label="Fatture non ricevute" value={totals.fattureNonRicevute} warning={totals.fattureNonRicevute > 0} href={invoicesNotReceivedHref} />
+      </tbody>
+    </table>
+  </section>;
 }
 
 export default function DashboardFiscalAjax({

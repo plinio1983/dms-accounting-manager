@@ -3200,6 +3200,121 @@ table th, table td {
     }
 }
 
+.dashboard-period-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+}
+
+.dashboard-statement-panel {
+    padding: 14px 16px;
+    box-shadow: none;
+}
+
+.dashboard-statement-panel.is-loading {
+    opacity: .6;
+    pointer-events: none;
+}
+
+.dashboard-statement-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.dashboard-statement-heading h2 {
+    margin: 0 0 3px;
+    font-size: 17px;
+}
+
+.dashboard-statement-heading p {
+    margin: 0;
+}
+
+.dashboard-statement-heading .period-selector select {
+    min-width: 136px;
+    padding: 8px 10px;
+}
+
+.dashboard-statement-table {
+    width: 100%;
+    font-size: 13px;
+    border-collapse: collapse;
+}
+
+.dashboard-statement-table td {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+}
+
+.dashboard-statement-table tr:last-child td {
+    border-bottom: 0;
+}
+
+.dashboard-statement-table td:first-child {
+    color: var(--muted);
+    font-weight: 650;
+}
+
+.dashboard-statement-table td:last-child {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.dashboard-statement-table strong {
+    font-size: 14px;
+}
+
+.dashboard-statement-result td {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background: #f8faff;
+}
+
+.dashboard-statement-result td:first-child {
+    padding-left: 8px;
+    border-radius: 10px 0 0 10px;
+    color: var(--text);
+    font-weight: 850;
+}
+
+.dashboard-statement-result td:last-child {
+    padding-right: 8px;
+    border-radius: 0 10px 10px 0;
+}
+
+.dashboard-statement-result strong {
+    font-size: 18px;
+}
+
+.dashboard-statement-table a {
+    display: inline-block;
+}
+
+.dashboard-statement-table a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 1180px) {
+    .dashboard-period-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .dashboard-statement-heading {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .dashboard-statement-heading .period-selector,
+    .dashboard-statement-heading .period-selector select {
+        width: 100%;
+    }
+}
+
 /* v22 sortable tables and new category tone */
 .sortable-th {
     cursor: pointer;
@@ -8909,4 +9024,20 @@ body:has(.detail-page-no-site-header) .shell {
 
 .totals-period-note {
     white-space: pre-line;
+}
+
+@media (min-width: 760px) {
+    .expense-trend-selectors {
+        display: flex;
+        align-items: center;
+    }
+
+    .expense-trend-selectors .expense-trend-mode-toggle {
+        width: auto;
+    }
+
+    .expense-trend-selectors .expense-trend-mode-toggle .expense-trend-mode-button {
+        width: auto;
+        max-width: initial;
+    }
 }
