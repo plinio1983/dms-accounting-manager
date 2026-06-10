@@ -3094,14 +3094,20 @@ table th, table td {
 
 .dashboard-annual-card {
     display: grid;
-    gap: 16px;
+    gap: 10px;
 }
 
-.annual-kpi-grid .kpi-box {
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 16px;
-    background: #fff;
+.dashboard-annual-statement-table {
+    max-width: 760px;
+}
+
+.dashboard-annual-statement-table td {
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+
+.dashboard-annual-statement-table strong {
+    font-size: 16px;
 }
 
 .dashboard-report-card .card-heading-row {

@@ -290,6 +290,26 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
       />
     </div>
 
+    <section className="card dashboard-statement-panel dashboard-annual-card">
+      <div className="dashboard-statement-heading">
+        <div>
+          <h2>Conteggi annuali</h2>
+          <p className="muted">Totali fiscali anno {report.annualYear}</p>
+        </div>
+      </div>
+      <div className="dashboard-statement-body">
+        <table className="dashboard-statement-table dashboard-annual-statement-table">
+          <tbody>
+          <tr><td>Entrate totali anno</td><td><strong className={moneyTone(report.totals.incassoTotale)}>{euro(report.totals.incassoTotale)}</strong></td></tr>
+          <tr><td>Uscite anno</td><td><strong className={moneyTone(report.totals.speseTotali)}>{euro(report.totals.speseTotali)}</strong></td></tr>
+          <tr className="dashboard-statement-result"><td>Utile netto anno</td><td><strong className={moneyTone(report.totals.utileNetto, 'money-highlight')}>{euro(report.totals.utileNetto)}</strong></td></tr>
+          <tr><td>Uscite non fiscali</td><td><strong className={moneyTone(report.totals.usciteNonFiscali)}>{euro(report.totals.usciteNonFiscali)}</strong></td></tr>
+          <tr className="dashboard-statement-result"><td>Utile fiscale anno</td><td><strong className={moneyTone(report.totals.utileFiscale, 'money-highlight')}>{euro(report.totals.utileFiscale)}</strong></td></tr>
+          <tr className="row-warning"><td>Previsione imposte anno</td><td><strong className={moneyTone(report.totals.previsioneImposte, 'money-warning')}>{euro(report.totals.previsioneImposte)}</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
     <div className="card dashboard-report-card">
       <div className="card-heading-row">
@@ -327,23 +347,6 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
             <td><MoneyCell value={m.totals.debitoIva} /></td>
           </tr>)}</tbody>
         </table>
-      </div>
-    </div>
-
-    <div className="card dashboard-annual-card">
-      <div className="card-heading-row">
-        <div>
-          <h2>Conteggi annuali</h2>
-          <p className="muted">Totali fiscali anno {report.annualYear}</p>
-        </div>
-      </div>
-      <div className="annual-kpi-grid annual-totals-grid">
-        <div className="kpi-box kpi-net"><div className="kpi-label">Utile netto anno</div><div className={moneyTone(report.totals.utileNetto, 'kpi-value')}>{euro(report.totals.utileNetto)}</div><p className="kpi-help">Entrate totali meno uscite totali, IVA pagata e IVA prevista da saldare.</p></div>
-        <div className="kpi-box kpi-fiscal"><div className="kpi-label">Utile fiscale anno</div><div className={moneyTone(report.totals.utileFiscale, 'kpi-value')}>{euro(report.totals.utileFiscale)}</div><p className="kpi-help">Entrate fiscali meno spese in detrazione, IVA pagata e IVA prevista da saldare.</p></div>
-        <div className="kpi-box kpi-income"><div className="kpi-label">Entrate totali anno</div><div className={moneyTone(report.totals.incassoTotale, 'kpi-value')}>{euro(report.totals.incassoTotale)}</div><p className="kpi-help">Somma di tutte le entrate fiscali e non fiscali dell’anno selezionato.</p></div>
-        <div className="kpi-box kpi-expense"><div className="kpi-label">Uscite anno</div><div className={moneyTone(report.totals.speseTotali, 'kpi-value')}>{euro(report.totals.speseTotali)}</div><p className="kpi-help">Totale delle uscite registrate nell’anno fiscale selezionato.</p></div>
-        <div className="kpi-box kpi-expense"><div className="kpi-label">Uscite non fiscali</div><div className={moneyTone(report.totals.usciteNonFiscali, 'kpi-value')}>{euro(report.totals.usciteNonFiscali)}</div><p className="kpi-help">Totale delle spese con Detrazione/Fiscale = No nell’anno selezionato.</p></div>
-        <div className="kpi-box annual-tax-forecast kpi-tax"><div className="kpi-label">Previsione imposte anno</div><div className={moneyTone(report.totals.previsioneImposte, 'kpi-value money-warning')}>{euro(report.totals.previsioneImposte)}</div><p className="kpi-help">Calcolo provvisorio: utile fiscale positivo × aliquota fissa 30%.</p></div>
       </div>
     </div>
 
