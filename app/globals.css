@@ -9056,3 +9056,17 @@ body:has(.detail-page-no-site-header) .shell {
         max-width: initial;
     }
 }
+
+.supplier-linked-expenses-mobile-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.supplier-linked-expenses-mobile-list .expense-mobile-item {
+    display: flex;
+    flex-grow: 1;
+}
+
+.supplier-linked-expenses-mobile-list .expense-mobile-item .expense-mobile-link {
+    flex-grow: 1;
+}

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
-import { euro } from '@/lib/money';
+import { euro, moneyTone } from '@/lib/money';
 import {
   badgeClass,
   categoryStyles,
@@ -27,6 +27,23 @@ function formatPeriod(month: number, year: number) {
 function booleanBadge(value: boolean) {
   const item = value ? yesNoStyles.yes : yesNoStyles.no;
   return <span className={badgeClass(item.className)}>{item.icon} {item.label}</span>;
+}
+
+function mobileDateLabel(value?: Date | null) {
+  return value ? value.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' }) : '-';
+}
+
+function isExpensePastDueForBadge(expense: { dueDate?: Date | null; paymentStatus?: string | null }) {
+  if (!expense.dueDate || expense.paymentStatus === 'COMPLETATO') return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dueDate = new Date(expense.dueDate);
+  dueDate.setHours(0, 0, 0, 0);
+  return dueDate < today;
+}
+
+function isExpenseUnpaid(expense: { paymentStatus?: string | null }) {
+  return expense.paymentStatus === 'DA_PAGARE' || expense.paymentStatus === 'PAGATO_PARZIALMENTE';
 }
 
 function CopyableField({ label, value }: { label: string; value?: string | null }) {
@@ -87,8 +104,72 @@ export default async function SupplierDetailPage({ params }: { params: Promise<{
       <CopyableField label="Note interne" value={supplier.internalNotes} />
     </div>
 
-    <div className="card">
-      <h2>Spese collegate</h2>
+    <div className="card expenses-list-card">
+      <div className="list-heading">
+        <div>
+          <h2>Spese collegate</h2>
+          <p className="muted">Risultati mostrati: {supplier.expenses.length}</p>
+        </div>
+      </div>
+
+      <div className="expense-mobile-list supplier-linked-expenses-mobile-list" aria-label="Spese collegate mobile">
+        {supplier.expenses.map(expense => {
+          const amount = Number(expense.amount.toString());
+          const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
+          const residual = Math.max(0, amount - paid);
+          const categoryStyle = expense.category?.name ? categoryStyles[expense.category.name] : undefined;
+          const paymentStyle = paymentStatusStyles[expense.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
+          const invoiceStyle = invoiceStatusStyles[expense.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
+          const invoiceLabel = invoiceStatusStyles.IN_ATTESA ? "Att.fatt." : invoiceStyle.label;
+          const overdue = isExpensePastDueForBadge(expense);
+          const unpaid = isExpenseUnpaid(expense);
+          const statusStyle = overdue ? paymentStatusStyles.SCADUTO : paymentStyle;
+          const declaredBadgeLabel = expense.isDeclared ? "DF" : "NF";
+          let recordAddClass = "";
+          if (overdue) {
+            recordAddClass = "expense-mobile-item-overdue";
+          } else if (unpaid) {
+            recordAddClass = "expense-mobile-item-unpaid";
+          }
+          const recordClass = `expense-mobile-item ${recordAddClass}`;
+          return <div className={recordClass} key={`mobile-linked-expense-${expense.id}`}>
+            <Link className="expense-mobile-link" href={`/expenses/${expense.id}`}>
+              <div className="expense-mobile-main">
+                <div className="expense-mobile-meta">
+                  <div className="expense-mobile-meta-left">
+                    {expense.category ? <span title={expense.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? expense.category.code}</span> : null}
+                    <span className={badgeClass(invoiceStyle.className)}>{invoiceLabel}</span>
+                    <span className="expense-mobile-date">{formatPeriod(expense.month, expense.year)}</span>
+                  </div>
+                  <div className="expense-mobile-meta-right">
+                    <span className="expense-mobile-date">{mobileDateLabel(expense.dueDate)}</span>
+                    <span className={badgeClass("")}>{declaredBadgeLabel}</span>
+                    {/*{booleanBadge(expense.isDeclared)}*/}
+                  </div>
+                </div>
+                <div className="expense-mobile-title-row">
+                  <span className={expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{expense.isRecurring ? 'R' : 'S'}</span>
+                  <div className="expense-mobile-title-left">
+                    <strong>{supplier.businessName}</strong>
+                  </div>
+                  <div className="expense-mobile-title-right">
+                    <span className={moneyTone(amount)}>{euro(amount)}</span>
+                  </div>
+                </div>
+                <div className="expense-mobile-subtitle">
+                  <div>{expense.description || 'Spesa senza descrizione'}</div>
+                  <div><span className={badgeClass(statusStyle.className)}>{statusStyle.label}</span></div>
+                </div>
+                {/*{residual > 0 ? <div className="expense-mobile-footer">*/}
+                {/*  <strong className="text-warning">Residuo {euro(residual)}</strong>*/}
+                {/*</div> : null}*/}
+              </div>
+            </Link>
+          </div>;
+        })}
+        {!supplier.expenses.length ? <div className="expense-mobile-empty">Nessuna spesa collegata a questo fornitore.</div> : null}
+      </div>
+
       <div className="table-scroll"><table className="supplier-linked-expenses-table"><thead><tr>
         <th>Data ordine</th>
         <th>Periodo Fatt.</th>
