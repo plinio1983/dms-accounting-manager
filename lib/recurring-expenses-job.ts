@@ -158,7 +158,7 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
             hasElectronicInvoice: recurringExpense.hasElectronicInvoice,
             isDeclared: recurringExpense.isDeclared,
             isRecurring: true,
-            isAutomaticPayment: recurringExpense.accrualType === 'AUTOMATICO',
+            isAutomaticPayment: recurringExpense.accrualType === 'AUTOMATICA',
             bankId: recurringExpense.bankId || null,
             notes: recurringExpense.notes || null,
             recurringExpenseId: recurringExpense.id,
