@@ -98,7 +98,7 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
         </div>
       </div>
       <div className="actions-row expense-detail-actions">
-        <Link className="table-action secondary" href={returnTo}>↩ Lista incassi</Link>
+        <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
         <Link className="table-action" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
       </div>
     </section>

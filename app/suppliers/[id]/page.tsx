@@ -55,8 +55,11 @@ function CopyableField({ label, value }: { label: string; value?: string | null 
   </div>;
 }
 
-export default async function SupplierDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function SupplierDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const { id } = await params;
+  const query = (await searchParams) ?? {};
+  const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
+  const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : '/suppliers';
   const supplier = await prisma.supplier.findUnique({
     where: { id: Number(id) },
     include: { expenses: { include: { payments: true, category: true }, orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }] } }
@@ -79,7 +82,7 @@ export default async function SupplierDetailPage({ params }: { params: Promise<{
         <p className="muted">{supplier.businessName}</p>
       </div>
       <div className="actions-row right-actions">
-        <Link className="table-action secondary" href="/suppliers">↩ Lista fornitori</Link>
+        <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
         <Link className="table-action" href={`/suppliers/${supplier.id}/edit`}>✎ Modifica</Link>
       </div>
     </div>
