@@ -7998,7 +7998,7 @@ button.bulk-direct-danger {
 }
 
 .totals-period-note {
-    margin: 0 0 12px;
+    margin: 0;
     padding: 10px 12px;
     border-radius: 14px;
     background: #f8fafc;
@@ -8015,6 +8015,7 @@ button.bulk-direct-danger {
 /* Mobile-first expense list cards */
 .expense-mobile-list {
     display: none;
+    margin-bottom: 30px;
 }
 
 .expense-mobile-header>.left-side {
