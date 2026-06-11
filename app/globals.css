@@ -2993,6 +2993,23 @@ table th, table td {
     font-size: 17px;
 }
 
+.list-totals-statement {
+    margin: 12px 0 18px;
+}
+
+.list-totals-table {
+    max-width: 760px;
+}
+
+.list-totals-table td {
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+
+.list-totals-table strong {
+    font-size: 16px;
+}
+
 .dashboard-report-table {
     min-width: 1050px;
 }

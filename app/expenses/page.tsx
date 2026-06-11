@@ -639,13 +639,18 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         billingPeriodYear={billingPeriodYearFilter}
         useFiscalPeriodFilter={useFiscalPeriodFilter}
       />
-      <div className="totals-row">
-        <div className="total-card total-card-expense"><span>Spese Totali<br />IVA inclusa</span><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong><small>Totale calcolato sui filtri impostati.</small></div>
-        <div className="total-card total-card-vat"><span>IVA versata</span><strong className={moneyTone(totals.paidVat)}>{euro(totals.paidVat)}</strong><small>IVA calcolata sulle spese filtrate e saldate.</small></div>
-        <div className="total-card total-card-declared"><span>Spese non dichiarate</span><strong className={moneyTone(totals.nonDeclared)}>{euro(totals.nonDeclared)}</strong><small>Spese non in detrazione nei risultati filtrati.</small></div>
-        <div className="total-card total-card-warning"><span>Non saldato</span><strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong><small>Residuo ancora da pagare nei risultati filtrati.</small></div>
-        <div className="total-card total-card-warning"><span>Fatture non<br />ricevute</span><strong>{totals.invoicesNotReceived}</strong><small>Spese filtrate in detrazione senza fattura emessa.</small></div>
-        <div className={`total-card ${totals.overdueCount > 0 ? 'total-card-critical' : 'total-card-neutral'}`}><span>Pagamenti scaduti</span><strong>{totals.overdueCount}</strong><small>Spese filtrate scadute con residuo.</small></div>
+      <p className="totals-period-note">{totalsPeriodLabel}</p>
+      <div className="dashboard-statement-panel list-totals-statement">
+        <table className="dashboard-statement-table list-totals-table" aria-label="Totali spese filtrate">
+          <tbody>
+            <tr><td>Spese totali IVA inclusa</td><td><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></td></tr>
+            <tr><td>IVA versata</td><td><strong className={moneyTone(totals.paidVat)}>{euro(totals.paidVat)}</strong></td></tr>
+            <tr><td>Spese non dichiarate</td><td><strong className={moneyTone(totals.nonDeclared)}>{euro(totals.nonDeclared)}</strong></td></tr>
+            <tr><td>Non saldato</td><td><strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong></td></tr>
+            <tr><td>Fatture non ricevute</td><td><strong>{totals.invoicesNotReceived}</strong></td></tr>
+            <tr><td>Pagamenti scaduti</td><td><strong>{totals.overdueCount}</strong></td></tr>
+          </tbody>
+        </table>
       </div>
 
       <div className="list-heading recurring-list-heading">

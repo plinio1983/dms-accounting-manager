@@ -517,13 +517,17 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         useFiscalPeriodFilter={useFiscalPeriodFilter}
       />
       <p className="totals-period-note">{totalsPeriodLabel}</p>
-      <div className="totals-row income-totals-row">
-        <div className="total-card total-card-income"><span>Entrate totali</span><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong><small>Totale dei risultati filtrati.</small></div>
-        <div className="total-card total-card-fiscal"><span>Incasso fiscale</span><strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong><small>Entrate fiscali dei risultati filtrati.</small></div>
-        <div className="total-card total-card-neutral"><span>Incasso non fiscale</span><strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong><small>Entrate non fiscali dei risultati filtrati.</small></div>
-        <div className="total-card total-card-vat"><span>Debito IVA</span><strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong><small>IVA generata dagli incassi fiscali filtrati.</small></div>
-        <div className="total-card total-card-warning"><span>Debito IVA residuo</span><strong>{residualVatDebt === null ? <span className="total-placeholder">Seleziona periodo fiscale</span> : <span className={moneyTone(residualVatDebt)}>{euro(residualVatDebt)}</span>}</strong><small>Debito IVA meno IVA versata nelle spese.</small></div>
-        <div className="total-card total-card-warning"><span>Fatture non inviate</span><strong>{totals.invoicesNotSent}</strong><small>Incassi fiscali filtrati con fattura non emessa.</small></div>
+      <div className="dashboard-statement-panel list-totals-statement">
+        <table className="dashboard-statement-table list-totals-table" aria-label="Totali incassi filtrati">
+          <tbody>
+            <tr><td>Entrate totali</td><td><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></td></tr>
+            <tr><td>Incasso fiscale</td><td><strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong></td></tr>
+            <tr><td>Incasso non fiscale</td><td><strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong></td></tr>
+            <tr><td>Debito IVA prodotto</td><td><strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong></td></tr>
+            {/*<tr><td>Debito IVA residuo</td><td><strong>{residualVatDebt === null ? <span className="total-placeholder">Seleziona periodo fiscale</span> : <span className={moneyTone(residualVatDebt)}>{euro(residualVatDebt)}</span>}</strong></td></tr>*/}
+            <tr><td>Fatture non inviate</td><td><strong>{totals.invoicesNotSent}</strong></td></tr>
+          </tbody>
+        </table>
       </div>
 
       <div className="list-heading recurring-list-heading">
