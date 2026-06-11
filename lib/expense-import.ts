@@ -1,4 +1,4 @@
-import XLSX from 'xlsx';
+import * as XLSX from 'xlsx';
 import { prisma } from '@/lib/prisma';
 import type { CompanyCode, InvoiceStatus, PaidBy, PaymentStatus } from '../generated/prisma/client';
 

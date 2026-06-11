@@ -21,15 +21,27 @@ export async function POST(request: Request) {
     const result = importType === 'recurring_definitions'
       ? await importRecurringExpenseDefinitionsWorkbook(buffer, { clearBeforeImport })
       : await importExpensesWorkbook(buffer, { clearBeforeImport });
-    return redirectWithParams(request, {
+
+    const baseResult = {
       imported: result.imported,
       skipped: result.skipped,
       deleted: result.deleted,
       suppliers: result.suppliersCreated,
       sheets: result.sheets.join(', ')
-    });
+    };
+
+    if (result.imported === 0 && result.skipped === 0) {
+      return redirectWithParams(request, { error: 'empty_file', ...baseResult });
+    }
+
+    if (result.imported === 0) {
+      return redirectWithParams(request, { error: 'no_rows_imported', ...baseResult });
+    }
+
+    return redirectWithParams(request, baseResult);
   } catch (error) {
     console.error(error);
-    return redirectWithParams(request, { error: 'import_failed' });
+    const detail = error instanceof Error ? error.message.slice(0, 180) : 'Errore sconosciuto';
+    return redirectWithParams(request, { error: 'import_failed', detail });
   }
 }

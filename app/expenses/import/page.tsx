@@ -15,6 +15,8 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
   const suppliers = param(params, 'suppliers');
   const sheets = param(params, 'sheets');
   const error = param(params, 'error');
+  const detail = param(params, 'detail');
+  const hasResult = imported !== undefined || skipped !== undefined || deleted !== undefined || suppliers !== undefined || sheets !== undefined;
 
   return <div className="grid import-page">
     <div className="toolbar-card import-hero-card">
@@ -31,10 +33,19 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
 
     {error ? <div className="card import-status-card error-card">
       <strong>Importazione non completata.</strong>
-      <p className="muted">Controlla che il file sia valido e che contenga almeno fornitore/esercente, descrizione e importo.</p>
+      <p className="muted">
+        {error === 'empty_file'
+          ? 'Il file è stato letto, ma non sono state trovate righe compatibili con il modello di importazione selezionato.'
+          : error === 'no_rows_imported'
+            ? 'Il file è stato letto, ma nessuna riga è stata importata. Controlla dati obbligatori, importi, date e tipo importazione.'
+            : 'Controlla che il file sia valido e che contenga almeno fornitore/esercente, descrizione e importo.'}
+      </p>
+      {skipped ? <p className="muted">Righe saltate: {skipped}</p> : null}
+      {sheets ? <p className="muted">Fogli letti: {sheets}</p> : null}
+      {detail ? <p className="muted">Dettaglio tecnico: {detail}</p> : null}
     </div> : null}
 
-    {imported ? <div className="card import-status-card success-card">
+    {!error && hasResult ? <div className="card import-status-card success-card">
       <div className="import-status-heading">
         <div>
           <span className="badge">Completata</span>
@@ -52,7 +63,7 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
     </div> : null}
 
     <div className="import-layout-grid">
-      <form action="/api/expenses/import" method="post" encType="multipart/form-data" className="card import-form-card">
+      <form id="expenseImportForm" action="/api/expenses/import" method="post" encType="multipart/form-data" className="card import-form-card">
         <div className="import-card-heading">
           <div>
             <h3>Nuova importazione</h3>
@@ -108,10 +119,10 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
 }
 
 
-export default function ImportExpensesPage() {
+export default function ImportExpensesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   return (
     <Suspense fallback={<div className="card"><p className="muted">Caricamento importazione...</p></div>}>
-      <ImportExpensesContent />
+      <ImportExpensesContent searchParams={searchParams} />
     </Suspense>
   );
 }

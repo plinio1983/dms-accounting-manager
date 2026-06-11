@@ -26,7 +26,7 @@ export default function ExpenseImportTypeSelector() {
   return <div className="import-type-selector">
     <label>
       Tipo importazione
-      <select name="importType" value={importType} onChange={(event) => setImportType(event.currentTarget.value as ImportType)}>
+      <select form="expenseImportForm" name="importType" value={importType} onChange={(event) => setImportType(event.currentTarget.value as ImportType)}>
         <option value="single_expenses">Lista spese singole</option>
         <option value="recurring_definitions">Definizioni spese ricorrenti</option>
       </select>
