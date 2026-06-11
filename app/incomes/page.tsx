@@ -448,7 +448,6 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
     return acc;
   }, { total: 0, fiscal: 0, nonFiscal: 0, vatDebt: 0, invoicesNotSent: 0 });
 
-  const periodTotals = summarizeIncomes(periodIncomes);
   const totals = summarizeIncomes(filteredIncomes);
   const totalsPeriodLabel = periodTotalsLabel({
     useFiscalPeriodFilter,
@@ -488,7 +487,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
       return sum + vatAmountFromGross(paid, vatRate);
     }, 0);
   }
-  const residualVatDebt = recoverableExpenseVat === null ? null : periodTotals.vatDebt - recoverableExpenseVat;
+  const residualVatDebt = recoverableExpenseVat === null ? null : totals.vatDebt - recoverableExpenseVat;
 
   const activeFilterItems = [
     creditDateFromDefault && { label: 'Data accredito da', value: formatDateInputLabel(creditDateFromDefault) },
@@ -519,12 +518,12 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
       />
       <p className="totals-period-note">{totalsPeriodLabel}</p>
       <div className="totals-row income-totals-row">
-        <div className="total-card total-card-income"><span>Entrate totali</span><strong className={moneyTone(periodTotals.total)}>{euro(periodTotals.total)}</strong><small>Totale del periodo selezionato, senza altri filtri.</small></div>
-        <div className="total-card total-card-fiscal"><span>Incasso fiscale</span><strong className={moneyTone(periodTotals.fiscal)}>{euro(periodTotals.fiscal)}</strong><small>Entrate fiscali del periodo selezionato.</small></div>
-        <div className="total-card total-card-neutral"><span>Incasso non fiscale</span><strong className={moneyTone(periodTotals.nonFiscal)}>{euro(periodTotals.nonFiscal)}</strong><small>Entrate non fiscali del periodo selezionato.</small></div>
-        <div className="total-card total-card-vat"><span>Debito IVA</span><strong className={moneyTone(periodTotals.vatDebt)}>{euro(periodTotals.vatDebt)}</strong><small>IVA generata dagli incassi fiscali del periodo.</small></div>
+        <div className="total-card total-card-income"><span>Entrate totali</span><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong><small>Totale dei risultati filtrati.</small></div>
+        <div className="total-card total-card-fiscal"><span>Incasso fiscale</span><strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong><small>Entrate fiscali dei risultati filtrati.</small></div>
+        <div className="total-card total-card-neutral"><span>Incasso non fiscale</span><strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong><small>Entrate non fiscali dei risultati filtrati.</small></div>
+        <div className="total-card total-card-vat"><span>Debito IVA</span><strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong><small>IVA generata dagli incassi fiscali filtrati.</small></div>
         <div className="total-card total-card-warning"><span>Debito IVA residuo</span><strong>{residualVatDebt === null ? <span className="total-placeholder">Seleziona periodo fiscale</span> : <span className={moneyTone(residualVatDebt)}>{euro(residualVatDebt)}</span>}</strong><small>Debito IVA meno IVA versata nelle spese.</small></div>
-        <div className="total-card total-card-warning"><span>Fatture non inviate</span><strong>{periodTotals.invoicesNotSent}</strong><small>Incassi fiscali del periodo con fattura non emessa.</small></div>
+        <div className="total-card total-card-warning"><span>Fatture non inviate</span><strong>{totals.invoicesNotSent}</strong><small>Incassi fiscali filtrati con fattura non emessa.</small></div>
       </div>
 
       <div className="list-heading recurring-list-heading">
@@ -693,13 +692,6 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         })();
       ` }} />
 
-      <div className="search-totals-row" aria-label="Totali risultati filtrati">
-        {/*<div><span>Risultati</span><strong>{filteredIncomes.length}</strong></div>*/}
-        <div><span>Entrate filtrate</span><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></div>
-        <div><span>Fiscale</span><strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong></div>
-        <div><span>Non fiscale</span><strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong></div>
-        <div><span>Tot. IVA</span><strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong></div>
-      </div>
 
       <form id="incomeBulkForm" action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
         <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="incomeBulkForm">

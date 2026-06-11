@@ -144,9 +144,9 @@ export default function IncomeFiltersDrawer({
 
           <fieldset className="filter-group filter-group-order-date">
             <legend>Date accredito</legend>
+            <label>Selezione rapida data<select id="incomeDateQuick" name="dateQuick" defaultValue={quickDateFilter}>
             <label>Data accredito da<input id="creditDateFrom" name="creditDateFrom" type="date" defaultValue={creditDateFromDefault} /></label>
             <label>Data accredito a<input id="creditDateTo" name="creditDateTo" type="date" defaultValue={creditDateToDefault} /></label>
-            <label>Selezione rapida data<select id="incomeDateQuick" name="dateQuick" defaultValue={quickDateFilter}>
               <option value="">Periodo personalizzato</option>
               {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select></label>
