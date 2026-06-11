@@ -88,8 +88,9 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
     <RecurringExpensesList
       items={items}
       filters={filters}
-      categories={orderedCategories.map(c => ({ id: c.id, name: c.name }))}
+      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
+      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
     />
   </div>;
 }

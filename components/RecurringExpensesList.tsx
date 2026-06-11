@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import RecurringExpenseFiltersDrawer from '@/components/RecurringExpenseFiltersDrawer';
+import RecurringExpenseDetailEditModalController from '@/components/RecurringExpenseDetailEditModalController';
 import { euro } from '@/lib/money';
 
 const cadenceLabels: Record<string, string> = { MONTHLY:'Ogni mese', EVERY_2_MONTHS:'Ogni 2 mesi', EVERY_3_MONTHS:'Ogni 3 mesi', EVERY_6_MONTHS:'Ogni 6 mesi', YEARLY:'Annuale', EVERY_2_YEARS:'Ogni 2 anni' };
@@ -45,17 +46,21 @@ const paymentChannelLabels: Record<string, string> = {
 };
 
 type FilterOption = { id: number; name: string };
+type CategoryOption = { id: number; code?: string; name: string };
+type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; phone?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
 
 export default function RecurringExpensesList({
   items,
   filters,
   categories,
   banks,
+  suppliers,
 }: {
   items: any[];
   filters?: Record<string, string | string[] | undefined>;
-  categories: FilterOption[];
+  categories: CategoryOption[];
   banks: FilterOption[];
+  suppliers: SupplierOption[];
 }) {
   const itemCount = items.length;
   const currentFilters = filters ?? {};
@@ -72,6 +77,7 @@ export default function RecurringExpensesList({
     inputDefault(currentFilters, 'amountMax') ? `Importo max: ${inputDefault(currentFilters, 'amountMax')}` : '',
   ].filter(Boolean);
   return <div className="card recurring-expenses-card">
+    <RecurringExpenseDetailEditModalController categories={categories} banks={banks} suppliers={suppliers} returnTo="/recurring-expenses" />
     <div className="list-heading recurring-list-heading">
       <div>
         <h2>Lista spese ricorrenti</h2>
@@ -93,7 +99,7 @@ export default function RecurringExpensesList({
     <BulkSelectionController />
     <form id="recurringExpenseBulkForm" action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses" method="post" className="bulk-actions-bar confirm-bulk-form recurring-bulk-actions-bar">
       <p className="muted">Risultati mostrati: {itemCount}</p>
-      <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="recurringExpenseBulkForm" data-edit-base="/recurring-expenses/" data-edit-suffix="" data-return-to="%2Frecurring-expenses">
+      <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="recurringExpenseBulkForm" data-edit-base="/recurring-expenses/" data-edit-suffix="" data-edit-trigger-attr="data-recurring-expense-detail-edit-id" data-return-to="%2Frecurring-expenses">
         <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
         <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
       </div>
