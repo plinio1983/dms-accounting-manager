@@ -84,6 +84,33 @@ export default function ExpenseFiltersDrawer({
     };
   }, [open]);
 
+  function handleFiltersSubmit(event: React.FormEvent<HTMLFormElement>) {
+    const form = event.currentTarget;
+    const field = (name: string) => form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null;
+
+    const billingPeriodQuick = field("billingPeriodQuick");
+    const billingPeriodFrom = field("billingPeriodFrom");
+    const billingPeriodTo = field("billingPeriodTo");
+    const dateQuick = field("dateQuick");
+    const orderDateFrom = field("orderDateFrom");
+    const orderDateTo = field("orderDateTo");
+
+    const hasBillingPeriod = Boolean(billingPeriodFrom?.value || billingPeriodTo?.value);
+    const hasOrderDate = Boolean(orderDateFrom?.value || orderDateTo?.value);
+
+    if (hasBillingPeriod) {
+      if (billingPeriodQuick) billingPeriodQuick.value = "";
+      if (dateQuick) dateQuick.value = "";
+      if (orderDateFrom) orderDateFrom.value = "";
+      if (orderDateTo) orderDateTo.value = "";
+    } else if (hasOrderDate) {
+      if (dateQuick) dateQuick.value = "";
+      if (billingPeriodQuick) billingPeriodQuick.value = "";
+      if (billingPeriodFrom) billingPeriodFrom.value = "";
+      if (billingPeriodTo) billingPeriodTo.value = "";
+    }
+  }
+
   const drawer = mounted ? createPortal(
     <div className={open ? "filter-drawer-backdrop is-open" : "filter-drawer-backdrop"} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
       <aside className="filter-drawer-panel expense-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri spese" onMouseDown={(event) => event.stopPropagation()}>
@@ -95,7 +122,7 @@ export default function ExpenseFiltersDrawer({
           <button className="secondary-button modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
         </div>
 
-        <form className="expense-filters recurring-drawer-filters expense-drawer-filters" action="/expenses" method="get">
+        <form className="expense-filters recurring-drawer-filters expense-drawer-filters" action="/expenses" method="get" onSubmit={handleFiltersSubmit}>
           <fieldset className="filter-group filter-group-fiscal">
             <legend>Periodo fiscale</legend>
             <label>Periodo fiscale rapido<select id="billingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter}>

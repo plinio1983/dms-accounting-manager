@@ -423,7 +423,10 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   const hasOrderDateFilter = Boolean(inputDefault(filters, 'orderDateFrom') || inputDefault(filters, 'orderDateTo') || inputDefault(filters, 'dateQuick'));
   const useFiscalPeriodFilter = hasFiscalPeriodFilter;
   const useOrderDateFilter = !useFiscalPeriodFilter;
-  const quickDateFilter = useOrderDateFilter ? (inputDefault(filters, 'dateQuick') || (!hasAnyFilter && !hasOrderDateFilter ? 'this_month' : '')) : '';
+  const rawDateQuickFilter = useOrderDateFilter ? inputDefault(filters, 'dateQuick') : '';
+  const hasCustomOrderDateFilter = useOrderDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'orderDateFrom') || inputDefault(filters, 'orderDateTo'));
+  const quickDateFilter = useOrderDateFilter ? (rawDateQuickFilter || (!hasAnyFilter && !hasOrderDateFilter ? 'this_month' : '')) : '';
+  const dateQuickSelectorValue = hasCustomOrderDateFilter ? 'custom' : quickDateFilter;
   const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter) : null;
   const orderDateFromDefault = useOrderDateFilter ? (quickDateRange?.from || inputDefault(filters, 'orderDateFrom') || (!hasAnyFilter ? currentMonthStart() : '')) : '';
   const orderDateToDefault = useOrderDateFilter ? (quickDateRange?.to || inputDefault(filters, 'orderDateTo')) : '';
@@ -525,7 +528,6 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     return acc;
   }, { total: 0, paidVat: 0, declared: 0, nonDeclared: 0, toPay: 0, overdue: 0, overdueCount: 0, invoicesNotReceived: 0 });
 
-  const periodTotals = summarizeExpenses(periodExpenses);
   const totals = summarizeExpenses(filteredExpenses);
   const totalsPeriodLabel = periodTotalsLabel({
     useFiscalPeriodFilter,
@@ -579,18 +581,18 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
 
     <div className="card expenses-list-card">
       <ExpenseTrendSelectors
-        dateQuick={quickDateFilter}
+        dateQuick={dateQuickSelectorValue}
         billingPeriodQuick={quickBillingPeriodFilter}
         useFiscalPeriodFilter={useFiscalPeriodFilter}
       />
       <p className="totals-period-note">{totalsPeriodLabel}</p>
       <div className="totals-row">
-        <div className="total-card total-card-expense"><span>Spese Totali<br />IVA inclusa</span><strong className={moneyTone(periodTotals.total)}>{euro(periodTotals.total)}</strong><small>Totale del periodo selezionato, senza altri filtri.</small></div>
-        <div className="total-card total-card-vat"><span>IVA versata</span><strong className={moneyTone(periodTotals.paidVat)}>{euro(periodTotals.paidVat)}</strong><small>IVA del periodo calcolata sulle spese saldate.</small></div>
-        <div className="total-card total-card-declared"><span>Spese non dichiarate</span><strong className={moneyTone(periodTotals.nonDeclared)}>{euro(periodTotals.nonDeclared)}</strong><small>Spese non in detrazione del periodo.</small></div>
-        <div className="total-card total-card-warning"><span>Non saldato</span><strong className={moneyTone(periodTotals.toPay)}>{euro(periodTotals.toPay)}</strong><small>Residuo del periodo ancora da pagare.</small></div>
-        <div className="total-card total-card-warning"><span>Fatture non<br />ricevute</span><strong>{periodTotals.invoicesNotReceived}</strong><small>Spese del periodo in detrazione senza fattura emessa.</small></div>
-        <div className={`total-card ${periodTotals.overdueCount > 0 ? 'total-card-critical' : 'total-card-neutral'}`}><span>Pagamenti scaduti</span><strong>{periodTotals.overdueCount}</strong><small>Spese scadute con residuo nel periodo selezionato.</small></div>
+        <div className="total-card total-card-expense"><span>Spese Totali<br />IVA inclusa</span><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong><small>Totale calcolato sui filtri impostati.</small></div>
+        <div className="total-card total-card-vat"><span>IVA versata</span><strong className={moneyTone(totals.paidVat)}>{euro(totals.paidVat)}</strong><small>IVA calcolata sulle spese filtrate e saldate.</small></div>
+        <div className="total-card total-card-declared"><span>Spese non dichiarate</span><strong className={moneyTone(totals.nonDeclared)}>{euro(totals.nonDeclared)}</strong><small>Spese non in detrazione nei risultati filtrati.</small></div>
+        <div className="total-card total-card-warning"><span>Non saldato</span><strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong><small>Residuo ancora da pagare nei risultati filtrati.</small></div>
+        <div className="total-card total-card-warning"><span>Fatture non<br />ricevute</span><strong>{totals.invoicesNotReceived}</strong><small>Spese filtrate in detrazione senza fattura emessa.</small></div>
+        <div className={`total-card ${totals.overdueCount > 0 ? 'total-card-critical' : 'total-card-neutral'}`}><span>Pagamenti scaduti</span><strong>{totals.overdueCount}</strong><small>Spese filtrate scadute con residuo.</small></div>
       </div>
 
       <div className="list-heading recurring-list-heading">
@@ -792,14 +794,6 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           [from, to].forEach((field) => field.addEventListener('change', () => { quick.value = ''; ['billingPeriodFrom','billingPeriodTo','billingPeriodQuick'].forEach(id => { const f = document.getElementById(id); if (f) f.value = ''; }); }));
         })();
       ` }} />
-
-      <div className="search-totals-row" aria-label="Totali risultati filtrati">
-        {/*<div><span>Risultati</span><strong>{filteredExpenses.length}</strong></div>*/}
-        <div><span>Spese filtrate</span><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></div>
-        <div><span>Spesa non fiscale</span><strong className={moneyTone(totals.nonDeclared)}>{euro(totals.nonDeclared)}</strong></div>
-        <div><span>Non saldato</span><strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong></div>
-        <div className={totals.overdue > 0 ? 'search-total-critical' : ''}><span>Pag. scaduti</span><strong className={moneyTone(totals.overdue)}>{euro(totals.overdue)}</strong></div>
-      </div>
 
       <form id="expenseBulkForm" action={`/api/expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
         <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="expenseBulkForm">

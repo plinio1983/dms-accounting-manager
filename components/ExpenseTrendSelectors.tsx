@@ -14,6 +14,7 @@ const quickDateOptions = [
   ["two_months_ago", "Due mesi fa"],
   ["current_quarter", "Trimestre in corso"],
   ["last_quarter", "Ultimo Trimestre"],
+  ["custom", "Data personalizzata"],
 ];
 
 const quickBillingPeriodOptions = [
@@ -22,6 +23,11 @@ const quickBillingPeriodOptions = [
   ["current_quarter", "Trimestre in corso"],
   ["previous_quarter", "Trimestre precedente"],
 ];
+
+function openFiltersDrawer() {
+  const trigger = document.querySelector<HTMLButtonElement>(".recurring-filter-trigger");
+  if (trigger) trigger.click();
+}
 
 function goWithQuick(type: "date" | "fiscal", value: string) {
   const params = new URLSearchParams(window.location.search);
@@ -79,7 +85,13 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, u
     </div>
 
     {mode === "date" ? <label>
-      <select value={andamentoComplessivoValue} onChange={(event) => goWithQuick("date", event.currentTarget.value)}>
+      <select value={andamentoComplessivoValue} onChange={(event) => {
+        if (event.currentTarget.value === "custom") {
+          openFiltersDrawer();
+          return;
+        }
+        goWithQuick("date", event.currentTarget.value);
+      }}>
         {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
       </select>
     </label> : <label>
