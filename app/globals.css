@@ -52,6 +52,24 @@ a {
     gap: 10px;
 }
 
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.pwa-install-button {
+    background: #0b2f66;
+    color: #fff;
+    border: 1px solid #0b2f66;
+    border-radius: 12px;
+    padding: 10px 13px;
+    font-weight: 850;
+    box-shadow: 0 10px 22px rgba(11, 47, 102, .16);
+}
+
 /* dettaglio spesa: mantiene solo la barra mobile, senza intestazione desktop */
 .expense-detail-mobile-nav-only .nav-links {
     display: none;
@@ -4168,6 +4186,18 @@ button {
         font-size: 20px;
     }
 
+    .nav-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        justify-content: stretch;
+    }
+
+    .pwa-install-button {
+        width: 100%;
+        max-width: none;
+    }
+
     .nav-links {
         width: 100%;
         display: grid;
@@ -8231,7 +8261,7 @@ button.bulk-direct-danger {
 
     .supplier-toolbar-card .actions-row {
         grid-template-columns: 1fr 1fr;
-        gap: 7px;
+        gap: 7px !important;
     }
 
     .supplier-toolbar-card .actions-row a,

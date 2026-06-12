@@ -3,6 +3,7 @@
 import { Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import MainNav from '@/components/MainNav';
+import PwaInstallButton from '@/components/PwaInstallButton';
 
 type Props = {
   slot: 'header' | 'footer';
@@ -19,9 +20,12 @@ export default function ShellChrome({ slot }: Props) {
     if (slot === 'footer') return null;
 
     return <div className="expense-detail-mobile-nav-only">
-      <Suspense fallback={null}>
-        <MainNav />
-      </Suspense>
+      <div className="nav-actions">
+        <PwaInstallButton />
+        <Suspense fallback={null}>
+          <MainNav />
+        </Suspense>
+      </div>
     </div>;
   }
 
