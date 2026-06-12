@@ -76,14 +76,14 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const encodedSupplierDetailHref = encodeURIComponent(supplierDetailHref);
 
   return <div className="grid">
-    <div className="toolbar-card">
+    <div className="toolbar-card supplier-toolbar-card">
+      <div className="actions-row">
+        <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
+        <Link className="table-action" href={`/suppliers/${supplier.id}/edit`}>✎ Modifica</Link>
+      </div>
       <div>
         <h2>Dettaglio fornitore</h2>
         <p className="muted">{supplier.businessName}</p>
-      </div>
-      <div className="actions-row right-actions">
-        <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
-        <Link className="table-action" href={`/suppliers/${supplier.id}/edit`}>✎ Modifica</Link>
       </div>
     </div>
 

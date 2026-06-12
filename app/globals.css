@@ -8228,6 +8228,18 @@ button.bulk-direct-danger {
         max-width: initial;
         flex-grow: 1;
     }
+
+    .supplier-toolbar-card .actions-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+    }
+
+    .supplier-toolbar-card .actions-row a,
+    .supplier-toolbar-card .actions-row button {
+        max-width: initial;
+        flex-grow: 1;
+        padding: 10px 7px;
+    }
 }
 
 /* Mobile-first income list cards */
