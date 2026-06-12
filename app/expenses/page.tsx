@@ -124,14 +124,15 @@ function fiscalBadge(value: boolean) {
   return <span className={badgeClass(item.className)}>{label}</span>;
 }
 function fiscalBadgeMobile(value: boolean) {
-  const item = value ? yesNoStyles.yes : yesNoStyles.no;
+  const item = value ? { className: '' } : yesNoStyles.no;
   const label = value ? 'DF' : 'NF';
   return <span className={badgeClass(item.className)}>{label}</span>;
 }
 function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
-  if (!value) return <span className={badgeClass("tone-services")}>NF</span>;
+  //if (!value) return <span className={badgeClass("tone-services")}>Fatt</span>;
   const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
-  return <span className={badgeClass(style.className)}>@fatt</span>;
+  if (!value) return <span className={badgeClass(style.className)}>Fatt</span>;
+  return <span className={badgeClass(style.className)}>eFatt</span>;
 }
 function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: string }> }) {
   return <div className="active-filter-summary">
@@ -902,6 +903,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           const invoiceStyle = invoiceStatusStyles[e.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
           const overdue = isExpensePastDueForBadge(e);
           const upaid = isExpenseOverdue(e);
+          const invoicePendingAfterPayment = e.paymentStatus === 'COMPLETATO' && e.invoiceStatus === 'IN_ATTESA';
           const statusStyle = overdue ? paymentStatusStyles.SCADUTO : paymentStyle;
           const detailHref = e.recurringExpenseId
             ? `/recurring-expenses/${e.recurringExpenseId}?returnTo=${returnTo}`
@@ -912,6 +914,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             recordAddClass = "expense-mobile-item-overdue";
           } else if (upaid) {
             recordAddClass = "expense-mobile-item-unpaid";
+          } else if (invoicePendingAfterPayment) {
+            recordAddClass = "expense-mobile-item-invoice-waiting";
           }
           const recordClass = `expense-mobile-item ${recordAddClass}`;
 
@@ -925,7 +929,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
                 <div className="expense-mobile-meta">
                   <div className="expense-mobile-meta-left">
                     {e.category ? <span title={e.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? e.category.code}</span> : null}
-                    {electronicInvoiceBadge(e.hasElectronicInvoice, e.invoiceStatus)}
+                    {e.isDeclared ? electronicInvoiceBadge(e.hasElectronicInvoice, e.invoiceStatus) : null}
                     <span className="expense-mobile-date">
                       {formatPeriod(e.month, e.year)}
                     </span>
@@ -996,7 +1000,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           const paymentStyle = paymentStatusStyles[e.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
           const invoiceStyle = invoiceStatusStyles[e.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
           const overdue = isExpensePastDueForBadge(e);
-          return <tr key={e.id}>
+          const invoicePendingAfterPayment = e.paymentStatus === 'COMPLETATO' && e.invoiceStatus === 'IN_ATTESA';
+          return <tr key={e.id} className={invoicePendingAfterPayment ? 'expense-row-invoice-waiting' : ''}>
             <td className="cell-center"><input form="expenseBulkForm" type="checkbox" name="ids" value={e.id} aria-label={`Seleziona spesa ${e.id}`} /></td>
             <td><Link title="Dettaglio" aria-label="Dettaglio" className="table-action secondary icon-action" href={`/expenses/${e.id}?returnTo=${returnTo}`}>👁</Link></td>
             <td>{formatPeriod(e.month, e.year)}</td>

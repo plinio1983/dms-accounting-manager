@@ -1545,6 +1545,20 @@ body.drawer-open {
     border-color: #ffe8a3;
 }
 
+.expense-row-invoice-waiting td {
+    background: #fffaf0;
+}
+
+.expense-row-invoice-waiting td:first-child {
+    border-left: 4px solid #f59e0b;
+}
+
+.expense-mobile-item-invoice-waiting {
+    background: linear-gradient(135deg, #fffaf0 0%, #ffffff 72%);
+    border-color: #f7d78b;
+    /*box-shadow: 0 10px 24px rgba(161, 92, 0, .10);*/
+}
+
 .tone-sdi {
     background: #edf5ff;
     color: #155aa8;
