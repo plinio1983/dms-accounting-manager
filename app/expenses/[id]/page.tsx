@@ -114,6 +114,11 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
     />
 
     <section className="expense-detail-hero card">
+      <div className="actions-row expense-detail-actions">
+        <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
+        <button className="table-action secondary" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉ Copia</button>
+        <Link className="table-action" href="#" data-expense-detail-edit-id={expense.id}>✎ Modifica</Link>
+      </div>
       <div className="expense-detail-hero-main">
         <div className="expense-detail-hero-main-meta">
           <div className={expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{expense.isRecurring ? 'R' : 'S'}</div>
@@ -142,11 +147,6 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>
           </div>
         </div>
-      </div>
-      <div className="actions-row expense-detail-actions">
-        <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
-        <button className="table-action secondary" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉ Copia</button>
-        <Link className="table-action" href="#" data-expense-detail-edit-id={expense.id}>✎ Modifica</Link>
       </div>
     </section>
 

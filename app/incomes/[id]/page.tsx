@@ -63,7 +63,12 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
   return <div className="grid income-detail-page">
     <IncomeEditModalController returnTo={currentDetailReturnTo} />
 
+
     <section className="expense-detail-hero card income-detail-hero">
+      <div className="actions-row expense-detail-actions">
+        <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
+        <Link className="table-action" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
+      </div>
       <div className="expense-detail-hero-main">
         <div className="expense-detail-hero-main-meta">
           <div className="badge color-badge income-detail-badge">I</div>
@@ -96,10 +101,6 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
             <strong>{euro(netAmount)}</strong>
           </div>
         </div>
-      </div>
-      <div className="actions-row expense-detail-actions">
-        <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
-        <Link className="table-action" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
       </div>
     </section>
 

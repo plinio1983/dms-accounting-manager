@@ -2303,7 +2303,16 @@ body.drawer-open {
     }
 
     .expense-detail-actions {
-        justify-content: stretch;
+        justify-content: space-between !important;
+        margin-bottom: 6px;
+        margin-top: -8px;
+    }
+
+    .expense-detail-actions a,
+    .expense-detail-actions button {
+        flex-grow: 1;
+        max-width: initial;
+        padding: 10px 10px;
     }
 
     .expense-detail-actions .table-action {

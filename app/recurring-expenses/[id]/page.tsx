@@ -103,6 +103,10 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
     />
 
     <section className="expense-detail-hero card recurring-detail-hero">
+      <div className="actions-row expense-detail-actions">
+        <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
+        <Link className="table-action" href="#" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</Link>
+      </div>
       <div className="expense-detail-hero-main">
         <div className="expense-detail-hero-main-meta">
           <div className={badgeClass(activeClass)}>{item.isActive ? 'ON' : 'OFF'}</div>
@@ -128,10 +132,6 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
             <span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span>
           </div>
         </div>
-      </div>
-      <div className="actions-row expense-detail-actions">
-        <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
-        <Link className="table-action" href="#" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</Link>
       </div>
     </section>
 
