@@ -24,7 +24,7 @@ export default function NewRecurringExpensePanel({ categories, banks, suppliers 
   }, []);
 
   return <>
-    <div className="toolbar-actions">
+    <div className="toolbar-actions expense-toolbar-actions">
       <Link className="button-standard secondary-action" href="/expenses">↩ Lista spese</Link>
       <button className="button-standard primary-action" type="button" onClick={() => setIsOpen(true)}><span className="btn-icon">＋</span>Spesa ricorrente</button>
     </div>

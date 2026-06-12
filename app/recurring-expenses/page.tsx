@@ -77,7 +77,7 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
   const orderedCategories = allowedCategoryOrder.map(name => categories.find(category => category.name === name)).filter(Boolean) as typeof categories;
 
   return <div className="grid">
-    <div className="toolbar-card">
+    <div className="toolbar-card expense-toolbar-card">
       <div><h2>Spese ricorrenti</h2><p className="muted">Gestisci le regole di spesa ricorrente.</p></div>
       <NewRecurringExpensePanel
         categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}

@@ -8222,6 +8222,12 @@ button.bulk-direct-danger {
         border-top: 1px solid var(--line);
         border-bottom: 1px solid var(--line);
     }
+
+    .expense-toolbar-card .expense-toolbar-actions a,
+    .expense-toolbar-card .expense-toolbar-actions button {
+        max-width: initial;
+        flex-grow: 1;
+    }
 }
 
 /* Mobile-first income list cards */
