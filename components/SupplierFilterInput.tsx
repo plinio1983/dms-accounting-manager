@@ -20,7 +20,7 @@ export default function SupplierFilterInput({ initialValue = '' }: { initialValu
   useEffect(() => {
     const controller = new AbortController();
     const trimmed = query.trim();
-    const params = trimmed ? `?q=${encodeURIComponent(trimmed)}` : '';
+    const params = trimmed ? `?search=${encodeURIComponent(trimmed)}` : '';
     fetch(`/api/suppliers${params}`, { signal: controller.signal })
       .then((response) => response.ok ? response.json() : [])
       .then((data) => {
@@ -84,7 +84,10 @@ export default function SupplierFilterInput({ initialValue = '' }: { initialValu
           key={supplier.id}
           className={index === activeIndex ? 'active' : ''}
           onMouseEnter={() => setActiveIndex(index)}
-          onClick={() => selectSupplier(supplier)}
+          onMouseDown={(event) => {
+            event.preventDefault();
+            selectSupplier(supplier);
+          }}
         >
           <strong>{supplier.businessName}</strong>
           {supplier.alias && <small>Alias: {supplier.alias}</small>}

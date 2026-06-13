@@ -210,7 +210,7 @@ function SupplierAutocomplete({
       }).catch(() => null);
       if (!response?.ok) return;
       const data = await response.json();
-      setResults(data);
+      setResults(Array.isArray(data) ? data : []);
       setActiveIndex(0);
     }, 180);
     return () => {
@@ -316,7 +316,10 @@ function SupplierAutocomplete({
                 key={supplier.id}
                 className={index === activeIndex ? "active" : ""}
                 onMouseEnter={() => setActiveIndex(index)}
-                onClick={() => selectSupplier(supplier)}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  selectSupplier(supplier);
+                }}
               >
                 <strong>{supplier.businessName}</strong>
                 {supplier.alias && <small>Alias: {supplier.alias}</small>}
