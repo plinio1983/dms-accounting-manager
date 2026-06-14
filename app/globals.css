@@ -1430,12 +1430,15 @@ body.drawer-open {
     min-width: 1260px;
 }
 
+.supplier-linked-expenses-table .cell-option,
 .expenses-table .cell-option {
     width: 4% !important;
     max-width: 4% !important;
     text-align: center;
 }
 
+
+.supplier-linked-expenses-table  .cell-order-date,
 .expenses-table .cell-order-date {
     width: 8% !important;
     /*width: 66px !important;*/
@@ -1443,6 +1446,7 @@ body.drawer-open {
     text-align: center;
 }
 
+.supplier-linked-expenses-table .cell-billing-period,
 .expenses-table .cell-billing-period {
     width: 6% !important;
     /*width: 66px !important;*/
@@ -1450,6 +1454,7 @@ body.drawer-open {
     text-align: left;
 }
 
+.supplier-linked-expenses-table .cell-category,
 .expenses-table .cell-category {
     width: 7% !important;
     /*width: 58px !important;*/
@@ -1457,38 +1462,47 @@ body.drawer-open {
     text-align: center;
 }
 
+.supplier-linked-expenses-table .cell-ebilling,
 .expenses-table .cell-ebilling {
     width: 5% !important;
     text-align: center;
 }
 
+.supplier-linked-expenses-table .cell-fiscal,
+.supplier-linked-expenses-table .cell-type,
 .expenses-table .cell-fiscal,
 .expenses-table .cell-type {
     width: 5% !important;
     text-align: center;
 }
 
+.supplier-linked-expenses-table .cell-supplier,
 .expenses-table .cell-supplier {
     width: 11% !important;
     text-align: left;
 }
 
+.supplier-linked-expenses-table .cell-amount,
+.supplier-linked-expenses-table .cell-residual,
 .expenses-table .cell-residual,
 .expenses-table .cell-amount {
     width: 7% !important;
     text-align: center;
 }
 
+.supplier-linked-expenses-table .cell-invoice-state,
 .expenses-table .cell-invoice-state {
     width: 9% !important;
     text-align: center;
 }
 
+.supplier-linked-expenses-table .cell-payment-state,
 .expenses-table .cell-payment-state {
     width: 9% !important;
     text-align: center;
 }
 
+.supplier-linked-expenses-table .cell-description,
 .expenses-table .cell-description {
     width: 9% !important;
     text-align: left;
@@ -8115,12 +8129,12 @@ button.bulk-direct-danger {
 }
 
 /* v096: fiscal overdue counts, fiscal links and totals period labels */
-.toolbar-card > div:first-child,
-.toolbar-card-wrap > div:first-child {
-    min-width: 0;
-    display: grid;
-    gap: 4px;
-}
+/*.toolbar-card > div:first-child,*/
+/*.toolbar-card-wrap > div:first-child {*/
+/*    min-width: 0;*/
+/*    display: grid;*/
+/*    gap: 4px;*/
+/*}*/
 
 .toolbar-card > div:first-child h2,
 .toolbar-card-wrap > div:first-child h2 {
@@ -8137,7 +8151,7 @@ button.bulk-direct-danger {
 }
 
 .totals-period-note {
-    margin: 0;
+    margin: 0 0 14px;
     padding: 10px 12px;
     border-radius: 14px;
     background: #f8fafc;
@@ -9334,5 +9348,24 @@ body:has(.detail-page-no-site-header) .shell {
 
     form.expense-filters {
         grid-template-columns: repeat(1, minmax(130px, 1fr));
+    }
+
+    .dashboard-statement-panel.list-totals-statement {
+        max-width: 760px;
+        margin: 0 auto;
+        padding-top: 0;
+    }
+
+    .dashboard-statement-panel.list-totals-statement table {
+        margin: 0 auto;
+    }
+
+    .expense-mobile-list {
+        display: none;
+    }
+
+    .supplier-toolbar-card {
+        display: flex;
+        flex-direction: row-reverse;
     }
 }

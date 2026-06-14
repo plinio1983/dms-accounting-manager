@@ -134,22 +134,22 @@ export default function IncomeFiltersDrawer({
         <form className="expense-filters recurring-drawer-filters income-drawer-filters" action="/incomes" method="get" onSubmit={handleFiltersSubmit}>
           <fieldset className="filter-group filter-group-fiscal">
             <legend>Periodo fiscale</legend>
-            <label>Periodo Fatt. da<input id="incomeBillingPeriodFrom" name="billingPeriodFrom" type="month" defaultValue={billingPeriodFromFilter} /></label>
-            <label>Periodo Fatt. a<input id="incomeBillingPeriodTo" name="billingPeriodTo" type="month" defaultValue={billingPeriodToFilter} /></label>
-            <label>Periodo fiscale rapido<select id="incomeBillingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter}>
+            <label>Selezione rapida periodo<select id="incomeBillingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter}>
               <option value="">Periodo personalizzato</option>
               {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select></label>
+            <label>Periodo Fatt. da<input id="incomeBillingPeriodFrom" name="billingPeriodFrom" type="month" defaultValue={billingPeriodFromFilter} /></label>
+            <label>Periodo Fatt. a<input id="incomeBillingPeriodTo" name="billingPeriodTo" type="month" defaultValue={billingPeriodToFilter} /></label>
           </fieldset>
 
           <fieldset className="filter-group filter-group-order-date">
             <legend>Date accredito</legend>
-            <label>Selezione rapida data<select id="incomeDateQuick" name="dateQuick" defaultValue={quickDateFilter}>
-            <label>Data accredito da<input id="creditDateFrom" name="creditDateFrom" type="date" defaultValue={creditDateFromDefault} /></label>
-            <label>Data accredito a<input id="creditDateTo" name="creditDateTo" type="date" defaultValue={creditDateToDefault} /></label>
+            <label>Selezione rapida periodo<select id="incomeDateQuick" name="dateQuick" defaultValue={quickDateFilter}>
               <option value="">Periodo personalizzato</option>
               {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select></label>
+            <label>Data accredito da<input id="creditDateFrom" name="creditDateFrom" type="date" defaultValue={creditDateFromDefault} /></label>
+            <label>Data accredito a<input id="creditDateTo" name="creditDateTo" type="date" defaultValue={creditDateToDefault} /></label>
           </fieldset>
 
           <label>Canale vendita<select name="salesChannel" defaultValue={inputDefault(filters, "salesChannel")}>

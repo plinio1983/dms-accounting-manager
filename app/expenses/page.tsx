@@ -640,8 +640,9 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         billingPeriodYear={billingPeriodYearFilter}
         useFiscalPeriodFilter={useFiscalPeriodFilter}
       />
-      <p className="totals-period-note">{totalsPeriodLabel}</p>
+
       <div className="dashboard-statement-panel list-totals-statement">
+        <p className="totals-period-note">{totalsPeriodLabel}</p>
         <table className="dashboard-statement-table list-totals-table" aria-label="Totali spese filtrate">
           <tbody>
             <tr><td>Spese totali IVA inclusa</td><td><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></td></tr>

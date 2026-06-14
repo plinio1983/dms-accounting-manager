@@ -176,16 +176,16 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       </div>
 
       <div className="table-scroll"><table className="supplier-linked-expenses-table"><thead><tr>
-        <th>Data ordine</th>
-        <th>Periodo Fatt.</th>
-        <th>Categoria</th>
-        <th>Stato Pagam.</th>
-        <th>Importo</th>
-        <th>Dichiarazione</th>
-        <th>Stato Fattura</th>
-        <th>Fattura Elettr.</th>
-        <th>Descrizione</th>
-        <th></th>
+        <th className="cell-option"></th>
+        <th className="cell-order-date">Data ordine</th>
+        <th className="cell-billing-period">Periodo Fatt.</th>
+        <th className="cell-category">Categoria</th>
+        <th className="cell-payment-state">Stato Pagam.</th>
+        <th className="cell-amount">Importo</th>
+        <th className="cell-fiscal">Dichiarazione</th>
+        <th className="cell-invoice-state">Stato <br />Fatt.</th>
+        <th className="cell-ebilling">e-Bill</th>
+        <th className="cell-description">Descrizione</th>
       </tr></thead><tbody>
         {supplier.expenses.map(expense => {
           const amount = Number(expense.amount.toString());
@@ -193,16 +193,16 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
           const paymentStyle = paymentStatusStyles[expense.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
           const invoiceStyle = invoiceStatusStyles[expense.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
           return <tr key={expense.id}>
-            <td>{dateLabel(expense.receivedDate)}</td>
-            <td>{formatPeriod(expense.month, expense.year)}</td>
-            <td>{expense.category ? <span title={expense.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? expense.category.code}</span> : '-'}</td>
-            <td><span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span></td>
-            <td><strong>{euro(amount)}</strong></td>
-            <td>{booleanBadge(expense.isDeclared)}</td>
-            <td><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
-            <td>{booleanBadge(expense.hasElectronicInvoice)}</td>
+            <td className="cell-option"><Link className="table-action secondary icon-action" title="Dettaglio spesa" aria-label="Dettaglio spesa" href={`/expenses/${expense.id}?returnTo=${encodedSupplierDetailHref}`}>👁</Link></td>
+            <td className="cell-order-date">{dateLabel(expense.receivedDate)}</td>
+            <td className="cell-billing-period">{formatPeriod(expense.month, expense.year)}</td>
+            <td className="cell-category">{expense.category ? <span title={expense.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? expense.category.code}</span> : '-'}</td>
+            <td className="cell-payment-state"><span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span></td>
+            <td className="cell-amount"><strong>{euro(amount)}</strong></td>
+            <td className="cell-fiscal">{booleanBadge(expense.isDeclared)}</td>
+            <td className="cell-invoice-state"><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
+            <td className="cell-ebilling">{booleanBadge(expense.hasElectronicInvoice)}</td>
             <td className="cell-description" title={expense.description ?? ''}>{expense.description ?? '-'}</td>
-            <td><Link className="table-action secondary icon-action" title="Dettaglio spesa" aria-label="Dettaglio spesa" href={`/expenses/${expense.id}?returnTo=${encodedSupplierDetailHref}`}>👁</Link></td>
           </tr>;
         })}
         {!supplier.expenses.length && <tr><td colSpan={10}>Nessuna spesa collegata a questo fornitore.</td></tr>}
