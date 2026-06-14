@@ -70,13 +70,19 @@ a {
     box-shadow: 0 10px 22px rgba(11, 47, 102, .16);
 }
 
-/* dettaglio spesa: mantiene solo la barra mobile, senza intestazione desktop */
+/* pagine compatte: intestazione desktop ripristinata, barra essenziale solo mobile */
 .expense-detail-mobile-nav-only .nav-links {
     display: none;
 }
 
 @media (min-width: 761px) {
     .expense-detail-mobile-nav-only {
+        display: none;
+    }
+}
+
+@media (max-width: 760px) {
+    .compact-mobile-header-path {
         display: none;
     }
 }
