@@ -609,7 +609,7 @@ export default function ExpenseForm({
         ["RICEVUTA", "✅ Emessa"],
         ["CONTESTAZIONE", "⚠️ Contestazione"],
       ];
-      return [["NON_PREVISTA", "— Non prevista"], ...base];
+      return [["NON_PREVISTA", "Non prevista"], ...base];
     },
     [],
   );

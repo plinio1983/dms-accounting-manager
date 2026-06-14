@@ -42,7 +42,7 @@ export default function SupplierFiltersDrawer({ filters }: Props) {
         <div className="filter-drawer-header">
           <div>
             <h3>Filtri fornitori</h3>
-            <p className="muted">Cerca per ragione sociale, alias, contatti e codice fiscale/SDI.</p>
+            {/*<p className="muted">Cerca per ragione sociale, alias, contatti e codice fiscale/SDI.</p>*/}
           </div>
           <button className="secondary-button modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
         </div>

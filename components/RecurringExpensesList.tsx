@@ -97,6 +97,25 @@ export default function RecurringExpensesList({
     </div> : null}
 
     <BulkSelectionController />
+    <script dangerouslySetInnerHTML={{ __html: `
+      document.addEventListener('click', function(event) {
+        const row = event.target.closest && event.target.closest('[data-row-href]');
+        if (!row) return;
+        if (window.matchMedia && !window.matchMedia('(min-width: 761px)').matches) return;
+        if (event.target.closest('a, button, input, select, textarea, label, summary, details')) return;
+        const href = row.getAttribute('data-row-href');
+        if (href) window.location.href = href;
+      });
+      document.addEventListener('keydown', function(event) {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        const row = event.target && event.target.matches && event.target.matches('[data-row-href]') ? event.target : null;
+        if (!row) return;
+        if (window.matchMedia && !window.matchMedia('(min-width: 761px)').matches) return;
+        event.preventDefault();
+        const href = row.getAttribute('data-row-href');
+        if (href) window.location.href = href;
+      });
+    ` }} />
     <form id="recurringExpenseBulkForm" action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses" method="post" className="bulk-actions-bar confirm-bulk-form recurring-bulk-actions-bar">
       <p className="muted">Risultati mostrati: {itemCount}</p>
       <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="recurringExpenseBulkForm" data-edit-base="/recurring-expenses/" data-edit-suffix="" data-edit-trigger-attr="data-recurring-expense-detail-edit-id" data-return-to="%2Frecurring-expenses">
@@ -105,7 +124,7 @@ export default function RecurringExpensesList({
       </div>
     </form>
     {items.length ? <>
-      <div className="recurring-expenses-list recurring-expenses-desktop-list">{items.map(item => <div className="recurring-expense-row recurring-expense-row-with-select" key={item.id}>
+      <div className="recurring-expenses-list recurring-expenses-desktop-list">{items.map(item => <div className="recurring-expense-row recurring-expense-row-with-select clickable-desktop-row" data-row-href={`/recurring-expenses/${item.id}`} role="link" tabIndex={0} key={item.id}>
         <div className="recurring-expense-select"><input form="recurringExpenseBulkForm" type="checkbox" name="ids" value={item.id} aria-label={`Seleziona spesa ricorrente ${item.id}`} /></div>
         <div><span className={item.isActive ? 'status-dot is-active' : 'status-dot'} /><strong>{item.description}</strong><small>{item.supplier?.businessName || item.merchant} · {item.category?.name ?? 'Senza categoria'}</small></div>
         <div><span>Cadenza</span><strong>{cadenceLabels[item.cadence] ?? item.cadence}</strong></div>

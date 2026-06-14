@@ -561,6 +561,23 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
       <BulkSelectionController />
 
       <script dangerouslySetInnerHTML={{ __html: `
+        document.addEventListener('click', function(event) {
+          const row = event.target.closest && event.target.closest('[data-row-href]');
+          if (!row) return;
+          if (window.matchMedia && !window.matchMedia('(min-width: 761px)').matches) return;
+          if (event.target.closest('a, button, input, select, textarea, label, summary, details')) return;
+          const href = row.getAttribute('data-row-href');
+          if (href) window.location.href = href;
+        });
+        document.addEventListener('keydown', function(event) {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          const row = event.target && event.target.matches && event.target.matches('[data-row-href]') ? event.target : null;
+          if (!row) return;
+          if (window.matchMedia && !window.matchMedia('(min-width: 761px)').matches) return;
+          event.preventDefault();
+          const href = row.getAttribute('data-row-href');
+          if (href) window.location.href = href;
+        });
         (() => {
           const storageKey = 'dmsAccounting.incomes.filters';
           const resetLink = document.querySelector('a[href="/incomes"].reset-button');
@@ -775,7 +792,6 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
 
       <div className="table-scroll incomes-table-scroll"><table className="expenses-table compact-incomes-table"><colgroup>
         <col className="income-col-select" />
-        <col className="income-col-detail" />
         <col className="income-col-period" />
         <col className="income-col-date" />
         <col className="income-col-channel" />
@@ -787,10 +803,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         <col className="income-col-fiscal" />
         <col className="income-col-invoice" />
         <col className="income-col-vat" />
-        <col className="income-col-action" />
       </colgroup><thead><tr>
         <th className="cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="incomeBulkForm" aria-label="Seleziona tutti gli incassi" /></th>
-        <th className="cell-center"><span className="sr-only">Dettaglio</span></th>
         <th className="cell-left"><span className="th-wrap">Periodo<br />Fatt.</span></th>
         <th className="cell-left"><span className="th-wrap">Data<br />accr.</span></th>
         <th className="cell-left"><span className="th-wrap">Canale<br />vendita</span></th>
@@ -811,9 +825,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           const creditStyle = creditChannelStyles[income.creditChannel];
           const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
           const vatStyle = vatStyles[String(Number(income.vatRate.toString()))] ?? vatStyles['0'];
-          return <tr className={income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : undefined} key={income.id}>
+          return <tr className={['clickable-desktop-row', income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : ''].filter(Boolean).join(' ')} data-row-href={`/incomes/${income.id}?returnTo=${returnTo}`} tabIndex={0} key={income.id}>
             <td className="cell-center"><input form="incomeBulkForm" type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`} /></td>
-            <td className="cell-center"><Link title="Dettaglio" aria-label="Dettaglio" className="table-action secondary icon-action" href={`/incomes/${income.id}?returnTo=${returnTo}`}>👁</Link></td>
             <td className="cell-left nowrap-cell">{formatPeriod(income.billingMonth, income.billingYear)}</td>
             <td className="cell-left nowrap-cell">{dateLabel(income.creditDate)}</td>
             <td className="cell-left"><span title={income.salesChannel} className={`${badgeClass(salesStyle?.className)} income-badge-compact`}>{salesStyle?.icon ?? '•'} {income.salesChannel}</span></td>
@@ -828,7 +841,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             {/*<td className="cell-center"><DeleteActionButton action={`/api/incomes/${income.id}?returnTo=${returnTo}`} confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata." /></td>*/}
           </tr>;
         })}
-        {!filteredIncomes.length && <tr><td colSpan={14}>Nessun incasso trovato con i filtri selezionati.</td></tr>}
+        {!filteredIncomes.length && <tr><td colSpan={12}>Nessun incasso trovato con i filtri selezionati.</td></tr>}
       </tbody></table></div>
     </div>
     <div className="card expenses-list-card">

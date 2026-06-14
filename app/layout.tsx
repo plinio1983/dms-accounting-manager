@@ -1,6 +1,7 @@
 import './globals.css';
 import './mobile.css';
 import ShellChrome from '@/components/ShellChrome';
+import ClickableDesktopRows from '@/components/ClickableDesktopRows';
 
 export const metadata = {
   title: 'Tabularium',
@@ -19,6 +20,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return <html lang="it"><body><main className="shell">
     <ShellChrome slot="header" />
+    <ClickableDesktopRows />
 
     <script dangerouslySetInnerHTML={{ __html: `
       if ('serviceWorker' in navigator) {

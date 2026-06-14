@@ -134,7 +134,7 @@ export default function ExpenseFiltersDrawer({
         <div className="filter-drawer-header">
           <div>
             <h3>Filtri spese</h3>
-            <p className="muted">Cerca per periodo, fornitore, stato pagamento, fattura e importo.</p>
+            {/*<p className="muted">Cerca per periodo, fornitore, stato pagamento, fattura e importo.</p>*/}
           </div>
           <button className="secondary-button modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
         </div>
