@@ -6208,9 +6208,11 @@ select:disabled {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    min-height: 30px;
-    padding: 6px 9px;
+    gap: 7px;
+    /*gap: 5px;*/
+    /*min-height: 30px;*/
+    /*padding: 6px 9px;*/
+    padding: 0 13px;
     border: 1px solid var(--line);
     border-radius: 999px;
     background: #fff;
@@ -6220,6 +6222,8 @@ select:disabled {
     line-height: 1;
     text-decoration: none;
     box-shadow: 0 3px 8px rgba(15, 23, 42, .05);
+    min-height: 38px;
+    height: 38px;
 }
 
 button.bulk-direct-link {
@@ -6883,7 +6887,6 @@ button.bulk-direct-link {
     white-space: nowrap;
 }
 
-.bulk-direct-link,
 .bulk-action-trigger,
 .bulk-action-menu-panel button {
     display: inline-flex;
@@ -6955,32 +6958,6 @@ button.bulk-direct-link {
     margin: 0 !important;
 }
 
-.bulk-action-trigger,
-.bulk-direct-link,
-button.bulk-direct-link {
-    box-sizing: border-box !important;
-    min-width: 0 !important;
-    width: auto !important;
-    max-width: none !important;
-    min-height: 38px !important;
-    height: 38px !important;
-    padding: 0 13px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 7px !important;
-    border: 1px solid var(--line) !important;
-    border-radius: 999px !important;
-    background: #fff !important;
-    color: var(--accent) !important;
-    font-size: 12px !important;
-    font-weight: 850 !important;
-    line-height: 1 !important;
-    white-space: nowrap !important;
-    text-decoration: none !important;
-    box-shadow: 0 3px 8px rgba(15, 23, 42, .05) !important;
-}
-
 .bulk-action-trigger {
     color: var(--text) !important;
 }
@@ -7014,12 +6991,12 @@ button.bulk-direct-danger {
     flex: 0 0 auto !important;
 }
 
-.bulk-direct-link .bulk-label,
-.bulk-action-trigger .bulk-label,
-.bulk-action-menu-panel .bulk-label {
-    display: inline !important;
-    white-space: nowrap !important;
-}
+/*.bulk-direct-link .bulk-label,*/
+/*.bulk-action-trigger .bulk-label,*/
+/*.bulk-action-menu-panel .bulk-label {*/
+/*    display: inline !important;*/
+/*    white-space: nowrap !important;*/
+/*}*/
 
 .bulk-action-menu-panel {
     position: absolute !important;
@@ -7089,9 +7066,7 @@ button.bulk-direct-danger {
         flex: 0 0 auto !important;
     }
 
-    .bulk-action-trigger,
-    .bulk-direct-link,
-    button.bulk-direct-link {
+    .bulk-action-trigger {
         min-width: 44px !important;
         width: auto !important;
         height: 40px !important;
