@@ -186,7 +186,7 @@ function FiscalSummaryCard({
           <StatementMoneyRow label="Uscite fiscali" value={totals.usciteFiscali} href={fiscalExpensesHref} />
           <StatementMoneyRow label="Utile fiscale" value={totals.utileFiscale} highlight />
           <StatementMoneyRow label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
-          <StatementMoneyRow label="Previsione saldo IVA" value={totals.debitoIva} vat />
+          <StatementMoneyRow label="Previsione saldo IVA" value={totals.debitoIva} vat highlight />
           <StatementCountRow label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
           <StatementCountRow label="Fatture non inviate" value={totals.fattureNonInviate} warning={totals.fattureNonInviate > 0} href={invoicesNotSentHref} />
           <StatementCountRow label="Fatture non ricevute" value={totals.fattureNonRicevute} warning={totals.fattureNonRicevute > 0} href={invoicesNotReceivedHref} />

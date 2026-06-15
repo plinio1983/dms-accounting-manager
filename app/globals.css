@@ -1461,80 +1461,6 @@ body.drawer-open {
     min-width: 1260px;
 }
 
-table .cell-option,
-table .cell-option {
-    width: 4% !important;
-    max-width: 28px !important;
-    text-align: center;
-}
-
-
-table  .cell-order-date,
-table .cell-order-date {
-    width: 8% !important;
-    text-align: center;
-}
-
-table .cell-billing-period,
-table .cell-billing-period {
-    width: 6% !important;
-    /*max-width: 66px !important;*/
-    text-align: left;
-}
-
-table .cell-category,
-table .cell-category {
-    width: 7% !important;
-    /*max-width: 58px !important;*/
-    text-align: center;
-}
-
-table .cell-ebilling,
-table .cell-ebilling {
-    width: 5% !important;
-    text-align: center;
-}
-
-table .cell-fiscal,
-table .cell-type,
-table .cell-fiscal,
-table .cell-type {
-    width: 5% !important;
-    text-align: center;
-}
-
-table .cell-supplier,
-table .cell-supplier {
-    width: 11% !important;
-    text-align: left;
-}
-
-table .cell-amount,
-table .cell-residual,
-table .cell-residual,
-table .cell-amount {
-    width: 7% !important;
-    text-align: center;
-}
-
-table .cell-invoice-state,
-table .cell-invoice-state {
-    width: 9% !important;
-    text-align: center;
-}
-
-table .cell-payment-state,
-table .cell-payment-state {
-    width: 8% !important;
-    text-align: center;
-}
-
-table .cell-description,
-table .cell-description {
-    width: 9% !important;
-    text-align: left;
-}
-
 .expenses-table th, .expenses-table td {
     white-space: nowrap;
     vertical-align: middle;
@@ -3164,6 +3090,7 @@ table th, table td {
     border-radius: 999px;
     background: #eef2ff;
     color: #1f3ea8;
+    font-size: 15px;
 }
 
 .money-highlight.money-negative {
@@ -3251,7 +3178,7 @@ table th, table td {
 }
 
 .dashboard-annual-statement-table strong {
-    font-size: 16px;
+    font-size: 16px !important;
 }
 
 .dashboard-report-card .card-heading-row {
@@ -8896,3 +8823,79 @@ body:has(.detail-page-no-site-header) .shell {
         padding-bottom: 12px;
     }
 }
+
+
+table .cell-option,
+table .cell-option {
+    width: 4% !important;
+    max-width: 28px !important;
+    text-align: center;
+}
+
+
+table  .cell-order-date,
+table .cell-order-date {
+    width: 8% !important;
+    text-align: center;
+}
+
+table .cell-billing-period,
+table .cell-billing-period {
+    width: 6% !important;
+    /*max-width: 66px !important;*/
+    text-align: left;
+}
+
+table .cell-category,
+table .cell-category {
+    width: 7% !important;
+    /*max-width: 58px !important;*/
+    text-align: center;
+}
+
+table .cell-ebilling,
+table .cell-ebilling {
+    width: 5% !important;
+    text-align: center;
+}
+
+table .cell-fiscal,
+table .cell-type,
+table .cell-fiscal,
+table .cell-type {
+    width: 5% !important;
+    text-align: center;
+}
+
+table .cell-supplier,
+table .cell-supplier {
+    width: 11% !important;
+    text-align: left;
+}
+
+table .cell-amount,
+table .cell-residual,
+table .cell-residual,
+table .cell-amount {
+    width: 7% !important;
+    text-align: center;
+}
+
+table .cell-invoice-state,
+table .cell-invoice-state {
+    width: 9% !important;
+    text-align: center;
+}
+
+table .cell-payment-state,
+table .cell-payment-state {
+    width: 8% !important;
+    text-align: center;
+}
+
+table .cell-description,
+table .cell-description {
+    width: 9% !important;
+    text-align: left;
+}
+

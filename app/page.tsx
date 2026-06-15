@@ -323,28 +323,28 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
         <table className="dashboard-report-table">
           <thead><tr>
             <th><span className="th-wrap">Mese</span></th>
-            <th><span className="th-wrap">Incasso<br />Fiscale</span></th>
-            <th><span className="th-wrap">Incasso<br />non fiscale</span></th>
             <th className="highlight-column"><span className="th-wrap">Entrate<br />totali</span></th>
             <th><span className="th-wrap">Spesa<br />Totale</span></th>
-            <th><span className="th-wrap">Spese da<br />detrazione</span></th>
+            {/*<th><span className="th-wrap">Incasso<br />Fiscale</span></th>*/}
             <th className="highlight-column"><span className="th-wrap">Utile<br />netto</span></th>
-            <th><span className="th-wrap">Spese non<br />saldate</span></th>
-            <th><span className="th-wrap">Pagamenti<br />scaduti</span></th>
             <th className="highlight-column"><span className="th-wrap">Utile<br />fiscale</span></th>
+            <th><span className="th-wrap">Incasso<br />non fiscale</span></th>
+            <th><span className="th-wrap">Spese da<br />detrazione</span></th>
+            <th><span className="th-wrap">Spese non<br />saldate</span></th>
+            {/*<th><span className="th-wrap">Pagamenti<br />scaduti</span></th>*/}
             <th><span className="th-wrap">Debito<br />IVA</span></th>
           </tr></thead>
           <tbody>{report.months.map(m => <tr key={m.month}>
             <td><Link className="badge" href={`/months/${m.year}/${m.month}`}>{monthName(m.month)}</Link></td>
-            <td><Link href={periodLink('/incomes', [{ year: m.year, month: m.month }], { fiscal: 'yes' })}><MoneyCell value={m.totals.incassoFiscale} /></Link></td>
-            <td><Link href={periodLink('/incomes', [{ year: m.year, month: m.month }], { fiscal: 'no' })}><MoneyCell value={m.totals.incassoNonFiscale} /></Link></td>
             <td><Link href={periodLink('/incomes', [{ year: m.year, month: m.month }])}><MoneyCell value={m.totals.incassoTotale} highlight /></Link></td>
             <td><Link href={periodLink('/expenses', [{ year: m.year, month: m.month }])}><MoneyCell value={m.totals.speseTotali} /></Link></td>
-            <td><Link href={periodLink('/expenses', [{ year: m.year, month: m.month }], { declared: 'yes' })}><MoneyCell value={m.totals.speseInDetrazione} /></Link></td>
             <td><MoneyCell value={m.totals.utileNetto} highlight /></td>
-            <td><Link href={periodLink('/expenses', [{ year: m.year, month: m.month }], { paymentStatus: 'not_complete' })}><MoneyCell value={m.totals.nonSaldato} tone="money-warning" /></Link></td>
-            <td><Link className={m.totals.fattureScaduteCount > 0 ? 'count-critical' : 'count-muted'} href={periodLink('/expenses', [{ year: m.year, month: m.month }], { paymentStatus: 'overdue' })}>{m.totals.fattureScaduteCount}</Link></td>
             <td><MoneyCell value={m.totals.utileFiscale} highlight /></td>
+            {/*<td><Link href={periodLink('/incomes', [{ year: m.year, month: m.month }], { fiscal: 'yes' })}><MoneyCell value={m.totals.incassoFiscale} /></Link></td>*/}
+            <td><Link href={periodLink('/incomes', [{ year: m.year, month: m.month }], { fiscal: 'no' })}><MoneyCell value={m.totals.incassoNonFiscale} /></Link></td>
+            <td><Link href={periodLink('/expenses', [{ year: m.year, month: m.month }], { declared: 'yes' })}><MoneyCell value={m.totals.speseInDetrazione} /></Link></td>
+            <td><Link href={periodLink('/expenses', [{ year: m.year, month: m.month }], { paymentStatus: 'not_complete' })}><MoneyCell value={m.totals.nonSaldato} tone="money-warning" /></Link></td>
+            {/*<td><Link className={m.totals.fattureScaduteCount > 0 ? 'count-critical' : 'count-muted'} href={periodLink('/expenses', [{ year: m.year, month: m.month }], { paymentStatus: 'overdue' })}>{m.totals.fattureScaduteCount}</Link></td>*/}
             <td><MoneyCell value={m.totals.debitoIva} /></td>
           </tr>)}</tbody>
         </table>
