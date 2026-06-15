@@ -130,16 +130,43 @@ export default function RecurringExpensesList({
       </div>
     </form>
     {items.length ? <>
-      <div className="recurring-expenses-list recurring-expenses-desktop-list">{items.map(item => <div className="recurring-expense-row recurring-expense-row-with-select clickable-desktop-row" data-row-href={`/recurring-expenses/${item.id}`} role="link" tabIndex={0} key={item.id}>
-        <div className="recurring-expense-select"><input form="recurringExpenseBulkForm" type="checkbox" name="ids" value={item.id} aria-label={`Seleziona spesa ricorrente ${item.id}`} /></div>
-        <div><span className={item.isActive ? 'status-dot is-active' : 'status-dot'} /><strong>{item.description}</strong><small>{item.supplier?.businessName || item.merchant} · {item.category?.name ?? 'Senza categoria'}</small></div>
-        <div><span>Cadenza</span><strong>{cadenceLabels[item.cadence] ?? item.cadence}</strong></div>
-        <div><span>Scadenza</span><strong>{dueLabel(item)}</strong></div>
-        <div><span>Periodo fatt.</span><strong>{billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}{item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}</strong></div>
-        <div><span>Pagamento</span><strong>{item.paymentChannel ?? '-'}{item.bank ? ` · ${item.bank.name}` : ''}</strong></div>
-        <div><span>Inizio</span><strong>{dateLabel(item.startDate)}</strong></div>
-        <div><span>Importo</span><strong>{euro(item.amount.toString())}</strong></div>
-      </div>)}</div>
+      <div className="table-scroll recurring-expenses-desktop-table-scroll">
+        <table className="expenses-table compact-recurring-expenses-table">
+          <thead><tr>
+            <th className="cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="recurringExpenseBulkForm" aria-label="Seleziona tutte le spese ricorrenti" /></th>
+            <th className="cell-left">Stato</th>
+            <th className="cell-left">Fornitore</th>
+            <th className="cell-left">Descrizione</th>
+            <th className="cell-left">Categoria</th>
+            <th className="cell-left">Cadenza</th>
+            <th className="cell-left">Scadenza</th>
+            <th className="cell-left"><span className="th-wrap">Periodo<br />fatt.</span></th>
+            <th className="cell-left">Pagamento</th>
+            <th className="cell-left">Inizio</th>
+            <th className="cell-right">Importo</th>
+          </tr></thead>
+          <tbody>
+            {items.map(item => {
+              const supplier = item.supplier?.businessName || item.merchant || '-';
+              const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
+              const payment = item.paymentChannel ? `${item.paymentChannel}${item.bank ? ` · ${item.bank.name}` : ''}` : '-';
+              return <tr className="clickable-desktop-row" data-row-href={`/recurring-expenses/${item.id}`} tabIndex={0} key={item.id}>
+                <td className="cell-center"><input form="recurringExpenseBulkForm" type="checkbox" name="ids" value={item.id} aria-label={`Seleziona spesa ricorrente ${item.id}`} /></td>
+                <td className="cell-left"><span className={item.isActive ? 'badge color-badge recurring-expense-badge' : 'badge'}>{item.isActive ? 'Attiva' : 'Off'}</span></td>
+                <td className="cell-left recurring-supplier-cell" title={supplier}>{supplier}</td>
+                <td className="cell-left recurring-description-cell" title={item.description ?? ''}>{item.description || '-'}</td>
+                <td className="cell-left">{item.category?.name ?? 'Senza categoria'}</td>
+                <td className="cell-left">{cadenceLabels[item.cadence] ?? item.cadence}</td>
+                <td className="cell-left nowrap-cell">{dueLabel(item)}</td>
+                <td className="cell-left nowrap-cell">{billing}</td>
+                <td className="cell-left recurring-payment-cell" title={payment}>{payment}</td>
+                <td className="cell-left nowrap-cell">{dateLabel(item.startDate)}</td>
+                <td className="cell-right nowrap-cell"><strong>{euro(item.amount.toString())}</strong></td>
+              </tr>;
+            })}
+          </tbody>
+        </table>
+      </div>
 
       <div className="recurring-expenses-mobile-list" aria-label="Lista spese ricorrenti mobile">
         {items.map(item => {

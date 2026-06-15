@@ -532,6 +532,10 @@ button {
     }
 }
 
+.recurring-bulk-actions-bar .bulk-inner-container {
+    flex-grow: 0;
+}
+
 .recurring-expenses-card .recurring-bulk-actions-bar {
     margin: 0 !important;
     padding: 0 !important;
@@ -542,6 +546,7 @@ button {
     flex-grow: 1 !important;
     align-items: center !important;
     justify-content: flex-end !important;
+    margin-right: 12px;
 }
 
 .recurring-active-filters {
@@ -830,8 +835,26 @@ body.drawer-open {
     display: none;
 }
 
-.recurring-expenses-desktop-list {
-    display: grid;
+.recurring-expenses-desktop-table-scroll {
+    display: block;
+}
+
+.compact-recurring-expenses-table {
+    min-width: 1120px;
+}
+
+.compact-recurring-expenses-table th,
+.compact-recurring-expenses-table td {
+    vertical-align: middle;
+}
+
+.compact-recurring-expenses-table .recurring-supplier-cell,
+.compact-recurring-expenses-table .recurring-description-cell,
+.compact-recurring-expenses-table .recurring-payment-cell {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .recurring-mobile-item {
@@ -964,7 +987,7 @@ body.drawer-open {
         background: var(--card);
     }
 
-    .recurring-expenses-desktop-list {
+    .recurring-expenses-desktop-table-scroll {
         display: none !important;
     }
 
