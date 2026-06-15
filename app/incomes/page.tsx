@@ -520,7 +520,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
       <div className="dashboard-statement-panel list-totals-statement">
         <table className="dashboard-statement-table list-totals-table" aria-label="Totali incassi filtrati">
           <tbody>
-            <tr><td>Entrate totali</td><td><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></td></tr>
+            <tr><td>Entrate totali</td><td><strong className={badgeClass()}>{euro(totals.total)}</strong></td></tr>
             <tr><td>Incasso fiscale</td><td><strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong></td></tr>
             <tr><td>Incasso non fiscale</td><td><strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong></td></tr>
             <tr><td>Debito IVA prodotto</td><td><strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong></td></tr>
