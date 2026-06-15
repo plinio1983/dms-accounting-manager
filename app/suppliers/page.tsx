@@ -24,6 +24,7 @@ function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: s
 
 export default async function SuppliersPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const filters = (await searchParams) ?? {};
+  const currentYear = new Date().getFullYear();
   const currentQuery = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
     if (Array.isArray(value)) value.forEach(item => item && currentQuery.append(key, item));
@@ -44,8 +45,11 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
       const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
       return Math.max(0, amount - paid);
     }).filter(residual => residual > 0);
+    const annualExpenses = supplier.expenses.filter(expense => expense.year === currentYear);
+    const annualOrdersCount = annualExpenses.length;
+    const annualPurchasedAmount = annualExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
     const amountToPay = openExpenses.reduce((sum, residual) => sum + residual, 0);
-    return { supplier, openExpensesCount: openExpenses.length, amountToPay };
+    return { supplier, openExpensesCount: openExpenses.length, amountToPay, annualOrdersCount, annualPurchasedAmount };
   });
 
   const businessNameFilter = normalize(inputDefault(filters, 'businessName'));
@@ -229,7 +233,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
       </form>
 
       <div className="supplier-mobile-list expense-mobile-list" aria-label="Lista fornitori mobile">
-        {filteredSupplierRows.map(({ supplier, openExpensesCount, amountToPay }) => {
+        {filteredSupplierRows.map(({ supplier, openExpensesCount, amountToPay, annualOrdersCount, annualPurchasedAmount }) => {
           const detailHref = `/suppliers/${supplier.id}?returnTo=${encodeURIComponent(supplierListHref)}`;
           return <div className={amountToPay > 0 ? "supplier-mobile-item expense-mobile-item expense-mobile-item-overdue" : "supplier-mobile-item expense-mobile-item"} key={`mobile-supplier-${supplier.id}`}>
             <div className="expense-mobile-select">
@@ -248,6 +252,8 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
                 <div className="expense-mobile-subtitle">{supplier.alias || 'Nessun alias'}</div>
                 <div className="expense-mobile-meta">
                   <span>{openExpensesCount} ordini da saldare</span>
+                  <span>{annualOrdersCount} ordini {currentYear}</span>
+                  <span>{euro(annualPurchasedAmount)} acquistati {currentYear}</span>
                   {supplier.email ? <span>{supplier.email}</span> : null}
                   {supplier.pec ? <span>PEC</span> : null}
                 </div>
@@ -259,18 +265,20 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
       </div>
 
       <div className="table-scroll"><table className="suppliers-table compact-suppliers-table"><thead><tr>
-        <th className="cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="supplierBulkForm" aria-label="Seleziona tutti i fornitori" /></th><th>Ragione Sociale</th><th>Alias</th><th className="text-center">Ordini da saldare</th><th className="text-right supplier-amount-header">Importo da saldare</th>
+        <th className="cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="supplierBulkForm" aria-label="Seleziona tutti i fornitori" /></th><th>Ragione Sociale</th><th>Alias</th><th className="text-center">Ordini <br />da saldare</th><th className="text-right supplier-amount-header">Importo <br />da saldare</th><th className="text-center">Ordini <br />anno</th><th className="text-right">Acquisti anno</th>
       </tr></thead><tbody>
-        {filteredSupplierRows.map(({ supplier, openExpensesCount, amountToPay }) => {
+        {filteredSupplierRows.map(({ supplier, openExpensesCount, amountToPay, annualOrdersCount, annualPurchasedAmount }) => {
           return <tr className="clickable-desktop-row" data-row-href={`/suppliers/${supplier.id}?returnTo=${encodeURIComponent(supplierListHref)}`} tabIndex={0} key={supplier.id}>
             <td className="cell-center"><input form="supplierBulkForm" type="checkbox" name="ids" value={supplier.id} aria-label={`Seleziona fornitore ${supplier.businessName}`} /></td>
             <td><strong>{supplier.businessName}</strong></td>
             <td>{supplier.alias ?? '-'}</td>
             <td className="text-center"><strong>{openExpensesCount}</strong></td>
             <td className="text-right supplier-amount-cell"><strong className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong></td>
+            <td className="text-center"><strong>{annualOrdersCount}</strong></td>
+            <td className="text-right supplier-amount-cell"><strong>{euro(annualPurchasedAmount)}</strong></td>
           </tr>;
         })}
-        {!filteredSupplierRows.length && <tr><td colSpan={5}>Nessun fornitore trovato.</td></tr>}
+        {!filteredSupplierRows.length && <tr><td colSpan={7}>Nessun fornitore trovato.</td></tr>}
       </tbody></table></div>
     </div>
   </div>;

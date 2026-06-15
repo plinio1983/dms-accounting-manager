@@ -20,7 +20,7 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
 
   return <div className="grid import-page">
     <div className="toolbar-card import-hero-card">
-      <div>
+      <div className="import-hero-title">
         {/*<span className="badge">Importazione dati</span>*/}
         <Link className="table-action secondary" href="/expenses">↩ Torna alle spese</Link>
         <h2>Importa spese da Excel / ODS</h2>

@@ -1266,6 +1266,12 @@ body.drawer-open {
 .import-hero-card {
     align-items: flex-start;
     background: linear-gradient(135deg, #ffffff 0%, #f2f5ff 100%);
+    flex-direction: column;
+    gap: 28px;
+}
+
+.import-hero-card .import-hero-title a {
+    margin-bottom: 12px;
 }
 
 .import-hero-card h2 {
@@ -1472,80 +1478,76 @@ body.drawer-open {
     min-width: 1260px;
 }
 
-.supplier-linked-expenses-table .cell-option,
-.expenses-table .cell-option {
+table .cell-option,
+table .cell-option {
     width: 4% !important;
-    max-width: 4% !important;
+    max-width: 28px !important;
     text-align: center;
 }
 
 
-.supplier-linked-expenses-table  .cell-order-date,
-.expenses-table .cell-order-date {
+table  .cell-order-date,
+table .cell-order-date {
     width: 8% !important;
-    /*width: 66px !important;*/
-    /*max-width: 66px !important;*/
     text-align: center;
 }
 
-.supplier-linked-expenses-table .cell-billing-period,
-.expenses-table .cell-billing-period {
+table .cell-billing-period,
+table .cell-billing-period {
     width: 6% !important;
-    /*width: 66px !important;*/
     /*max-width: 66px !important;*/
     text-align: left;
 }
 
-.supplier-linked-expenses-table .cell-category,
-.expenses-table .cell-category {
+table .cell-category,
+table .cell-category {
     width: 7% !important;
-    /*width: 58px !important;*/
     /*max-width: 58px !important;*/
     text-align: center;
 }
 
-.supplier-linked-expenses-table .cell-ebilling,
-.expenses-table .cell-ebilling {
+table .cell-ebilling,
+table .cell-ebilling {
     width: 5% !important;
     text-align: center;
 }
 
-.supplier-linked-expenses-table .cell-fiscal,
-.supplier-linked-expenses-table .cell-type,
-.expenses-table .cell-fiscal,
-.expenses-table .cell-type {
+table .cell-fiscal,
+table .cell-type,
+table .cell-fiscal,
+table .cell-type {
     width: 5% !important;
     text-align: center;
 }
 
-.supplier-linked-expenses-table .cell-supplier,
-.expenses-table .cell-supplier {
+table .cell-supplier,
+table .cell-supplier {
     width: 11% !important;
     text-align: left;
 }
 
-.supplier-linked-expenses-table .cell-amount,
-.supplier-linked-expenses-table .cell-residual,
-.expenses-table .cell-residual,
-.expenses-table .cell-amount {
+table .cell-amount,
+table .cell-residual,
+table .cell-residual,
+table .cell-amount {
     width: 7% !important;
     text-align: center;
 }
 
-.supplier-linked-expenses-table .cell-invoice-state,
-.expenses-table .cell-invoice-state {
+table .cell-invoice-state,
+table .cell-invoice-state {
     width: 9% !important;
     text-align: center;
 }
 
-.supplier-linked-expenses-table .cell-payment-state,
-.expenses-table .cell-payment-state {
+table .cell-payment-state,
+table .cell-payment-state {
     width: 8% !important;
     text-align: center;
 }
 
-.supplier-linked-expenses-table .cell-description,
-.expenses-table .cell-description {
+table .cell-description,
+table .cell-description {
     width: 9% !important;
     text-align: left;
 }
@@ -5223,23 +5225,23 @@ button {
     white-space: nowrap;
 }
 
-.compact-suppliers-table th:nth-last-child(-n+3),
-.compact-suppliers-table td:nth-last-child(-n+3) {
-    width: 38px;
-    text-align: center;
-    padding-left: 4px;
-    padding-right: 4px;
-}
+/*.compact-suppliers-table th:nth-last-child(-n+3),*/
+/*.compact-suppliers-table td:nth-last-child(-n+3) {*/
+/*    width: 38px;*/
+/*    text-align: center;*/
+/*    padding-left: 4px;*/
+/*    padding-right: 4px;*/
+/*}*/
 
-.compact-suppliers-table td:nth-child(1),
-.compact-suppliers-table th:nth-child(1) {
-    min-width: 220px;
-}
+/*.compact-suppliers-table td:nth-child(1),*/
+/*.compact-suppliers-table th:nth-child(1) {*/
+/*    min-width: 220px;*/
+/*}*/
 
-.compact-suppliers-table td:nth-child(2),
-.compact-suppliers-table th:nth-child(2) {
-    min-width: 140px;
-}
+/*.compact-suppliers-table td:nth-child(2),*/
+/*.compact-suppliers-table th:nth-child(2) {*/
+/*    min-width: 140px;*/
+/*}*/
 
 /* v50: ordine colonne lista spese, form spesa e larghezze ottimizzate */
 /*.supplier-picker-wide {*/
