@@ -27,6 +27,19 @@ export default function NewExpensePanel({ categories, banks, suppliers, initialO
     setRecurringAction(`/api/recurring-expenses?returnTo=${encodeURIComponent(returnTo)}`);
   }, []);
 
+  useEffect(() => {
+    const handler = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!target?.closest('[data-expense-new]')) return;
+
+      event.preventDefault();
+      setIsOpen(true);
+    };
+
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, []);
+
   return <div className="grid">
     <div className="toolbar-card expense-toolbar-card">
       <div className="expense-toolbar-card-content">
@@ -45,7 +58,7 @@ export default function NewExpensePanel({ categories, banks, suppliers, initialO
       <div className="toolbar-actions expense-toolbar-actions">
         <Link className="button-standard secondary-action expense-import-btn-large" href="/expenses/import"><span className="btn-icon">⬆</span>Importa Excel</Link>
         <Link className="button-standard secondary-action" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>
-        <button className="button-standard primary-action" type="button" onClick={() => setIsOpen(true)}><span className="btn-icon">+</span>Aggiungi spesa</button>
+        <button className="button-standard primary-action" type="button" data-expense-new><span className="btn-icon">+</span>Aggiungi spesa</button>
       </div>
     </div>
 
