@@ -3,10 +3,24 @@ import BulkSelectionController from '@/components/BulkSelectionController';
 import RecurringExpenseFiltersDrawer from '@/components/RecurringExpenseFiltersDrawer';
 import RecurringExpenseDetailEditModalController from '@/components/RecurringExpenseDetailEditModalController';
 import { euro } from '@/lib/money';
+import { bankIcons, badgeClass, categoryStyles } from '@/lib/expense-ui';
 
 const cadenceLabels: Record<string, string> = { MONTHLY:'Ogni mese', EVERY_2_MONTHS:'Ogni 2 mesi', EVERY_3_MONTHS:'Ogni 3 mesi', EVERY_6_MONTHS:'Ogni 6 mesi', YEARLY:'Annuale', EVERY_2_YEARS:'Ogni 2 anni' };
 const billingLabels: Record<string, string> = { SAME_MONTH:'Stesso mese', NEXT_MONTH:'Mese successivo', CUSTOM_MONTH:'Mese impostato' };
 const months = ['', 'Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const cadenceStyles: Record<string, { icon: string; className: string }> = {
+  MONTHLY: { icon: '↻', className: 'tone-paid' },
+  EVERY_2_MONTHS: { icon: '2M', className: 'tone-web' },
+  EVERY_3_MONTHS: { icon: '3M', className: 'tone-installment' },
+  EVERY_6_MONTHS: { icon: '6M', className: 'tone-services' },
+  YEARLY: { icon: '12M', className: 'tone-taxes' },
+  EVERY_2_YEARS: { icon: '24M', className: 'tone-neutral' }
+};
+const billingStyles: Record<string, { icon: string; className: string }> = {
+  SAME_MONTH: { icon: 'M', className: 'tone-vat-22' },
+  NEXT_MONTH: { icon: '+1', className: 'tone-vat-10' },
+  CUSTOM_MONTH: { icon: 'CAL', className: 'tone-vat-4' }
+};
 
 function dateLabel(value?: Date | string | null) {
   if (!value) return '-';
@@ -150,18 +164,22 @@ export default function RecurringExpensesList({
               const supplier = item.supplier?.businessName || item.merchant || '-';
               const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
               const payment = item.paymentChannel ? `${item.paymentChannel}${item.bank ? ` · ${item.bank.name}` : ''}` : '-';
+              const categoryStyle = item.category?.name ? categoryStyles[item.category.name] : undefined;
+              const cadenceStyle = cadenceStyles[item.cadence] ?? { icon: '↻', className: 'tone-neutral' };
+              const billingStyle = billingStyles[item.billingPeriodMode] ?? { icon: 'CAL', className: 'tone-neutral' };
+              const statusStyle = item.isActive ? { icon: '✓', label: 'Attiva', className: 'tone-yes' } : { icon: '×', label: 'Off', className: 'tone-critical' };
               return <tr className="clickable-desktop-row" data-row-href={`/recurring-expenses/${item.id}`} tabIndex={0} key={item.id}>
                 <td className="cell-center"><input form="recurringExpenseBulkForm" type="checkbox" name="ids" value={item.id} aria-label={`Seleziona spesa ricorrente ${item.id}`} /></td>
-                <td className="cell-left"><span className={item.isActive ? 'badge color-badge recurring-expense-badge' : 'badge'}>{item.isActive ? 'Attiva' : 'Off'}</span></td>
-                <td className="cell-left recurring-supplier-cell" title={supplier}>{supplier}</td>
+                <td className="cell-left"><span className={badgeClass(statusStyle.className)}>{statusStyle.icon} {statusStyle.label}</span></td>
+                <td className="cell-left recurring-supplier-cell" title={supplier}><span className="recurring-table-supplier-icon">↻</span>{supplier}</td>
                 <td className="cell-left recurring-description-cell" title={item.description ?? ''}>{item.description || '-'}</td>
-                <td className="cell-left">{item.category?.name ?? 'Senza categoria'}</td>
-                <td className="cell-left">{cadenceLabels[item.cadence] ?? item.cadence}</td>
-                <td className="cell-left nowrap-cell">{dueLabel(item)}</td>
-                <td className="cell-left nowrap-cell">{billing}</td>
-                <td className="cell-left recurring-payment-cell" title={payment}>{payment}</td>
+                <td className="cell-left">{item.category ? <span title={item.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? item.category.code}</span> : <span className={badgeClass('tone-neutral')}>• ND</span>}</td>
+                <td className="cell-left"><span className={badgeClass(cadenceStyle.className)}>{cadenceStyle.icon} {cadenceLabels[item.cadence] ?? item.cadence}</span></td>
+                <td className="cell-left nowrap-cell"><span className={badgeClass('tone-waiting')}>📅 {dueLabel(item)}</span></td>
+                <td className="cell-left nowrap-cell"><span className={badgeClass(billingStyle.className)}>{billingStyle.icon} {billing}</span></td>
+                <td className="cell-left recurring-payment-cell" title={payment}>{item.paymentChannel ? <span className={badgeClass(item.bank ? 'tone-bank-services' : 'tone-neutral')}>{item.bank ? `${bankIcons[item.bank.name] ?? '🏦'} ` : '• '}{payment}</span> : <span className={badgeClass('tone-neutral')}>• Manuale</span>}</td>
                 <td className="cell-left nowrap-cell">{dateLabel(item.startDate)}</td>
-                <td className="cell-right nowrap-cell"><strong>{euro(item.amount.toString())}</strong></td>
+                <td className="cell-right nowrap-cell"><strong className="recurring-table-amount">€ {euro(item.amount.toString()).replace('€', '').trim()}</strong></td>
               </tr>;
             })}
           </tbody>
