@@ -645,10 +645,11 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         <p className="totals-period-note">{totalsPeriodLabel}</p>
         <table className="dashboard-statement-table list-totals-table" aria-label="Totali spese filtrate">
           <tbody>
-            <tr><td>Spese totali IVA inclusa</td><td><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></td></tr>
-            <tr><td>IVA versata</td><td><strong className={moneyTone(totals.paidVat)}>{euro(totals.paidVat)}</strong></td></tr>
+            {/*<tr><td>Spese totali IVA inclusa</td><td><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></td></tr>*/}
+            <tr><td>Spese totali IVA inclusa</td><td><strong className={badgeClass()}>{euro(totals.total)}</strong></td></tr>
             <tr><td>Spese non dichiarate</td><td><strong className={moneyTone(totals.nonDeclared)}>{euro(totals.nonDeclared)}</strong></td></tr>
             <tr className={totals.toPay > 0 ? 'list-totals-row-warning row-warning' : ''}><td>Non saldato</td><td><strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong></td></tr>
+            <tr><td>IVA versata</td><td><strong className={moneyTone(totals.paidVat)}>{euro(totals.paidVat)}</strong></td></tr>
             <tr className={totals.invoicesNotReceived > 0 ? 'list-totals-row-warning row-warning' : ''}><td>Fatture non ricevute</td><td><strong>{totals.invoicesNotReceived}</strong></td></tr>
             <tr className={totals.overdueCount > 0 ? 'list-totals-row-critical row-critical' : ''}><td>Pagamenti scaduti</td><td><strong>{totals.overdueCount}</strong></td></tr>
           </tbody>
