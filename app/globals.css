@@ -891,7 +891,7 @@ body.drawer-open {
     justify-content: space-between;
     gap: 14px;
     padding: 18px;
-    border-bottom: 1px solid var(--line);
+    /*border-bottom: 1px solid var(--line);*/
 }
 
 .filter-drawer-header h3 {
@@ -6353,7 +6353,7 @@ button.bulk-direct-link {
     }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 576px) {
     .supplier-filters {
         grid-template-columns: 1fr;
     }
@@ -9031,3 +9031,8 @@ table .cell-description {
     width: 9% !important;
     text-align: left;
 }
+
+.supplier-mobile-row-grow {
+    flex-grow: 1;
+}
+

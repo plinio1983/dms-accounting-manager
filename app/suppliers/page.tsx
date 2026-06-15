@@ -249,13 +249,16 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
                     <span className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</span>
                   </div>
                 </div>
-                <div className="expense-mobile-subtitle">{supplier.alias || 'Nessun alias'}</div>
+                <div className="expense-mobile-subtitle">
+                  <span className="supplier-mobile-row-grow">{supplier.alias || 'Nessun alias'}</span>
+                  <span className="supplier-mobile-row"><strong className="badge color-badge tone-insurance">{euro(annualPurchasedAmount)}</strong> acquistati {currentYear}</span>
+                </div>
                 <div className="expense-mobile-meta">
-                  <span>{openExpensesCount} ordini da saldare</span>
-                  <span>{annualOrdersCount} ordini {currentYear}</span>
-                  <span>{euro(annualPurchasedAmount)} acquistati {currentYear}</span>
-                  {supplier.email ? <span>{supplier.email}</span> : null}
-                  {supplier.pec ? <span>PEC</span> : null}
+                  <span className="supplier-mobile-row-grow">{openExpensesCount} ordini da saldare</span>
+                  <span className="badge badge-color">{annualOrdersCount} ordini {currentYear}</span>
+                  {/*<span>{euro(annualPurchasedAmount)} acquistati {currentYear}</span>*/}
+                  {/*{supplier.email ? <span>{supplier.email}</span> : null}*/}
+                  {/*{supplier.pec ? <span>PEC</span> : null}*/}
                 </div>
               </div>
             </Link>
