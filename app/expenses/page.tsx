@@ -133,8 +133,14 @@ function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
   const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
   const state = invoiceStatusStyles.IN_ATTESA ? ' - Att.' : '';
   const label = !value ? 'Fatt' : '@bill';
-  if (!value) return <span className={badgeClass(style.className)}>Fatt</span>;
+  // if (!value) return <span className={badgeClass(style.className)}>Fatt</span>;
   return <span className={badgeClass(style.className)}>{label}{state}</span>;
+}
+function InvoiceBadge(value: boolean, invoiceStatus?: string) {
+  //if (!value) return <span className={badgeClass("tone-services")}>Fatt</span>;
+  const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
+  const label = !value ? 'Fatt' : '@bill';
+  return <span className={badgeClass(style.className)}>{label}</span>;
 }
 function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: string }> }) {
   return <div className="active-filter-summary">
@@ -1047,7 +1053,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             <td className="cell-fiscal">{fiscalBadge(e.isDeclared)}</td>
             <td className="cell-payment-state">{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>
             <td className="cell-invoice-state"><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
-            <td className="cell-ebilling">{electronicInvoiceBadge(e.hasElectronicInvoice)}</td>
+            <td className="cell-ebilling">{InvoiceBadge(e.hasElectronicInvoice)}</td>
             <td className="cell-description" title={e.description ?? ''}>{e.description}</td>
             <td className="cell-residual"><strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong></td>
           </tr>;
