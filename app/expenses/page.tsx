@@ -129,15 +129,12 @@ function fiscalBadgeMobile(value: boolean) {
   return <span className={badgeClass(item.className)}>{label}</span>;
 }
 function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
-  //if (!value) return <span className={badgeClass("tone-services")}>Fatt</span>;
   const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
-  const state = invoiceStatusStyles.IN_ATTESA ? ' - Att.' : '';
+  const state = invoiceStatus === "IN_ATTESA" ? ' - Att.' : '';
   const label = !value ? 'Fatt' : '@bill';
-  // if (!value) return <span className={badgeClass(style.className)}>Fatt</span>;
   return <span className={badgeClass(style.className)}>{label}{state}</span>;
 }
 function InvoiceBadge(value: boolean, invoiceStatus?: string) {
-  //if (!value) return <span className={badgeClass("tone-services")}>Fatt</span>;
   const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
   const label = !value ? 'Fatt' : '@bill';
   return <span className={badgeClass(style.className)}>{label}</span>;
