@@ -99,7 +99,7 @@ function makeFloatingBar(sourceBar: HTMLElement) {
     const trigger = document.createElement("button");
     trigger.type = "button";
     trigger.className = "floating-bulk-button floating-bulk-menu-trigger";
-    trigger.innerHTML = `<span class="btn-icon">⚙</span><span class="floating-bulk-label">Bulk actions</span><span class="floating-bulk-caret">▾</span>`;
+    trigger.innerHTML = `<span class="btn-icon">⚙</span><span class="floating-bulk-label">Bulk</span><span> Actions</span><span class="floating-bulk-caret">▾</span>`;
 
     const panel = document.createElement("div");
     panel.className = "floating-bulk-menu-panel";
@@ -131,10 +131,12 @@ function makeFloatingBar(sourceBar: HTMLElement) {
   const edit = sourceBar.querySelector<HTMLElement>("[data-bulk-edit]");
   const copy = sourceBar.querySelector<HTMLElement>("[data-bulk-copy]");
   const del = sourceBar.querySelector<HTMLElement>("[data-bulk-delete]");
+  const newExpense = sourceBar.querySelector<HTMLElement>("[data-expense-new]");
 
   if (edit) inner.appendChild(buildFloatingButton(edit, "Modifica", "✎", "floating-bulk-edit"));
   if (copy) inner.appendChild(buildFloatingButton(copy, "Copia", "＋", "floating-bulk-copy"));
   if (del) inner.appendChild(buildFloatingButton(del, "Elimina", "🗑", "floating-bulk-delete"));
+  if (newExpense) inner.appendChild(buildFloatingButton(newExpense, "Aggiungi spesa", "+", "floating-bulk-new primary-action"));
 
   document.body.appendChild(floating);
   return floating;

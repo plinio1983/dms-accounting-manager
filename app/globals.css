@@ -6910,7 +6910,8 @@ button.bulk-direct-link {
     }
 
     .bulk-direct-link .bulk-label,
-    .bulk-action-trigger .bulk-label {
+    .bulk-action-trigger .bulk-label,
+    .floating-bulk-label {
         display: none;
     }
 
@@ -9355,5 +9356,13 @@ body:has(.detail-page-no-site-header) .shell {
     .supplier-toolbar-card {
         display: flex;
         flex-direction: row-reverse;
+    }
+
+    .modal-backdrop {
+        z-index: 9999999;
+    }
+
+    .app-form-modal .expense-form {
+        padding-bottom: 12px;
     }
 }
