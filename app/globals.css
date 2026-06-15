@@ -3316,6 +3316,7 @@ table th, table td {
 
 .dashboard-annual-statement-table {
     max-width: 760px;
+    margin: 0 auto;
 }
 
 .dashboard-annual-statement-table td {
@@ -3471,6 +3472,8 @@ table th, table td {
     justify-content: space-between;
     gap: 12px;
     margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .dashboard-statement-heading h2 {
