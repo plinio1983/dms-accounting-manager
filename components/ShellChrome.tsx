@@ -3,6 +3,7 @@
 import { Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import MainNav from '@/components/MainNav';
+import SettingsMenu from '@/components/SettingsMenu';
 
 type Props = {
   slot: 'header' | 'footer';
@@ -22,9 +23,12 @@ function DesktopHeader({ compactOnMobile = false }: { compactOnMobile?: boolean 
 
   return <div className={className}>
     <div><h1>Tabularium</h1><div className="muted">Gestionale web per incassi, spese, fornitori e report mensili</div></div>
-    <Suspense fallback={null}>
-      <MainNav />
-    </Suspense>
+    <div className="site-header-actions">
+      <Suspense fallback={null}>
+        <MainNav />
+        <SettingsMenu />
+      </Suspense>
+    </div>
   </div>;
 }
 

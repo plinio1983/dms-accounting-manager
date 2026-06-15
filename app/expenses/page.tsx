@@ -131,8 +131,9 @@ function fiscalBadgeMobile(value: boolean) {
 function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
   //if (!value) return <span className={badgeClass("tone-services")}>Fatt</span>;
   const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
-  if (!value) return <span className={badgeClass()}>--</span>;
-  return <span className={badgeClass(style.className)}>eBill</span>;
+  const state = invoiceStatusStyles.IN_ATTESA ? '- Att.' : '';
+  if (!value) return <span className={badgeClass(style.className)}>Fatt</span>;
+  return <span className={badgeClass(style.className)}>@bill {state}</span>;
 }
 function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: string }> }) {
   return <div className="active-filter-summary">
@@ -963,13 +964,13 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
                 <div className="expense-mobile-meta">
                   <div className="expense-mobile-meta-left">
                     {e.category ? <span title={e.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? e.category.code}</span> : null}
-                    {e.isDeclared ? electronicInvoiceBadge(e.hasElectronicInvoice, e.invoiceStatus) : null}
+                    {fiscalBadgeMobile(e.isDeclared)}
                     <span className="expense-mobile-date">
                       {formatPeriod(e.month, e.year)}
                     </span>
                   </div>
                   <div className="expense-mobile-meta-right">
-                    {fiscalBadgeMobile(e.isDeclared)}
+                    {e.isDeclared ? electronicInvoiceBadge(e.hasElectronicInvoice, e.invoiceStatus) : null}
                     <span className="expense-mobile-date">{mobileDateLabel(e.dueDate)}</span>
                   </div>
                 </div>
