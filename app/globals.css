@@ -3766,7 +3766,7 @@ table {
 }
 
 .card-heading-row .card-title-wrap {
-    text-align: right;
+    /*text-align: right;*/
     flex-grow: 1;
 }
 
