@@ -9,6 +9,7 @@ type MonthOption = { year: number; month: number };
 type QuarterOption = { year: number; quarterIndex: number };
 type Totals = {
   incassoTotale: number;
+  incassoNonFiscale: number;
   speseTotali: number;
   utileNetto: number;
   usciteNonFiscali: number;
@@ -124,6 +125,7 @@ function MonthlyTrendCard({
   const nonFiscalExpensesHref = dateRangeLink('/expenses', state.year, state.month, { declared: 'no' });
   const unpaidExpensesHref = dateRangeLink('/expenses', state.year, state.month, { paymentStatus: 'not_complete' });
   const incomesHref = dateRangeLink('/incomes', state.year, state.month);
+  const nonFiscalIncomesHref = dateRangeLink('/incomes', state.year, state.month, { fiscal: 'no' });
   const overdueExpensesHref = dateRangeLink('/expenses', state.year, state.month, { paymentStatus: 'overdue' });
 
   return <section className={`card dashboard-statement-panel monthly-trend-card ${loading ? 'is-loading' : ''}`}>
@@ -140,6 +142,7 @@ function MonthlyTrendCard({
           <StatementMoneyRow label="Entrate totali" value={totals.incassoTotale} href={incomesHref} highlight={true} />
           <StatementMoneyRow label="Uscite totali" value={totals.speseTotali} href={expensesHref} />
           <StatementMoneyRow label="Utile netto" value={totals.utileNetto} highlight />
+          <StatementMoneyRow label="Incasso non fiscale" value={totals.incassoNonFiscale} href={nonFiscalIncomesHref} />
           <StatementMoneyRow label="Spese non fiscali" value={totals.usciteNonFiscali} warning={totals.usciteNonFiscali > 0} href={nonFiscalExpensesHref} />
           <StatementMoneyRow label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
           <StatementCountRow label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
