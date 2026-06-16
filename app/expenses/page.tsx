@@ -910,7 +910,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           </div>
         </details>
         <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="expenseBulkForm"
-             data-edit-base="/expenses/" data-copy-base="/expenses/new?copyId=" data-return-to={returnTo}>
+             data-edit-base="/expenses/" data-copy-base="/expenses/new?copyId=" data-edit-trigger-attr="data-expense-edit-id" data-copy-trigger-attr="data-expense-copy-id" data-return-to={returnTo}>
           <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
             <span className="btn-icon">✎</span><span className="bulk-label">Modifica</span>
           </a>

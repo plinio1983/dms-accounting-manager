@@ -26,11 +26,13 @@ type Props = {
 
 export default function IncomeEditModalController({ returnTo }: Props) {
   const [income, setIncome] = useState<EditIncome | null>(null);
+  const [mode, setMode] = useState<"edit" | "copy">("edit");
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const [error, setError] = useState("");
 
-  async function openIncome(id: number) {
+  async function openIncome(id: number, nextMode: "edit" | "copy" = "edit") {
     setError("");
+    setMode(nextMode);
     setLoadingId(id);
 
     try {
@@ -48,16 +50,19 @@ export default function IncomeEditModalController({ returnTo }: Props) {
   useEffect(() => {
     const handler = (event: MouseEvent) => {
       const target = event.target as HTMLElement | null;
-      const trigger = target?.closest<HTMLElement>("[data-income-edit-id]");
+      const editTrigger = target?.closest<HTMLElement>("[data-income-edit-id]");
+      const copyTrigger = target?.closest<HTMLElement>("[data-income-copy-id]");
+      const trigger = editTrigger ?? copyTrigger;
       if (!trigger) return;
 
-      const id = Number(trigger.dataset.incomeEditId);
+      const nextMode = copyTrigger ? "copy" : "edit";
+      const id = Number(copyTrigger ? copyTrigger.dataset.incomeCopyId : editTrigger?.dataset.incomeEditId);
       if (!Number.isInteger(id) || id <= 0) return;
 
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
-      openIncome(id);
+      openIncome(id, nextMode);
     };
 
     document.addEventListener("click", handler, true);
@@ -68,20 +73,20 @@ export default function IncomeEditModalController({ returnTo }: Props) {
     {loadingId ? <div className="inline-modal-loading">Caricamento incasso #{loadingId}…</div> : null}
     {error ? <div className="inline-modal-error">{error}</div> : null}
 
-    {income ? <div className="modal-backdrop app-form-modal edit-income-client-modal" role="dialog" aria-modal="true" aria-label={`Modifica incasso ${income.id}`} onMouseDown={() => setIncome(null)}>
+    {income ? <div className="modal-backdrop app-form-modal edit-income-client-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia incasso ${income.id}` : `Modifica incasso ${income.id}`} onMouseDown={() => setIncome(null)}>
       <div className="modal-card modal-card-wide" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-title">
           <div>
-            <h3>Modifica incasso #{income.id}</h3>
-            <p className="muted">Aggiorna l'incasso senza uscire dalla pagina attuale.</p>
+            <h3>{mode === "copy" ? `Copia incasso #${income.id}` : `Modifica incasso #${income.id}`}</h3>
+            <p className="muted">{mode === "copy" ? "I dati sono precompilati: puoi modificarli prima di salvare il nuovo incasso." : "Aggiorna l'incasso senza uscire dalla pagina attuale."}</p>
           </div>
           <button className="secondary-button modal-close-button" type="button" onClick={() => setIncome(null)}>×</button>
         </div>
         <IncomeForm
           initialIncome={income}
-          action={`/api/incomes/${income.id}?returnTo=${encodeURIComponent(returnTo)}`}
-          title={`Modifica incasso #${income.id}`}
-          submitLabel="Salva modifiche"
+          action={mode === "copy" ? `/api/incomes?returnTo=${encodeURIComponent(returnTo)}` : `/api/incomes/${income.id}?returnTo=${encodeURIComponent(returnTo)}`}
+          title={mode === "copy" ? "Nuovo incasso da copia" : `Modifica incasso #${income.id}`}
+          submitLabel={mode === "copy" ? "Crea incasso copiato" : "Salva modifiche"}
           onCancel={() => setIncome(null)}
         />
       </div>

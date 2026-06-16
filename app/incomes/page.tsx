@@ -653,7 +653,9 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
               if (copy) {
                 copy.classList.toggle('is-disabled', !singleEnabled);
                 copy.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
-                copy.href = singleEnabled ? (group.getAttribute('data-copy-base') + firstId + '&returnTo=' + returnTo) : '#';
+                copy.href = '#';
+                if (singleEnabled) copy.setAttribute('data-income-copy-id', firstId);
+                else copy.removeAttribute('data-income-copy-id');
               }
               if (del) del.disabled = !anyEnabled;
             });
@@ -721,7 +723,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             <button type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
           </div>
         </details>
-        <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="incomeBulkForm" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-return-to={returnTo}>
+        <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="incomeBulkForm" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id" data-return-to={returnTo}>
           <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
           <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">＋</span><span className="bulk-label">Copia</span></a>
           <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>

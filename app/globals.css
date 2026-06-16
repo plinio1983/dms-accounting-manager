@@ -212,6 +212,11 @@ body:has(.settings-page) .app-footer {
     .compact-mobile-header-path {
         display: none;
     }
+
+    .modal-backdrop,
+    .app-form-modal {
+        z-index: 9999999!important;
+    }
 }
 
 .nav-links a, .btn {
@@ -670,7 +675,6 @@ button {
 
 .recurring-bulk-actions-bar .bulk-direct-actions {
     display: flex !important;
-    flex-grow: 1 !important;
     align-items: center !important;
     justify-content: flex-end !important;
     margin-right: 12px;
@@ -716,6 +720,11 @@ button {
     .recurring-active-filters-reset {
         width: fit-content;
     }
+
+    .recurring-bulk-actions-bar .bulk-direct-actions {
+        flex-grow: 1 !important;
+    }
+
 }
 
 .recurring-expense-row-with-select {
@@ -8378,10 +8387,10 @@ button.bulk-direct-danger {
 
 /* Form action bar must prevail over mobile bottom navigation */
 @media (max-width: 760px) {
-    .app-form-modal,
-    .modal-backdrop {
-        z-index: 300;
-    }
+    /*.app-form-modal,*/
+    /*.modal-backdrop {*/
+    /*    z-index: 300;*/
+    /*}*/
 
     .modal-card,
     .modal-page-card {
@@ -9080,7 +9089,8 @@ body:has(.detail-page-no-site-header) .shell {
         flex-direction: row-reverse;
     }
 
-    .modal-backdrop {
+    .modal-backdrop,
+    .app-form-modal {
         z-index: 9999999;
     }
 

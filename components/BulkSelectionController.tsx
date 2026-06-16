@@ -50,9 +50,16 @@ function syncDirectActionGroup(group: HTMLElement) {
   if (copy) {
     copy.classList.toggle("is-disabled", !singleEnabled);
     copy.setAttribute("aria-disabled", singleEnabled ? "false" : "true");
-    copy.href = singleEnabled
-      ? `${group.getAttribute("data-copy-base") ?? ""}${firstId}&returnTo=${returnTo}`
-      : "#";
+    const triggerAttr = group.getAttribute("data-copy-trigger-attr");
+    if (triggerAttr) {
+      copy.href = "#";
+      if (singleEnabled) copy.setAttribute(triggerAttr, firstId);
+      else copy.removeAttribute(triggerAttr);
+    } else {
+      copy.href = singleEnabled
+        ? `${group.getAttribute("data-copy-base") ?? ""}${firstId}&returnTo=${returnTo}`
+        : "#";
+    }
   }
 
   if (del) del.disabled = !anyEnabled;
@@ -66,7 +73,7 @@ function buildFloatingButton(original: HTMLElement, label: string, icon: string,
   button.addEventListener("click", () => {
     if (original instanceof HTMLAnchorElement) {
       if (original.classList.contains("is-disabled") || original.getAttribute("aria-disabled") === "true") return;
-      window.location.href = original.href;
+      original.click();
       return;
     }
 
