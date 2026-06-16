@@ -429,11 +429,6 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
     const isRecurring = parseBool(rowValue(row, ['Ricorrente', 'Spesa ricorrente', 'Recurring']));
     const isAutomaticPayment = parseBool(rowValue(row, ['Pagamento automatico', 'Automatico', 'Addebito automatico']));
     const { supplier, created } = await getOrCreateSupplier(supplierName, {
-      alias: textValue(rowValue(row, ['Alias fornitore', 'Alias'])),
-      email: textValue(rowValue(row, ['Email fornitore', 'Email'])),
-      phone: textValue(rowValue(row, ['Telefono fornitore', 'Telefono', 'Phone'])),
-      pec: textValue(rowValue(row, ['PEC fornitore', 'PEC'])),
-      taxCodeSdi: textValue(rowValue(row, ['Codice SDI', 'SDI', 'Codice destinatario', 'Codice fiscale/SDI'])),
       internalNotes: textValue(rowValue(row, ['Note fornitore', 'Note interne fornitore']))
     });
     if (created) suppliersCreated++;

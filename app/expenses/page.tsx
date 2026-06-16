@@ -141,8 +141,8 @@ function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
   return <span className={badgeClass(style.className)}>{label}{state}</span>;
 }
 function InvoiceBadge(value: boolean, invoiceStatus?: string) {
-  const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : '';
-  const label = (status) => {
+  const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
+  const label = (status?: string) => {
     let label = "";
     if (!value) {
       label = status === 'NON_PREVISTA' ? 'N.P.' : 'Fatt';
