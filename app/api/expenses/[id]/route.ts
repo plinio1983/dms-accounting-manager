@@ -17,6 +17,7 @@ const ExpenseSchema = z.object({
   amount: z.coerce.number().nonnegative(),
   vatRate: z.coerce.number().default(22),
   isDeclared: BooleanFromForm.default(false),
+  isRecurring: BooleanFromForm.default(false),
   hasElectronicInvoice: BooleanFromForm.default(false),
   invoiceStatus: z.enum(['NON_PREVISTA', 'IN_ATTESA', 'INVIATA_SDI', 'CONTESTAZIONE', 'RICEVUTA']).default('IN_ATTESA'),
   billingPeriod: z.string().optional(),
@@ -155,6 +156,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const existing = await prisma.expense.findUnique({ where: { id: expenseId }, include: { attachments: true } });
   if (!existing) return NextResponse.json({ error: 'Spesa non trovata' }, { status: 404 });
+  const nextIsRecurring = existing.isRecurring ? data.isRecurring : false;
 
   const attachments = await saveAttachments(formData.getAll('attachments'), existing.attachments.length);
 
@@ -173,6 +175,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       channel: firstPayment?.channel || null,
       bankId: firstPayment?.bankId || null,
       isDeclared: invoiceFields.isDeclared,
+      isRecurring: nextIsRecurring,
       hasElectronicInvoice: invoiceFields.hasElectronicInvoice,
       invoiceStatus: invoiceFields.invoiceStatus,
       isComplete: data.paymentStatus === 'COMPLETATO',

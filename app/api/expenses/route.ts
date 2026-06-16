@@ -17,6 +17,7 @@ const ExpenseSchema = z.object({
   amount: z.coerce.number().nonnegative(),
   vatRate: z.coerce.number().default(22),
   isDeclared: BooleanFromForm.default(false),
+  isRecurring: BooleanFromForm.default(false),
   hasElectronicInvoice: BooleanFromForm.default(false),
   invoiceStatus: z.enum(['NON_PREVISTA', 'IN_ATTESA', 'INVIATA_SDI', 'CONTESTAZIONE', 'RICEVUTA']).default('IN_ATTESA'),
   billingPeriod: z.string().optional(),
@@ -36,7 +37,6 @@ function normalizeInvoiceFields(data: z.infer<typeof ExpenseSchema>) {
   }
   return {
     isDeclared: data.isDeclared,
-    isRecurring: false,
     isAutomaticPayment: false,
     hasElectronicInvoice: data.hasElectronicInvoice,
     invoiceStatus: data.invoiceStatus === 'INVIATA_SDI' ? 'RICEVUTA' as const : data.invoiceStatus,
@@ -211,6 +211,7 @@ export async function POST(request: Request) {
     bankId: firstPayment?.bankId || null,
     companyId: null,
     isDeclared: invoiceFields.isDeclared,
+    isRecurring: false,
     hasElectronicInvoice: invoiceFields.hasElectronicInvoice,
     invoiceStatus: invoiceFields.invoiceStatus,
     isComplete: data.paymentStatus === 'COMPLETATO',

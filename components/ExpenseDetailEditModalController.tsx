@@ -31,6 +31,7 @@ type EditExpense = {
   hasElectronicInvoice?: boolean;
   invoiceStatus?: string | null;
   isDeclared?: boolean;
+  isRecurring?: boolean;
   notes?: string | null;
   payments?: Array<{
     id?: number;

@@ -50,6 +50,7 @@ type InitialExpense = {
   hasElectronicInvoice?: boolean;
   invoiceStatus?: string | null;
   isDeclared?: boolean;
+  isRecurring?: boolean;
   payments?: InitialPayment[];
   notes?: string | null;
 };
@@ -576,6 +577,10 @@ export default function ExpenseForm({
   const [invoiceStatus, setInvoiceStatus] = useState(
     initialExpense?.invoiceStatus ?? "IN_ATTESA",
   );
+  const [isRecurring, setIsRecurring] = useState(
+    initialExpense?.isRecurring ?? false,
+  );
+  const canEditRecurringFlag = !initialExpense || initialExpense.isRecurring;
 
   const amountValue = Number(amount || 0);
   const paidAmountValue = payments.reduce(
@@ -736,14 +741,19 @@ export default function ExpenseForm({
         <div className="form-section-grid">
 
       <div className="toggle-field switch-toggle-field expense-type-switch-in-form full">
-        <span>Tipo spesa: Singola</span>
+        <span>Tipo spesa: {isRecurring ? "Ricorrente" : "Singola"}</span>
         <label className="switch">
+          <input type="hidden" name="isRecurring" value="false" />
           <input
             type="checkbox"
-            checked={false}
-            disabled={!onSwitchToRecurring}
+            name="isRecurring"
+            value="true"
+            checked={isRecurring}
+            disabled={!canEditRecurringFlag}
             onChange={(event) => {
-              if (event.currentTarget.checked) {
+              const checked = event.currentTarget.checked;
+              setIsRecurring(checked);
+              if (checked && onSwitchToRecurring && !initialExpense) {
                 onSwitchToRecurring?.();
               }
             }}

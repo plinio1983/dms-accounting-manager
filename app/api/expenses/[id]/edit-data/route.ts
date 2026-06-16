@@ -35,6 +35,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       hasElectronicInvoice: expense.hasElectronicInvoice,
       invoiceStatus: expense.invoiceStatus,
       isDeclared: expense.isDeclared,
+      isRecurring: expense.isRecurring,
       notes: expense.notes,
       payments: expense.payments.map(payment => ({
         id: payment.id,
