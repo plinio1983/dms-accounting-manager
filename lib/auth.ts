@@ -17,7 +17,8 @@ export function hashPassword(password: string) {
   return `pbkdf2:${passwordIterations}:${salt}:${hash}`;
 }
 
-export function verifyPassword(password: string, storedHash: string) {
+export function verifyPassword(password: string, storedHash?: string | null) {
+  if (!storedHash) return false;
   const [scheme, iterationsRaw, salt, hash] = storedHash.split(':');
   if (scheme !== 'pbkdf2' || !iterationsRaw || !salt || !hash) return false;
   const iterations = Number(iterationsRaw);

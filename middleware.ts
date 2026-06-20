@@ -6,6 +6,7 @@ const sessionCookieName = 'tabularium_session';
 const publicPrefixes = [
   '/login',
   '/register',
+  '/api/auth',
   '/admin/login',
   '/admin/setup',
   '/_next',

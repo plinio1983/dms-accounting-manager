@@ -1,0 +1,12 @@
+.git
+.next
+node_modules
+tsconfig.tsbuildinfo
+.env
+.env.*
+!.env.example
+data
+*.dump
+*.sql
+public/uploads/invoices/*
+!public/uploads/invoices/.gitkeep

@@ -17,10 +17,13 @@ export default async function RegisterPage({ searchParams }: { searchParams?: Pr
       <p className="muted">Crea il tuo utente e il tuo workspace personale.</p>
       {error === 'exists' ? <div className="inline-modal-error">Esiste già un utente con questa email.</div> : null}
       {error === 'invalid' ? <div className="inline-modal-error">Email obbligatoria e password di almeno 8 caratteri.</div> : null}
+      {error === 'google_config' ? <div className="inline-modal-error">Accesso Google non configurato.</div> : null}
+      {error === 'google' || error === 'google_state' ? <div className="inline-modal-error">Registrazione Google non riuscita.</div> : null}
       <label>Nome<input name="name" autoComplete="name" /></label>
       <label>Email<input name="email" type="email" autoComplete="email" required /></label>
       <label>Password<input name="password" type="password" autoComplete="new-password" minLength={8} required /></label>
       <label>Nome workspace<input name="workspaceName" placeholder="Il mio workspace" /></label>
+      <a className="button-standard secondary-button full" href="/api/auth/google?next=/register/success">Registrati con Google</a>
       <div className="actions-row right-actions">
         <Link className="table-action secondary" href="/login">Ho già un account</Link>
         <button type="submit" className="button-standard primary-action">Registrati</button>

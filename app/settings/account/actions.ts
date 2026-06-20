@@ -26,8 +26,10 @@ export async function updateAccountAction(formData: FormData) {
   const newPassword = value(formData, 'newPassword');
   const confirmPassword = value(formData, 'confirmPassword');
 
-  if (!email || !currentPassword) accountError('invalid');
-  if (!verifyPassword(currentPassword, current.user.passwordHash)) accountError('password');
+  if (!email) accountError('invalid');
+  if (current.user.passwordHash && !currentPassword) accountError('invalid');
+  if (current.user.passwordHash && !verifyPassword(currentPassword, current.user.passwordHash)) accountError('password');
+  if (!current.user.passwordHash && currentPassword) accountError('password');
   if (newPassword || confirmPassword) {
     if (newPassword.length < 8) accountError('password_short');
     if (newPassword !== confirmPassword) accountError('password_mismatch');

@@ -16,11 +16,14 @@ export default async function LoginPage({ searchParams }: { searchParams?: Promi
     <form action={loginAction} className="card form admin-auth-card">
       <h2>Accesso</h2>
       <p className="muted">Accedi alla tua area di lavoro Tabularium.</p>
-      {error ? <div className="inline-modal-error">Credenziali non valide.</div> : null}
+      {error === 'google_config' ? <div className="inline-modal-error">Accesso Google non configurato.</div> : null}
+      {error === 'google' || error === 'google_state' ? <div className="inline-modal-error">Accesso Google non riuscito.</div> : null}
+      {error && !String(error).startsWith('google') ? <div className="inline-modal-error">Credenziali non valide.</div> : null}
       <input type="hidden" name="next" value={next && next.startsWith('/') ? next : '/'} />
       <input type="hidden" name="failurePath" value="/login" />
       <label>Email<input name="email" type="email" autoComplete="email" required /></label>
       <label>Password<input name="password" type="password" autoComplete="current-password" required /></label>
+      <a className="button-standard secondary-button full" href={`/api/auth/google?next=${encodeURIComponent(next && next.startsWith('/') ? next : '/')}`}>Accedi con Google</a>
       <div className="actions-row right-actions">
         <Link className="table-action secondary" href="/register">Registrati</Link>
         <button type="submit" className="button-standard primary-action">Accedi</button>
@@ -28,4 +31,3 @@ export default async function LoginPage({ searchParams }: { searchParams?: Promi
     </form>
   </div>;
 }
-

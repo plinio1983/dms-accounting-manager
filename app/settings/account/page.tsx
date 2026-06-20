@@ -53,7 +53,7 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
       {error ? <div className="inline-form-error full">{errorMessages[error] ?? 'Impossibile aggiornare l’account.'}</div> : null}
       <label>Nome<input name="name" defaultValue={current.user.name ?? ''} autoComplete="name" /></label>
       <label>Email<input name="email" type="email" defaultValue={current.user.email} autoComplete="email" required /></label>
-      <label>Password attuale<input name="currentPassword" type="password" autoComplete="current-password" required /></label>
+      {current.user.passwordHash ? <label>Password attuale<input name="currentPassword" type="password" autoComplete="current-password" required /></label> : null}
       <label>Nuova password<input name="newPassword" type="password" autoComplete="new-password" minLength={8} /></label>
       <label>Conferma nuova password<input name="confirmPassword" type="password" autoComplete="new-password" minLength={8} /></label>
       <div className="actions-row full form-actions-row">

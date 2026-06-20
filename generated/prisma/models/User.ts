@@ -38,6 +38,8 @@ export type UserMinAggregateOutputType = {
   id: number | null
   email: string | null
   passwordHash: string | null
+  googleId: string | null
+  googleEmailVerified: boolean | null
   name: string | null
   isActive: boolean | null
   isSystemAdmin: boolean | null
@@ -49,6 +51,8 @@ export type UserMaxAggregateOutputType = {
   id: number | null
   email: string | null
   passwordHash: string | null
+  googleId: string | null
+  googleEmailVerified: boolean | null
   name: string | null
   isActive: boolean | null
   isSystemAdmin: boolean | null
@@ -60,6 +64,8 @@ export type UserCountAggregateOutputType = {
   id: number
   email: number
   passwordHash: number
+  googleId: number
+  googleEmailVerified: number
   name: number
   isActive: number
   isSystemAdmin: number
@@ -81,6 +87,8 @@ export type UserMinAggregateInputType = {
   id?: true
   email?: true
   passwordHash?: true
+  googleId?: true
+  googleEmailVerified?: true
   name?: true
   isActive?: true
   isSystemAdmin?: true
@@ -92,6 +100,8 @@ export type UserMaxAggregateInputType = {
   id?: true
   email?: true
   passwordHash?: true
+  googleId?: true
+  googleEmailVerified?: true
   name?: true
   isActive?: true
   isSystemAdmin?: true
@@ -103,6 +113,8 @@ export type UserCountAggregateInputType = {
   id?: true
   email?: true
   passwordHash?: true
+  googleId?: true
+  googleEmailVerified?: true
   name?: true
   isActive?: true
   isSystemAdmin?: true
@@ -200,7 +212,9 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type UserGroupByOutputType = {
   id: number
   email: string
-  passwordHash: string
+  passwordHash: string | null
+  googleId: string | null
+  googleEmailVerified: boolean
   name: string | null
   isActive: boolean
   isSystemAdmin: boolean
@@ -234,7 +248,9 @@ export type UserWhereInput = {
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   id?: Prisma.IntFilter<"User"> | number
   email?: Prisma.StringFilter<"User"> | string
-  passwordHash?: Prisma.StringFilter<"User"> | string
+  passwordHash?: Prisma.StringNullableFilter<"User"> | string | null
+  googleId?: Prisma.StringNullableFilter<"User"> | string | null
+  googleEmailVerified?: Prisma.BoolFilter<"User"> | boolean
   name?: Prisma.StringNullableFilter<"User"> | string | null
   isActive?: Prisma.BoolFilter<"User"> | boolean
   isSystemAdmin?: Prisma.BoolFilter<"User"> | boolean
@@ -248,7 +264,9 @@ export type UserWhereInput = {
 export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
-  passwordHash?: Prisma.SortOrder
+  passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder
+  googleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  googleEmailVerified?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   isSystemAdmin?: Prisma.SortOrder
@@ -262,10 +280,12 @@ export type UserOrderByWithRelationInput = {
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: number
   email?: string
+  googleId?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
-  passwordHash?: Prisma.StringFilter<"User"> | string
+  passwordHash?: Prisma.StringNullableFilter<"User"> | string | null
+  googleEmailVerified?: Prisma.BoolFilter<"User"> | boolean
   name?: Prisma.StringNullableFilter<"User"> | string | null
   isActive?: Prisma.BoolFilter<"User"> | boolean
   isSystemAdmin?: Prisma.BoolFilter<"User"> | boolean
@@ -274,12 +294,14 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   ownedWorkspaces?: Prisma.WorkspaceListRelationFilter
   memberships?: Prisma.WorkspaceMemberListRelationFilter
   sessions?: Prisma.AuthSessionListRelationFilter
-}, "id" | "email">
+}, "id" | "email" | "googleId">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
-  passwordHash?: Prisma.SortOrder
+  passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder
+  googleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  googleEmailVerified?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   isSystemAdmin?: Prisma.SortOrder
@@ -298,7 +320,9 @@ export type UserScalarWhereWithAggregatesInput = {
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"User"> | number
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
-  passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
+  passwordHash?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  googleId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  googleEmailVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   name?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   isSystemAdmin?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
@@ -308,7 +332,9 @@ export type UserScalarWhereWithAggregatesInput = {
 
 export type UserCreateInput = {
   email: string
-  passwordHash: string
+  passwordHash?: string | null
+  googleId?: string | null
+  googleEmailVerified?: boolean
   name?: string | null
   isActive?: boolean
   isSystemAdmin?: boolean
@@ -322,7 +348,9 @@ export type UserCreateInput = {
 export type UserUncheckedCreateInput = {
   id?: number
   email: string
-  passwordHash: string
+  passwordHash?: string | null
+  googleId?: string | null
+  googleEmailVerified?: boolean
   name?: string | null
   isActive?: boolean
   isSystemAdmin?: boolean
@@ -335,7 +363,9 @@ export type UserUncheckedCreateInput = {
 
 export type UserUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystemAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -349,7 +379,9 @@ export type UserUpdateInput = {
 export type UserUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystemAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -363,7 +395,9 @@ export type UserUncheckedUpdateInput = {
 export type UserCreateManyInput = {
   id?: number
   email: string
-  passwordHash: string
+  passwordHash?: string | null
+  googleId?: string | null
+  googleEmailVerified?: boolean
   name?: string | null
   isActive?: boolean
   isSystemAdmin?: boolean
@@ -373,7 +407,9 @@ export type UserCreateManyInput = {
 
 export type UserUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystemAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -384,7 +420,9 @@ export type UserUpdateManyMutationInput = {
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystemAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -396,6 +434,8 @@ export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
+  googleId?: Prisma.SortOrder
+  googleEmailVerified?: Prisma.SortOrder
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   isSystemAdmin?: Prisma.SortOrder
@@ -411,6 +451,8 @@ export type UserMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
+  googleId?: Prisma.SortOrder
+  googleEmailVerified?: Prisma.SortOrder
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   isSystemAdmin?: Prisma.SortOrder
@@ -422,6 +464,8 @@ export type UserMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
+  googleId?: Prisma.SortOrder
+  googleEmailVerified?: Prisma.SortOrder
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   isSystemAdmin?: Prisma.SortOrder
@@ -506,7 +550,9 @@ export type UserUpdateOneRequiredWithoutSessionsNestedInput = {
 
 export type UserCreateWithoutOwnedWorkspacesInput = {
   email: string
-  passwordHash: string
+  passwordHash?: string | null
+  googleId?: string | null
+  googleEmailVerified?: boolean
   name?: string | null
   isActive?: boolean
   isSystemAdmin?: boolean
@@ -519,7 +565,9 @@ export type UserCreateWithoutOwnedWorkspacesInput = {
 export type UserUncheckedCreateWithoutOwnedWorkspacesInput = {
   id?: number
   email: string
-  passwordHash: string
+  passwordHash?: string | null
+  googleId?: string | null
+  googleEmailVerified?: boolean
   name?: string | null
   isActive?: boolean
   isSystemAdmin?: boolean
@@ -547,7 +595,9 @@ export type UserUpdateToOneWithWhereWithoutOwnedWorkspacesInput = {
 
 export type UserUpdateWithoutOwnedWorkspacesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystemAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -560,7 +610,9 @@ export type UserUpdateWithoutOwnedWorkspacesInput = {
 export type UserUncheckedUpdateWithoutOwnedWorkspacesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystemAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -572,7 +624,9 @@ export type UserUncheckedUpdateWithoutOwnedWorkspacesInput = {
 
 export type UserCreateWithoutMembershipsInput = {
   email: string
-  passwordHash: string
+  passwordHash?: string | null
+  googleId?: string | null
+  googleEmailVerified?: boolean
   name?: string | null
   isActive?: boolean
   isSystemAdmin?: boolean
@@ -585,7 +639,9 @@ export type UserCreateWithoutMembershipsInput = {
 export type UserUncheckedCreateWithoutMembershipsInput = {
   id?: number
   email: string
-  passwordHash: string
+  passwordHash?: string | null
+  googleId?: string | null
+  googleEmailVerified?: boolean
   name?: string | null
   isActive?: boolean
   isSystemAdmin?: boolean
@@ -613,7 +669,9 @@ export type UserUpdateToOneWithWhereWithoutMembershipsInput = {
 
 export type UserUpdateWithoutMembershipsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystemAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -626,7 +684,9 @@ export type UserUpdateWithoutMembershipsInput = {
 export type UserUncheckedUpdateWithoutMembershipsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystemAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -638,7 +698,9 @@ export type UserUncheckedUpdateWithoutMembershipsInput = {
 
 export type UserCreateWithoutSessionsInput = {
   email: string
-  passwordHash: string
+  passwordHash?: string | null
+  googleId?: string | null
+  googleEmailVerified?: boolean
   name?: string | null
   isActive?: boolean
   isSystemAdmin?: boolean
@@ -651,7 +713,9 @@ export type UserCreateWithoutSessionsInput = {
 export type UserUncheckedCreateWithoutSessionsInput = {
   id?: number
   email: string
-  passwordHash: string
+  passwordHash?: string | null
+  googleId?: string | null
+  googleEmailVerified?: boolean
   name?: string | null
   isActive?: boolean
   isSystemAdmin?: boolean
@@ -679,7 +743,9 @@ export type UserUpdateToOneWithWhereWithoutSessionsInput = {
 
 export type UserUpdateWithoutSessionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystemAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -692,7 +758,9 @@ export type UserUpdateWithoutSessionsInput = {
 export type UserUncheckedUpdateWithoutSessionsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystemAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -755,6 +823,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   id?: boolean
   email?: boolean
   passwordHash?: boolean
+  googleId?: boolean
+  googleEmailVerified?: boolean
   name?: boolean
   isActive?: boolean
   isSystemAdmin?: boolean
@@ -770,6 +840,8 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   email?: boolean
   passwordHash?: boolean
+  googleId?: boolean
+  googleEmailVerified?: boolean
   name?: boolean
   isActive?: boolean
   isSystemAdmin?: boolean
@@ -781,6 +853,8 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   email?: boolean
   passwordHash?: boolean
+  googleId?: boolean
+  googleEmailVerified?: boolean
   name?: boolean
   isActive?: boolean
   isSystemAdmin?: boolean
@@ -792,6 +866,8 @@ export type UserSelectScalar = {
   id?: boolean
   email?: boolean
   passwordHash?: boolean
+  googleId?: boolean
+  googleEmailVerified?: boolean
   name?: boolean
   isActive?: boolean
   isSystemAdmin?: boolean
@@ -799,7 +875,7 @@ export type UserSelectScalar = {
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "name" | "isActive" | "isSystemAdmin" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "googleId" | "googleEmailVerified" | "name" | "isActive" | "isSystemAdmin" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ownedWorkspaces?: boolean | Prisma.User$ownedWorkspacesArgs<ExtArgs>
   memberships?: boolean | Prisma.User$membershipsArgs<ExtArgs>
@@ -819,7 +895,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     email: string
-    passwordHash: string
+    passwordHash: string | null
+    googleId: string | null
+    googleEmailVerified: boolean
     name: string | null
     isActive: boolean
     isSystemAdmin: boolean
@@ -1254,6 +1332,8 @@ export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'Int'>
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly passwordHash: Prisma.FieldRef<"User", 'String'>
+  readonly googleId: Prisma.FieldRef<"User", 'String'>
+  readonly googleEmailVerified: Prisma.FieldRef<"User", 'Boolean'>
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly isActive: Prisma.FieldRef<"User", 'Boolean'>
   readonly isSystemAdmin: Prisma.FieldRef<"User", 'Boolean'>

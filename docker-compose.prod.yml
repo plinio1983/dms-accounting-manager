@@ -1,0 +1,40 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tabularium:latest
+    container_name: tabularium-app
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    expose:
+      - "3000"
+    volumes:
+      - tabularium_uploads:/app/public/uploads
+    networks:
+      - frontend
+      - backend
+
+  db:
+    image: postgres:16-alpine
+    container_name: tabularium-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tabularium}
+      POSTGRES_USER: ${POSTGRES_USER:-tabularium}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - tabularium_pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+
+volumes:
+  tabularium_pgdata:
+  tabularium_uploads:
+
+networks:
+  frontend:
+    external: true
+  backend:
+    external: true
