@@ -663,6 +663,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         useFiscalPeriodFilter={useFiscalPeriodFilter}
       />
 
+      {/*<section>*/}
       <div className="dashboard-statement-panel list-totals-statement">
         <p className="totals-period-note">{totalsPeriodLabel}</p>
         <table className="dashboard-statement-table list-totals-table" aria-label="Totali spese filtrate">
@@ -677,6 +678,10 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           </tbody>
         </table>
       </div>
+      {/*<div>*/}
+      {/*  <ExpenseCategoryChart data={expensesByCategory} />*/}
+      {/*</div>*/}
+      {/*</section>*/}
 
       <div className="list-heading recurring-list-heading">
         <div>
@@ -1032,47 +1037,52 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         })}
       </div>
 
-      <div className="table-scroll"><table className="expenses-table compact-expenses-table"><thead><tr>
-        <th className="cell-option cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="expenseBulkForm" aria-label="Seleziona tutte le spese" /></th>
-        <th className="cell-order-date"><span className="th-wrap">Data<br />ordine</span></th>
-        <th className="cell-billing-period"><span className="th-wrap">Per.<br />Cont.</span></th>
-        <th className="cell-category">Categ.</th>
-        <th className="cell-type"><span className="th-wrap">Tipo</span></th>
-        <th className="cell-supplier">Esercente</th>
-        <th className="cell-amount">Importo</th>
-        <th className="cell-fiscal">Fiscale</th>
-        <th className="cell-payment-state"><span className="th-wrap">Stato Pag.</span></th>
-        <th className="cell-invoice-state"><span className="th-wrap">Stato<br />Fatt.</span></th>
-        <th className="cell-ebilling"><span className="th-wrap">E-Bill</span></th>
-        <th className="cell-description">Descrizione</th>
-        <th className="cell-residual">Residuo</th>
-      </tr></thead><tbody>
-        {filteredExpenses.map(e => {
-          const amount = Number(e.amount.toString());
-          const paid = e.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
-          const residual = Math.max(0, amount - paid);
-          const categoryStyle = e.category?.name ? categoryStyles[e.category.name] : undefined;
-          const paymentStyle = paymentStatusStyles[e.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
-          const invoiceStyle = invoiceStatusStyles[e.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
-          const overdue = isExpensePastDueForBadge(e);
-          const invoicePendingAfterPayment = e.paymentStatus === 'COMPLETATO' && e.invoiceStatus === 'IN_ATTESA';
-          return <tr key={e.id} className={['clickable-desktop-row', invoicePendingAfterPayment ? 'expense-row-invoice-waiting' : ''].filter(Boolean).join(' ')} data-row-href={`/expenses/${e.id}?returnTo=${returnTo}`} tabIndex={0}>
-            <td className="cell-option cell-center"><input form="expenseBulkForm" type="checkbox" name="ids" value={e.id} aria-label={`Seleziona spesa ${e.id}`} /></td>
-            <td className="cell-order-date">{dateLabel(e.receivedDate)}</td>
-            <td className="cell-billing-period">{formatPeriod(e.month, e.year)}</td>
-            <td className="cell-category">{e.category ? <span title={e.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? e.category.code}</span> : '-'}</td>
-            <td className="cell-type"><span className={e.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{e.isRecurring ? 'R' : 'S'}</span></td>
-            <td className="cell-supplier cell-compact" title={e.merchant ?? ''}>{e.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${e.supplierId}`}>{e.merchant}</Link> : e.merchant}</td>
-            <td className="cell-amount"><strong className={moneyTone(amount)}>{euro(e.amount.toString())}</strong></td>
-            <td className="cell-fiscal">{fiscalBadge(e.isDeclared)}</td>
-            <td className="cell-payment-state">{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>
-            <td className="cell-invoice-state"><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
-            <td className="cell-ebilling">{InvoiceBadge(e.hasElectronicInvoice, e.invoiceStatus)}</td>
-            <td className="cell-description" title={e.description ?? ''}>{e.description}</td>
-            <td className="cell-residual"><strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong></td>
-          </tr>;
-        })}
-      </tbody></table></div>
+      <div className="table-scroll">
+        <table className="expenses-table compact-expenses-table">
+          <thead><tr>
+          <th className="cell-option cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="expenseBulkForm" aria-label="Seleziona tutte le spese" /></th>
+          <th className="cell-order-date"><span className="th-wrap">Data<br />ordine</span></th>
+          <th className="cell-billing-period"><span className="th-wrap">Per.<br />Cont.</span></th>
+          <th className="cell-category">Categ.</th>
+          <th className="cell-type"><span className="th-wrap">Tipo</span></th>
+          <th className="cell-supplier">Esercente</th>
+          <th className="cell-amount">Importo</th>
+          <th className="cell-fiscal">Fiscale</th>
+          <th className="cell-payment-state"><span className="th-wrap">Stato Pag.</span></th>
+          <th className="cell-invoice-state"><span className="th-wrap">Stato<br />Fatt.</span></th>
+          <th className="cell-ebilling"><span className="th-wrap">E-Bill</span></th>
+          <th className="cell-description">Descrizione</th>
+          <th className="cell-residual">Residuo</th>
+          </tr></thead>
+          <tbody>
+            {filteredExpenses.map(e => {
+            const amount = Number(e.amount.toString());
+            const paid = e.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
+            const residual = Math.max(0, amount - paid);
+            const categoryStyle = e.category?.name ? categoryStyles[e.category.name] : undefined;
+            const paymentStyle = paymentStatusStyles[e.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
+            const invoiceStyle = invoiceStatusStyles[e.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
+            const overdue = isExpensePastDueForBadge(e);
+            const invoicePendingAfterPayment = e.paymentStatus === 'COMPLETATO' && e.invoiceStatus === 'IN_ATTESA';
+            return <tr key={e.id} className={['clickable-desktop-row', invoicePendingAfterPayment ? 'expense-row-invoice-waiting' : ''].filter(Boolean).join(' ')} data-row-href={`/expenses/${e.id}?returnTo=${returnTo}`} tabIndex={0}>
+              <td className="cell-option cell-center"><input form="expenseBulkForm" type="checkbox" name="ids" value={e.id} aria-label={`Seleziona spesa ${e.id}`} /></td>
+              <td className="cell-order-date">{dateLabel(e.receivedDate)}</td>
+              <td className="cell-billing-period">{formatPeriod(e.month, e.year)}</td>
+              <td className="cell-category">{e.category ? <span title={e.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? e.category.code}</span> : '-'}</td>
+              <td className="cell-type"><span className={e.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{e.isRecurring ? 'R' : 'S'}</span></td>
+              <td className="cell-supplier cell-compact" title={e.merchant ?? ''}>{e.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${e.supplierId}`}>{e.merchant}</Link> : e.merchant}</td>
+              <td className="cell-amount"><strong className={moneyTone(amount)}>{euro(e.amount.toString())}</strong></td>
+              <td className="cell-fiscal">{fiscalBadge(e.isDeclared)}</td>
+              <td className="cell-payment-state">{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>
+              <td className="cell-invoice-state"><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
+              <td className="cell-ebilling">{InvoiceBadge(e.hasElectronicInvoice, e.invoiceStatus)}</td>
+              <td className="cell-description" title={e.description ?? ''}>{e.description}</td>
+              <td className="cell-residual"><strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong></td>
+            </tr>;
+          })}
+          </tbody>
+        </table>
+      </div>
     </div>
     <div className="card expenses-list-card">
       <ExpenseCategoryChart data={expensesByCategory} />
