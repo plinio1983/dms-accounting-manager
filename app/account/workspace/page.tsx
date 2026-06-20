@@ -24,25 +24,6 @@ export default async function WorkspaceAccountPage({ searchParams }: { searchPar
   const canEditWorkspace = current.membership.role === 'OWNER' || current.membership.role === 'ADMIN';
 
   return <div className="grid admin-page">
-    <style>{`
-      .workspace-account-card {
-        display: grid;
-        gap: 16px;
-      }
-
-      .workspace-account-card .form {
-        width: min(720px, 100%);
-      }
-
-      .inline-form-error {
-        padding: 10px 12px;
-        border: 1px solid #fecaca;
-        border-radius: 12px;
-        background: #fef2f2;
-        color: #991b1b;
-        font-weight: 800;
-      }
-    `}</style>
     <div className="toolbar-card">
       <div>
         <h2>Workspace</h2>

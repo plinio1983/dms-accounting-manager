@@ -21,26 +21,6 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
   const saved = Array.isArray(params.saved) ? params.saved[0] : params.saved;
 
   return <div className="grid admin-page account-settings-page">
-    <style>{`
-      .account-settings-form {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .inline-form-error {
-        padding: 10px 12px;
-        border: 1px solid #fecaca;
-        border-radius: 12px;
-        background: #fef2f2;
-        color: #991b1b;
-        font-weight: 800;
-      }
-
-      @media (max-width: 760px) {
-        .account-settings-form {
-          grid-template-columns: 1fr;
-        }
-      }
-    `}</style>
     <div className="toolbar-card">
       <div>
         <h2>Account</h2>
@@ -50,12 +30,14 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
 
     <form action={updateAccountAction}>
       <div className="card form account-settings-form">
-          {saved ? <div className="form-summary full"><strong>Account aggiornato.</strong></div> : null}
-          {error ? <div className="inline-form-error full">{errorMessages[error] ?? 'Impossibile aggiornare l’account.'}</div> : null}
-          <label>Nome<input name="name" defaultValue={current.user.name ?? ''} autoComplete="name" /></label>
-          <label>Email<input name="email" type="email" defaultValue={current.user.email} autoComplete="email" required /></label>
+        <h3>Dati account</h3>
+        {saved ? <div className="form-summary full"><strong>Account aggiornato.</strong></div> : null}
+        {error ? <div className="inline-form-error full">{errorMessages[error] ?? 'Impossibile aggiornare l’account.'}</div> : null}
+        <label>Nome<input name="name" defaultValue={current.user.name ?? ''} autoComplete="name" /></label>
+        <label>Email<input name="email" type="email" defaultValue={current.user.email} autoComplete="email" required /></label>
       </div>
       <div className="card form account-settings-form">
+        <h3>Modifica password</h3>
         {current.user.passwordHash ? <label>Password attuale<input name="currentPassword" type="password" autoComplete="current-password" required /></label> : null}
         <label>Nuova password<input name="newPassword" type="password" autoComplete="new-password" minLength={8} /></label>
         <label>Conferma nuova password<input name="confirmPassword" type="password" autoComplete="new-password" minLength={8} /></label>

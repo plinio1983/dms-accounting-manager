@@ -9548,3 +9548,45 @@ table .cell-description {
 .supplier-mobile-row-grow {
     flex-grow: 1;
 }
+
+.account-settings-page form {
+    display: grid;
+    gap: 16px;
+}
+
+.account-settings-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.inline-form-error {
+    padding: 10px 12px;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    background: #fef2f2;
+    color: #991b1b;
+    font-weight: 800;
+}
+
+@media (max-width: 760px) {
+    .account-settings-form {
+        grid-template-columns: 1fr;
+    }
+}
+
+.workspace-account-card {
+    display: grid;
+    gap: 16px;
+}
+
+.workspace-account-card .form {
+    width: min(720px, 100%);
+}
+
+.inline-form-error {
+    padding: 10px 12px;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    background: #fef2f2;
+    color: #991b1b;
+    font-weight: 800;
+}
