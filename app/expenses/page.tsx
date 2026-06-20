@@ -102,7 +102,7 @@ function periodTotalsLabel({
 }) {
   if (useFiscalPeriodFilter) {
     if (billingPeriodFromFilter && billingPeriodToFilter && billingPeriodFromFilter !== billingPeriodToFilter) {
-      return `Totali periodo fiscale dal ${formatMonthInputLabel(billingPeriodFromFilter)} al ${formatMonthInputLabel(billingPeriodToFilter)}`;
+      return `Periodo fiscale dal ${formatMonthInputLabel(billingPeriodFromFilter)} al ${formatMonthInputLabel(billingPeriodToFilter)}`;
     }
     const value = billingPeriodFromFilter || billingPeriodToFilter;
     return value ? `Totali periodo fiscale ${formatMonthInputLabel(value)}` : 'Totali periodo fiscale selezionato';
@@ -167,7 +167,38 @@ function optionLabel(options: Array<string[]>, value: string) {
 }
 
 
-function ExpenseCategoryChart({ data }: { data: Array<{ name: string; code: string; total: number }> }) {
+type ExpenseCategoryDatum = { name: string; code: string; total: number; residual: number };
+
+function ExpenseCategoryColumnChart({ data, total }: { data: ExpenseCategoryDatum[]; total: number }) {
+  const max = Math.max(...data.map(item => item.total), 0);
+
+  return <div className="expense-column-panel" aria-label="Grafico a colonne per categorie di spesa">
+    <div className="expense-column-heading">
+      <div>
+        <h2>Top categorie</h2>
+        <p className="muted">Colonne per totale speso sui risultati filtrati.</p>
+      </div>
+    </div>
+    {data.length ? <div className="expense-column-chart">
+      {data.map(item => {
+        const height = max ? Math.max((item.total / max) * 100, 7) : 0;
+        const residualHeight = item.total ? Math.min((item.residual / item.total) * 100, 100) : 0;
+        const percentage = total ? (item.total / total) * 100 : 0;
+        return <div className="expense-column" key={`${item.code}-${item.name}`} title={`${item.name}: ${euro(item.total)} - residuo ${euro(item.residual)}`}>
+          <div className="expense-column-plot">
+            <span className="expense-column-bar" style={{ height: `${height}%` }}>
+              {item.residual > 0 ? <span className="expense-column-residual" style={{ height: `${residualHeight}%` }} /> : null}
+            </span>
+          </div>
+          <strong>{item.code}</strong>
+          <small>{percentage.toFixed(0)}%</small>
+        </div>;
+      })}
+    </div> : <p className="muted">Nessuna spesa presente nei risultati filtrati.</p>}
+  </div>;
+}
+
+function ExpenseCategoryChart({ data }: { data: ExpenseCategoryDatum[] }) {
   const max = Math.max(...data.map(item => item.total), 0);
   const total = data.reduce((sum, item) => sum + item.total, 0);
 
@@ -619,14 +650,18 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   });
 
   const expensesByCategory = Array.from(filteredExpenses.reduce((map, expense) => {
+    const amount = Number(expense.amount.toString());
+    const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
+    const residual = Math.max(0, amount - paid);
     const name = expense.category?.name ?? 'Senza categoria';
     const code = expense.category?.code ?? 'ND';
     const key = `${code}-${name}`;
-    const current = map.get(key) ?? { name, code, total: 0 };
-    current.total += Number(expense.amount.toString());
+    const current = map.get(key) ?? { name, code, total: 0, residual: 0 };
+    current.total += amount;
+    current.residual += residual;
     map.set(key, current);
     return map;
-  }, new Map<string, { name: string; code: string; total: number }>()).values()).sort((a, b) => b.total - a.total);
+  }, new Map<string, ExpenseCategoryDatum>()).values()).sort((a, b) => b.total - a.total);
 
   const activeFilterItems = [
     orderDateFromDefault && { label: 'Data ordine da', value: formatDateInputLabel(orderDateFromDefault) },
@@ -663,25 +698,24 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         useFiscalPeriodFilter={useFiscalPeriodFilter}
       />
 
-      {/*<section>*/}
-      <div className="dashboard-statement-panel list-totals-statement">
-        <p className="totals-period-note">{totalsPeriodLabel}</p>
-        <table className="dashboard-statement-table list-totals-table" aria-label="Totali spese filtrate">
-          <tbody>
-            {/*<tr><td>Spese totali IVA inclusa</td><td><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></td></tr>*/}
-            <tr><td>Spese totali IVA inclusa</td><td><strong className={badgeClass()}>{euro(totals.total)}</strong></td></tr>
-            <tr><td>Spese non dichiarate</td><td><strong className={moneyTone(totals.nonDeclared)}>{euro(totals.nonDeclared)}</strong></td></tr>
-            <tr className={totals.toPay > 0 ? 'list-totals-row-warning row-warning' : ''}><td>Non saldato</td><td><strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong></td></tr>
-            <tr><td>IVA versata</td><td><strong className={moneyTone(totals.paidVat)}>{euro(totals.paidVat)}</strong></td></tr>
-            <tr className={totals.invoicesNotReceived > 0 ? 'list-totals-row-warning row-warning' : ''}><td>Fatture non ricevute</td><td><strong className="text-warning">{totals.invoicesNotReceived}</strong></td></tr>
-            <tr className={totals.overdueCount > 0 ? 'list-totals-row-critical row-critical' : ''}><td>Pagamenti scaduti</td><td><strong className="text-warning">{totals.overdueCount}</strong></td></tr>
-          </tbody>
-        </table>
+      <div className="expense-summary-row">
+        <div className="dashboard-statement-panel list-totals-statement">
+          {/*<p className="totals-period-note">{totalsPeriodLabel}</p>*/}
+          <h2>{totalsPeriodLabel}</h2>
+          <table className="dashboard-statement-table list-totals-table" aria-label="Totali spese filtrate">
+            <tbody>
+              {/*<tr><td>Spese totali IVA inclusa</td><td><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></td></tr>*/}
+              <tr><td>Spese totali IVA inclusa</td><td><strong className={badgeClass()}>{euro(totals.total)}</strong></td></tr>
+              <tr><td>Spese non dichiarate</td><td><strong className={moneyTone(totals.nonDeclared)}>{euro(totals.nonDeclared)}</strong></td></tr>
+              <tr className={totals.toPay > 0 ? 'list-totals-row-warning row-warning' : ''}><td>Non saldato</td><td><strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong></td></tr>
+              <tr><td>IVA versata</td><td><strong className={moneyTone(totals.paidVat)}>{euro(totals.paidVat)}</strong></td></tr>
+              <tr className={totals.invoicesNotReceived > 0 ? 'list-totals-row-warning row-warning' : ''}><td>Fatture non ricevute</td><td><strong className="text-warning">{totals.invoicesNotReceived}</strong></td></tr>
+              <tr className={totals.overdueCount > 0 ? 'list-totals-row-critical row-critical' : ''}><td>Pagamenti scaduti</td><td><strong className="text-warning">{totals.overdueCount}</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ExpenseCategoryColumnChart data={expensesByCategory} total={totals.total} />
       </div>
-      {/*<div>*/}
-      {/*  <ExpenseCategoryChart data={expensesByCategory} />*/}
-      {/*</div>*/}
-      {/*</section>*/}
 
       <div className="list-heading recurring-list-heading">
         <div>
@@ -964,7 +998,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           const invoiceStyle = invoiceStatusStyles[e.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
           const overdue = isExpensePastDueForBadge(e);
           const upaid = isExpenseOverdue(e);
-          const invoicePendingAfterPayment = e.paymentStatus === 'COMPLETATO' && e.invoiceStatus === 'IN_ATTESA';
+          const invoiceWaiting = e.invoiceStatus === 'IN_ATTESA';
           const statusStyle = overdue ? paymentStatusStyles.SCADUTO : paymentStyle;
           const detailHref = e.recurringExpenseId
             ? `/recurring-expenses/${e.recurringExpenseId}?returnTo=${returnTo}`
@@ -975,7 +1009,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             recordAddClass = "expense-mobile-item-overdue";
           } else if (upaid) {
             recordAddClass = "expense-mobile-item-unpaid";
-          } else if (invoicePendingAfterPayment) {
+          } else if (invoiceWaiting) {
             recordAddClass = "expense-mobile-item-invoice-waiting";
           }
           const recordClass = `expense-mobile-item ${recordAddClass}`;
@@ -1063,8 +1097,9 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             const paymentStyle = paymentStatusStyles[e.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
             const invoiceStyle = invoiceStatusStyles[e.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
             const overdue = isExpensePastDueForBadge(e);
-            const invoicePendingAfterPayment = e.paymentStatus === 'COMPLETATO' && e.invoiceStatus === 'IN_ATTESA';
-            return <tr key={e.id} className={['clickable-desktop-row', overdue ? 'expense-row-overdue' : invoicePendingAfterPayment ? 'expense-row-invoice-waiting' : ''].filter(Boolean).join(' ')} data-row-href={`/expenses/${e.id}?returnTo=${returnTo}`} tabIndex={0}>
+            const paymentWaiting = e.paymentStatus !== 'COMPLETATO' || residual > 0;
+            const invoiceWaiting = e.invoiceStatus === 'IN_ATTESA';
+            return <tr key={e.id} className={['clickable-desktop-row', overdue ? 'expense-row-overdue' : paymentWaiting || invoiceWaiting ? 'expense-row-warning' : ''].filter(Boolean).join(' ')} data-row-href={`/expenses/${e.id}?returnTo=${returnTo}`} tabIndex={0}>
               <td className="cell-option cell-center"><input form="expenseBulkForm" type="checkbox" name="ids" value={e.id} aria-label={`Seleziona spesa ${e.id}`} /></td>
               <td className="cell-order-date">{dateLabel(e.receivedDate)}</td>
               <td className="cell-billing-period">{formatPeriod(e.month, e.year)}</td>
