@@ -9287,7 +9287,7 @@ body:has(.detail-page-no-site-header) .shell {
 
     .dashboard-statement-panel.list-totals-statement {
         max-width: 760px;
-        margin: 0 auto;
+        /*margin: 0 auto;*/
         padding-top: 0;
     }
 
