@@ -88,6 +88,27 @@ function buildFloatingButton(original: HTMLElement, label: string, icon: string,
   return button;
 }
 
+function buildFloatingSelectAll(original: HTMLInputElement) {
+  const label = document.createElement("label");
+  label.className = "bulk-select-all-inline floating-bulk-select-all-inline expense-mobile-select";
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.setAttribute("aria-label", original.getAttribute("aria-label") ?? "Seleziona tutti");
+
+  const text = document.createElement("span");
+  //text.textContent = original.closest("label")?.querySelector("span")?.textContent ?? "Seleziona tutti";
+
+  checkbox.addEventListener("change", () => {
+    original.checked = checkbox.checked;
+    original.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+
+  label.appendChild(checkbox);
+  label.appendChild(text);
+  return label;
+}
+
 function submitterAction(submitter: HTMLElement | null) {
   if (!(submitter instanceof HTMLButtonElement) && !(submitter instanceof HTMLInputElement)) return "";
   return submitter.name === "bulkAction" ? submitter.value : "";
@@ -114,6 +135,9 @@ function makeFloatingBar(sourceBar: HTMLElement) {
   const inner = document.createElement("div");
   inner.className = "floating-bulk-actions-inner";
   floating.appendChild(inner);
+
+  const selectAll = sourceBar.querySelector<HTMLInputElement>(".bulk-select-all-inline .bulk-select-all");
+  if (selectAll) inner.appendChild(buildFloatingSelectAll(selectAll));
 
   const sourceMenu = sourceBar.querySelector<HTMLElement>("[data-bulk-menu]");
   const sourcePanel = sourceMenu?.querySelector<HTMLElement>(".bulk-action-menu-panel");
@@ -181,6 +205,13 @@ function syncFloatingBar(sourceBar: HTMLElement, floating: HTMLElement) {
   const sourceEdit = sourceBar.querySelector<HTMLElement>("[data-bulk-edit]");
   const sourceCopy = sourceBar.querySelector<HTMLElement>("[data-bulk-copy]");
   const sourceDel = sourceBar.querySelector<HTMLButtonElement>("[data-bulk-delete]");
+  const sourceSelectAll = sourceBar.querySelector<HTMLInputElement>(".bulk-select-all-inline .bulk-select-all");
+  const floatingSelectAll = floating.querySelector<HTMLInputElement>(".floating-bulk-select-all-inline input");
+
+  if (sourceSelectAll && floatingSelectAll) {
+    floatingSelectAll.checked = sourceSelectAll.checked;
+    floatingSelectAll.indeterminate = sourceSelectAll.indeterminate;
+  }
 
   floating
     .querySelector(".floating-bulk-menu-trigger")

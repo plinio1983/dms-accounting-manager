@@ -6124,7 +6124,7 @@ button {
     width: auto;
     max-width: max-content;
     padding: 6px 10px;
-    border: 1px solid var(--line);
+
     border-radius: 999px;
     background: #fff;
     color: var(--text);
@@ -7069,7 +7069,7 @@ button.bulk-direct-link {
     gap: 8px;
     flex: 0 0 auto;
     min-height: 38px;
-    padding: 0 0 0 7px;
+    padding: 0 0 3px 7px;
 }
 
 .bulk-select-all-inline input {
