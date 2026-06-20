@@ -3183,19 +3183,19 @@ table th, table td {
     vertical-align: middle;
 }
 
-.compact-incomes-table th:nth-child(1), .compact-incomes-table td:nth-child(1) {
-    width: 90px;
-}
+/*.compact-incomes-table th:nth-child(1), .compact-incomes-table td:nth-child(1) {*/
+/*    width: 90px;*/
+/*}*/
 
-.compact-incomes-table th:nth-child(4), .compact-incomes-table td:nth-child(4) {
-    width: 96px;
-    text-align: right;
-}
+/*.compact-incomes-table th:nth-child(4), .compact-incomes-table td:nth-child(4) {*/
+/*    width: 96px;*/
+/*    text-align: right;*/
+/*}*/
 
-.compact-incomes-table th:nth-last-child(-n+3), .compact-incomes-table td:nth-last-child(-n+3) {
-    width: 38px;
-    text-align: center;
-}
+/*.compact-incomes-table th:nth-last-child(-n+3), .compact-incomes-table td:nth-last-child(-n+3) {*/
+/*    width: 38px;*/
+/*    text-align: center;*/
+/*}*/
 
 @media (max-width: 900px) {
     .income-form {
@@ -3410,7 +3410,8 @@ table th, table td {
 
 .expense-summary-row {
     display: grid;
-    grid-template-columns: minmax(430px, 1.25fr) minmax(300px, .75fr);
+    grid-template-columns: minmax(430px, 1fr) minmax(300px, 1fr);
+    /*grid-template-columns: minmax(430px, 1.25fr) minmax(300px, .75fr);*/
     gap: 14px;
     align-items: stretch;
     margin: 12px 0 18px;
@@ -5284,47 +5285,47 @@ button {
     text-overflow: ellipsis;
 }
 
-.compact-incomes-table th:nth-child(2), .compact-incomes-table td:nth-child(2) {
-    width: 76px;
-}
+/*.compact-incomes-table th:nth-child(2), .compact-incomes-table td:nth-child(2) {*/
+/*    width: 76px;*/
+/*}*/
 
-.compact-incomes-table th:nth-child(3), .compact-incomes-table td:nth-child(3) {
-    width: 78px;
-}
+/*.compact-incomes-table th:nth-child(3), .compact-incomes-table td:nth-child(3) {*/
+/*    width: 78px;*/
+/*}*/
 
-.compact-incomes-table th:nth-child(4), .compact-incomes-table td:nth-child(4) {
-    width: 112px;
-}
+/*.compact-incomes-table th:nth-child(4), .compact-incomes-table td:nth-child(4) {*/
+/*    width: 112px;*/
+/*}*/
 
-.compact-incomes-table th:nth-child(5), .compact-incomes-table td:nth-child(5) {
-    width: 72px;
-}
+/*.compact-incomes-table th:nth-child(5), .compact-incomes-table td:nth-child(5) {*/
+/*    width: 72px;*/
+/*}*/
 
-.compact-incomes-table th:nth-child(6), .compact-incomes-table td:nth-child(6) {
-    width: 94px;
-    text-align: right;
-}
+/*.compact-incomes-table th:nth-child(6), .compact-incomes-table td:nth-child(6) {*/
+/*    width: 94px;*/
+/*    text-align: right;*/
+/*}*/
 
-.compact-incomes-table th:nth-child(7), .compact-incomes-table td:nth-child(7) {
-    width: 116px;
-}
+/*.compact-incomes-table th:nth-child(7), .compact-incomes-table td:nth-child(7) {*/
+/*    width: 116px;*/
+/*}*/
 
-.compact-incomes-table th:nth-child(8), .compact-incomes-table td:nth-child(8) {
-    width: 92px;
-}
+/*.compact-incomes-table th:nth-child(8), .compact-incomes-table td:nth-child(8) {*/
+/*    width: 92px;*/
+/*}*/
 
-.compact-incomes-table th:nth-child(9), .compact-incomes-table td:nth-child(9) {
-    width: 72px;
-}
+/*.compact-incomes-table th:nth-child(9), .compact-incomes-table td:nth-child(9) {*/
+/*    width: 72px;*/
+/*}*/
 
-.compact-incomes-table th:nth-child(10), .compact-incomes-table td:nth-child(10) {
-    width: 92px;
-}
+/*.compact-incomes-table th:nth-child(10), .compact-incomes-table td:nth-child(10) {*/
+/*    width: 92px;*/
+/*}*/
 
-.compact-incomes-table th:nth-child(11), .compact-incomes-table td:nth-child(11) {
-    width: 56px;
-    text-align: center;
-}
+/*.compact-incomes-table th:nth-child(11), .compact-incomes-table td:nth-child(11) {*/
+/*    width: 56px;*/
+/*    text-align: center;*/
+/*}*/
 
 .income-amount-row {
     display: flex;
@@ -9474,76 +9475,61 @@ body:has(.detail-page-no-site-header) .shell {
     }
 }
 
-
-table .cell-option,
 table .cell-option {
     width: 4% !important;
     max-width: 28px !important;
     text-align: center;
 }
 
-
-table  .cell-order-date,
 table .cell-order-date {
     width: 8% !important;
     text-align: center;
 }
 
-table .cell-billing-period,
 table .cell-billing-period {
     width: 6% !important;
     /*max-width: 66px !important;*/
     text-align: left;
 }
 
-table .cell-category,
 table .cell-category {
     width: 7% !important;
     /*max-width: 58px !important;*/
     text-align: center;
 }
 
-table .cell-ebilling,
 table .cell-ebilling {
     width: 5% !important;
     text-align: center;
 }
 
 table .cell-fiscal,
-table .cell-type,
-table .cell-fiscal,
 table .cell-type {
     width: 5% !important;
     text-align: center;
 }
 
-table .cell-supplier,
 table .cell-supplier {
     width: 11% !important;
     text-align: left;
 }
 
-table .cell-amount,
-table .cell-residual,
 table .cell-residual,
 table .cell-amount {
     width: 7% !important;
     text-align: center;
 }
 
-table .cell-invoice-state,
 table .cell-invoice-state {
     width: 9% !important;
     text-align: center;
 }
 
-table .cell-payment-state,
 table .cell-payment-state {
     width: 8% !important;
     text-align: center;
 }
 
-table .cell-description,
 table .cell-description {
     width: 9% !important;
     text-align: left;

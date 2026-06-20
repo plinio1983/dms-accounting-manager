@@ -21,7 +21,7 @@ import { requireWorkspace } from '@/lib/auth';
 
 const salesChannelOptions = ['Shop', 'Online Shop', 'Altro Canale'];
 const saleCategoryOptions = ['B2C', 'B2B', 'Altro'];
-const paymentMethodOptions = ['Bonifico', 'Carta di Debito/Credito', 'Criptovaluta', 'Stripe', 'Cash'];
+const paymentMethodOptions = ['Bonifico', 'Carta di Debito/Credit', 'Criptovaluta', 'Stripe', 'Cash'];
 const creditChannelOptions = ['Cash', 'Unicredit', 'MyTu', 'Wise'];
 const invoiceStatusOptions = [
   ['NON_INVIATA', 'Non inviata'],
@@ -800,32 +800,32 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         {!filteredIncomes.length && <div className="expense-empty-panel">Nessun incasso trovato con i filtri selezionati.</div>}
       </div>
 
-      <div className="table-scroll incomes-table-scroll"><table className="expenses-table compact-incomes-table"><colgroup>
-        <col className="income-col-select" />
-        <col className="income-col-period" />
-        <col className="income-col-date" />
-        <col className="income-col-channel" />
-        <col className="income-col-category" />
-        <col className="income-col-description" />
-        <col className="income-col-amount" />
-        <col className="income-col-method" />
-        <col className="income-col-credit" />
-        <col className="income-col-fiscal" />
-        <col className="income-col-invoice" />
-        <col className="income-col-vat" />
+      <div className="table-scroll incomes-table-scroll"><table className="expenses-table incomes-table compact-incomes-table"><colgroup>
+        <col className="cell-option" />
+        <col className="cell-order-date" />
+        <col className="cell-billing-period" />
+        <col className="cell-category" />
+        <col className="cell-category" />
+        <col className="cell-description" />
+        <col className="cell-amount" />
+        <col className="cell-supplier" />
+        <col className="cell-category" />
+        <col className="cell-fiscal" />
+        <col className="cell-invoice-state" />
+        <col className="cell-amount" />
       </colgroup><thead><tr>
-        <th className="cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="incomeBulkForm" aria-label="Seleziona tutti gli incassi" /></th>
-        <th className="cell-left"><span className="th-wrap">Periodo<br />Fatt.</span></th>
-        <th className="cell-left"><span className="th-wrap">Data<br />accr.</span></th>
-        <th className="cell-left"><span className="th-wrap">Canale<br />vendita</span></th>
-        <th className="cell-center">Cat.</th>
-        <th className="cell-left">Descrizione</th>
-        <th className="cell-right">Importo</th>
-        <th className="cell-left"><span className="th-wrap">Metodo<br />pag.</span></th>
-        <th className="cell-left"><span className="th-wrap">Canale<br />accr.</span></th>
-        <th className="cell-center">Fisc.</th>
-        <th className="cell-center"><span className="th-wrap">Stato<br />fatt.</span></th>
-        <th className="cell-center">IVA</th>
+        <th className="cell-option"><input type="checkbox" className="bulk-select-all" data-bulk-target="incomeBulkForm" aria-label="Seleziona tutti gli incassi" /></th>
+        <th className="cell-order-date"><span className="th-wrap">Periodo<br />Fatt.</span></th>
+        <th className="cell-billing-period"><span className="th-wrap">Data<br />accr.</span></th>
+        <th className="cell-category"><span className="th-wrap">Canale<br />vendita</span></th>
+        <th className="cell-category">Cat.</th>
+        <th className="cell-description">Descrizione</th>
+        <th className="cell-amount">Importo</th>
+        <th className="cell-supplier"><span className="th-wrap">Metodo<br />pag.</span></th>
+        <th className="cell-category"><span className="th-wrap">Canale<br />accr.</span></th>
+        <th className="cell-fiscal">Fisc.</th>
+        <th className="cell-invoice-state"><span className="th-wrap">Stato<br />fatt.</span></th>
+        <th className="cell-amount">IVA</th>
         {/*<th className="cell-center"><span className="sr-only">Elimina</span></th>*/}
       </tr></thead><tbody>
         {filteredIncomes.map(income => {
@@ -836,18 +836,18 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
           const vatStyle = vatStyles[String(Number(income.vatRate.toString()))] ?? vatStyles['0'];
           return <tr className={['clickable-desktop-row', income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : ''].filter(Boolean).join(' ')} data-row-href={`/incomes/${income.id}?returnTo=${returnTo}`} tabIndex={0} key={income.id}>
-            <td className="cell-center"><input form="incomeBulkForm" type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`} /></td>
-            <td className="cell-left nowrap-cell">{formatPeriod(income.billingMonth, income.billingYear)}</td>
-            <td className="cell-left nowrap-cell">{dateLabel(income.creditDate)}</td>
-            <td className="cell-left"><span title={income.salesChannel} className={`${badgeClass(salesStyle?.className)} income-badge-compact`}>{salesStyle?.icon ?? '•'} {income.salesChannel}</span></td>
-            <td className="cell-center"><span title={income.saleCategory} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{catStyle?.icon ?? '•'} {income.saleCategory}</span></td>
-            <td className="cell-left income-description-cell" title={income.description ?? ''}>{income.description ?? '-'}</td>
-            <td className="cell-right nowrap-cell"><strong className={moneyTone(Number(income.amount.toString()))}>{euro(income.amount.toString())}</strong></td>
-            <td className="cell-left"><span title={income.paymentMethod} className={`${badgeClass(paymentStyle?.className)} income-badge-compact`}>{paymentStyle?.icon ?? '•'} {income.paymentMethod}</span></td>
-            <td className="cell-left"><span title={income.creditChannel} className={`${badgeClass(creditStyle?.className)} income-badge-compact`}>{creditStyle?.icon ?? '•'} {income.creditChannel}</span></td>
-            <td className="cell-center">{fiscalBadge(income.isFiscal)}</td>
-            <td className="cell-center"><span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
-            <td className="cell-center"><span className={badgeClass(vatStyle.className)}>{Number(income.vatRate.toString())}%</span></td>
+            <td className="cell-option"><input form="incomeBulkForm" type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`} /></td>
+            <td className="cell-order-date">{formatPeriod(income.billingMonth, income.billingYear)}</td>
+            <td className="cell-billing-period">{dateLabel(income.creditDate)}</td>
+            <td className="cell-category"><span title={income.salesChannel} className={`${badgeClass(salesStyle?.className)} income-badge-compact`}>{salesStyle?.icon ?? '•'} {income.salesChannel}</span></td>
+            <td className="cell-category"><span title={income.saleCategory} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{catStyle?.icon ?? '•'} {income.saleCategory}</span></td>
+            <td className="cell-description" title={income.description ?? ''}>{income.description ?? '-'}</td>
+            <td className="cell-amount"><strong className={moneyTone(Number(income.amount.toString()))}>{euro(income.amount.toString())}</strong></td>
+            <td className="cell-supplier"><span title={income.paymentMethod} className={`${badgeClass(paymentStyle?.className)} income-badge-compact`}>{paymentStyle?.icon ?? '•'} {income.paymentMethod}</span></td>
+            <td className="cell-category"><span title={income.creditChannel} className={`${badgeClass(creditStyle?.className)} income-badge-compact`}>{creditStyle?.icon ?? '•'} {income.creditChannel}</span></td>
+            <td className="cell-fiscal">{fiscalBadge(income.isFiscal)}</td>
+            <td className="cell-invoice-state"><span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
+            <td className="cell-amount"><span className={badgeClass(vatStyle.className)}>{Number(income.vatRate.toString())}%</span></td>
             {/*<td className="cell-center"><DeleteActionButton action={`/api/incomes/${income.id}?returnTo=${returnTo}`} confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata." /></td>*/}
           </tr>;
         })}

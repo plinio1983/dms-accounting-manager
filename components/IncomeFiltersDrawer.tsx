@@ -16,7 +16,7 @@ type Props = {
 
 const salesChannelOptions = ["Shop", "Online Shop", "Altro Canale"];
 const saleCategoryOptions = ["B2C", "B2B", "Altro"];
-const paymentMethodOptions = ["Bonifico", "Carta di Debito/Credito", "Criptovaluta", "Stripe", "Cash"];
+const paymentMethodOptions = ["Bonifico", "Carta di Debito/Credit", "Criptovaluta", "Stripe", "Cash"];
 const creditChannelOptions = ["Cash", "Unicredit", "MyTu", "Wise"];
 
 const invoiceStatusOptions = [

@@ -10,7 +10,7 @@ const IncomeSchema = z.object({
   saleCategory: z.enum(['B2C', 'B2B', 'Altro']).default('B2C'),
   description: z.string().optional().nullable(),
   amount: z.coerce.number().nonnegative(),
-  paymentMethod: z.enum(['Bonifico', 'Carta di Debito/Credito', 'Criptovaluta', 'Stripe', 'Cash']),
+  paymentMethod: z.enum(['Bonifico', 'Carta di Debito/Credit', 'Criptovaluta', 'Stripe', 'Cash']),
   creditChannel: z.enum(['Cash', 'Unicredit', 'MyTu', 'Wise']),
   creditDate: z.string().min(1),
   billingPeriod: z.string().regex(/^\d{4}-\d{2}$/),

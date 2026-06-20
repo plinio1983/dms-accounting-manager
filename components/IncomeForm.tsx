@@ -32,7 +32,7 @@ const today = new Date().toISOString().slice(0, 10);
 const currentMonth = new Date().toISOString().slice(0, 7);
 const salesChannels = ["Shop", "Online Shop", "Altro Canale"];
 const saleCategories = ["B2C", "B2B", "Altro"];
-const paymentMethods = ["Bonifico", "Carta di Debito/Credito", "Criptovaluta", "Stripe", "Cash"];
+const paymentMethods = ["Bonifico", "Carta di Debito/Credit", "Criptovaluta", "Stripe", "Cash"];
 const creditChannels = ["Cash", "Unicredit", "MyTu", "Wise"];
 const vatRates = ["0", "4", "10", "22"];
 
