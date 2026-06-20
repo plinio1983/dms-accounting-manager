@@ -7346,7 +7346,6 @@ button.bulk-direct-danger {
     }
 }
 
-/* v077: fixed floating bulk actions controller */
 .floating-bulk-actions-bar {
     position: fixed;
     top: 1px;
@@ -7474,14 +7473,10 @@ button.bulk-direct-danger {
     }
 
     .floating-bulk-actions-inner {
-        /*max-width: calc(100vw - 16px);*/
-        /*overflow-x: auto;*/
         overflow-y: visible;
     }
 
     .floating-bulk-button {
-        /*flex: 0 0 auto;*/
-        /*min-width: 44px;*/
         height: 40px;
         padding: 0 12px;
     }
@@ -7489,7 +7484,6 @@ button.bulk-direct-danger {
     .floating-bulk-edit,
     .floating-bulk-copy,
     .floating-bulk-delete {
-        /*width: 44px;*/
         padding: 0;
     }
 
@@ -7500,7 +7494,6 @@ button.bulk-direct-danger {
     }
 }
 
-/* v079: professional expense detail layout */
 .expense-detail-page {
     width: 100%;
 }

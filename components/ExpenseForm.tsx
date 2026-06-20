@@ -92,6 +92,8 @@ function addDaysToDateInput(value: string, days: number) {
 
 const currentBillingPeriod = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
 const defaultChannel = "Bonifico";
+const cashChannel = "Cash";
+const cashBankName = "Altra Banca";
 
 function normalizeMoney(value: unknown) {
     if (value === null || value === undefined) return "";
@@ -147,6 +149,10 @@ function isPaymentComplete(row: PaymentRow) {
         Number(row.amount || 0) > 0 &&
         row.paidBy,
     );
+}
+
+function isCashChannel(channel: string) {
+    return channel.trim().toLowerCase() === cashChannel.toLowerCase();
 }
 
 function MoneyInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
@@ -546,17 +552,21 @@ function ProductServiceAutocomplete({
 }
 
 export default function ExpenseForm({
-                                        categories,
-                                        banks,
-                                        suppliers = [],
-                                        initialExpense,
-                                        action = "/api/expenses",
-                                        title = "Nuova spesa",
-                                        submitLabel = "Salva spesa",
-                                        onCancel,
-                                        cancelHref,
-                                        onSwitchToRecurring,
-                                    }: Props) {
+    categories,
+    banks,
+    suppliers = [],
+    initialExpense,
+    action = "/api/expenses",
+    title = "Nuova spesa",
+    submitLabel = "Salva spesa",
+    onCancel,
+    cancelHref,
+    onSwitchToRecurring,
+}: Props) {
+    const cashBankId = banks.find((bank) => bank.name.toLowerCase() === cashBankName.toLowerCase())?.id;
+    const cashBankIdValue = cashBankId ? String(cashBankId) : "";
+    const normalizePaymentRow = (row: PaymentRow): PaymentRow =>
+        isCashChannel(row.channel) && cashBankIdValue ? {...row, bankId: cashBankIdValue} : row;
     const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount));
     const [hasElectronicInvoice, setHasElectronicInvoice] = useState(
         initialExpense?.hasElectronicInvoice ?? true,
@@ -566,7 +576,7 @@ export default function ExpenseForm({
     );
     const [payments, setPayments] = useState<PaymentRow[]>(
         initialExpense?.payments?.length
-            ? initialExpense.payments.map(paymentRowFromInitial)
+            ? initialExpense.payments.map(paymentRowFromInitial).map(normalizePaymentRow)
             : [],
     );
     const [openPaymentKey, setOpenPaymentKey] = useState<number | null>(null);
@@ -651,7 +661,14 @@ export default function ExpenseForm({
 
     function updatePayment(index: number, patch: Partial<PaymentRow>) {
         setPayments((rows) =>
-            rows.map((row, i) => (i === index ? {...row, ...patch} : row)),
+            rows.map((row, i) => {
+                if (i !== index) return row;
+                const next = {...row, ...patch};
+                if ("channel" in patch && isCashChannel(next.channel) && cashBankIdValue) {
+                    next.bankId = cashBankIdValue;
+                }
+                return next;
+            }),
         );
     }
 
@@ -693,12 +710,13 @@ export default function ExpenseForm({
     }
 
     function renderPaymentHiddenInputs(payment: PaymentRow) {
+        const cashBankLocked = isCashChannel(payment.channel) && cashBankIdValue;
         return (
             <>
                 <input type="hidden" name="paymentId[]" value={payment.id ?? ""}/>
                 <input type="hidden" name="paymentDate[]" value={payment.paymentDate}/>
                 <input type="hidden" name="paymentChannel[]" value={payment.channel}/>
-                <input type="hidden" name="paymentBankId[]" value={payment.bankId}/>
+                <input type="hidden" name="paymentBankId[]" value={cashBankLocked ? cashBankIdValue : payment.bankId}/>
                 <input type="hidden" name="paymentAmount[]" value={payment.amount}/>
                 <input type="hidden" name="paymentPaidBy[]" value={payment.paidBy}/>
             </>
@@ -969,6 +987,7 @@ export default function ExpenseForm({
                         </div>
                         {payments.map((payment, index) => {
                             const isOpen = openPaymentKey === payment.key || !payment.id;
+                            const cashBankLocked = isCashChannel(payment.channel) && cashBankIdValue;
 
                             if (!isOpen) {
                                 return (
@@ -1038,9 +1057,11 @@ export default function ExpenseForm({
                                     <label>
                                         {/*🏦 Banca*/}
                                         Banca pagamento
+                                        {cashBankLocked ? <input type="hidden" name="paymentBankId[]" value={cashBankIdValue}/> : null}
                                         <select
-                                            name="paymentBankId[]"
-                                            value={payment.bankId}
+                                            name={cashBankLocked ? undefined : "paymentBankId[]"}
+                                            value={cashBankLocked ? cashBankIdValue : payment.bankId}
+                                            disabled={Boolean(cashBankLocked)}
                                             onChange={(e) =>
                                                 updatePayment(index, {bankId: e.target.value})
                                             }
