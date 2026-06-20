@@ -4,7 +4,8 @@
     }
 
     .floating-bulk-actions-inner {
-        justify-content: flex-end;
+        justify-content: flex-start;
+        max-width: 100%;
     }
 
     .app-footer {

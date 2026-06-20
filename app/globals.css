@@ -6308,6 +6308,10 @@ select:disabled {
     /*gap: 5px;*/
     /*min-height: 30px;*/
     /*padding: 6px 9px;*/
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
     padding: 0 13px;
     border: 1px solid var(--line);
     border-radius: 999px;
@@ -6318,8 +6322,6 @@ select:disabled {
     line-height: 1;
     text-decoration: none;
     box-shadow: 0 3px 8px rgba(15, 23, 42, .05);
-    min-height: 38px;
-    height: 38px;
 }
 
 button.bulk-direct-link {
@@ -7017,11 +7019,11 @@ button.bulk-direct-link {
 
     .bulk-direct-link,
     .bulk-action-trigger {
-        min-width: 38px;
-        width: 38px;
-        height: 38px;
-        padding-left: 0;
-        padding-right: 0;
+        /*min-width: 38px;*/
+        /*width: 38px;*/
+        /*height: 38px;*/
+        /*padding-left: 0;*/
+        /*padding-right: 0;*/
     }
 
     .payment-row .payment-row-actions {
@@ -7182,10 +7184,10 @@ button.bulk-direct-danger {
     }
 
     .bulk-direct-link {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        width: 44px !important;
-        max-width: 44px !important;
+        /*padding-left: 0 !important;*/
+        /*padding-right: 0 !important;*/
+        /*width: 44px !important;*/
+        /*max-width: 44px !important;*/
     }
 
     .bulk-action-trigger .bulk-label {
@@ -7375,13 +7377,14 @@ button.bulk-direct-danger {
 }
 
 .floating-bulk-button {
-    min-width: 0;
-    height: 40px;
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 7px;
-    padding: 0 13px;
+    padding: 0;
     border: 1px solid var(--line);
     border-radius: 999px;
     background: #fff;
@@ -7413,6 +7416,10 @@ button.bulk-direct-danger {
 .floating-bulk-menu-wrap {
     position: relative;
     display: inline-flex;
+}
+
+.floating-bulk-menu-wrap .floating-bulk-button {
+    width: auto;
 }
 
 .floating-bulk-menu-panel {
@@ -7467,14 +7474,14 @@ button.bulk-direct-danger {
     }
 
     .floating-bulk-actions-inner {
-        max-width: calc(100vw - 16px);
+        /*max-width: calc(100vw - 16px);*/
         /*overflow-x: auto;*/
         overflow-y: visible;
     }
 
     .floating-bulk-button {
-        flex: 0 0 auto;
-        min-width: 44px;
+        /*flex: 0 0 auto;*/
+        /*min-width: 44px;*/
         height: 40px;
         padding: 0 12px;
     }
@@ -7482,7 +7489,7 @@ button.bulk-direct-danger {
     .floating-bulk-edit,
     .floating-bulk-copy,
     .floating-bulk-delete {
-        width: 44px;
+        /*width: 44px;*/
         padding: 0;
     }
 
@@ -7778,7 +7785,7 @@ button.bulk-direct-danger {
 
 .expense-payment-data {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 10px;
 }
 
@@ -7876,6 +7883,12 @@ button.bulk-direct-danger {
     }
 }
 
+@media (max-width: 760px) {
+    .expense-payment-data {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
 @media (max-width: 700px) {
     .expense-detail-document {
         border-radius: 20px;
@@ -7910,7 +7923,7 @@ button.bulk-direct-danger {
     }
 
     .expense-payment-card .expense-payment-data {
-        grid-template-columns: 1fr 1fr;;
+        grid-template-columns: 1fr 1fr;
     }
 
     .expense-detail-item-wide {
