@@ -5545,7 +5545,11 @@ button {
     min-width: 995px;
 }
 
-/* v52: tabella Incassi più compatta e stabile */
+
+.incomes-table {
+    font-size: 13px;
+}
+
 .incomes-table-scroll {
     width: 100%;
     overflow-x: auto;
@@ -5556,7 +5560,7 @@ button {
     min-width: 920px;
     width: 100%;
     table-layout: fixed;
-    font-size: 11px;
+    /*font-size: 11px;*/
 }
 
 .compact-incomes-table th,

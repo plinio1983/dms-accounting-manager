@@ -319,7 +319,7 @@ function matchesIsoDate(value: Date | null | undefined, from: string, to: string
 function fiscalBadge(value: boolean) {
   const item = value ? fiscalStyles.yes : fiscalStyles.no;
   const label = value ? 'DF' : 'NF';
-  return <span className={badgeClass(item.className)}>{label}</span>;
+  return <span className={`${badgeClass(item.className)} income-badge-compact`}>{label}</span>;
 }
 function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: string }> }) {
   return <div className="active-filter-summary">
@@ -847,7 +847,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             <td className="cell-category"><span title={income.creditChannel} className={`${badgeClass(creditStyle?.className)} income-badge-compact`}>{creditStyle?.icon ?? '•'} {income.creditChannel}</span></td>
             <td className="cell-fiscal">{fiscalBadge(income.isFiscal)}</td>
             <td className="cell-invoice-state"><span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
-            <td className="cell-amount"><span className={badgeClass(vatStyle.className)}>{Number(income.vatRate.toString())}%</span></td>
+            <td className="cell-amount"><span className={`${badgeClass(vatStyle.className)} income-badge-compact`}>{Number(income.vatRate.toString())}%</span></td>
             {/*<td className="cell-center"><DeleteActionButton action={`/api/incomes/${income.id}?returnTo=${returnTo}`} confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata." /></td>*/}
           </tr>;
         })}
