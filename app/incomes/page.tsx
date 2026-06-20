@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import BulkSelectionController from '@/components/BulkSelectionController';
+import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import { prisma } from '@/lib/prisma';
 import { euro, moneyTone } from '@/lib/money';
@@ -723,6 +724,13 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label">Bulk actions</span></summary>
           <div className="bulk-action-menu-panel">
             <button type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
+            <BulkChangeCategoryModal
+              formId="incomeBulkForm"
+              action={`/api/incomes/bulk?returnTo=${returnTo}`}
+              fieldName="saleCategory"
+              categories={saleCategoryOptions.map(category => ({ value: category, label: category, icon: saleCategoryStyles[category]?.icon }))}
+              selectLabel="Categoria vendita"
+            />
           </div>
         </details>
         <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="incomeBulkForm" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id" data-return-to={returnTo}>

@@ -28,6 +28,22 @@ export async function POST(request: Request) {
     return NextResponse.redirect(new URL(safePath(returnTo, '/recurring-expenses', request.url), request.url), 303);
   }
 
+  if (bulkAction === 'change_category') {
+    const categoryId = Number(formData.get('categoryId'));
+    if (Number.isInteger(categoryId) && categoryId > 0) {
+      const category = await prisma.expenseCategory.findFirst({
+        where: { id: categoryId, workspaceId: current.workspace.id }
+      });
+      if (category) {
+        await prisma.recurringExpense.updateMany({
+          where: { id: { in: ids }, workspaceId: current.workspace.id },
+          data: { categoryId }
+        });
+      }
+    }
+    return NextResponse.redirect(new URL(safePath(returnTo, '/recurring-expenses', request.url), request.url), 303);
+  }
+
   if (bulkAction === 'delete') {
     await prisma.recurringExpense.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
   }

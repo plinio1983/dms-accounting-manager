@@ -107,20 +107,20 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, d
 
   return <div className="expense-trend-selectors expense-trend-selectors-switch" aria-label="Selettori andamento spese">
 
-      <span>Andamento</span>
+    <span>Andamento</span>
 
     <div className="expense-trend-mode-toggle" role="group" aria-label="Tipo andamento">
       <button
-        type="button"
-        className={mode === "date" ? "expense-trend-mode-button is-active" : "expense-trend-mode-button"}
-        onClick={() => changeMode("date")}
+          type="button"
+          className={mode === "date" ? "expense-trend-mode-button is-active" : "expense-trend-mode-button"}
+          onClick={() => changeMode("date")}
       >
         Complessivo
       </button>
       <button
-        type="button"
-        className={mode === "fiscal" ? "expense-trend-mode-button is-active" : "expense-trend-mode-button"}
-        onClick={() => changeMode("fiscal")}
+          type="button"
+          className={mode === "fiscal" ? "expense-trend-mode-button is-active" : "expense-trend-mode-button"}
+          onClick={() => changeMode("fiscal")}
       >
         Fiscale
       </button>
@@ -137,7 +137,8 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, d
         }}>
           {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
         </select>
-        <select value={andamentoComplessivoYear} onChange={(event) => goWithQuick("date", andamentoComplessivoValue, event.currentTarget.value)}>
+        <select value={andamentoComplessivoYear}
+                onChange={(event) => goWithQuick("date", andamentoComplessivoValue, event.currentTarget.value)}>
           {years.map(year => <option key={year} value={year}>{year}</option>)}
         </select>
       </div>
@@ -152,7 +153,8 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, d
         }}>
           {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
         </select>
-        <select value={andamentoFiscaleYear} onChange={(event) => goWithQuick("fiscal", andamentoFiscaleValue, event.currentTarget.value)}>
+        <select value={andamentoFiscaleYear}
+                onChange={(event) => goWithQuick("fiscal", andamentoFiscaleValue, event.currentTarget.value)}>
           {years.map(year => <option key={year} value={year}>{year}</option>)}
         </select>
       </div>

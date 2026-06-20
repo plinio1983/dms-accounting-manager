@@ -1059,6 +1059,14 @@ button {
     }
 }
 
+.expense-trend-quick-date {
+    display: flex;
+    gap: 12px;
+    font-size: 14px;
+    justify-content: space-between;
+    color: var(--accent);
+}
+
 body.drawer-open {
     overflow: hidden;
 }
@@ -6465,6 +6473,46 @@ button.bulk-direct-link {
 
 .app-form-modal {
     overscroll-behavior: contain;
+}
+
+.bulk-category-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 10020;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: rgba(15, 23, 42, .42);
+}
+
+.bulk-category-modal .toolbar-card {
+    border: none;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    padding: 12px 0;
+}
+
+.bulk-category-modal {
+    width: min(520px, calc(100vw - 36px));
+    display: grid;
+    gap: 20px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 24px 80px rgba(15, 23, 42, .28);
+}
+
+.bulk-category-modal-form {
+    grid-template-columns: 1fr;
+}
+
+.bulk-category-modal-form .form-actions-row {
+    position: static !important;
+    width: auto !important;
+    transform: none !important;
+    box-shadow: none;
 }
 
 .modal-card-wide,

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import BulkSelectionController from '@/components/BulkSelectionController';
+import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
 import RecurringExpenseFiltersDrawer from '@/components/RecurringExpenseFiltersDrawer';
 import RecurringExpenseDetailEditModalController from '@/components/RecurringExpenseDetailEditModalController';
 import { euro } from '@/lib/money';
@@ -132,6 +133,17 @@ export default function RecurringExpensesList({
     ` }} />
     <form id="recurringExpenseBulkForm" action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses" method="post" className="bulk-actions-bar confirm-bulk-form recurring-bulk-actions-bar">
       <p className="muted">Risultati mostrati: {itemCount}</p>
+      <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="recurringExpenseBulkForm">
+        <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label">Bulk actions</span></summary>
+        <div className="bulk-action-menu-panel">
+          <BulkChangeCategoryModal
+            formId="recurringExpenseBulkForm"
+            action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses"
+            fieldName="categoryId"
+            categories={categories.map(category => ({ value: String(category.id), label: category.name, icon: category.icon }))}
+          />
+        </div>
+      </details>
       <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="recurringExpenseBulkForm" data-edit-base="/recurring-expenses/" data-edit-suffix="" data-edit-trigger-attr="data-recurring-expense-detail-edit-id" data-return-to="%2Frecurring-expenses">
         <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
         <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>

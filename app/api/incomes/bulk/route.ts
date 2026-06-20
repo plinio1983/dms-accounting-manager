@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getWorkspaceContext } from '@/lib/auth';
 
+const saleCategoryOptions = new Set(['B2C', 'B2B', 'Altro']);
+
 function selectedIds(formData: FormData) {
   return formData.getAll('ids').map(value => Number(value)).filter(value => Number.isInteger(value) && value > 0);
 }
@@ -27,6 +29,17 @@ export async function POST(request: Request) {
   const redirectTo = safeReturnTo(request);
 
   if (!ids.length || !action) {
+    return NextResponse.redirect(new URL(redirectTo, request.url), 303);
+  }
+
+  if (action === 'change_category') {
+    const saleCategory = String(formData.get('saleCategory') || '').trim();
+    if (saleCategoryOptions.has(saleCategory)) {
+      await prisma.income.updateMany({
+        where: { id: { in: ids }, workspaceId: current.workspace.id },
+        data: { saleCategory }
+      });
+    }
     return NextResponse.redirect(new URL(redirectTo, request.url), 303);
   }
 

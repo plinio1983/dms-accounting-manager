@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import BulkSelectionController from '@/components/BulkSelectionController';
+import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
 import { prisma } from '@/lib/prisma';
 import { euro, moneyTone } from '@/lib/money';
 import NewExpensePanel from '@/components/NewExpensePanel';
@@ -944,6 +945,12 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           <div className="bulk-action-menu-panel">
             <button type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
             <button type="submit" name="bulkAction" value="payment_completed"><span className="btn-icon">€</span><span className="bulk-label">Pagamento completato</span></button>
+            <BulkChangeCategoryModal
+              formId="expenseBulkForm"
+              action={`/api/expenses/bulk?returnTo=${returnTo}`}
+              fieldName="categoryId"
+              categories={orderedCategories.map(category => ({ value: String(category.id), label: category.name, icon: category.icon }))}
+            />
           </div>
         </details>
         <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="expenseBulkForm"

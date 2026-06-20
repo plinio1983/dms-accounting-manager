@@ -129,7 +129,9 @@ function makeFloatingBar(sourceBar: HTMLElement) {
     const panel = document.createElement("div");
     panel.className = "floating-bulk-menu-panel";
 
-    sourcePanel.querySelectorAll<HTMLButtonElement>("button").forEach((sourceButton) => {
+    Array.from(sourcePanel.children).forEach((child) => {
+      if (!(child instanceof HTMLButtonElement)) return;
+      const sourceButton = child;
       const cloned = document.createElement("button");
       cloned.type = "button";
       cloned.innerHTML = sourceButton.innerHTML;

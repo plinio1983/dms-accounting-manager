@@ -36,6 +36,23 @@ export async function POST(request: Request) {
     return NextResponse.redirect(new URL(redirectTo, request.url), 303);
   }
 
+  if (action === 'change_category') {
+    const categoryId = Number(formData.get('categoryId'));
+    if (!Number.isInteger(categoryId) || categoryId <= 0) {
+      return NextResponse.redirect(new URL(redirectTo, request.url), 303);
+    }
+    const category = await prisma.expenseCategory.findFirst({
+      where: { id: categoryId, workspaceId: current.workspace.id }
+    });
+    if (!category) return NextResponse.redirect(new URL(redirectTo, request.url), 303);
+
+    await prisma.expense.updateMany({
+      where: { id: { in: ids }, workspaceId: current.workspace.id },
+      data: { categoryId }
+    });
+    return NextResponse.redirect(new URL(redirectTo, request.url), 303);
+  }
+
   if (action === 'delete') {
     await prisma.expense.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
     return NextResponse.redirect(new URL(redirectTo, request.url), 303);
