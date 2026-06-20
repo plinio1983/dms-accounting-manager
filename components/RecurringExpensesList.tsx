@@ -134,7 +134,7 @@ export default function RecurringExpensesList({
     <form id="recurringExpenseBulkForm" action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses" method="post" className="bulk-actions-bar confirm-bulk-form recurring-bulk-actions-bar">
       <p className="muted">Risultati mostrati: {itemCount}</p>
       <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="recurringExpenseBulkForm">
-        <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label">Bulk actions</span></summary>
+        <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label">Actions</span></summary>
         <div className="bulk-action-menu-panel">
           <BulkChangeCategoryModal
             formId="recurringExpenseBulkForm"

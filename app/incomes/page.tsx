@@ -721,7 +721,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
 
       <form id="incomeBulkForm" action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
         <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="incomeBulkForm">
-          <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label">Bulk actions</span></summary>
+          <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label">Actions</span></summary>
           <div className="bulk-action-menu-panel">
             <button type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
             <BulkChangeCategoryModal
