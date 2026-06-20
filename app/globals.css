@@ -3764,6 +3764,7 @@ table th, table td {
     display: grid;
     gap: 16px;
     min-width: 33%;
+    flex-grow: 1;
 }
 
 .income-expense-chart-card h2 {
@@ -3951,10 +3952,10 @@ table th, table td {
     align-items: end;
 }
 
-.expenses-list-card, .dashboard-report-card, .card {
-    max-width: 100%;
-    min-width: 0;
-}
+/*.expenses-list-card, .dashboard-report-card, .card {*/
+/*    max-width: 100%;*/
+/*    min-width: 0;*/
+/*}*/
 
 .table-scroll {
     max-width: 100%;
