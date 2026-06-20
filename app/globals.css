@@ -187,6 +187,216 @@ body:has(.settings-page) .app-footer {
     display: none !important;
 }
 
+body:has(.login-page),
+body:has(.register-page) {
+    min-height: 100vh;
+    background: #eef2f7;
+    padding-bottom: 0;
+}
+
+body:has(.login-page) .shell,
+body:has(.register-page) .shell {
+    width: 100%;
+    max-width: none;
+    min-height: 100vh;
+    padding: 0;
+}
+
+.login-page,
+.register-page {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(360px, 0.92fr) minmax(420px, 1.08fr);
+    background: #eef2f7;
+}
+
+.login-hero-panel {
+    display: flex;
+    align-items: flex-end;
+    min-height: 100vh;
+    padding: clamp(42px, 6vw, 76px);
+    background: linear-gradient(145deg, #0b2f66, #174d8f);
+    color: #fff;
+}
+
+.login-hero-panel > div {
+    max-width: 520px;
+}
+
+.login-kicker {
+    margin: 0 0 12px;
+    color: inherit;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.login-hero-panel h1 {
+    margin: 0;
+    font-size: clamp(42px, 5vw, 72px);
+    line-height: .96;
+    letter-spacing: 0;
+}
+
+.login-hero-panel p:not(.login-kicker) {
+    max-width: 360px;
+    margin: 18px 0 0;
+    color: rgba(255, 255, 255, .78);
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.login-form-panel {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    padding: clamp(28px, 5vw, 72px);
+}
+
+.login-page .admin-auth-card,
+.register-page .admin-auth-card {
+    width: min(100%, 440px);
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 34px;
+    border-radius: 8px;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, .12);
+}
+
+.login-form-heading {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.login-form-heading .login-kicker {
+    color: var(--accent);
+    margin-bottom: 0;
+}
+
+.login-form-heading h2 {
+    margin: 0;
+    font-size: 30px;
+    line-height: 1.08;
+}
+
+.login-form-heading p {
+    margin: 0;
+}
+
+.register-page .admin-auth-card {
+    width: min(100%, 520px);
+}
+
+.register-success-page .admin-auth-card {
+    width: min(100%, 440px);
+}
+
+.login-page .admin-auth-card label,
+.register-page .admin-auth-card label {
+    gap: 8px;
+    color: #384152;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.login-page .admin-auth-card input,
+.register-page .admin-auth-card input {
+    min-height: 46px;
+    border-color: #d8deea;
+    border-radius: 8px;
+    background: #fbfcff;
+}
+
+.login-page .admin-auth-card input:focus,
+.register-page .admin-auth-card input:focus {
+    outline: 3px solid rgba(38, 86, 217, .16);
+    border-color: var(--accent);
+}
+
+.login-page .admin-auth-card .inline-modal-error,
+.register-page .admin-auth-card .inline-modal-error {
+    grid-column: 1 / -1;
+}
+
+.register-fields-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.register-success-actions {
+    justify-content: flex-end;
+}
+
+.login-google-button {
+    width: 100%;
+    max-width: none;
+    min-height: 44px;
+    border-radius: 8px;
+}
+
+.login-actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.login-actions a,
+.login-actions button {
+    min-height: 42px;
+    border-radius: 8px;
+}
+
+@media (max-width: 860px) {
+    .login-page,
+    .register-page {
+        grid-template-columns: 1fr;
+    }
+
+    .login-hero-panel {
+        display: none;
+    }
+
+    .login-form-panel {
+        min-height: 100vh;
+        padding: 24px;
+    }
+
+    .login-page .admin-auth-card,
+    .register-page .admin-auth-card {
+        padding: 24px;
+        box-shadow: 0 16px 45px rgba(15, 23, 42, .10);
+    }
+}
+
+@media (max-width: 420px) {
+    .login-form-panel {
+        padding: 16px;
+    }
+
+    .login-page .admin-auth-card,
+    .register-page .admin-auth-card {
+        padding: 20px;
+    }
+
+    .register-fields-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .login-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .login-actions a,
+    .login-actions button {
+        width: 100%;
+        max-width: none;
+    }
+}
+
 .pwa-install-button {
     background: #0b2f66;
     color: #fff;

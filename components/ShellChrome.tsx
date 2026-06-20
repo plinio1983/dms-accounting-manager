@@ -18,6 +18,10 @@ function isCompactMobileHeaderPath(pathname: string) {
     || pathname === '/incomes/new';
 }
 
+function isChromeHiddenPath(pathname: string) {
+  return pathname === '/login' || pathname.startsWith('/register') || pathname.startsWith('/admin');
+}
+
 function DesktopHeader({ compactOnMobile = false }: { compactOnMobile?: boolean }) {
   const className = compactOnMobile ? "nav compact-mobile-header-path" : "nav";
 
@@ -34,7 +38,7 @@ function DesktopHeader({ compactOnMobile = false }: { compactOnMobile?: boolean 
 
 export default function ShellChrome({ slot }: Props) {
   const pathname = usePathname() || '/';
-  if (pathname.startsWith('/admin')) return null;
+  if (isChromeHiddenPath(pathname)) return null;
 
   if (slot === 'header') {
     if (isCompactMobileHeaderPath(pathname)) {
