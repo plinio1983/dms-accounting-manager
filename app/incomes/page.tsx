@@ -812,12 +812,12 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
                 <div className="expense-mobile-header">
                   <div className="left-side">
                     <span title={income.saleCategory} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{catStyle?.icon ?? '•'} {income.saleCategory}</span>
+                    {fiscalBadge(income.isFiscal)}
                     <span className="text-pre">{formatPeriod(income.billingMonth, income.billingYear)}</span>
+                    <span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span>
                   </div>
                   <div className="right-side">
-                    {fiscalBadge(income.isFiscal)}
                     <span className="text-pre">{mobileDateLabel(income.creditDate)}</span>
-                    <span title={creditStatus.label} className={`${badgeClass(creditStatus.className)} income-badge-compact`}>{creditStatus.icon} {creditStatus.label}</span>
                   </div>
                 </div>
                 <div className="expense-mobile-title-row">
@@ -832,7 +832,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
                 </div>
                 <div className="expense-mobile-title-row">
                   <div className="expense-mobile-subtitle">{income.description ? `${income.description}` : ''}</div>
-                  <span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span>
+                  <span title={creditStatus.label} className={`${badgeClass(creditStatus.className)} income-badge-compact`}>{creditStatus.icon} {creditStatus.label}</span>
                 </div>
 
                 {/*<div className="expense-mobile-meta">*/}
