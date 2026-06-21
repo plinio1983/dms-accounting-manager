@@ -35,14 +35,24 @@ const quarterQuickOptions = [
 const quickDateOptions = [
   ...monthQuickOptions,
   ...quarterQuickOptions,
+  ["year_to_date", "Da inizio anno"],
   ["custom", "Data personalizzata"],
 ];
 
 const quickBillingPeriodOptions = [
   ...monthQuickOptions,
   ...quarterQuickOptions,
+  ["year_to_date", "Da inizio anno"],
   ["custom", "Periodo personalizzato"],
 ];
+
+const quickDateButtons = [
+  ["current_month", "Mese"],
+  ["previous_month", "Mese -1"],
+  ["current_quarter", "Trim"],
+  ["previous_quarter", "Trim -1"],
+  ["year_to_date", "Anno"],
+] as const;
 
 function currentMonthQuickValue() {
   return `month_${String(new Date().getMonth() + 1).padStart(2, "0")}`;
@@ -50,6 +60,47 @@ function currentMonthQuickValue() {
 
 function currentYearValue() {
   return String(new Date().getFullYear());
+}
+
+function quickButtonTarget(value: string) {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+  const currentQuarter = Math.floor(currentMonth / 3) + 1;
+
+  if (value === "current_month") {
+    return {
+      value: `month_${String(currentMonth + 1).padStart(2, "0")}`,
+      year: String(currentYear),
+    };
+  }
+
+  if (value === "previous_month") {
+    const previousMonth = new Date(currentYear, currentMonth - 1, 1);
+    return {
+      value: `month_${String(previousMonth.getMonth() + 1).padStart(2, "0")}`,
+      year: String(previousMonth.getFullYear()),
+    };
+  }
+
+  if (value === "current_quarter") {
+    return {
+      value: `quarter_${currentQuarter}`,
+      year: String(currentYear),
+    };
+  }
+
+  if (value === "previous_quarter") {
+    const previousQuarter = currentQuarter - 1;
+    return previousQuarter > 0
+      ? { value: `quarter_${previousQuarter}`, year: String(currentYear) }
+      : { value: "quarter_4", year: String(currentYear - 1) };
+  }
+
+  return {
+    value,
+    year: String(currentYear),
+  };
 }
 
 function yearOptions() {
@@ -98,6 +149,8 @@ export default function IncomeTrendSelectors({ dateQuick, billingPeriodQuick, da
   const andamentoFiscaleValue = useFiscalPeriodFilter ? (billingPeriodQuick || currentMonthQuickValue()) : currentMonthQuickValue();
   const andamentoComplessivoYear = !useFiscalPeriodFilter ? (dateYear || currentYearValue()) : currentYearValue();
   const andamentoFiscaleYear = useFiscalPeriodFilter ? (billingPeriodYear || currentYearValue()) : currentYearValue();
+  const currentQuickValue = mode === "date" ? andamentoComplessivoValue : andamentoFiscaleValue;
+  const currentQuickYear = mode === "date" ? andamentoComplessivoYear : andamentoFiscaleYear;
   const years = yearOptions();
 
   function changeMode(nextMode: "date" | "fiscal") {
@@ -147,5 +200,22 @@ export default function IncomeTrendSelectors({ dateQuick, billingPeriodQuick, da
         </select>
       </div>
     </label>}
+    <section>
+      <div className="expense-trend-quick-date" role="group" aria-label="Scorciatoie periodo">
+        {quickDateButtons.map(([value, label]) => {
+          const target = quickButtonTarget(value);
+          const isActive = currentQuickValue === target.value && currentQuickYear === target.year;
+          return <button
+            key={value}
+            type="button"
+            className={isActive ? "expense-trend-quick-button is-active" : "expense-trend-quick-button"}
+            aria-pressed={isActive}
+            onClick={() => goWithQuick(mode, target.value, target.year)}
+          >
+            {label}
+          </button>;
+        })}
+      </div>
+    </section>
   </div>;
 }

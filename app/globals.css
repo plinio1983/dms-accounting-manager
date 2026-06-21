@@ -1064,6 +1064,7 @@ button {
     gap: 12px;
     font-size: 13px;
     justify-content: flex-start;
+    margin-top: 12px;
 }
 
 @media (max-width: 760px) {
@@ -1108,7 +1109,7 @@ button {
     border-color: var(--accent);
     background: var(--accent);
     color: #fff;
-    box-shadow: 0 8px 18px rgba(37, 99, 235, .22);
+    /*box-shadow: 0 8px 18px rgba(37, 99, 235, .22);*/
 }
 
 body.drawer-open {
@@ -9584,6 +9585,16 @@ table .cell-order-date {
 
 table .cell-billing-period {
     width: 6% !important;
+    text-align: left;
+}
+
+table .cell-cchannel {
+    width: 7% !important;
+    text-align: left;
+}
+
+table .cell-selling {
+    width: 9% !important;
     text-align: left;
 }
 

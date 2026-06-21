@@ -199,6 +199,14 @@ function getQuickDateRange(value: string, selectedYear?: string) {
   if (value === 'two_months_ago') return { from: toDateInputValue(new Date(year, month - 2, 1)), to: toDateInputValue(new Date(year, month - 1, 0)) };
   if (value === 'current_quarter') return fiscalQuarterRange(year, currentQuarter);
   if (value === 'last_quarter') return currentQuarter > 0 ? fiscalQuarterRange(year, currentQuarter - 1) : fiscalQuarterRange(year - 1, 3);
+  if (value === 'previous_quarter') return currentQuarter > 0 ? fiscalQuarterRange(year, currentQuarter - 1) : fiscalQuarterRange(year - 1, 3);
+  if (value === 'year_to_date') {
+    const isCurrentYear = year === now.getFullYear();
+    return {
+      from: toDateInputValue(new Date(year, 0, 1)),
+      to: toDateInputValue(isCurrentYear ? now : new Date(year, 11, 31))
+    };
+  }
   return { from: toDateInputValue(new Date(year, month, 1)), to: toDateInputValue(new Date(year, month + 1, 0)) };
 }
 
@@ -225,6 +233,7 @@ const quarterQuickOptions = [
 ];
 
 const quickDateOptions = [
+  ['year_to_date', 'Da inizio anno'],
   ...monthQuickOptions,
   ...quarterQuickOptions
 ];
@@ -259,10 +268,18 @@ function getQuickBillingPeriodRange(value: string, selectedYear?: string) {
       ? { from: toMonthInputValue(year, quarter * 3), to: toMonthInputValue(year, quarter * 3 + 2) }
       : { from: toMonthInputValue(year - 1, 9), to: toMonthInputValue(year - 1, 11) };
   }
+  if (value === 'year_to_date') {
+    const isCurrentYear = year === now.getFullYear();
+    return {
+      from: toMonthInputValue(year, 0),
+      to: toMonthInputValue(year, isCurrentYear ? month : 11)
+    };
+  }
   return { from: toMonthInputValue(year, month), to: toMonthInputValue(year, month) };
 }
 
 const quickBillingPeriodOptions = [
+  ['year_to_date', 'Da inizio anno'],
   ...monthQuickOptions,
   ...quarterQuickOptions
 ];
@@ -818,27 +835,27 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
 
       <div className="table-scroll incomes-table-scroll"><table className="expenses-table incomes-table compact-incomes-table"><colgroup>
         <col className="cell-option" />
-        <col className="cell-order-date" />
         <col className="cell-billing-period" />
-        <col className="cell-category" />
+        <col className="cell-order-date" />
+        <col className="cell-selling" />
         <col className="cell-category" />
         <col className="cell-description" />
         <col className="cell-amount" />
         <col className="cell-supplier" />
-        <col className="cell-category" />
+        <col className="cell-cchannel" />
         <col className="cell-fiscal" />
         <col className="cell-invoice-state" />
         <col className="cell-amount" />
       </colgroup><thead><tr>
         <th className="cell-option"><input type="checkbox" className="bulk-select-all" data-bulk-target="incomeBulkForm" aria-label="Seleziona tutti gli incassi" /></th>
-        <th className="cell-order-date"><span className="th-wrap">Periodo<br />Fatt.</span></th>
-        <th className="cell-billing-period"><span className="th-wrap">Data<br />accr.</span></th>
-        <th className="cell-category"><span className="th-wrap">Canale<br />vendita</span></th>
+        <th className="cell-billing-period"><span className="th-wrap">Periodo<br />Fatt.</span></th>
+        <th className="cell-order-date"><span className="th-wrap">Data<br />accr.</span></th>
+        <th className="cell-selling"><span className="th-wrap">Canale<br />vendita</span></th>
         <th className="cell-category">Cat.</th>
         <th className="cell-description">Descrizione</th>
         <th className="cell-amount">Importo</th>
         <th className="cell-supplier"><span className="th-wrap">Metodo<br />pag.</span></th>
-        <th className="cell-category"><span className="th-wrap">Canale<br />accr.</span></th>
+        <th className="cell-cchannel"><span className="th-wrap">Canale<br />accr.</span></th>
         <th className="cell-fiscal">Fisc.</th>
         <th className="cell-invoice-state"><span className="th-wrap">Stato<br />fatt.</span></th>
         <th className="cell-amount">IVA</th>
@@ -853,14 +870,14 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           const vatStyle = vatStyles[String(Number(income.vatRate.toString()))] ?? vatStyles['0'];
           return <tr className={['clickable-desktop-row', income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : ''].filter(Boolean).join(' ')} data-row-href={`/incomes/${income.id}?returnTo=${returnTo}`} tabIndex={0} key={income.id}>
             <td className="cell-option"><input form="incomeBulkForm" type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`} /></td>
-            <td className="cell-order-date">{formatPeriod(income.billingMonth, income.billingYear)}</td>
-            <td className="cell-billing-period">{dateLabel(income.creditDate)}</td>
-            <td className="cell-category"><span title={income.salesChannel} className={`${badgeClass(salesStyle?.className)} income-badge-compact`}>{salesStyle?.icon ?? '•'} {income.salesChannel}</span></td>
+            <td className="cell-billing-period">{formatPeriod(income.billingMonth, income.billingYear)}</td>
+            <td className="cell-order-date">{dateLabel(income.creditDate)}</td>
+            <td className="cell-selling"><span title={income.salesChannel} className={`${badgeClass(salesStyle?.className)} income-badge-compact`}>{salesStyle?.icon ?? '•'} {income.salesChannel}</span></td>
             <td className="cell-category"><span title={income.saleCategory} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{catStyle?.icon ?? '•'} {income.saleCategory}</span></td>
             <td className="cell-description" title={income.description ?? ''}>{income.description ?? '-'}</td>
             <td className="cell-amount"><strong className={moneyTone(Number(income.amount.toString()))}>{euro(income.amount.toString())}</strong></td>
             <td className="cell-supplier"><span title={income.paymentMethod} className={`${badgeClass(paymentStyle?.className)} income-badge-compact`}>{paymentStyle?.icon ?? '•'} {income.paymentMethod}</span></td>
-            <td className="cell-category"><span title={income.creditChannel} className={`${badgeClass(creditStyle?.className)} income-badge-compact`}>{creditStyle?.icon ?? '•'} {income.creditChannel}</span></td>
+            <td className="cell-cchannel"><span title={income.creditChannel} className={`${badgeClass(creditStyle?.className)} income-badge-compact`}>{creditStyle?.icon ?? '•'} {income.creditChannel}</span></td>
             <td className="cell-fiscal">{fiscalBadge(income.isFiscal)}</td>
             <td className="cell-invoice-state"><span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
             <td className="cell-amount"><span className={`${badgeClass(vatStyle.className)} income-badge-compact`}>{Number(income.vatRate.toString())}%</span></td>
