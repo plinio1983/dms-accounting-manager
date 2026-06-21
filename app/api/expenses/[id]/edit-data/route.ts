@@ -44,6 +44,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
         id: payment.id,
         paymentDate: payment.paymentDate,
         channel: payment.channel,
+        paymentMethodId: payment.paymentMethodId,
         bankId: payment.bankId,
         amount: payment.amount.toString(),
         paidBy: payment.paidBy

@@ -9,7 +9,7 @@ import ExpenseFiltersDrawer from '@/components/ExpenseFiltersDrawer';
 import ExpenseTrendSelectors from '@/components/ExpenseTrendSelectors';
 import SupplierFilterInput from '@/components/SupplierFilterInput';
 import { requireWorkspace } from '@/lib/auth';
-import { orderExpenseCategories } from '@/lib/workspace-defaults';
+import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 import {
   badgeClass,
   categoryLabel,
@@ -19,8 +19,6 @@ import {
   paymentStatusStyles,
   yesNoStyles
 } from '@/lib/expense-ui';
-
-const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
 
 const paymentStatusOptions = [
   ['overdue', 'Scaduto'],
@@ -558,7 +556,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || '') : '';
   const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter) : null;
 
-  const [expenses, categories, banks, suppliers] = await Promise.all([
+  const [expenses, categories, banks, paymentMethods, suppliers] = await Promise.all([
     prisma.expense.findMany({
       where: { workspaceId: current.workspace.id },
       include: { category: true, bank: true, supplier: true, payments: { include: { bank: true } }, attachments: true },
@@ -567,12 +565,12 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     }),
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
   ]);
 
-  const orderedBanks = allowedBankOrder
-    .map(name => banks.find(bank => bank.name === name))
-    .filter(Boolean) as typeof banks;
+  const orderedBanks = orderBanks(banks);
+  const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
 
   const orderedCategories = orderExpenseCategories(categories);
 
@@ -721,7 +719,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     {/*<Link className="button-standard secondary-action" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>*/}
     <NewExpensePanel
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
-      banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
+      banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
+      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
       suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
       initialOpen={inputDefault(filters, 'new') === '1'}
     />
@@ -1037,7 +1036,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
 
       <ExpenseEditModalController
           categories={orderedCategories.map(c => ({id: c.id, code: c.code, name: c.name, icon: c.icon }))}
-        banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
+        banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
+        paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
         suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
         listHref={listHref}
       />

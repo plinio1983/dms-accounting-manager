@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { categoryIcon } from "@/lib/expense-ui";
 
-type Option = { id: number; code?: string; name: string; icon?: string | null };
+type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
 type SupplierOption = {
   id: number;
   businessName: string;
@@ -31,6 +31,7 @@ type InitialRecurringExpense = {
   isDeclared?: boolean;
   hasElectronicInvoice?: boolean;
   paymentChannel?: string | null;
+  paymentMethodId?: number | null;
   bankId?: number | null;
   notes?: string | null;
 };
@@ -38,6 +39,7 @@ type InitialRecurringExpense = {
 type Props = {
   categories: Option[];
   banks: Option[];
+  paymentMethods: Option[];
   suppliers?: SupplierOption[];
   action?: string;
   initialExpense?: InitialRecurringExpense;
@@ -47,7 +49,6 @@ type Props = {
 };
 
 const today = new Date().toISOString().slice(0, 10);
-const paymentChannels = ["Addebito", "Bonifico", "RID", "F24", "Carta", "PayPal", "Mooney", "Cash"];
 const monthOptions = [
   [1, "Gennaio"],
   [2, "Febbraio"],
@@ -360,6 +361,7 @@ function ProductServiceAutocomplete({ initialValue = "" }: { initialValue?: stri
 export default function RecurringExpenseForm({
   categories,
   banks,
+  paymentMethods,
   suppliers = [],
   action = "/api/recurring-expenses",
   initialExpense,
@@ -367,6 +369,9 @@ export default function RecurringExpenseForm({
   cancelHref,
   onSwitchToSingle,
 }: Props) {
+  const initialPaymentMethodId = initialExpense?.paymentMethodId && paymentMethods.some(method => method.id === initialExpense.paymentMethodId)
+    ? String(initialExpense.paymentMethodId)
+    : paymentMethods.find(method => method.name === initialExpense?.paymentChannel)?.id?.toString() ?? "";
   const [cadence, setCadence] = useState(initialExpense?.cadence ?? "MONTHLY");
   const [billingPeriodMode, setBillingPeriodMode] = useState(initialExpense?.billingPeriodMode ?? "SAME_MONTH");
   const [isDeclared, setIsDeclared] = useState(initialExpense?.isDeclared ?? true);
@@ -505,7 +510,7 @@ export default function RecurringExpenseForm({
         </label>
       </div>
 
-      <label>Canale di pagamento<select name="paymentChannel" defaultValue={initialExpense?.paymentChannel ?? ""} disabled={!isAutomaticAccrual} required={isAutomaticAccrual}><option value="">Seleziona canale</option>{paymentChannels.map(c => <option key={c} value={c}>{c}</option>)}</select></label>
+      <label>Canale di pagamento<select name="paymentMethodId" defaultValue={initialPaymentMethodId} disabled={!isAutomaticAccrual} required={isAutomaticAccrual}><option value="">Seleziona canale</option>{paymentMethods.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
       <label>Banca<select name="bankId" defaultValue={initialExpense?.bankId ?? ""} disabled={!isAutomaticAccrual} required={isAutomaticAccrual}><option value="">Seleziona banca</option>{banks.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}</select></label>
         </div>
       </details>

@@ -60,7 +60,7 @@ const paymentChannelLabels: Record<string, string> = {
   Cash: 'Cash'
 };
 
-type FilterOption = { id: number; name: string };
+type FilterOption = { id: number; name: string; kind?: string; isFallback?: boolean | null };
 type CategoryOption = { id: number; code?: string; name: string; icon?: string | null };
 type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; phone?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
 
@@ -69,12 +69,14 @@ export default function RecurringExpensesList({
   filters,
   categories,
   banks,
+  paymentMethods,
   suppliers,
 }: {
   items: any[];
   filters?: Record<string, string | string[] | undefined>;
   categories: CategoryOption[];
   banks: FilterOption[];
+  paymentMethods: FilterOption[];
   suppliers: SupplierOption[];
 }) {
   const itemCount = items.length;
@@ -92,13 +94,13 @@ export default function RecurringExpensesList({
     inputDefault(currentFilters, 'amountMax') ? `Importo max: ${inputDefault(currentFilters, 'amountMax')}` : '',
   ].filter(Boolean);
   return <div className="card recurring-expenses-card">
-    <RecurringExpenseDetailEditModalController categories={categories} banks={banks} suppliers={suppliers} returnTo="/recurring-expenses" />
+    <RecurringExpenseDetailEditModalController categories={categories} banks={banks} paymentMethods={paymentMethods} suppliers={suppliers} returnTo="/recurring-expenses" />
     <div className="list-heading recurring-list-heading">
       <div>
         <h2>Lista spese ricorrenti</h2>
       </div>
       <div>
-        <RecurringExpenseFiltersDrawer filters={filters ?? {}} categories={categories} banks={banks} />
+        <RecurringExpenseFiltersDrawer filters={filters ?? {}} categories={categories} banks={banks} paymentMethods={paymentMethods} />
       </div>
     </div>
     {activeFilterItems.length ? <div className="recurring-active-filters">
@@ -178,7 +180,8 @@ export default function RecurringExpensesList({
             {items.map(item => {
               const supplier = item.supplier?.businessName || item.merchant || '-';
               const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
-              const payment = item.paymentChannel ? `${item.paymentChannel}${item.bank ? ` · ${item.bank.name}` : ''}` : '-';
+              const paymentChannelName = item.paymentMethod?.name ?? item.paymentChannel;
+              const payment = paymentChannelName ? `${paymentChannelName}${item.bank ? ` · ${item.bank.name}` : ''}` : '-';
               const categoryClassName = categoryTone(item.category);
               const cadenceStyle = cadenceStyles[item.cadence] ?? { icon: '↻', className: 'tone-neutral' };
               const billingStyle = billingStyles[item.billingPeriodMode] ?? { icon: 'CAL', className: 'tone-neutral' };
@@ -192,7 +195,7 @@ export default function RecurringExpensesList({
                 <td className="cell-left"><span className={badgeClass(cadenceStyle.className)}>{cadenceStyle.icon} {cadenceLabels[item.cadence] ?? item.cadence}</span></td>
                 <td className="cell-left nowrap-cell"><span className={badgeClass('tone-waiting')}>📅 {dueLabel(item)}</span></td>
                 <td className="cell-left nowrap-cell"><span className={badgeClass(billingStyle.className)}>{billingStyle.icon} {billing}</span></td>
-                <td className="cell-left recurring-payment-cell" title={payment}>{item.paymentChannel ? <span className={badgeClass(item.bank ? 'tone-bank-services' : 'tone-neutral')}>{item.bank ? `${bankIcons[item.bank.name] ?? '🏦'} ` : '• '}{payment}</span> : <span className={badgeClass('tone-neutral')}>• Manuale</span>}</td>
+                <td className="cell-left recurring-payment-cell" title={payment}>{paymentChannelName ? <span className={badgeClass(item.bank ? 'tone-bank-services' : 'tone-neutral')}>{item.bank ? `${bankIcons[item.bank.name] ?? '🏦'} ` : '• '}{payment}</span> : <span className={badgeClass('tone-neutral')}>• Manuale</span>}</td>
                 <td className="cell-left nowrap-cell">{dateLabel(item.startDate)}</td>
                 <td className="cell-right nowrap-cell"><strong className="recurring-table-amount">€ {euro(item.amount.toString()).replace('€', '').trim()}</strong></td>
               </tr>;
@@ -206,7 +209,8 @@ export default function RecurringExpensesList({
           const cadence = cadenceLabels[item.cadence] ?? item.cadence;
           const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
           const supplier = item.supplier?.businessName || item.merchant || 'Fornitore non impostato';
-          const payment = item.paymentChannel ? `${item.paymentChannel}${item.bank ? ` · ${item.bank.name}` : ''}` : 'Pagamento manuale';
+          const paymentChannelName = item.paymentMethod?.name ?? item.paymentChannel;
+          const payment = paymentChannelName ? `${paymentChannelName}${item.bank ? ` · ${item.bank.name}` : ''}` : 'Pagamento manuale';
           return <div className="recurring-mobile-item-shell" key={`mobile-recurring-${item.id}`}>
             <div className="recurring-mobile-select">
               <input form="recurringExpenseBulkForm" type="checkbox" name="ids" value={item.id} aria-label={`Seleziona spesa ricorrente ${item.id}`} />

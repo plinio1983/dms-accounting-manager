@@ -12,12 +12,12 @@ type Props = {
   quickBillingPeriodFilter: string;
   billingPeriodFromFilter: string;
   billingPeriodToFilter: string;
+  banks: { id: number; name: string }[];
+  paymentMethods: { id: number; name: string }[];
 };
 
 const salesChannelOptions = ["Shop", "Online Shop", "Altro Canale"];
 const saleCategoryOptions = ["B2C", "B2B", "Altro"];
-const paymentMethodOptions = ["Bonifico", "Carta di Debito/Credit", "Criptovaluta", "Stripe", "Cash"];
-const creditChannelOptions = ["Cash", "Unicredit", "MyTu", "Wise"];
 
 const invoiceStatusOptions = [
   ["NON_INVIATA", "Non inviata"],
@@ -70,6 +70,8 @@ export default function IncomeFiltersDrawer({
   quickBillingPeriodFilter,
   billingPeriodFromFilter,
   billingPeriodToFilter,
+  banks,
+  paymentMethods,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -166,12 +168,12 @@ export default function IncomeFiltersDrawer({
 
           <label>Metodo pagamento<select name="paymentMethod" defaultValue={inputDefault(filters, "paymentMethod")}>
             <option value="">Tutti</option>
-            {paymentMethodOptions.map(value => <option key={value} value={value}>{value}</option>)}
+            {paymentMethods.map(value => <option key={value.id} value={value.name}>{value.name}</option>)}
           </select></label>
 
           <label>Canale accredito<select name="creditChannel" defaultValue={inputDefault(filters, "creditChannel")}>
             <option value="">Tutti</option>
-            {creditChannelOptions.map(value => <option key={value} value={value}>{value}</option>)}
+            {banks.map(value => <option key={value.id} value={value.name}>{value.name}</option>)}
           </select></label>
 
           <label>Fiscale<select name="fiscal" defaultValue={inputDefault(filters, "fiscal")}>

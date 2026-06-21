@@ -4,16 +4,17 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import RecurringExpenseForm from '@/components/RecurringExpenseForm';
 
-type Option = { id: number; code?: string; name: string; icon?: string | null };
+type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
 type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; phone?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
 
 type Props = {
   categories: Option[];
   banks: Option[];
+  paymentMethods: Option[];
   suppliers: SupplierOption[];
 };
 
-export default function NewRecurringExpensePanel({ categories, banks, suppliers }: Props) {
+export default function NewRecurringExpensePanel({ categories, banks, paymentMethods, suppliers }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [action, setAction] = useState('/api/recurring-expenses');
 
@@ -54,6 +55,7 @@ export default function NewRecurringExpensePanel({ categories, banks, suppliers 
         <RecurringExpenseForm
           categories={categories}
           banks={banks}
+          paymentMethods={paymentMethods}
           suppliers={suppliers}
           action={action}
           onCancel={() => setIsOpen(false)}

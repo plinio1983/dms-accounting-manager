@@ -20,11 +20,10 @@ import {
 } from '@/lib/income-ui';
 import { vatStyles } from '@/lib/expense-ui';
 import { requireWorkspace } from '@/lib/auth';
+import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
 
 const salesChannelOptions = ['Shop', 'Online Shop', 'Altro Canale'];
 const saleCategoryOptions = ['B2C', 'B2B', 'Altro'];
-const paymentMethodOptions = ['Bonifico', 'Carta di Debito/Credit', 'Criptovaluta', 'Stripe', 'Cash'];
-const creditChannelOptions = ['Cash', 'Unicredit', 'MyTu', 'Wise'];
 const invoiceStatusOptions = [
   ['NON_INVIATA', 'Non inviata'],
   ['EMESSA', 'Emessa'],
@@ -456,10 +455,14 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
   const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || '') : '';
   const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter) : null;
 
-  const [incomes, expensesForVat] = await Promise.all([
-    prisma.income.findMany({ where: { workspaceId: current.workspace.id }, orderBy: [{ creditDate: 'desc' }, { id: 'desc' }], take: 500 }),
-    prisma.expense.findMany({ where: { workspaceId: current.workspace.id }, include: { payments: true }, take: 5000 })
+  const [incomes, expensesForVat, banks, paymentMethods] = await Promise.all([
+    prisma.income.findMany({ where: { workspaceId: current.workspace.id }, include: { paymentMethodRef: true, creditBank: true }, orderBy: [{ creditDate: 'desc' }, { id: 'desc' }], take: 500 }),
+    prisma.expense.findMany({ where: { workspaceId: current.workspace.id }, include: { payments: true }, take: 5000 }),
+    prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } })
   ]);
+  const orderedBanks = orderBanks(banks);
+  const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
 
   const creditDateFromFilter = useCreditDateFilter ? creditDateFromDefault : '';
   const creditDateToFilter = useCreditDateFilter ? creditDateToDefault : '';
@@ -510,8 +513,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
     if (salesChannelFilter && income.salesChannel !== salesChannelFilter) return false;
     if (saleCategoryFilter && income.saleCategory !== saleCategoryFilter) return false;
     if (!amountMatchesFilter(Number(income.amount.toString()), amountFilterValue)) return false;
-    if (paymentMethodFilter && income.paymentMethod !== paymentMethodFilter) return false;
-    if (creditChannelFilter && income.creditChannel !== creditChannelFilter) return false;
+    if (paymentMethodFilter && (income.paymentMethodRef?.name ?? income.paymentMethod) !== paymentMethodFilter) return false;
+    if (creditChannelFilter && (income.creditBank?.name ?? income.creditChannel) !== creditChannelFilter) return false;
     if (fiscalFilter === 'yes' && !income.isFiscal) return false;
     if (fiscalFilter === 'no' && income.isFiscal) return false;
     if (invoiceStatusModeFilter === 'not_emitted' && income.invoiceStatus === 'EMESSA') return false;
@@ -591,8 +594,16 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
   ].filter(Boolean) as Array<{ label: string; value: string }>;
 
   return <div className="grid">
-    <NewIncomePanel initialOpen={inputDefault(filters, 'new') === '1'} />
-    <IncomeEditModalController returnTo={listHref} />
+    <NewIncomePanel
+      initialOpen={inputDefault(filters, 'new') === '1'}
+      banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
+      paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+    />
+    <IncomeEditModalController
+      returnTo={listHref}
+      banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
+      paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+    />
 
     <div className="card expenses-list-card">
       <IncomeTrendSelectors
@@ -634,6 +645,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             quickBillingPeriodFilter={quickBillingPeriodFilter}
             billingPeriodFromFilter={billingPeriodFromFilter}
             billingPeriodToFilter={billingPeriodToFilter}
+            banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name }))}
+            paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name }))}
           />
         </div>
       </div>
@@ -845,8 +858,10 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         {filteredIncomes.map(income => {
           const salesStyle = salesChannelStyles[income.salesChannel];
           const catStyle = saleCategoryStyles[income.saleCategory];
-          const paymentStyle = paymentMethodStyles[income.paymentMethod];
-          const creditStyle = creditChannelStyles[income.creditChannel];
+          const incomePaymentMethodName = income.paymentMethodRef?.name ?? income.paymentMethod;
+          const incomeCreditChannelName = income.creditBank?.name ?? income.creditChannel;
+          const paymentStyle = paymentMethodStyles[incomePaymentMethodName];
+          const creditStyle = creditChannelStyles[incomeCreditChannelName];
           const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
           const creditStatus = incomeCreditStatus(income);
           const creditOverdue = isIncomeCreditOverdue(income);
@@ -944,8 +959,10 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         {filteredIncomes.map(income => {
           const salesStyle = salesChannelStyles[income.salesChannel];
           const catStyle = saleCategoryStyles[income.saleCategory];
-          const paymentStyle = paymentMethodStyles[income.paymentMethod];
-          const creditStyle = creditChannelStyles[income.creditChannel];
+          const incomePaymentMethodName = income.paymentMethodRef?.name ?? income.paymentMethod;
+          const incomeCreditChannelName = income.creditBank?.name ?? income.creditChannel;
+          const paymentStyle = paymentMethodStyles[incomePaymentMethodName];
+          const creditStyle = creditChannelStyles[incomeCreditChannelName];
           const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
           const creditStatus = incomeCreditStatus(income);
           const creditOverdue = isIncomeCreditOverdue(income);
@@ -958,8 +975,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             <td className="cell-category"><span title={income.saleCategory} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{catStyle?.icon ?? '•'} {income.saleCategory}</span></td>
             <td className="cell-description" title={income.description ?? ''}>{income.description ?? '-'}</td>
             <td className="cell-amount"><strong className={moneyTone(Number(income.amount.toString()))}>{euro(income.amount.toString())}</strong></td>
-            <td className="cell-supplier"><span title={income.paymentMethod} className={`${badgeClass(paymentStyle?.className)} income-badge-compact`}>{paymentStyle?.icon ?? '•'} {income.paymentMethod}</span></td>
-            <td className="cell-cchannel"><span title={income.creditChannel} className={`${badgeClass(creditStyle?.className)} income-badge-compact`}>{creditStyle?.icon ?? '•'} {income.creditChannel}</span></td>
+            <td className="cell-supplier"><span title={incomePaymentMethodName} className={`${badgeClass(paymentStyle?.className)} income-badge-compact`}>{paymentStyle?.icon ?? '•'} {incomePaymentMethodName}</span></td>
+            <td className="cell-cchannel"><span title={incomeCreditChannelName} className={`${badgeClass(creditStyle?.className)} income-badge-compact`}>{creditStyle?.icon ?? '•'} {incomeCreditChannelName}</span></td>
             <td className="cell-invoice-state"><span title={creditStatus.label} className={`${badgeClass(creditStatus.className)} income-badge-compact`}>{creditStatus.icon} {creditStatus.label}</span></td>
             <td className="cell-fiscal">{fiscalBadge(income.isFiscal)}</td>
             <td className="cell-invoice-state"><span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>

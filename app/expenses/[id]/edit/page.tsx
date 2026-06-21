@@ -2,9 +2,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import ExpenseForm from '@/components/ExpenseForm';
 import { requireWorkspace } from '@/lib/auth';
-import { orderExpenseCategories } from '@/lib/workspace-defaults';
-
-const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
+import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 
 export default async function EditExpensePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await requireWorkspace('/expenses');
@@ -13,18 +11,18 @@ export default async function EditExpensePage({ params, searchParams }: { params
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : `/expenses/${id}`;
   const encodedReturnTo = encodeURIComponent(returnTo);
-  const [expense, categories, banks, suppliers] = await Promise.all([
+  const [expense, categories, banks, paymentMethods, suppliers] = await Promise.all([
     prisma.expense.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id }, include: { payments: { orderBy: { id: 'asc' } }, supplier: true } }),
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
   ]);
 
   if (!expense) notFound();
 
-  const orderedBanks = allowedBankOrder
-    .map(name => banks.find(bank => bank.name === name))
-    .filter(Boolean) as typeof banks;
+  const orderedBanks = orderBanks(banks);
+  const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
 
   const orderedCategories = orderExpenseCategories(categories);
 
@@ -35,7 +33,8 @@ export default async function EditExpensePage({ params, searchParams }: { params
           submitLabel="Salva modifiche"
           action={`/api/expenses/${expense.id}?returnTo=${encodedReturnTo}`}
           categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
-          banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
+          banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
+          paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
           suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
           initialExpense={{
             id: expense.id,
@@ -59,6 +58,7 @@ export default async function EditExpensePage({ params, searchParams }: { params
               id: payment.id,
               paymentDate: payment.paymentDate,
               channel: payment.channel,
+              paymentMethodId: payment.paymentMethodId,
               bankId: payment.bankId,
               amount: payment.amount.toString(),
               paidBy: payment.paidBy

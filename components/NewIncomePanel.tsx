@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import IncomeForm from "@/components/IncomeForm";
 
-export default function NewIncomePanel({ initialOpen = false }: { initialOpen?: boolean }) {
+type Option = { id: number; name: string; isFallback?: boolean | null };
+type PaymentMethodOption = Option & { kind?: string };
+
+export default function NewIncomePanel({ initialOpen = false, banks, paymentMethods }: { initialOpen?: boolean; banks: Option[]; paymentMethods: PaymentMethodOption[] }) {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [returnAction, setReturnAction] = useState('/api/incomes');
 
@@ -48,7 +51,7 @@ export default function NewIncomePanel({ initialOpen = false }: { initialOpen?: 
             </div>
             <button className="secondary-button modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
           </div>
-          <IncomeForm action={returnAction} onCancel={() => setIsOpen(false)} />
+          <IncomeForm action={returnAction} onCancel={() => setIsOpen(false)} banks={banks} paymentMethods={paymentMethods} />
         </div>
       </div> : null}
     </div>

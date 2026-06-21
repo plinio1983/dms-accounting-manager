@@ -8104,14 +8104,16 @@ button.bulk-direct-danger {
     text-align: center;
 }
 
+@media (max-width: 760px) {
+    .expense-detail-info-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 1020px) {
     .expense-detail-hero,
     .expense-detail-two-columns {
         grid-template-columns: 1fr 1fr;
-    }
-
-    .expense-detail-info-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .expense-detail-status-strip {
@@ -8168,10 +8170,6 @@ button.bulk-direct-danger {
 
     .expense-payment-card .expense-payment-data {
         grid-template-columns: 1fr 1fr;
-    }
-
-    .expense-detail-item-wide {
-        grid-column: auto;
     }
 
     .expense-detail-status-strip > div {
@@ -9859,6 +9857,18 @@ table .cell-description {
     line-height: 1;
 }
 
+.payment-credit-collapsible > summary {
+    list-style: none;
+}
+
+.payment-credit-collapsible > summary::-webkit-details-marker {
+    display: none;
+}
+
+.payment-credit-collapsible[open] > summary span:last-child {
+    transform: rotate(45deg);
+}
+
 .category-create-form {
     grid-template-columns: minmax(220px, 1fr) 160px 120px auto;
     align-items: end;
@@ -9872,7 +9882,8 @@ table .cell-description {
 .categories-settings-table-head,
 .category-settings-edit-form {
     display: grid;
-    grid-template-columns: minmax(220px, 1fr) 140px 120px 120px 92px;
+    /*grid-template-columns: minmax(220px, 1fr) 140px 120px 120px 92px;*/
+    grid-template-columns: minmax(220px, 1fr) 140px 120px 120px;
     gap: 12px;
     align-items: center;
 }

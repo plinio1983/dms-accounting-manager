@@ -2,9 +2,7 @@ import { prisma } from '@/lib/prisma';
 import RecurringExpensesList from '@/components/RecurringExpensesList';
 import NewRecurringExpensePanel from '@/components/NewRecurringExpensePanel';
 import { requireWorkspace } from '@/lib/auth';
-import { orderExpenseCategories } from '@/lib/workspace-defaults';
-
-const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
+import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
   const value = searchParams[key];
@@ -52,18 +50,20 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
   if (bankFilter) where.bankId = Number(bankFilter);
   if (amountWhere) where.amount = amountWhere;
 
-  const [items, categories, banks, suppliers] = await Promise.all([
+  const [items, categories, banks, paymentMethods, suppliers] = await Promise.all([
     prisma.recurringExpense.findMany({
       where,
-      include: { supplier: true, category: true, bank: true },
+      include: { supplier: true, category: true, bank: true, paymentMethod: true },
       orderBy: [{ isActive: 'desc' }, { startDate: 'asc' }]
     }),
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
   ]);
 
-  const orderedBanks = allowedBankOrder.map(name => banks.find(bank => bank.name === name)).filter(Boolean) as typeof banks;
+  const orderedBanks = orderBanks(banks);
+  const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
   const orderedCategories = orderExpenseCategories(categories);
 
   return <div className="grid">
@@ -71,7 +71,8 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
       <div><h2>Spese ricorrenti</h2><p className="muted">Gestisci le regole di spesa ricorrente.</p></div>
       <NewRecurringExpensePanel
         categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
-        banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
+        banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
+        paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
         suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
       />
     </div>
@@ -79,7 +80,8 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
       items={items}
       filters={filters}
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
-      banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
+      banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
+      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
       suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
     />
   </div>;

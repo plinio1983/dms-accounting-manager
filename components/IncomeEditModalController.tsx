@@ -10,7 +10,9 @@ type EditIncome = {
   description?: string | null;
   amount?: string | number | null;
   paymentMethod?: string | null;
+  paymentMethodId?: number | null;
   creditChannel?: string | null;
+  creditBankId?: number | null;
   creditDate?: string | Date | null;
   isCredited?: boolean;
   billingMonth?: number | null;
@@ -21,11 +23,16 @@ type EditIncome = {
   notes?: string | null;
 };
 
+type Option = { id: number; name: string; isFallback?: boolean | null };
+type PaymentMethodOption = Option & { kind?: string };
+
 type Props = {
   returnTo: string;
+  banks: Option[];
+  paymentMethods: PaymentMethodOption[];
 };
 
-export default function IncomeEditModalController({ returnTo }: Props) {
+export default function IncomeEditModalController({ returnTo, banks, paymentMethods }: Props) {
   const [income, setIncome] = useState<EditIncome | null>(null);
   const [mode, setMode] = useState<"edit" | "copy">("edit");
   const [loadingId, setLoadingId] = useState<number | null>(null);
@@ -89,6 +96,8 @@ export default function IncomeEditModalController({ returnTo }: Props) {
           title={mode === "copy" ? "Nuovo incasso da copia" : `Modifica incasso #${income.id}`}
           submitLabel={mode === "copy" ? "Crea incasso copiato" : "Salva modifiche"}
           onCancel={() => setIncome(null)}
+          banks={banks}
+          paymentMethods={paymentMethods}
         />
       </div>
     </div> : null}

@@ -9,6 +9,7 @@ type Props = {
   filters: Record<string, string | string[] | undefined>;
   categories: Option[];
   banks: Option[];
+  paymentMethods: Option[];
 };
 
 const cadenceOptions = [
@@ -25,23 +26,12 @@ const billingOptions = [
   ["NEXT_MONTH", "Mese successivo"],
 ];
 
-const paymentChannelOptions = [
-  "Addebito",
-  "Bonifico",
-  "RID Bancario",
-  "Modello F24",
-  "Carta di Debito",
-  "PayPal",
-  "Mooney",
-  "Cash",
-];
-
 function inputDefault(filters: Record<string, string | string[] | undefined>, key: string) {
   const value = filters[key];
   return Array.isArray(value) ? value[0] ?? "" : value ?? "";
 }
 
-export default function RecurringExpenseFiltersDrawer({ filters, categories, banks }: Props) {
+export default function RecurringExpenseFiltersDrawer({ filters, categories, banks, paymentMethods }: Props) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -122,7 +112,7 @@ export default function RecurringExpenseFiltersDrawer({ filters, categories, ban
             Canale pagamento
             <select name="paymentChannel" defaultValue={inputDefault(filters, "paymentChannel")}>
               <option value="">Tutti</option>
-              {paymentChannelOptions.map(value => <option key={value} value={value}>{value}</option>)}
+              {paymentMethods.map(value => <option key={value.id} value={value.name}>{value.name}</option>)}
             </select>
           </label>
 

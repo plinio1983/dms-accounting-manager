@@ -2,9 +2,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import RecurringExpenseForm from '@/components/RecurringExpenseForm';
 import { requireWorkspace } from '@/lib/auth';
-import { orderExpenseCategories } from '@/lib/workspace-defaults';
-
-const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
+import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 
 export default async function NewRecurringExpensePage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await requireWorkspace('/recurring-expenses/new');
@@ -13,13 +11,15 @@ export default async function NewRecurringExpensePage({ searchParams }: { search
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : '/recurring-expenses';
   const encodedReturnTo = encodeURIComponent(returnTo);
 
-  const [categories, banks, suppliers] = await Promise.all([
+  const [categories, banks, paymentMethods, suppliers] = await Promise.all([
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
   ]);
 
-  const orderedBanks = allowedBankOrder.map(name => banks.find(bank => bank.name === name)).filter(Boolean) as typeof banks;
+  const orderedBanks = orderBanks(banks);
+  const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
   const orderedCategories = orderExpenseCategories(categories);
 
   return <div className="modal-page-wrap">
@@ -30,7 +30,8 @@ export default async function NewRecurringExpensePage({ searchParams }: { search
       </div>
       <RecurringExpenseForm
         categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
-        banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
+        banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
+        paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
         suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias }))}
         action={`/api/recurring-expenses?returnTo=${encodedReturnTo}`}
         cancelHref={returnTo}

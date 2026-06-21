@@ -4,17 +4,18 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import ExpenseCreationSwitcher from '@/components/ExpenseCreationSwitcher';
 
-type Option = { id: number; code?: string; name: string; icon?: string | null };
+type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
 type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; phone?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
 
 type Props = {
   categories: Option[];
   banks: Option[];
+  paymentMethods: Option[];
   suppliers: SupplierOption[];
   initialOpen?: boolean;
 };
 
-export default function NewExpensePanel({ categories, banks, suppliers, initialOpen = false }: Props) {
+export default function NewExpensePanel({ categories, banks, paymentMethods, suppliers, initialOpen = false }: Props) {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [returnAction, setReturnAction] = useState('/api/expenses');
   const [recurringAction, setRecurringAction] = useState('/api/recurring-expenses');
@@ -71,7 +72,7 @@ export default function NewExpensePanel({ categories, banks, suppliers, initialO
           </div>
           <button className="secondary-button modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
         </div>
-        <ExpenseCreationSwitcher categories={categories} banks={banks} suppliers={suppliers} expenseAction={returnAction} recurringAction={recurringAction} onCancel={() => setIsOpen(false)} />
+        <ExpenseCreationSwitcher categories={categories} banks={banks} paymentMethods={paymentMethods} suppliers={suppliers} expenseAction={returnAction} recurringAction={recurringAction} onCancel={() => setIsOpen(false)} />
       </div>
     </div> : null}
   </div>;

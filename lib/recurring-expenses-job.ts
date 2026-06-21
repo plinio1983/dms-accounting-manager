@@ -175,6 +175,7 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
             isRecurring: true,
             isAutomaticPayment: recurringExpense.accrualType === 'AUTOMATICA',
             bankId: recurringExpense.bankId || null,
+            channel: recurringExpense.paymentChannel || null,
             notes: recurringExpense.notes || null,
             recurringExpenseId: recurringExpense.id,
             recurringExpensePeriodKey
@@ -247,6 +248,7 @@ export async function settleAutomaticRecurringPayments(todayInput = new Date()):
             expenseId: expense.id,
             paymentDate: expense.dueDate,
             channel: expense.recurringExpense.paymentChannel,
+            paymentMethodId: expense.recurringExpense.paymentMethodId || null,
             bankId: expense.recurringExpense.bankId || null,
             amount: residual,
             paidBy: 'HERBAL_MARKET'

@@ -60,6 +60,20 @@ async function resolveCategoryId(categoryId: number | null | undefined, workspac
   return category.id;
 }
 
+async function resolvePaymentInputs(payments: PaymentInput[], workspaceId: number) {
+  if (!payments.length) return payments;
+  const methods = await prisma.paymentMethod.findMany({ where: { workspaceId } });
+  return payments.map(payment => {
+    const method = payment.paymentMethodId
+      ? methods.find(item => item.id === payment.paymentMethodId)
+      : payment.channel
+        ? methods.find(item => item.name.toLowerCase() === payment.channel!.toLowerCase())
+        : null;
+    if (payment.paymentMethodId && !method) throw new Error('Metodo pagamento non valido');
+    return { ...payment, paymentMethodId: method?.id ?? null, channel: method?.name ?? payment.channel };
+  });
+}
+
 function normalizeInvoiceFields(data: z.infer<typeof ExpenseSchema>) {
   if (!data.isDeclared) {
     return { isDeclared: false, hasElectronicInvoice: false, invoiceStatus: 'NON_PREVISTA' as const };
@@ -77,6 +91,7 @@ function normalizeInvoiceFields(data: z.infer<typeof ExpenseSchema>) {
 type PaymentInput = {
   paymentDate?: string;
   channel?: string;
+  paymentMethodId?: number | null;
   bankId?: number | null;
   amount: number;
   paidBy: 'HERBAL_MARKET' | 'ALTRO_OPERATORE';
@@ -98,10 +113,11 @@ function getAll(formData: FormData, key: string) {
 function parsePayments(formData: FormData): PaymentInput[] {
   const dates = getAll(formData, 'paymentDate[]');
   const channels = getAll(formData, 'paymentChannel[]');
+  const methodIds = getAll(formData, 'paymentMethodId[]');
   const banks = getAll(formData, 'paymentBankId[]');
   const amounts = getAll(formData, 'paymentAmount[]');
   const paidByRows = getAll(formData, 'paymentPaidBy[]');
-  const length = Math.max(dates.length, channels.length, banks.length, amounts.length, paidByRows.length);
+  const length = Math.max(dates.length, channels.length, methodIds.length, banks.length, amounts.length, paidByRows.length);
   const payments: PaymentInput[] = [];
 
   for (let index = 0; index < length; index++) {
@@ -109,9 +125,10 @@ function parsePayments(formData: FormData): PaymentInput[] {
     const bankId = banks[index] ? Number(banks[index]) : null;
     const paymentDate = dates[index] || undefined;
     const channel = channels[index] || undefined;
+    const paymentMethodId = methodIds[index] ? Number(methodIds[index]) : null;
     const paidBy = paidByRows[index] === 'ALTRO_OPERATORE' ? 'ALTRO_OPERATORE' : 'HERBAL_MARKET';
-    if (amount > 0 || paymentDate || bankId || channel) {
-      payments.push({ amount, bankId, paymentDate, channel, paidBy });
+    if (amount > 0 || paymentDate || bankId || channel || paymentMethodId) {
+      payments.push({ amount, bankId, paymentDate, channel, paymentMethodId, paidBy });
     }
   }
 
@@ -157,7 +174,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const data = ExpenseSchema.parse(raw);
   const invoiceFields = normalizeInvoiceFields(data);
   const { year, month } = resolveBillingPeriod(data.billingPeriod);
-  const payments = parsePayments(formData);
+  const payments = await resolvePaymentInputs(parsePayments(formData), current.workspace.id);
   const supplierRef = await resolveSupplierReference(data, current.workspace.id);
   const categoryId = await resolveCategoryId(data.categoryId, current.workspace.id);
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
@@ -203,6 +220,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         create: payments.map(payment => ({
           paymentDate: payment.paymentDate ? new Date(payment.paymentDate) : null,
           channel: payment.channel || null,
+          paymentMethodId: payment.paymentMethodId || null,
           bankId: payment.bankId || null,
           amount: payment.amount,
           paidBy: payment.paidBy

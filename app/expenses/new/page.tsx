@@ -2,9 +2,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import ExpenseCreationSwitcher from '@/components/ExpenseCreationSwitcher';
 import { requireWorkspace } from '@/lib/auth';
-import { orderExpenseCategories } from '@/lib/workspace-defaults';
-
-const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
+import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 
 export default async function NewExpensePage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await requireWorkspace('/expenses/new');
@@ -15,14 +13,16 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
   const encodedReturnTo = encodeURIComponent(returnTo);
   const copyId = copyIdValue ? Number(copyIdValue) : null;
 
-  const [copyExpense, categories, banks, suppliers] = await Promise.all([
+  const [copyExpense, categories, banks, paymentMethods, suppliers] = await Promise.all([
     copyId ? prisma.expense.findFirst({ where: { id: copyId, workspaceId: current.workspace.id }, include: { supplier: true } }) : null,
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
   ]);
 
-  const orderedBanks = allowedBankOrder.map(name => banks.find(bank => bank.name === name)).filter(Boolean) as typeof banks;
+  const orderedBanks = orderBanks(banks);
+  const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
   const orderedCategories = orderExpenseCategories(categories);
 
   return <div className="modal-page-wrap">
@@ -36,7 +36,8 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
     </div>
     <ExpenseCreationSwitcher
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
-      banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
+      banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
+      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
       suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
       expenseAction={`/api/expenses?returnTo=${encodedReturnTo}`}
       recurringAction={`/api/recurring-expenses?returnTo=${encodedReturnTo}`}

@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import IncomeForm from '@/components/IncomeForm';
 import { requireWorkspace } from '@/lib/auth';
+import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
 
 export default async function EditIncomePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await requireWorkspace('/incomes');
@@ -10,8 +11,14 @@ export default async function EditIncomePage({ params, searchParams }: { params:
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : `/incomes/${id}`;
   const encodedReturnTo = encodeURIComponent(returnTo);
-  const income = await prisma.income.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id } });
+  const [income, banks, paymentMethods] = await Promise.all([
+    prisma.income.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id } }),
+    prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } })
+  ]);
   if (!income) notFound();
+  const orderedBanks = orderBanks(banks);
+  const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
 
   return <div className="modal-page-wrap">
     <div className="modal-card modal-card-wide modal-page-card">
@@ -21,6 +28,8 @@ export default async function EditIncomePage({ params, searchParams }: { params:
       title={`Modifica incasso #${income.id}`}
       cancelHref={returnTo}
       submitLabel="Salva modifiche"
+      banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
+      paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
     />
     </div>
   </div>;

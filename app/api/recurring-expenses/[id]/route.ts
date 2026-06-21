@@ -22,6 +22,7 @@ const RecurringExpenseSchema = z.object({
   isDeclared: BooleanFromForm.default(false),
   hasElectronicInvoice: BooleanFromForm.default(false),
   paymentChannel: z.string().optional(),
+  paymentMethodId: z.coerce.number().optional().nullable(),
   bankId: z.coerce.number().optional().nullable(),
   notes: z.string().optional()
 });
@@ -57,6 +58,15 @@ async function resolveCategoryId(categoryId: number | null | undefined, workspac
   return category.id;
 }
 
+async function resolvePaymentMethod(paymentMethodId: number | null | undefined, paymentChannel: string | undefined, workspaceId: number) {
+  if (!paymentMethodId && !paymentChannel) return null;
+  const method = paymentMethodId
+    ? await prisma.paymentMethod.findFirst({ where: { id: paymentMethodId, workspaceId } })
+    : await prisma.paymentMethod.findFirst({ where: { workspaceId, name: { equals: paymentChannel, mode: 'insensitive' } } });
+  if (paymentMethodId && !method) throw new Error('Metodo pagamento non valido');
+  return method;
+}
+
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const current = await getWorkspaceContext();
   if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
@@ -82,6 +92,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const data = RecurringExpenseSchema.parse(raw);
   const supplierRef = await resolveSupplierReference(data, current.workspace.id);
   const categoryId = await resolveCategoryId(data.categoryId, current.workspace.id);
+  const paymentMethod = await resolvePaymentMethod(data.paymentMethodId, data.paymentChannel, current.workspace.id);
   const isYearly = data.cadence === 'YEARLY' || data.cadence === 'EVERY_2_YEARS';
 
   await prisma.recurringExpense.update({
@@ -102,7 +113,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       vatRate: data.vatRate,
       isDeclared: data.isDeclared,
       hasElectronicInvoice: data.isDeclared ? data.hasElectronicInvoice : false,
-      paymentChannel: data.accrualType === 'AUTOMATICO' ? (data.paymentChannel || null) : null,
+      paymentChannel: data.accrualType === 'AUTOMATICO' ? (paymentMethod?.name ?? data.paymentChannel ?? null) : null,
+      paymentMethodId: data.accrualType === 'AUTOMATICO' ? (paymentMethod?.id ?? null) : null,
       bankId: data.accrualType === 'AUTOMATICO' ? (data.bankId || null) : null,
       notes: data.notes || null
     }

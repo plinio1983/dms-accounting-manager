@@ -84,6 +84,7 @@ export async function POST(request: Request) {
           expenseId: expense.id,
           paymentDate: today,
           channel: expense.channel,
+          paymentMethodId: expense.payments[0]?.paymentMethodId ?? null,
           bankId: expense.bankId,
           amount: residual,
           paidBy: expense.paidBy

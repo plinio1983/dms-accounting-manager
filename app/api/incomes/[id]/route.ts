@@ -10,8 +10,10 @@ const IncomeSchema = z.object({
   saleCategory: z.enum(['B2C', 'B2B', 'Altro']).default('B2C'),
   description: z.string().optional().nullable(),
   amount: z.coerce.number().nonnegative(),
-  paymentMethod: z.enum(['Bonifico', 'Carta di Debito/Credit', 'Criptovaluta', 'Stripe', 'Cash']),
-  creditChannel: z.enum(['Cash', 'Unicredit', 'MyTu', 'Wise']),
+  paymentMethod: z.string().optional(),
+  paymentMethodId: z.coerce.number(),
+  creditChannel: z.string().optional(),
+  creditBankId: z.coerce.number(),
   creditDate: z.string().min(1),
   isCredited: BooleanFromForm.default(true),
   billingPeriod: z.string().regex(/^\d{4}-\d{2}$/),
@@ -37,6 +39,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
 
   const parsed = IncomeSchema.parse(raw);
+  const [paymentMethod, creditBank] = await Promise.all([
+    prisma.paymentMethod.findFirst({ where: { id: parsed.paymentMethodId, workspaceId: current.workspace.id } }),
+    prisma.bank.findFirst({ where: { id: parsed.creditBankId, workspaceId: current.workspace.id } })
+  ]);
+  if (!paymentMethod || !creditBank) return NextResponse.json({ error: 'Metodo o banca non validi' }, { status: 400 });
   const existing = await prisma.income.findFirst({ where: { id: incomeId, workspaceId: current.workspace.id }, select: { id: true } });
   if (!existing) return NextResponse.json({ error: 'Incasso non trovato' }, { status: 404 });
   const [billingYear, billingMonth] = parsed.billingPeriod.split('-').map(Number);
@@ -47,8 +54,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       saleCategory: parsed.saleCategory,
       description: parsed.description || null,
       amount: parsed.amount,
-      paymentMethod: parsed.paymentMethod,
-      creditChannel: parsed.creditChannel,
+      paymentMethod: paymentMethod.name,
+      paymentMethodId: paymentMethod.id,
+      creditChannel: creditBank.name,
+      creditBankId: creditBank.id,
       creditDate: new Date(parsed.creditDate),
       isCredited: parsed.isCredited,
       billingYear,

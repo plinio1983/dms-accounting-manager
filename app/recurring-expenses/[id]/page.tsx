@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import RecurringExpenseDetailEditModalController from '@/components/RecurringExpenseDetailEditModalController';
 import { euro } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
+import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
 import {
   badgeClass,
   bankIcons,
@@ -70,22 +71,24 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : '/recurring-expenses';
   const currentDetailReturnTo = `/recurring-expenses/${id}?returnTo=${encodeURIComponent(returnTo)}`;
 
-  const [item, categories, banks, suppliers] = await Promise.all([
+  const [item, categories, banks, paymentMethods, suppliers] = await Promise.all([
     prisma.recurringExpense.findUnique({
     where: { id: Number(id) },
     include: {
       supplier: true,
       category: true,
       bank: true,
+      paymentMethod: true,
       generatedExpenses: {
         include: { category: true, payments: true },
         orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }],
         take: 24
       }
     }
-  }),
+    }),
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
   ]);
 
@@ -96,11 +99,15 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
   const generatedTotal = item.generatedExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
   const merchant = item.supplier?.businessName || item.merchant;
   const activeClass = item.isActive ? 'tone-yes' : 'tone-critical';
+  const orderedBanks = orderBanks(banks);
+  const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
+  const paymentChannelName = item.paymentMethod?.name ?? item.paymentChannel;
 
   return <div className="grid">
     <RecurringExpenseDetailEditModalController
       categories={categories.map(category => ({ id: category.id, code: category.code, name: category.name, icon: category.icon }))}
-      banks={banks.map(bank => ({ id: bank.id, name: bank.name }))}
+      banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
+      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
       suppliers={suppliers.map(supplier => ({ id: supplier.id, businessName: supplier.businessName, alias: supplier.alias, email: supplier.email, phone: supplier.phone, pec: supplier.pec, taxCodeSdi: supplier.taxCodeSdi, internalNotes: supplier.internalNotes }))}
       returnTo={currentDetailReturnTo}
     />
@@ -162,7 +169,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
       <div className="expense-detail-priority-card declared-card">
         <span>Detrazione:&nbsp;&nbsp;<strong>{booleanBadge(item.isDeclared)}</strong></span>
         <span>Fattura Elett:&nbsp;&nbsp;{booleanBadge(item.hasElectronicInvoice)}</span>
-        <span>Pagamento automatico:&nbsp;&nbsp;{booleanBadge(Boolean(item.paymentChannel || item.bankId))}</span>
+        <span>Pagamento automatico:&nbsp;&nbsp;{booleanBadge(Boolean(paymentChannelName || item.bankId))}</span>
       </div>
     </section>
 
@@ -174,7 +181,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
         </div>
       </div>
       <div className="detail-grid expense-detail-secondary-grid">
-        <div><span>Canale pagamento</span><strong>{item.paymentChannel ?? '-'}</strong></div>
+        <div><span>Canale pagamento</span><strong>{paymentChannelName ?? '-'}</strong></div>
         <div><span>Banca</span><strong>{item.bank ? `${bankIcons[item.bank.name] ?? '🏦'} ${item.bank.name}` : '-'}</strong></div>
         <div><span>Giorno scadenza</span><strong>{dueLabel(item)}</strong></div>
         <div><span>Data inizio</span><strong>{dateLabel(item.startDate)}</strong></div>

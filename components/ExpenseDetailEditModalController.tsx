@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import ExpenseForm from "@/components/ExpenseForm";
 
-type Option = { id: number; code?: string; name: string; icon?: string | null };
+type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
 type SupplierOption = {
   id: number;
   businessName: string;
@@ -37,6 +37,7 @@ type EditExpense = {
     id?: number;
     paymentDate?: string | Date | null;
     channel?: string | null;
+    paymentMethodId?: number | null;
     bankId?: number | null;
     amount?: string | number | null;
     paidBy?: "HERBAL_MARKET" | "ALTRO_OPERATORE";
@@ -46,11 +47,12 @@ type EditExpense = {
 type Props = {
   categories: Option[];
   banks: Option[];
+  paymentMethods: Option[];
   suppliers: SupplierOption[];
   returnTo: string;
 };
 
-export default function ExpenseDetailEditModalController({ categories, banks, suppliers, returnTo }: Props) {
+export default function ExpenseDetailEditModalController({ categories, banks, paymentMethods, suppliers, returnTo }: Props) {
   const [expense, setExpense] = useState<EditExpense | null>(null);
   const [mode, setMode] = useState<"edit" | "copy">("edit");
   const [loadingId, setLoadingId] = useState<number | null>(null);
@@ -123,6 +125,7 @@ export default function ExpenseDetailEditModalController({ categories, banks, su
           action={mode === "copy" ? `/api/expenses?returnTo=${encodeURIComponent(returnTo)}` : `/api/expenses/${expense.id}?returnTo=${encodeURIComponent(returnTo)}`}
           categories={categories}
           banks={banks}
+          paymentMethods={paymentMethods}
           suppliers={suppliers}
           initialExpense={expense}
         />

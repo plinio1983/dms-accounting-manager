@@ -9,7 +9,9 @@ type InitialIncome = {
   description?: string | null;
   amount?: string | number | { toString(): string } | null;
   paymentMethod?: string | null;
+  paymentMethodId?: number | null;
   creditChannel?: string | null;
+  creditBankId?: number | null;
   creditDate?: string | Date | null;
   isCredited?: boolean;
   billingMonth?: number | null;
@@ -20,6 +22,9 @@ type InitialIncome = {
   notes?: string | null;
 };
 
+type Option = { id: number; name: string; isFallback?: boolean | null };
+type PaymentMethodOption = Option & { kind?: string };
+
 type Props = {
   initialIncome?: InitialIncome;
   action?: string;
@@ -27,14 +32,14 @@ type Props = {
   submitLabel?: string;
   onCancel?: () => void;
   cancelHref?: string;
+  banks: Option[];
+  paymentMethods: PaymentMethodOption[];
 };
 
 const today = new Date().toISOString().slice(0, 10);
 const currentMonth = new Date().toISOString().slice(0, 7);
 const salesChannels = ["Shop", "Online Shop", "Altro Canale"];
 const saleCategories = ["B2C", "B2B", "Altro"];
-const paymentMethods = ["Bonifico", "Carta di Debito/Credit", "Criptovaluta", "Stripe", "Cash"];
-const creditChannels = ["Cash", "Unicredit", "MyTu", "Wise"];
 const vatRates = ["0", "4", "10", "22"];
 
 function toDateInput(value?: string | Date | null) {
@@ -69,10 +74,17 @@ function MoneyInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   );
 }
 
-function getInitialCreditChannel(paymentMethod: string, creditChannel?: string | null) {
-  if (paymentMethod === "Cash") return "Cash";
-  if (!creditChannel || creditChannel === "Cash") return "Unicredit";
-  return creditChannel;
+function findOptionId(options: Option[], id?: number | null, name?: string | null) {
+  if (id && options.some(option => option.id === id)) return String(id);
+  if (name) {
+    const match = options.find(option => option.name.toLowerCase() === name.toLowerCase());
+    if (match) return String(match.id);
+  }
+  return "";
+}
+
+function isCashMethod(method?: Option) {
+  return method?.name.trim().toLowerCase() === "cash";
 }
 
 export default function IncomeForm({
@@ -82,11 +94,16 @@ export default function IncomeForm({
   submitLabel = "Salva incasso",
   onCancel,
   cancelHref,
+  banks,
+  paymentMethods,
 }: Props) {
-  const initialPaymentMethod = initialIncome?.paymentMethod ?? "Bonifico";
+  const fallbackBank = banks.find(bank => bank.isFallback) ?? banks.find(bank => bank.name.toLowerCase().includes("altra")) ?? banks[0];
+  const defaultPaymentMethod = paymentMethods.find(method => method.name === "Bonifico") ?? paymentMethods[0];
+  const initialPaymentMethodId = findOptionId(paymentMethods, initialIncome?.paymentMethodId, initialIncome?.paymentMethod) || (defaultPaymentMethod ? String(defaultPaymentMethod.id) : "");
+  const initialCreditBankId = findOptionId(banks, initialIncome?.creditBankId, initialIncome?.creditChannel) || (fallbackBank ? String(fallbackBank.id) : "");
   const [amount, setAmount] = useState(normalizeMoney(initialIncome?.amount));
-  const [paymentMethod, setPaymentMethod] = useState(initialPaymentMethod);
-  const [creditChannel, setCreditChannel] = useState(getInitialCreditChannel(initialPaymentMethod, initialIncome?.creditChannel));
+  const [paymentMethodId, setPaymentMethodId] = useState(initialPaymentMethodId);
+  const [creditBankId, setCreditBankId] = useState(initialCreditBankId);
   const [isCredited, setIsCredited] = useState(initialIncome?.isCredited ?? true);
   const [isFiscal, setIsFiscal] = useState(initialIncome?.isFiscal ?? true);
   const [vatRate, setVatRate] = useState(normalizeMoney(initialIncome?.vatRate) || "22");
@@ -94,13 +111,14 @@ export default function IncomeForm({
   const activeVatRate = isFiscal ? Number(vatRate || 0) : 0;
   const netAmount = useMemo(() => activeVatRate > 0 ? amountValue / (1 + activeVatRate / 100) : amountValue, [amountValue, activeVatRate]);
 
+  const selectedPaymentMethod = paymentMethods.find(method => String(method.id) === paymentMethodId);
+  const cashPaymentSelected = isCashMethod(selectedPaymentMethod);
+
   useEffect(() => {
-    if (paymentMethod === "Cash") {
-      if (creditChannel !== "Cash") setCreditChannel("Cash");
-      return;
+    if (cashPaymentSelected && fallbackBank && creditBankId !== String(fallbackBank.id)) {
+      setCreditBankId(String(fallbackBank.id));
     }
-    if (creditChannel === "Cash") setCreditChannel("Unicredit");
-  }, [paymentMethod, creditChannel]);
+  }, [cashPaymentSelected, fallbackBank, creditBankId]);
 
   function toggleFiscal(nextValue: boolean) {
     setIsFiscal(nextValue);
@@ -191,19 +209,19 @@ export default function IncomeForm({
 
           <label>
             Metodo di accredito
-            <select name="paymentMethod" value={paymentMethod} onChange={(event) => setPaymentMethod(event.currentTarget.value)} required>
-              {paymentMethods.map(value => <option key={value} value={value}>{value}</option>)}
+            <select name="paymentMethodId" value={paymentMethodId} onChange={(event) => setPaymentMethodId(event.currentTarget.value)} required>
+              {paymentMethods.map(method => <option key={method.id} value={method.id}>{method.name}</option>)}
             </select>
           </label>
 
           <label>
             Canale di accredito
-            <select name="creditChannel" value={paymentMethod === "Cash" ? "Cash" : creditChannel} onChange={(event) => setCreditChannel(event.currentTarget.value)} disabled={paymentMethod === "Cash"} required>
-              {creditChannels.map(value => (
-                <option key={value} value={value} disabled={paymentMethod !== "Cash" && value === "Cash"}>{value}</option>
+            <select name="creditBankId" value={cashPaymentSelected && fallbackBank ? String(fallbackBank.id) : creditBankId} onChange={(event) => setCreditBankId(event.currentTarget.value)} disabled={cashPaymentSelected} required>
+              {banks.map(bank => (
+                <option key={bank.id} value={bank.id}>{bank.name}</option>
               ))}
             </select>
-            {paymentMethod === "Cash" && <input type="hidden" name="creditChannel" value="Cash" />}
+            {cashPaymentSelected && fallbackBank ? <input type="hidden" name="creditBankId" value={fallbackBank.id} /> : null}
           </label>
         </div>
       </details>

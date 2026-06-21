@@ -5,6 +5,7 @@ import IncomeEditModalController from '@/components/IncomeEditModalController';
 import { euro } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
 import { vatStyles } from '@/lib/expense-ui';
+import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
 import {
   badgeClass,
   creditChannelStyles,
@@ -62,8 +63,14 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : '/incomes';
   const encodedReturnTo = encodeURIComponent(returnTo);
   const currentDetailReturnTo = `/incomes/${id}?returnTo=${encodedReturnTo}`;
-  const income = await prisma.income.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id } });
+  const [income, banks, paymentMethods] = await Promise.all([
+    prisma.income.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id }, include: { paymentMethodRef: true, creditBank: true } }),
+    prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } })
+  ]);
   if (!income) notFound();
+  const orderedBanks = orderBanks(banks);
+  const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
 
   const amount = Number(income.amount.toString());
   const vatRate = Number(income.vatRate.toString());
@@ -71,14 +78,20 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
   const netAmount = amount - vatAmount;
   const salesStyle = salesChannelStyles[income.salesChannel];
   const categoryStyle = saleCategoryStyles[income.saleCategory];
-  const paymentStyle = paymentMethodStyles[income.paymentMethod];
-  const creditStyle = creditChannelStyles[income.creditChannel];
+  const incomePaymentMethodName = income.paymentMethodRef?.name ?? income.paymentMethod;
+  const incomeCreditChannelName = income.creditBank?.name ?? income.creditChannel;
+  const paymentStyle = paymentMethodStyles[incomePaymentMethodName];
+  const creditStyle = creditChannelStyles[incomeCreditChannelName];
   const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
   const creditStatus = incomeCreditStatus(income);
   const vatStyle = vatStyles[String(vatRate)] ?? vatStyles['0'];
 
   return <div className="grid income-detail-page">
-    <IncomeEditModalController returnTo={currentDetailReturnTo} />
+    <IncomeEditModalController
+      returnTo={currentDetailReturnTo}
+      banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
+      paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+    />
 
 
     <section className="expense-detail-hero card income-detail-hero">

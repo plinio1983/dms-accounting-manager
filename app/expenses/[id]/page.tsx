@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import ExpenseDetailEditModalController from '@/components/ExpenseDetailEditModalController';
 import { euro } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
-import { orderExpenseCategories } from '@/lib/workspace-defaults';
+import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 import {
   badgeClass,
   bankIcons,
@@ -17,8 +17,6 @@ import {
   vatStyles,
   yesNoStyles
 } from '@/lib/expense-ui';
-
-const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
 
 function dateLabel(value?: Date | null) {
   if (!value) return '-';
@@ -51,21 +49,21 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
   const encodedReturnTo = encodeURIComponent(returnTo);
   const currentDetailReturnTo = `/expenses/${id}?returnTo=${encodedReturnTo}`;
   const encodedCurrentDetailReturnTo = encodeURIComponent(currentDetailReturnTo);
-  const [expense, categories, banks, suppliers] = await Promise.all([
+  const [expense, categories, banks, paymentMethods, suppliers] = await Promise.all([
     prisma.expense.findUnique({
       where: { id: Number(id) },
       include: { category: true, bank: true, supplier: true, payments: { include: { bank: true }, orderBy: { id: 'asc' } }, attachments: true }
     }),
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
   ]);
 
   if (!expense || expense.workspaceId !== current.workspace.id) notFound();
 
-  const orderedBanks = allowedBankOrder
-    .map(name => banks.find(bank => bank.name === name))
-    .filter(Boolean) as typeof banks;
+  const orderedBanks = orderBanks(banks);
+  const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
 
   const orderedCategories = orderExpenseCategories(categories);
 
@@ -91,7 +89,8 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
   return <div className="grid expense-detail-page">
     <ExpenseDetailEditModalController
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
-      banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
+      banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
+      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
       suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
       returnTo={currentDetailReturnTo}
     />

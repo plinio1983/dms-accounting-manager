@@ -226,6 +226,7 @@ export type WorkspaceWhereInput = {
   companies?: Prisma.CompanyListRelationFilter
   expenseCategories?: Prisma.ExpenseCategoryListRelationFilter
   banks?: Prisma.BankListRelationFilter
+  paymentMethods?: Prisma.PaymentMethodListRelationFilter
   suppliers?: Prisma.SupplierListRelationFilter
   recurringExpenses?: Prisma.RecurringExpenseListRelationFilter
   expenses?: Prisma.ExpenseListRelationFilter
@@ -245,6 +246,7 @@ export type WorkspaceOrderByWithRelationInput = {
   companies?: Prisma.CompanyOrderByRelationAggregateInput
   expenseCategories?: Prisma.ExpenseCategoryOrderByRelationAggregateInput
   banks?: Prisma.BankOrderByRelationAggregateInput
+  paymentMethods?: Prisma.PaymentMethodOrderByRelationAggregateInput
   suppliers?: Prisma.SupplierOrderByRelationAggregateInput
   recurringExpenses?: Prisma.RecurringExpenseOrderByRelationAggregateInput
   expenses?: Prisma.ExpenseOrderByRelationAggregateInput
@@ -267,6 +269,7 @@ export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
   companies?: Prisma.CompanyListRelationFilter
   expenseCategories?: Prisma.ExpenseCategoryListRelationFilter
   banks?: Prisma.BankListRelationFilter
+  paymentMethods?: Prisma.PaymentMethodListRelationFilter
   suppliers?: Prisma.SupplierListRelationFilter
   recurringExpenses?: Prisma.RecurringExpenseListRelationFilter
   expenses?: Prisma.ExpenseListRelationFilter
@@ -308,6 +311,7 @@ export type WorkspaceCreateInput = {
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
@@ -326,6 +330,7 @@ export type WorkspaceUncheckedCreateInput = {
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankUncheckedCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -343,6 +348,7 @@ export type WorkspaceUpdateInput = {
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
@@ -361,6 +367,7 @@ export type WorkspaceUncheckedUpdateInput = {
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUncheckedUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -564,6 +571,22 @@ export type WorkspaceUpdateOneWithoutBanksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutBanksInput, Prisma.WorkspaceUpdateWithoutBanksInput>, Prisma.WorkspaceUncheckedUpdateWithoutBanksInput>
 }
 
+export type WorkspaceCreateNestedOneWithoutPaymentMethodsInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutPaymentMethodsInput, Prisma.WorkspaceUncheckedCreateWithoutPaymentMethodsInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutPaymentMethodsInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+}
+
+export type WorkspaceUpdateOneWithoutPaymentMethodsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutPaymentMethodsInput, Prisma.WorkspaceUncheckedCreateWithoutPaymentMethodsInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutPaymentMethodsInput
+  upsert?: Prisma.WorkspaceUpsertWithoutPaymentMethodsInput
+  disconnect?: Prisma.WorkspaceWhereInput | boolean
+  delete?: Prisma.WorkspaceWhereInput | boolean
+  connect?: Prisma.WorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutPaymentMethodsInput, Prisma.WorkspaceUpdateWithoutPaymentMethodsInput>, Prisma.WorkspaceUncheckedUpdateWithoutPaymentMethodsInput>
+}
+
 export type WorkspaceCreateNestedOneWithoutSuppliersInput = {
   create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutSuppliersInput, Prisma.WorkspaceUncheckedCreateWithoutSuppliersInput>
   connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutSuppliersInput
@@ -653,6 +676,7 @@ export type WorkspaceCreateWithoutOwnerInput = {
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
@@ -670,6 +694,7 @@ export type WorkspaceUncheckedCreateWithoutOwnerInput = {
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankUncheckedCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -723,6 +748,7 @@ export type WorkspaceCreateWithoutMembersInput = {
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
@@ -740,6 +766,7 @@ export type WorkspaceUncheckedCreateWithoutMembersInput = {
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankUncheckedCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -772,6 +799,7 @@ export type WorkspaceUpdateWithoutMembersInput = {
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
@@ -789,6 +817,7 @@ export type WorkspaceUncheckedUpdateWithoutMembersInput = {
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUncheckedUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -805,6 +834,7 @@ export type WorkspaceCreateWithoutSessionsInput = {
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
@@ -822,6 +852,7 @@ export type WorkspaceUncheckedCreateWithoutSessionsInput = {
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankUncheckedCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -854,6 +885,7 @@ export type WorkspaceUpdateWithoutSessionsInput = {
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
@@ -871,6 +903,7 @@ export type WorkspaceUncheckedUpdateWithoutSessionsInput = {
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUncheckedUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -887,6 +920,7 @@ export type WorkspaceCreateWithoutCompaniesInput = {
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
@@ -904,6 +938,7 @@ export type WorkspaceUncheckedCreateWithoutCompaniesInput = {
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankUncheckedCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -936,6 +971,7 @@ export type WorkspaceUpdateWithoutCompaniesInput = {
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
@@ -953,6 +989,7 @@ export type WorkspaceUncheckedUpdateWithoutCompaniesInput = {
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUncheckedUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -969,6 +1006,7 @@ export type WorkspaceCreateWithoutExpenseCategoriesInput = {
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
@@ -986,6 +1024,7 @@ export type WorkspaceUncheckedCreateWithoutExpenseCategoriesInput = {
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankUncheckedCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1018,6 +1057,7 @@ export type WorkspaceUpdateWithoutExpenseCategoriesInput = {
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
@@ -1035,6 +1075,7 @@ export type WorkspaceUncheckedUpdateWithoutExpenseCategoriesInput = {
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUncheckedUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1051,6 +1092,7 @@ export type WorkspaceCreateWithoutBanksInput = {
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
@@ -1068,6 +1110,7 @@ export type WorkspaceUncheckedCreateWithoutBanksInput = {
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1100,6 +1143,7 @@ export type WorkspaceUpdateWithoutBanksInput = {
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
@@ -1117,6 +1161,93 @@ export type WorkspaceUncheckedUpdateWithoutBanksInput = {
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput
+  suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutWorkspaceNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
+  monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
+  incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceCreateWithoutPaymentMethodsInput = {
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+  sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
+  companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
+  expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
+  banks?: Prisma.BankCreateNestedManyWithoutWorkspaceInput
+  suppliers?: Prisma.SupplierCreateNestedManyWithoutWorkspaceInput
+  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
+  monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
+  incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceUncheckedCreateWithoutPaymentMethodsInput = {
+  id?: number
+  name: string
+  ownerId: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+  sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
+  companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
+  expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
+  banks?: Prisma.BankUncheckedCreateNestedManyWithoutWorkspaceInput
+  suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutWorkspaceInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
+  monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
+  incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceCreateOrConnectWithoutPaymentMethodsInput = {
+  where: Prisma.WorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutPaymentMethodsInput, Prisma.WorkspaceUncheckedCreateWithoutPaymentMethodsInput>
+}
+
+export type WorkspaceUpsertWithoutPaymentMethodsInput = {
+  update: Prisma.XOR<Prisma.WorkspaceUpdateWithoutPaymentMethodsInput, Prisma.WorkspaceUncheckedUpdateWithoutPaymentMethodsInput>
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutPaymentMethodsInput, Prisma.WorkspaceUncheckedCreateWithoutPaymentMethodsInput>
+  where?: Prisma.WorkspaceWhereInput
+}
+
+export type WorkspaceUpdateToOneWithWhereWithoutPaymentMethodsInput = {
+  where?: Prisma.WorkspaceWhereInput
+  data: Prisma.XOR<Prisma.WorkspaceUpdateWithoutPaymentMethodsInput, Prisma.WorkspaceUncheckedUpdateWithoutPaymentMethodsInput>
+}
+
+export type WorkspaceUpdateWithoutPaymentMethodsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+  sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
+  companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
+  expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
+  banks?: Prisma.BankUpdateManyWithoutWorkspaceNestedInput
+  suppliers?: Prisma.SupplierUpdateManyWithoutWorkspaceNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
+  monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
+  incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceUncheckedUpdateWithoutPaymentMethodsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerId?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+  sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
+  companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
+  expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
+  banks?: Prisma.BankUncheckedUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1134,6 +1265,7 @@ export type WorkspaceCreateWithoutSuppliersInput = {
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
@@ -1151,6 +1283,7 @@ export type WorkspaceUncheckedCreateWithoutSuppliersInput = {
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankUncheckedCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1183,6 +1316,7 @@ export type WorkspaceUpdateWithoutSuppliersInput = {
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
@@ -1200,6 +1334,7 @@ export type WorkspaceUncheckedUpdateWithoutSuppliersInput = {
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUncheckedUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1216,6 +1351,7 @@ export type WorkspaceCreateWithoutRecurringExpensesInput = {
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
@@ -1233,6 +1369,7 @@ export type WorkspaceUncheckedCreateWithoutRecurringExpensesInput = {
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankUncheckedCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1265,6 +1402,7 @@ export type WorkspaceUpdateWithoutRecurringExpensesInput = {
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
@@ -1282,6 +1420,7 @@ export type WorkspaceUncheckedUpdateWithoutRecurringExpensesInput = {
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUncheckedUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1298,6 +1437,7 @@ export type WorkspaceCreateWithoutExpensesInput = {
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
@@ -1315,6 +1455,7 @@ export type WorkspaceUncheckedCreateWithoutExpensesInput = {
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankUncheckedCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1347,6 +1488,7 @@ export type WorkspaceUpdateWithoutExpensesInput = {
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
@@ -1364,6 +1506,7 @@ export type WorkspaceUncheckedUpdateWithoutExpensesInput = {
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUncheckedUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1380,6 +1523,7 @@ export type WorkspaceCreateWithoutMonthlyRevenuesInput = {
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
@@ -1397,6 +1541,7 @@ export type WorkspaceUncheckedCreateWithoutMonthlyRevenuesInput = {
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankUncheckedCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1429,6 +1574,7 @@ export type WorkspaceUpdateWithoutMonthlyRevenuesInput = {
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
@@ -1446,6 +1592,7 @@ export type WorkspaceUncheckedUpdateWithoutMonthlyRevenuesInput = {
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUncheckedUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1462,6 +1609,7 @@ export type WorkspaceCreateWithoutIncomesInput = {
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
@@ -1479,6 +1627,7 @@ export type WorkspaceUncheckedCreateWithoutIncomesInput = {
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
   banks?: Prisma.BankUncheckedCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput
   suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutWorkspaceInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1511,6 +1660,7 @@ export type WorkspaceUpdateWithoutIncomesInput = {
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
@@ -1528,6 +1678,7 @@ export type WorkspaceUncheckedUpdateWithoutIncomesInput = {
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUncheckedUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1550,6 +1701,7 @@ export type WorkspaceUpdateWithoutOwnerInput = {
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
@@ -1567,6 +1719,7 @@ export type WorkspaceUncheckedUpdateWithoutOwnerInput = {
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
   banks?: Prisma.BankUncheckedUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput
   suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutWorkspaceNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1592,6 +1745,7 @@ export type WorkspaceCountOutputType = {
   companies: number
   expenseCategories: number
   banks: number
+  paymentMethods: number
   suppliers: number
   recurringExpenses: number
   expenses: number
@@ -1605,6 +1759,7 @@ export type WorkspaceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensi
   companies?: boolean | WorkspaceCountOutputTypeCountCompaniesArgs
   expenseCategories?: boolean | WorkspaceCountOutputTypeCountExpenseCategoriesArgs
   banks?: boolean | WorkspaceCountOutputTypeCountBanksArgs
+  paymentMethods?: boolean | WorkspaceCountOutputTypeCountPaymentMethodsArgs
   suppliers?: boolean | WorkspaceCountOutputTypeCountSuppliersArgs
   recurringExpenses?: boolean | WorkspaceCountOutputTypeCountRecurringExpensesArgs
   expenses?: boolean | WorkspaceCountOutputTypeCountExpensesArgs
@@ -1660,6 +1815,13 @@ export type WorkspaceCountOutputTypeCountBanksArgs<ExtArgs extends runtime.Types
 /**
  * WorkspaceCountOutputType without action
  */
+export type WorkspaceCountOutputTypeCountPaymentMethodsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentMethodWhereInput
+}
+
+/**
+ * WorkspaceCountOutputType without action
+ */
 export type WorkspaceCountOutputTypeCountSuppliersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.SupplierWhereInput
 }
@@ -1705,6 +1867,7 @@ export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   companies?: boolean | Prisma.Workspace$companiesArgs<ExtArgs>
   expenseCategories?: boolean | Prisma.Workspace$expenseCategoriesArgs<ExtArgs>
   banks?: boolean | Prisma.Workspace$banksArgs<ExtArgs>
+  paymentMethods?: boolean | Prisma.Workspace$paymentMethodsArgs<ExtArgs>
   suppliers?: boolean | Prisma.Workspace$suppliersArgs<ExtArgs>
   recurringExpenses?: boolean | Prisma.Workspace$recurringExpensesArgs<ExtArgs>
   expenses?: boolean | Prisma.Workspace$expensesArgs<ExtArgs>
@@ -1747,6 +1910,7 @@ export type WorkspaceInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   companies?: boolean | Prisma.Workspace$companiesArgs<ExtArgs>
   expenseCategories?: boolean | Prisma.Workspace$expenseCategoriesArgs<ExtArgs>
   banks?: boolean | Prisma.Workspace$banksArgs<ExtArgs>
+  paymentMethods?: boolean | Prisma.Workspace$paymentMethodsArgs<ExtArgs>
   suppliers?: boolean | Prisma.Workspace$suppliersArgs<ExtArgs>
   recurringExpenses?: boolean | Prisma.Workspace$recurringExpensesArgs<ExtArgs>
   expenses?: boolean | Prisma.Workspace$expensesArgs<ExtArgs>
@@ -1770,6 +1934,7 @@ export type $WorkspacePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     companies: Prisma.$CompanyPayload<ExtArgs>[]
     expenseCategories: Prisma.$ExpenseCategoryPayload<ExtArgs>[]
     banks: Prisma.$BankPayload<ExtArgs>[]
+    paymentMethods: Prisma.$PaymentMethodPayload<ExtArgs>[]
     suppliers: Prisma.$SupplierPayload<ExtArgs>[]
     recurringExpenses: Prisma.$RecurringExpensePayload<ExtArgs>[]
     expenses: Prisma.$ExpensePayload<ExtArgs>[]
@@ -2182,6 +2347,7 @@ export interface Prisma__WorkspaceClient<T, Null = never, ExtArgs extends runtim
   companies<T extends Prisma.Workspace$companiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$companiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   expenseCategories<T extends Prisma.Workspace$expenseCategoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$expenseCategoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpenseCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   banks<T extends Prisma.Workspace$banksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$banksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BankPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  paymentMethods<T extends Prisma.Workspace$paymentMethodsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$paymentMethodsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentMethodPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   suppliers<T extends Prisma.Workspace$suppliersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$suppliersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SupplierPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recurringExpenses<T extends Prisma.Workspace$recurringExpensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$recurringExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   expenses<T extends Prisma.Workspace$expensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2739,6 +2905,30 @@ export type Workspace$banksArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.BankScalarFieldEnum | Prisma.BankScalarFieldEnum[]
+}
+
+/**
+ * Workspace.paymentMethods
+ */
+export type Workspace$paymentMethodsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PaymentMethod
+   */
+  select?: Prisma.PaymentMethodSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PaymentMethod
+   */
+  omit?: Prisma.PaymentMethodOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentMethodInclude<ExtArgs> | null
+  where?: Prisma.PaymentMethodWhereInput
+  orderBy?: Prisma.PaymentMethodOrderByWithRelationInput | Prisma.PaymentMethodOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentMethodWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentMethodScalarFieldEnum | Prisma.PaymentMethodScalarFieldEnum[]
 }
 
 /**

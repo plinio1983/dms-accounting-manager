@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import RecurringExpenseForm from "@/components/RecurringExpenseForm";
 
-type Option = { id: number; code?: string; name: string; icon?: string | null };
+type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
 type SupplierOption = {
   id: number;
   businessName: string;
@@ -33,6 +33,7 @@ type EditRecurringExpense = {
   isDeclared?: boolean;
   hasElectronicInvoice?: boolean;
   paymentChannel?: string | null;
+  paymentMethodId?: number | null;
   bankId?: number | null;
   notes?: string | null;
 };
@@ -40,11 +41,12 @@ type EditRecurringExpense = {
 type Props = {
   categories: Option[];
   banks: Option[];
+  paymentMethods: Option[];
   suppliers: SupplierOption[];
   returnTo: string;
 };
 
-export default function RecurringExpenseDetailEditModalController({ categories, banks, suppliers, returnTo }: Props) {
+export default function RecurringExpenseDetailEditModalController({ categories, banks, paymentMethods, suppliers, returnTo }: Props) {
   const [expense, setExpense] = useState<EditRecurringExpense | null>(null);
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const [error, setError] = useState("");
@@ -100,6 +102,7 @@ export default function RecurringExpenseDetailEditModalController({ categories, 
         <RecurringExpenseForm
           categories={categories}
           banks={banks}
+          paymentMethods={paymentMethods}
           suppliers={suppliers}
           action={`/api/recurring-expenses/${expense.id}?returnTo=${encodeURIComponent(returnTo)}`}
           initialExpense={expense}

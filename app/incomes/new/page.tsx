@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import IncomeForm from '@/components/IncomeForm';
 import { requireWorkspace } from '@/lib/auth';
+import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
 
 export default async function NewIncomePage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await requireWorkspace('/incomes/new');
@@ -11,7 +12,13 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : '/incomes';
   const encodedReturnTo = encodeURIComponent(returnTo);
   const copyId = copyIdValue ? Number(copyIdValue) : null;
-  const copyIncome = copyId ? await prisma.income.findFirst({ where: { id: copyId, workspaceId: current.workspace.id } }) : null;
+  const [copyIncome, banks, paymentMethods] = await Promise.all([
+    copyId ? prisma.income.findFirst({ where: { id: copyId, workspaceId: current.workspace.id } }) : null,
+    prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } })
+  ]);
+  const orderedBanks = orderBanks(banks);
+  const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
 
   return <div className="modal-page-wrap">
     <div className="modal-card modal-card-wide modal-page-card">
@@ -28,7 +35,9 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
         saleCategory: copyIncome.saleCategory,
         amount: copyIncome.amount.toString(),
         paymentMethod: copyIncome.paymentMethod,
+        paymentMethodId: copyIncome.paymentMethodId,
         creditChannel: copyIncome.creditChannel,
+        creditBankId: copyIncome.creditBankId,
         creditDate: copyIncome.creditDate,
         billingMonth: copyIncome.billingMonth,
         billingYear: copyIncome.billingYear,
@@ -41,6 +50,8 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
       title={copyIncome ? 'Nuovo incasso da copia' : 'Nuovo incasso'}
       cancelHref={returnTo}
       submitLabel={copyIncome ? 'Crea incasso copiato' : 'Salva incasso'}
+      banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
+      paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
     />
     </div>
   </div>;
