@@ -595,6 +595,25 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   const invoiceStatusModeFilter = inputDefault(filters, 'invoiceStatusMode');
   const declaredFilter = inputDefault(filters, 'declared');
   const attachmentsFilter = inputDefault(filters, 'attachments');
+  const totalsFilterHref = (extraFilters: Record<string, string>) => {
+    const query = new URLSearchParams();
+    if (useFiscalPeriodFilter) {
+      if (billingPeriodFromFilter) query.set('billingPeriodFrom', billingPeriodFromFilter);
+      if (billingPeriodToFilter) query.set('billingPeriodTo', billingPeriodToFilter);
+    } else {
+      if (orderDateFromDefault) query.set('orderDateFrom', orderDateFromDefault);
+      if (orderDateToDefault) query.set('orderDateTo', orderDateToDefault);
+    }
+    Object.entries(extraFilters).forEach(([key, value]) => {
+      if (value) query.set(key, value);
+    });
+    const queryString = query.toString();
+    return `/expenses${queryString ? `?${queryString}` : ''}`;
+  };
+  const nonDeclaredTotalsHref = totalsFilterHref({ declared: 'no' });
+  const unpaidTotalsHref = totalsFilterHref({ residual: 'open' });
+  const invoicesNotReceivedHref = totalsFilterHref({ invoiceStatus: 'not_received' });
+  const overduePaymentsHref = totalsFilterHref({ paymentStatus: 'overdue' });
 
   const periodExpenses = expenses.filter(expense => {
     if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey)) return false;
@@ -724,11 +743,11 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             <tbody>
               {/*<tr><td>Spese totali IVA inclusa</td><td><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></td></tr>*/}
               <tr><td>Spese totali IVA inclusa</td><td><strong className={badgeClass()}>{euro(totals.total)}</strong></td></tr>
-              <tr><td>Spese non dichiarate</td><td><strong className={moneyTone(totals.nonDeclared)}>{euro(totals.nonDeclared)}</strong></td></tr>
-              <tr className={totals.toPay > 0 ? 'list-totals-row-warning row-warning' : ''}><td>Non saldato</td><td><strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong></td></tr>
+              <tr><td>Spese non dichiarate</td><td><Link href={nonDeclaredTotalsHref}><strong className={moneyTone(totals.nonDeclared)}>{euro(totals.nonDeclared)}</strong></Link></td></tr>
+              <tr className={totals.toPay > 0 ? 'list-totals-row-warning row-warning' : ''}><td>Non saldato</td><td><Link href={unpaidTotalsHref}><strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong></Link></td></tr>
               <tr><td>IVA versata</td><td><strong className={moneyTone(totals.paidVat)}>{euro(totals.paidVat)}</strong></td></tr>
-              <tr className={totals.invoicesNotReceived > 0 ? 'list-totals-row-warning row-warning' : ''}><td>Fatture non ricevute</td><td><strong className="text-warning">{totals.invoicesNotReceived}</strong></td></tr>
-              <tr className={totals.overdueCount > 0 ? 'list-totals-row-critical row-critical' : ''}><td>Pagamenti scaduti</td><td><strong className="text-warning">{totals.overdueCount}</strong></td></tr>
+              <tr className={totals.invoicesNotReceived > 0 ? 'list-totals-row-warning row-warning' : ''}><td>Fatture non ricevute</td><td><Link href={invoicesNotReceivedHref}><strong className="text-warning">{totals.invoicesNotReceived}</strong></Link></td></tr>
+              <tr className={totals.overdueCount > 0 ? 'list-totals-row-critical row-critical' : ''}><td>Pagamenti scaduti</td><td><Link href={overduePaymentsHref}><strong className="text-warning">{totals.overdueCount}</strong></Link></td></tr>
             </tbody>
           </table>
         </div>
