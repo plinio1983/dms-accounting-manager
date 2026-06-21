@@ -8080,12 +8080,6 @@ button.bulk-direct-danger {
     .expense-payment-data {
         grid-template-columns: 1fr 1fr;
     }
-}
-
-@media (max-width: 700px) {
-    .expense-detail-document {
-        border-radius: 20px;
-    }
 
     .expense-detail-hero,
     .expense-detail-section {
@@ -8111,6 +8105,12 @@ button.bulk-direct-danger {
         display: flex;
         gap: 8px;
         flex-grow: 1;
+    }
+}
+
+@media (max-width: 700px) {
+    .expense-detail-document {
+        border-radius: 20px;
     }
 
     .expense-detail-info-grid,
