@@ -416,7 +416,8 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
     const vatRate = parseMoney(rowValue(row, ['Aliquota IVA', '% IVA', 'Applicazione IVA', 'IVA']));
     const hasElectronicInvoice = parseBool(rowValue(row, ['Fattura elettronica', 'F. Elett.', 'Fattura Elettronica']));
     const isDeclared = parseBool(rowValue(row, ['Detrazione', 'Dich.', 'Dichiarazione']));
-    const invoiceStatus = (!isDeclared && !hasElectronicInvoice) ? 'NON_PREVISTA' : mapInvoiceStatus(rowValue(row, ['Stato fattura', 'Fattura']), hasElectronicInvoice);
+    const mappedInvoiceStatus = mapInvoiceStatus(rowValue(row, ['Stato fattura', 'Fattura']), hasElectronicInvoice);
+    const invoiceStatus = !isDeclared ? 'NON_PREVISTA' : (mappedInvoiceStatus === 'NON_PREVISTA' ? 'IN_ATTESA' : mappedInvoiceStatus);
     const categoryName = mapCategoryName(rowValue(row, ['Categoria']));
     const category = refs.categories[categoryName] ?? refs.categories['Altri Servizi'];
     const bankName = mapBankName(rowValue(row, ['Banca']));

@@ -167,7 +167,7 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
             amount: recurringExpense.amount,
             vatRate: recurringExpense.vatRate,
             paymentStatus: 'DA_PAGARE',
-            invoiceStatus: recurringExpense.hasElectronicInvoice ? 'IN_ATTESA' : 'NON_PREVISTA',
+            invoiceStatus: recurringExpense.isDeclared ? 'IN_ATTESA' : 'NON_PREVISTA',
             month: billingPeriod.month,
             year: billingPeriod.year,
             hasElectronicInvoice: recurringExpense.hasElectronicInvoice,

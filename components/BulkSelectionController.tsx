@@ -70,7 +70,9 @@ function buildFloatingButton(original: HTMLElement, label: string, icon: string,
   button.type = "button";
   button.className = `floating-bulk-button ${className}`.trim();
   const sicon = document.createElement("span");
+  sicon.textContent = icon;
   const slabel = document.createElement("span");
+  slabel.textContent = label;
   sicon.className = "btn-icon";
   slabel.className = "floating-bulk-label";
   button.appendChild(sicon);
@@ -157,15 +159,17 @@ function makeFloatingBar(sourceBar: HTMLElement) {
 
     const caret = document.createElement("span");
     caret.className = "floating-bulk-caret";
+    caret.textContent = "▾";
     const icon = document.createElement("span");
     icon.className = "btn-icon";
+    icon.textContent = "⚙";
     const label = document.createElement("span");
-    label.textContent = "Actions";
     const hLabel = document.createElement("span");
     hLabel.textContent = "Bulk ";
     hLabel.className = "floating-bulk-label";
 
     label.appendChild(hLabel);
+    label.append("Actions");
     trigger.appendChild(icon);
     trigger.appendChild(label);
     trigger.appendChild(caret);
