@@ -190,7 +190,7 @@ export default function IncomeForm({
           </div>
 
           <label>
-            Metodo di pagamento
+            Metodo di accredito
             <select name="paymentMethod" value={paymentMethod} onChange={(event) => setPaymentMethod(event.currentTarget.value)} required>
               {paymentMethods.map(value => <option key={value} value={value}>{value}</option>)}
             </select>

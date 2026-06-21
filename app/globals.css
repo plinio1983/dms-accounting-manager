@@ -614,6 +614,12 @@ button {
     justify-content: flex-end;
 }
 
+@media (max-width: 576px) {
+    .income-form-section-credit {
+        justify-content: flex-start;
+    }
+}
+
 .income-form .income-form-section-stack {
     display: grid;
     gap: 12px;
@@ -8972,12 +8978,14 @@ button.bulk-direct-danger {
     backdrop-filter: blur(10px);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 640px) {
     .form-section-grid {
         grid-template-columns: 1fr;
         padding: 12px;
     }
+}
 
+@media (max-width: 760px) {
     .form-section-stack {
         padding: 12px;
         background: #fafbff;
