@@ -173,23 +173,21 @@ export default function IncomeForm({
             <input type="date" name="creditDate" required defaultValue={toDateInput(initialIncome?.creditDate) || today} />
           </label>
 
-          <label>
-            <div className="toggle-field switch-toggle-field">
-              <span>Accreditato</span>
-              <input type="hidden" name="isCredited" value="false" />
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  name="isCredited"
-                  value="true"
-                  checked={isCredited}
-                  onChange={(event) => setIsCredited(event.currentTarget.checked)}
-                />
-                <span className="slider" />
-                <span>{isCredited ? "Si" : "No"}</span>
-              </label>
-            </div>
-          </label>
+          <div className="income-form-section-credit">
+            <label>Accreditato</label>
+            <input type="hidden" name="isCredited" value="false" />
+            <label className="switch">
+              <input
+                type="checkbox"
+                name="isCredited"
+                value="true"
+                checked={isCredited}
+                onChange={(event) => setIsCredited(event.currentTarget.checked)}
+              />
+              <span className="slider" />
+              <span>{isCredited ? "Si" : "No"}</span>
+            </label>
+          </div>
 
           <label>
             Metodo di pagamento

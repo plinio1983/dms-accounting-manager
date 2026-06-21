@@ -608,6 +608,11 @@ button {
     padding: 16px;
 }
 
+.income-form-section-credit {
+    display: grid;
+    gap: 8px;
+}
+
 .income-form .income-form-section-stack {
     display: grid;
     gap: 12px;
