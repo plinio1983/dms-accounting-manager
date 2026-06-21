@@ -96,8 +96,8 @@ function buildFloatingSelectAll(original: HTMLInputElement) {
   checkbox.type = "checkbox";
   checkbox.setAttribute("aria-label", original.getAttribute("aria-label") ?? "Seleziona tutti");
 
-  const text = document.createElement("span");
-  //text.textContent = original.closest("label")?.querySelector("span")?.textContent ?? "Seleziona tutti";
+  // const text = document.createElement("span");
+  // text.textContent = original.closest("label")?.querySelector("span")?.textContent ?? "Seleziona tutti";
 
   checkbox.addEventListener("change", () => {
     original.checked = checkbox.checked;
@@ -105,7 +105,6 @@ function buildFloatingSelectAll(original: HTMLInputElement) {
   });
 
   label.appendChild(checkbox);
-  label.appendChild(text);
   return label;
 }
 
@@ -185,7 +184,7 @@ function makeFloatingBar(sourceBar: HTMLElement) {
   const newItem = sourceBar.querySelector<HTMLElement>("[data-bulk-new], [data-expense-new]");
 
   if (edit) inner.appendChild(buildFloatingButton(edit, "Modifica", "✎", "floating-bulk-edit"));
-  if (copy) inner.appendChild(buildFloatingButton(copy, "Copia", "＋", "floating-bulk-copy"));
+  if (copy) inner.appendChild(buildFloatingButton(copy, "Copia", "⧉", "floating-bulk-copy"));
   if (del) inner.appendChild(buildFloatingButton(del, "Elimina", "🗑", "floating-bulk-delete"));
   if (newItem) {
     const newItemWrap = document.createElement("div");

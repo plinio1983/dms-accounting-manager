@@ -224,7 +224,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
         </details>
         <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="supplierBulkForm" data-edit-base="/suppliers/" data-copy-base="/suppliers/new?copyId=" data-return-to={returnTo}>
           <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
-          <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">＋</span><span className="bulk-label">Copia</span></a>
+          <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="bulk-label">Copia</span></a>
           <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
         </div>
         <div className="bulk-inner-container">
@@ -254,11 +254,13 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
                 </div>
                 <div className="expense-mobile-subtitle">
                   <span className="supplier-mobile-row-grow">{supplier.alias || 'Nessun alias'}</span>
-                  <span className="supplier-mobile-row"><strong className="badge color-badge tone-insurance">{euro(annualPurchasedAmount)}</strong> acquistati {currentYear}</span>
+                  <span className="supplier-mobile-row-grow text-rright"><strong>{openExpensesCount}</strong> ordini da saldare</span>
                 </div>
                 <div className="expense-mobile-meta">
-                  <span className="supplier-mobile-row-grow">{openExpensesCount} ordini da saldare</span>
-                  <span className="badge badge-color">{annualOrdersCount} ordini {currentYear}</span>
+                  <span className="supplier-mobile-row"><strong className="badge color-badge tone-insurance">{euro(annualPurchasedAmount)}</strong> acquistati {currentYear}</span>
+                  <div className="supplier-mobile-row-right">
+                    <span className="badge badge-color">{annualOrdersCount} ordini {currentYear}</span>
+                  </div>
                   {/*<span>{euro(annualPurchasedAmount)} acquistati {currentYear}</span>*/}
                   {/*{supplier.email ? <span>{supplier.email}</span> : null}*/}
                   {/*{supplier.pec ? <span>PEC</span> : null}*/}

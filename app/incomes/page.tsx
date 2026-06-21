@@ -722,7 +722,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
       <form id="incomeBulkForm" action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
         <label className="bulk-select-all-inline">
           <input type="checkbox" className="bulk-select-all" data-bulk-target="incomeBulkForm" aria-label="Seleziona tutti gli incassi visibili" />
-          <span>Seleziona tutti</span>
+          {/*<span>Seleziona tutti</span>*/}
         </label>
         <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="incomeBulkForm">
           <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label">Actions</span></summary>
@@ -739,7 +739,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         </details>
         <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="incomeBulkForm" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id" data-return-to={returnTo}>
           <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
-          <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">＋</span><span className="bulk-label">Copia</span></a>
+          <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="bulk-label">Copia</span></a>
           <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
         </div>
         <div className="bulk-inner-container">

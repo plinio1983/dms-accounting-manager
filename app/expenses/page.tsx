@@ -990,7 +990,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             <span className="btn-icon">✎</span><span className="bulk-label">Modifica</span>
           </a>
           <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true">
-            <span className="btn-icon">＋</span><span className="bulk-label">Copia</span>
+            <span className="btn-icon">⧉</span><span className="bulk-label">Copia</span>
           </a>
           <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete"
                   data-bulk-delete data-confirm-label="Elimina" disabled>

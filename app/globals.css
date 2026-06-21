@@ -28,6 +28,10 @@ a {
     display: flex;
 }
 
+.text-rright {
+    text-align: right;
+}
+
 .shell {
     max-width: 1280px;
     margin: 0 auto;
@@ -875,18 +879,20 @@ button {
 }
 
 .recurring-bulk-actions-bar .bulk-inner-container {
-    flex-grow: 0;
+    flex-grow: 1;
+    text-align: right;
 }
 
 .recurring-expenses-card .recurring-bulk-actions-bar {
-    margin: 0 !important;
+    margin: 0 0 12px 0!important;
     padding: 0 !important;
+
 }
 
 .recurring-bulk-actions-bar .bulk-direct-actions {
     display: flex !important;
     align-items: center !important;
-    justify-content: flex-end !important;
+    justify-content: flex-end;
     margin-right: 12px;
 }
 
@@ -933,8 +939,8 @@ button {
 
     .recurring-bulk-actions-bar .bulk-direct-actions {
         flex-grow: 1 !important;
+        justify-content: flex-start;
     }
-
 }
 
 .recurring-expense-row-with-select {
@@ -1291,6 +1297,17 @@ body.drawer-open {
 
 .recurring-mobile-top {
 
+}
+
+.recurring-mobile-right {
+    flex-grow: 1;
+    text-align: right;
+    justify-content: flex-end;
+    font-size: 13px;
+}
+
+.recurring-mobile-middle {
+    display: flex;
 }
 
 .recurring-mobile-main-title strong,
@@ -6115,6 +6132,10 @@ button {
     margin: 0;
 }
 
+.recurring-bulk-actions-bar .bulk-action-trigger {
+    height: 38px;
+}
+
 .bulk-action-trigger {
     cursor: pointer;
     user-select: none;
@@ -6124,7 +6145,7 @@ button {
     width: auto;
     max-width: max-content;
     padding: 6px 10px;
-
+    border: 1px solid #b7bccc;
     border-radius: 999px;
     background: #fff;
     color: var(--text);
@@ -6353,15 +6374,11 @@ select:disabled {
     align-items: center;
     justify-content: center;
     gap: 7px;
-    /*gap: 5px;*/
-    /*min-height: 30px;*/
-    /*padding: 6px 9px;*/
-    width: 38px;
     height: 38px;
-    min-width: 38px;
     min-height: 38px;
     padding: 0 13px;
-    border: 1px solid var(--line);
+    border: 1px solid #b7bccc;
+    /*border: 1px solid var(--line);*/
     border-radius: 999px;
     background: #fff;
     color: var(--accent);
@@ -6373,7 +6390,7 @@ select:disabled {
 }
 
 button.bulk-direct-link {
-    border: 1px solid var(--line);
+    /*border: 1px solid var(--line);*/
     background: #fff;
     width: auto;
     max-width: max-content;
@@ -7069,7 +7086,15 @@ button.bulk-direct-link {
     gap: 8px;
     flex: 0 0 auto;
     min-height: 38px;
-    padding: 0 0 3px 7px;
+    padding: 0 0 7px 16px;
+}
+
+@media (max-width: 760px) {
+
+    .bulk-select-all-inline {
+        align-items: flex-end;
+        padding: 0 0 3px 7px;
+    }
 }
 
 .bulk-select-all-inline input {
@@ -7118,13 +7143,9 @@ button.bulk-direct-link {
         display: none;
     }
 
-    .bulk-direct-link,
-    .bulk-action-trigger {
-        /*min-width: 38px;*/
-        /*width: 38px;*/
-        /*height: 38px;*/
-        /*padding-left: 0;*/
-        /*padding-right: 0;*/
+    .bulk-direct-link {
+        width: 38px;
+        min-width: 38px;
     }
 
     .payment-row .payment-row-actions {
@@ -7485,7 +7506,7 @@ button.bulk-direct-danger {
     justify-content: center;
     gap: 7px;
     padding: 0;
-    border: 1px solid var(--line);
+    border: 1px solid #b7bccc;
     border-radius: 999px;
     background: #fff;
     color: var(--accent);
@@ -8401,13 +8422,18 @@ button.bulk-direct-danger {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-top: 4px;
+    padding: 4px 0;
 }
 
 .expense-mobile-select input {
     width: 22px;
     height: 22px;
     min-height: 22px;
+    margin: 0;
+}
+
+.floating-bulk-actions-inner .expense-mobile-select {
+    padding: 5px 0 2px 14px;
 }
 
 .expense-mobile-link {
@@ -8484,6 +8510,13 @@ button.bulk-direct-danger {
     color: var(--muted);
     font-size: 13px;
     font-weight: 700;
+}
+
+.supplier-mobile-row-right {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    justify-content: flex-end;
 }
 
 .expense-mobile-meta span {
