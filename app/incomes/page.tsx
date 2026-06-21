@@ -479,6 +479,24 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
   const invoiceStatusFilter = inputDefault(filters, 'invoiceStatus');
   const invoiceStatusModeFilter = inputDefault(filters, 'invoiceStatusMode');
   const vatRateFilter = inputDefault(filters, 'vatRate');
+  const totalsFilterHref = (extraFilters: Record<string, string>) => {
+    const query = new URLSearchParams();
+    if (useFiscalPeriodFilter) {
+      if (billingPeriodFromFilter) query.set('billingPeriodFrom', billingPeriodFromFilter);
+      if (billingPeriodToFilter) query.set('billingPeriodTo', billingPeriodToFilter);
+    } else {
+      if (creditDateFromDefault) query.set('creditDateFrom', creditDateFromDefault);
+      if (creditDateToDefault) query.set('creditDateTo', creditDateToDefault);
+    }
+    Object.entries(extraFilters).forEach(([key, value]) => {
+      if (value) query.set(key, value);
+    });
+    const queryString = query.toString();
+    return `/incomes${queryString ? `?${queryString}` : ''}`;
+  };
+  const fiscalTotalsHref = totalsFilterHref({ fiscal: 'yes' });
+  const nonFiscalTotalsHref = totalsFilterHref({ fiscal: 'no' });
+  const invoicesNotSentHref = totalsFilterHref({ invoiceStatus: 'NON_INVIATA' });
 
   const periodIncomes = incomes.filter(income => {
     if (!matchesIsoDate(income.creditDate, creditDateFromFilter, creditDateToFilter)) return false;
@@ -591,11 +609,11 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           <table className="dashboard-statement-table list-totals-table" aria-label="Totali incassi filtrati">
             <tbody>
               <tr><td>Entrate totali</td><td><strong className={badgeClass()}>{euro(totals.total)}</strong></td></tr>
-              <tr><td>Incasso fiscale</td><td><strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong></td></tr>
-              <tr><td>Incasso non fiscale</td><td><strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong></td></tr>
+              <tr><td>Incasso fiscale</td><td><Link href={fiscalTotalsHref}><strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong></Link></td></tr>
+              <tr><td>Incasso non fiscale</td><td><Link href={nonFiscalTotalsHref}><strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong></Link></td></tr>
               <tr><td>Debito IVA prodotto</td><td><strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong></td></tr>
               {/*<tr><td>Debito IVA residuo</td><td><strong>{residualVatDebt === null ? <span className="total-placeholder">Seleziona periodo fiscale</span> : <span className={moneyTone(residualVatDebt)}>{euro(residualVatDebt)}</span>}</strong></td></tr>*/}
-              <tr><td>Fatture non inviate</td><td><strong>{totals.invoicesNotSent}</strong></td></tr>
+              <tr><td>Fatture non inviate</td><td><Link href={invoicesNotSentHref}><strong>{totals.invoicesNotSent}</strong></Link></td></tr>
             </tbody>
           </table>
         </div>
