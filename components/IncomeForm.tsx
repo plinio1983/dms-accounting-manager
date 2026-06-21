@@ -130,16 +130,6 @@ export default function IncomeForm({
             </select>
           </label>
 
-          <label>
-            Periodo Fatturazione
-            <input type="month" name="billingPeriod" required defaultValue={toMonthInput(initialIncome)} />
-          </label>
-
-          <label>
-            Data accredito
-            <input type="date" name="creditDate" required defaultValue={toDateInput(initialIncome?.creditDate) || today} />
-          </label>
-
           <label className="full">
             Descrizione
             <input name="description" defaultValue={initialIncome?.description ?? ""} placeholder="Descrizione dell'incasso" />
@@ -150,7 +140,6 @@ export default function IncomeForm({
               Importo IVA inclusa
               <div className="income-amount-row">
                 <MoneyInput name="amount" required value={amount} onChange={(event) => setAmount(event.currentTarget.value)} />
-                <span className="net-amount-inline"><span>IVA esclusa</span><strong>{formatEuro(netAmount)}</strong></span>
               </div>
             </label>
 
@@ -161,6 +150,12 @@ export default function IncomeForm({
               </select>
               {!isFiscal && <input type="hidden" name="vatRate" value="0" />}
             </label>
+
+            <label>
+              <span>IVA esclusa</span>
+              <span className="net-amount-inline"><strong>{formatEuro(netAmount)}</strong></span>
+            </label>
+
           </div>
         </div>
       </details>
@@ -171,6 +166,16 @@ export default function IncomeForm({
           <small>Metodo, accredito e conto di destinazione</small>
         </summary>
         <div className="form-section-grid income-form-section-grid">
+          <label>
+            Data accredito
+            <input type="date" name="creditDate" required defaultValue={toDateInput(initialIncome?.creditDate) || today} />
+          </label>
+
+          <label>
+            Stato Accredito
+            <br/> TODO...
+          </label>
+
           <label>
             Metodo di pagamento
             <select name="paymentMethod" value={paymentMethod} onChange={(event) => setPaymentMethod(event.currentTarget.value)} required>
@@ -221,6 +226,11 @@ export default function IncomeForm({
               <option value="EMESSA">Emessa</option>
             </select>
             {!isFiscal && <input type="hidden" name="invoiceStatus" value="" />}
+          </label>
+
+          <label>
+            Periodo Contabile
+            <input type="month" name="billingPeriod" required defaultValue={toMonthInput(initialIncome)} />
           </label>
 
         </div>

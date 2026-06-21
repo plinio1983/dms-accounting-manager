@@ -1,5 +1,4 @@
 import './globals.css';
-import './mobile.css';
 import ShellChrome from '@/components/ShellChrome';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
 

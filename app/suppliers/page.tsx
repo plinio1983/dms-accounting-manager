@@ -220,7 +220,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
           <summary className="bulk-action-trigger">
             <span className="btn-icon">⚙</span>
             <span className="bulk-label">
-              <span class="floating-bulk-label">Bulk </span>Actions
+              <span className="floating-bulk-label">Bulk </span>Actions
             </span>
           </summary>
           <div className="bulk-action-menu-panel">

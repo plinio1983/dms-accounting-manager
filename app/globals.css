@@ -55,6 +55,12 @@ a {
 .nav-links {
     display: flex;
     gap: 10px;
+    flex-wrap: nowrap;
+    min-width: 0;
+    max-width: 100%;
+    flex: 0 1 auto;
+    justify-content: flex-end;
+    align-items: center;
 }
 
 .nav-actions {
@@ -685,7 +691,6 @@ button {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .income-form .income-amount-field,
     .income-form .income-amount-row {
         grid-column: 1 / -1;
     }
@@ -695,6 +700,19 @@ button {
     .income-form .income-form-section-grid,
     .income-form .income-amount-vat-row {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .recurring-expense-form .amount-vat-row {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) 112px;
+        gap: 10px;
+    }
+
+    .income-form  .amount-vat-row,
+    .expense-form .amount-vat-row {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) 112px;
+        gap: 10px;
     }
 
     .income-form .income-form-section-grid > *,
@@ -2130,10 +2148,6 @@ body.drawer-open {
 
 .money-input input {
     padding-left: 30px;
-}
-
-.income-form .net-amount-inline {
-    width: 40%;
 }
 
 .income-form .money-input {
@@ -4840,15 +4854,6 @@ button {
     flex: 1 1 320px;
 }
 
-.nav-links {
-    min-width: 0;
-    max-width: 100%;
-    flex: 0 1 auto;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    align-items: center;
-}
-
 .nav-links a {
     white-space: nowrap;
     flex: 0 0 auto;
@@ -6010,7 +6015,7 @@ button {
     position: absolute;
     right: 0;
     gap: 0.25rem;
-    background: var(--card-bg, #fff);
+    background: var(--bg, #fff);
     display: flex;
     flex-direction: column;
     text-align: left;
@@ -6474,7 +6479,6 @@ button.bulk-direct-link {
     }
 
     .bulk-direct-actions {
-        width: 100%;
         width: auto !important;
         flex: 0 0 auto !important;
     }
@@ -6721,10 +6725,8 @@ button.bulk-direct-link {
     }
 }
 
-/* v073 UI polish: payment status summary + consistent form buttons */
 .payment-status-note {
     width: 100%;
-    display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
     padding: 12px;
@@ -6732,7 +6734,7 @@ button.bulk-direct-link {
     border-radius: 14px;
     background: #fff;
     text-align: left;
-    display: none !important;
+    /*display: none !important;*/
 }
 
 .payment-status-note > div {
@@ -8032,6 +8034,18 @@ button.bulk-direct-danger {
     }
 }
 
+@media (min-width: 400px) {
+    .income-add-btn {
+        max-width: max-content !important;
+    }
+}
+
+@media (max-width: 700px) {
+    .income-add-btn {
+        max-width: max-content !important;
+    }
+}
+
 /* v089: recurring expenses corrected flow */
 .expense-type-toggle {
     display: flex;
@@ -8248,8 +8262,6 @@ button.bulk-direct-danger {
     grid-column: 1 / -1;
 }
 
-\n
-    /* v091: standard expense form recurring toggle parity */
 .expense-form .expense-type-switch-in-form {
     display: flex;
     align-items: center;
@@ -8501,7 +8513,7 @@ button.bulk-direct-danger {
     }
 
     .expenses-list-card .dashboard-statement-panel {
-        padding: 14px 0px;
+        padding: 14px 0;
     }
 
     .expense-mobile-list {
@@ -8734,7 +8746,6 @@ button.bulk-direct-danger {
     /*border: 1px solid var(--line);*/
     border: 2px solid #bfdbfe;
     border-radius: 16px;
-    background: rgba(255, 255, 255, .94);
     background: rgba(255, 255, 255, .94);
     background: linear-gradient(135deg, rgba(239, 246, 255, .98), rgba(255, 255, 255, .98));
     backdrop-filter: blur(10px);
@@ -9207,8 +9218,9 @@ button.bulk-direct-danger {
 
 /* Expense form amount/VAT row and payment edit actions */
 .expense-form .amount-vat-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 140px;
+    /*display: grid;*/
+    /*grid-template-columns: minmax(0, 1fr) 140px;*/
+    display: flex;
     gap: 14px;
     align-items: end;
 }
@@ -9227,11 +9239,6 @@ button.bulk-direct-danger {
 }
 
 @media (max-width: 760px) {
-    .expense-form .amount-vat-row,
-    .recurring-expense-form .amount-vat-row {
-        grid-template-columns: minmax(0, 1fr) 112px;
-        gap: 10px;
-    }
 
     .expense-form .payment-edit-actions .remove-row,
     .expense-form .payment-edit-actions .secondary-button {
@@ -9281,7 +9288,6 @@ button.bulk-direct-danger {
     }
 }
 
-/* Fixed action bar for expense forms opened in modal */
 .app-form-modal .expense-form {
     padding-bottom: 96px;
 }
@@ -9327,7 +9333,7 @@ button.bulk-direct-danger {
     .edit-expense-client-modal .expense-form .form-sticky-actions {
         bottom: calc(10px + env(safe-area-inset-bottom)) !important;
         width: calc(100vw - 20px) !important;
-        display: grid !important;
+        /*display: grid !important;*/
         grid-template-columns: 1fr 1fr;
         padding: 10px !important;
         border-radius: 18px;

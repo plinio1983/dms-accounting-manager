@@ -488,7 +488,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
   }, new Map<string, { name: string; code: string; total: number }>()).values()).sort((a, b) => b.total - a.total);
 
   const incomesByFiscalStatus = Array.from(filteredIncomes.reduce((map, income) => {
-    const name = income.isFiscal ? 'Fiscale Si' : 'Fiscale No';
+    const name = income.isFiscal ? 'Dichiarato' : 'Non dichiarato';
     const code = income.isFiscal ? 'FISC' : 'NFISC';
     const key = `${code}-${name}`;
     const current = map.get(key) ?? { name, code, total: 0 };
@@ -745,7 +745,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           <summary className="bulk-action-trigger">
             <span className="btn-icon">⚙</span>
             <span className="bulk-label">
-              <span class="floating-bulk-label">Bulk </span>Actions</span>
+              <span className="floating-bulk-label">Bulk </span>Actions</span>
           </summary>
           <div className="bulk-action-menu-panel">
             <button type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
@@ -888,7 +888,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
       </tbody></table></div>
     </div>
     <div className="card expenses-list-card">
-      <div className="charts-grid"><IncomeBreakdownChart title="Grafico entrate per canale di vendita" description="Distribuzione degli incassi per canale di vendita sui risultati filtrati." data={incomesBySalesChannel} /><IncomeBreakdownChart title="Grafico entrate fiscale Si/No" description="Distribuzione degli incassi fiscali e non fiscali sui risultati filtrati." data={incomesByFiscalStatus} /></div>
+      <div className="charts-grid"><IncomeBreakdownChart title="Grafico entrate per canale di vendita" description="Distribuzione degli incassi per canale di vendita sui risultati filtrati." data={incomesBySalesChannel} /><IncomeBreakdownChart title="Grafico entrate dichiarate" description="Distribuzione degli incassi fiscali e non fiscali sui risultati filtrati." data={incomesByFiscalStatus} /></div>
     </div>
   </div>;
 }

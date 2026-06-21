@@ -153,7 +153,22 @@ function makeFloatingBar(sourceBar: HTMLElement) {
     const trigger = document.createElement("button");
     trigger.type = "button";
     trigger.className = "floating-bulk-button floating-bulk-menu-trigger";
-    trigger.innerHTML = `<span class="btn-icon">⚙</span><span><span class="floating-bulk-label">Bulk </span>Actions</span><span class="floating-bulk-caret">▾</span>`;
+    // trigger.innerHTML = `<span class="btn-icon">⚙</span><span><span class="floating-bulk-label">Bulk </span>Actions</span><span class="floating-bulk-caret">▾</span>`;
+
+    const caret = document.createElement("span");
+    caret.className = "floating-bulk-caret";
+    const icon = document.createElement("span");
+    icon.className = "btn-icon";
+    const label = document.createElement("span");
+    label.textContent = "Actions";
+    const hLabel = document.createElement("span");
+    hLabel.textContent = "Bulk ";
+    hLabel.className = "floating-bulk-label";
+
+    label.appendChild(hLabel);
+    trigger.appendChild(icon);
+    trigger.appendChild(label);
+    trigger.appendChild(caret);
 
     const panel = document.createElement("div");
     panel.className = "floating-bulk-menu-panel";
