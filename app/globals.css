@@ -611,6 +611,7 @@ button {
 .income-form-section-credit {
     display: grid;
     gap: 8px;
+    justify-content: flex-end;
 }
 
 .income-form .income-form-section-stack {
