@@ -97,9 +97,17 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
 
     <div className="expense-detail-shell">
       <article className="expense-detail-document">
+        <div className="expense-detail-action-row">
+          <div className="left-side">
+            <Link className="expense-detail-back" href={returnTo}>Indietro</Link>
+          </div>
+          <div className="right-side">
+            <button className="table-action secondary" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉ Copia</button>
+            <Link className="table-action" href="#" data-expense-detail-edit-id={expense.id}>✎ Modifica</Link>
+          </div>
+        </div>
         <section className="expense-detail-hero">
           <div>
-            <Link className="expense-detail-back" href={returnTo}>Indietro alla lista</Link>
             <div className="expense-detail-title-block">
               <p className="expense-detail-kicker">Spesa #{expense.id}</p>
               <h1>{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}`}>{expense.merchant}</Link> : expense.merchant}</h1>
@@ -125,10 +133,10 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           </aside>
         </section>
 
-        <div className="expense-detail-action-row">
-          <button className="table-action secondary" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉ Copia</button>
-          <Link className="table-action" href="#" data-expense-detail-edit-id={expense.id}>✎ Modifica</Link>
-        </div>
+        {/*<div className="expense-detail-action-row">*/}
+        {/*  <button className="table-action secondary" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉ Copia</button>*/}
+        {/*  <Link className="table-action" href="#" data-expense-detail-edit-id={expense.id}>✎ Modifica</Link>*/}
+        {/*</div>*/}
 
         <section className="expense-detail-status-strip">
           <div>

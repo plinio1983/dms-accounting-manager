@@ -2470,15 +2470,14 @@ body.drawer-open {
     border-left: 4px solid #dc2626;
 }
 
-/* v074: dettaglio spesa con gerarchia reale e pagamenti responsive */
 .expense-detail-hero {
     display: grid;
     grid-template-columns: minmax(0, 1.7fr) minmax(260px, .75fr);
     gap: 18px;
     align-items: stretch;
     padding: 22px;
-    background: radial-gradient(circle at top right, rgba(38, 86, 217, .10), transparent 34%),
-    linear-gradient(135deg, #ffffff 0%, #f7f9ff 100%);
+    /*background: radial-gradient(circle at top right, rgba(38, 86, 217, .10), transparent 34%),*/
+    /*linear-gradient(135deg, #ffffff 0%, #f7f9ff 100%);*/
 }
 
 .expense-detail-hero-main {
@@ -2872,13 +2871,8 @@ body.drawer-open {
     .expense-filters, .totals-row {
         grid-template-columns: 1fr;
     }
-
-    .list-heading {
-        /*flex-direction: column;*/
-    }
 }
 
-/* v9: lista spese più compatta */
 .compact-filters {
     grid-template-columns: repeat(6, minmax(110px, 1fr));
     gap: 12px;
@@ -2982,7 +2976,6 @@ body.drawer-open {
     }
 }
 
-/* v11: azioni, fornitori, autocomplete e compattezza tabella */
 table th, table td {
     vertical-align: middle;
 }
@@ -3172,7 +3165,6 @@ table th, table td {
     }
 }
 
-/* v12: suggerimenti, conferme, fornitori e azioni coerenti */
 .inline-warning {
     font-weight: 500;
 }
@@ -3241,16 +3233,6 @@ table th, table td {
     white-space: nowrap
 }
 
-/*.suppliers-table td:nth-child(8) {*/
-/*    text-align: right;*/
-/*    white-space: nowrap;*/
-/*}*/
-
-/*.suppliers-table td:nth-last-child(-n+2), .suppliers-table th:nth-last-child(-n+2) {*/
-/*    width: 42px;*/
-/*    text-align: center;*/
-/*}*/
-
 .compact-expenses-table form, .suppliers-table form {
     margin: 0;
 }
@@ -3291,20 +3273,6 @@ table th, table td {
     vertical-align: middle;
 }
 
-/*.compact-incomes-table th:nth-child(1), .compact-incomes-table td:nth-child(1) {*/
-/*    width: 90px;*/
-/*}*/
-
-/*.compact-incomes-table th:nth-child(4), .compact-incomes-table td:nth-child(4) {*/
-/*    width: 96px;*/
-/*    text-align: right;*/
-/*}*/
-
-/*.compact-incomes-table th:nth-last-child(-n+3), .compact-incomes-table td:nth-last-child(-n+3) {*/
-/*    width: 38px;*/
-/*    text-align: center;*/
-/*}*/
-
 @media (max-width: 900px) {
     .income-form {
         grid-template-columns: 1fr 1fr;
@@ -3315,7 +3283,6 @@ table th, table td {
     }
 }
 
-/* v14: toolbar incassi, switch fiscale, icone e dettaglio fornitore */
 .toolbar-card-wrap {
     flex-wrap: wrap;
 }
@@ -3427,8 +3394,6 @@ table th, table td {
     }
 }
 
-
-/* v16: dashboard fiscale e correzioni incassi */
 .switch-with-label {
     display: flex;
     align-items: center;
@@ -3536,7 +3501,6 @@ table th, table td {
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     gap: 10px;
-    /*padding: 10px 0 4px;*/
     border: 1px solid var(--line);
     border-radius: 12px;
     padding: 12px;
@@ -3567,7 +3531,6 @@ table th, table td {
     gap: 6px;
     align-items: end;
     padding: 4px 4px 0;
-    /*border-bottom: 1px solid var(--line);*/
 }
 
 .expense-column {
@@ -3591,7 +3554,6 @@ table th, table td {
 
 .expense-column-bar {
     position: relative;
-    /*width: clamp(12px, 55%, 22px);*/
     width: 100%;
     min-height: 6px;
     overflow: hidden;
@@ -3622,7 +3584,6 @@ table th, table td {
     color: #273142;
     font-size: 11px;
     line-height: 1;
-    /*text-overflow: ellipsis;*/
     white-space: nowrap;
 }
 
@@ -3684,8 +3645,6 @@ table th, table td {
     }
 }
 
-
-/* v17: dashboard selezionabile, evidenza negativi e report compatto */
 .money-negative {
     color: #b42318 !important;
 }
@@ -3780,8 +3739,6 @@ table th, table td {
     margin-bottom: 14px;
 }
 
-
-/* v19: selettori anno dashboard e report mensile più compatto */
 .selector-label {
     color: var(--muted);
     font-size: 12px;
@@ -3862,7 +3819,6 @@ table th, table td {
     }
 }
 
-/* v20: dashboard selector alignment, supplier create in toolbar, fiscal period quick filter */
 .period-selector {
     flex-wrap: nowrap;
     white-space: nowrap;
@@ -3904,14 +3860,8 @@ table th, table td {
     gap: 18px;
 }
 
-.dashboard-statement-body {
-    /*margin: 0 12px;*/
-}
-
-
 .dashboard-statement-panel {
     padding: 14px 16px;
-    /*box-shadow: none;*/
 }
 
 .dashboard-statement-panel.is-loading {
@@ -4150,7 +4100,6 @@ table th, table td {
     }
 }
 
-/* v22 sortable tables and new category tone */
 .sortable-th {
     cursor: pointer;
     user-select: none;
@@ -4180,7 +4129,6 @@ table th, table td {
     border-color: #c7d2fe;
 }
 
-/* v24: filtro fornitore, persistenza liste e ottimizzazione layout */
 .filter-supplier-picker {
     display: block;
 }
@@ -4200,11 +4148,6 @@ table th, table td {
 .expense-filters, .compact-filters {
     align-items: end;
 }
-
-/*.expenses-list-card, .dashboard-report-card, .card {*/
-/*    max-width: 100%;*/
-/*    min-width: 0;*/
-/*}*/
 
 .table-scroll {
     max-width: 100%;
@@ -4242,7 +4185,6 @@ table {
 }
 
 .card-heading-row .card-title-wrap {
-    /*text-align: right;*/
     flex-grow: 1;
 }
 
@@ -4273,8 +4215,6 @@ table {
     }
 }
 
-
-/* v25: persistenza post-salvataggio, calcoli utili e overflow mobile */
 html, body {
     max-width: 100%;
     overflow-x: hidden;
@@ -4321,7 +4261,6 @@ html, body {
     }
 }
 
-/* v26: dashboard report chart and fiscal summary emphasis */
 .summary-metrics-grid-priority {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -7758,8 +7697,10 @@ button.bulk-direct-danger {
     overflow: hidden;
     border: 1px solid rgba(226, 232, 240, .95);
     border-radius: 28px;
-    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    /*background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);*/
     box-shadow: 0 24px 70px rgba(15, 23, 42, .08);
+    background: radial-gradient(circle at 12% 0%, rgba(63, 111, 255, .11), transparent 34%),
+    linear-gradient(135deg, #f8fbff 0%, #ffffff 62%);
 }
 
 .expense-detail-hero {
@@ -7768,8 +7709,6 @@ button.bulk-direct-danger {
     gap: 16px;
     align-items: stretch;
     padding: 28px;
-    background: radial-gradient(circle at 12% 0%, rgba(63, 111, 255, .11), transparent 34%),
-    linear-gradient(135deg, #f8fbff 0%, #ffffff 62%);
     border-bottom: 1px solid rgba(226, 232, 240, .9);
 }
 
@@ -7777,7 +7716,6 @@ button.bulk-direct-danger {
     display: inline-flex;
     align-items: center;
     width: max-content;
-    margin-bottom: 16px;
     color: var(--accent);
     font-size: 13px;
     font-weight: 850;
@@ -7827,7 +7765,7 @@ button.bulk-direct-danger {
     align-content: baseline;
     gap: 12px;
     padding: 30px 12px 12px;
-    background: rgba(255, 255, 255, .88);
+    /*background: rgba(255, 255, 255, .88);*/
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8);
 }
 
@@ -7854,11 +7792,24 @@ button.bulk-direct-danger {
 
 .expense-detail-action-row {
     display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+    /*justify-content: flex-end;*/
+    align-items: center;
+    gap: 20px;
     padding: 16px 28px;
-    border-bottom: 1px solid rgba(226, 232, 240, .9);
-    background: #fff;
+    /*border-bottom: 1px solid rgba(226, 232, 240, .9);*/
+    /*background: #fff;*/
+    /*background: transparent;*/
+}
+
+.expense-detail-action-row .right-side {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.expense-detail-action-row .right-side a,
+.expense-detail-action-row .right-side button {
+    padding: 8px 12px;
 }
 
 .expense-detail-status-strip {
@@ -8147,10 +8098,23 @@ button.bulk-direct-danger {
 
     .expense-detail-action-row {
         padding: 12px 18px;
+        gap: 10px;
     }
 
+    .expense-detail-action-row button,
     .expense-detail-action-row a {
+        flex-grow: 1;
+        max-width: 100%;
+    }
+
+    .expense-detail-action-row .left-side {
         flex: 1 1 0;
+    }
+
+    .expense-detail-action-row .right-side {
+        display: flex;
+        gap: 8px;
+        flex-grow: 1;
     }
 
     .expense-detail-info-grid,
@@ -9515,7 +9479,6 @@ button.bulk-direct-danger {
     }
 }
 
-/* Detail pages without global site header */
 body:has(.detail-page-no-site-header) .nav {
     display: none !important;
 }
@@ -9524,117 +9487,6 @@ body:has(.detail-page-no-site-header) .shell {
     padding-top: 0;
 }
 
-/*.edit-expense-dedicated-page .expense-form {*/
-/*    padding-bottom: 0;*/
-/*}*/
-
-/*.edit-expense-dedicated-page .expense-form .form-actions-row,*/
-/*.edit-expense-dedicated-page .expense-form .form-sticky-actions {*/
-/*    position: fixed !important;*/
-/*    left: 50% !important;*/
-/*    right: auto !important;*/
-/*    bottom: 16px !important;*/
-/*    transform: translateX(-50%) !important;*/
-/*    z-index: 10000 !important;*/
-/*    width: min(1120px, calc(100vw - 32px)) !important;*/
-/*    margin: 0 !important;*/
-/*    padding: 12px 14px calc(12px + env(safe-area-inset-bottom)) !important;*/
-/*    display: flex !important;*/
-/*    justify-content: flex-end !important;*/
-/*    gap: 10px !important;*/
-/*    border: 1px solid var(--line);*/
-/*    border-radius: 18px;*/
-/*    background: rgba(255, 255, 255, .98);*/
-/*    box-shadow: 0 -18px 44px rgba(15, 23, 42, .22);*/
-/*    backdrop-filter: blur(12px);*/
-/*}*/
-
-/*.edit-expense-dedicated-page .expense-form .form-actions-row .button-standard,*/
-/*.edit-expense-dedicated-page .expense-form .form-sticky-actions .button-standard {*/
-/*    min-width: 150px;*/
-/*}*/
-
-/*@media (max-width: 760px) {*/
-/*    .edit-expense-dedicated-page .expense-form {*/
-/*        padding-bottom: calc(0 + env(safe-area-inset-bottom));*/
-/*    }*/
-
-/*    .edit-expense-dedicated-page .expense-form .form-actions-row,*/
-/*    .edit-expense-dedicated-page .expense-form .form-sticky-actions {*/
-/*        bottom: calc(10px + env(safe-area-inset-bottom)) !important;*/
-/*        width: calc(100vw - 20px) !important;*/
-/*        display: grid !important;*/
-/*        grid-template-columns: 1fr 1fr;*/
-/*        padding: 10px !important;*/
-/*    }*/
-
-/*    .edit-expense-dedicated-page .expense-form .form-actions-row .button-standard,*/
-/*    .edit-expense-dedicated-page .expense-form .form-sticky-actions .button-standard {*/
-/*        min-width: 0;*/
-/*        width: 100%;*/
-/*        justify-content: center;*/
-/*    }*/
-/*}*/
-
-/*.edit-expense-dedicated-page {*/
-/*    max-width: 1120px;*/
-/*    margin: 0 auto;*/
-/*    padding-bottom: 0;*/
-/*}*/
-
-/*.edit-expense-dedicated-page .expense-form .form-actions-row,*/
-/*.edit-expense-dedicated-page .expense-form .form-sticky-actions {*/
-/*    position: fixed !important;*/
-/*    left: 50% !important;*/
-/*    right: auto !important;*/
-/*    bottom: 16px !important;*/
-/*    transform: translateX(-50%) !important;*/
-/*    z-index: 10000 !important;*/
-/*    width: min(1120px, calc(100vw - 32px)) !important;*/
-/*    margin: 0 !important;*/
-/*    padding: 12px 14px calc(12px + env(safe-area-inset-bottom)) !important;*/
-/*    display: flex !important;*/
-/*    justify-content: flex-end !important;*/
-/*    gap: 10px !important;*/
-/*    border: 1px solid var(--line);*/
-/*    border-radius: 18px;*/
-/*    background: rgba(255, 255, 255, .98);*/
-/*    box-shadow: 0 -18px 44px rgba(15, 23, 42, .22);*/
-/*    backdrop-filter: blur(12px);*/
-/*}*/
-
-/*.edit-expense-dedicated-page .expense-form .form-actions-row .button-standard,*/
-/*.edit-expense-dedicated-page .expense-form .form-sticky-actions .button-standard {*/
-/*    min-width: 150px;*/
-/*}*/
-
-/*@media (max-width: 760px) {*/
-/*    .edit-expense-dedicated-page {*/
-/*        padding-bottom: calc(0 + env(safe-area-inset-bottom));*/
-/*    }*/
-
-/*    .edit-expense-dedicated-page .expense-form {*/
-/*        padding-bottom: calc(20px + env(safe-area-inset-bottom));*/
-/*    }*/
-
-/*    .edit-expense-dedicated-page .expense-form .form-actions-row,*/
-/*    .edit-expense-dedicated-page .expense-form .form-sticky-actions {*/
-/*        bottom: calc(10px + env(safe-area-inset-bottom)) !important;*/
-/*        width: calc(100vw - 20px) !important;*/
-/*        display: grid !important;*/
-/*        grid-template-columns: 1fr 1fr;*/
-/*        padding: 10px !important;*/
-/*    }*/
-
-/*    .edit-expense-dedicated-page .expense-form .form-actions-row .button-standard,*/
-/*    .edit-expense-dedicated-page .expense-form .form-sticky-actions .button-standard {*/
-/*        min-width: 0;*/
-/*        width: 100%;*/
-/*        justify-content: center;*/
-/*    }*/
-/*}*/
-
-/* Pages without global site header */
 body:has(.page-no-site-header) .nav,
 body:has(.detail-page-no-site-header) .nav {
     display: none !important;
