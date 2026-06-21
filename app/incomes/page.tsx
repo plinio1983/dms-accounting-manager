@@ -394,6 +394,40 @@ function IncomeBreakdownChart({ title, description, data }: { title: string; des
   </div>;
 }
 
+function IncomeVerticalBarChart({ title, description, data }: { title: string; description: string; data: Array<{ name: string; code: string; total: number }> }) {
+  const max = Math.max(...data.map(item => item.total), 0);
+  const total = data.reduce((sum, item) => sum + item.total, 0);
+
+  return <div className="income-sales-channel-chart" aria-label={title}>
+    <div className="card-heading-row">
+      <div>
+        <h2>{title}</h2>
+        <p className="muted">{description}</p>
+      </div>
+      <span className="badge">Totale {euro(total)}</span>
+    </div>
+    {data.length ? <div className="income-vertical-chart" role="list">
+      {data.map(item => {
+        const percentage = total ? (item.total / total) * 100 : 0;
+        const height = max ? Math.max((item.total / max) * 100, 6) : 0;
+        return <div className="income-vertical-chart-item" key={`${item.code}-${item.name}`} role="listitem">
+          <div className="income-vertical-chart-value">
+            <strong className={moneyTone(item.total)}>{euro(item.total)}</strong>
+            <small>{percentage.toFixed(1)}%</small>
+          </div>
+          <div className="income-vertical-chart-bar-wrap" aria-label={`${item.name}: ${euro(item.total)}`}>
+            <div className="income-vertical-chart-bar" style={{ height: `${height}%` }} />
+          </div>
+          <div className="income-vertical-chart-label" title={item.name}>
+            <strong>{item.code}</strong>
+            <span>{item.name}</span>
+          </div>
+        </div>;
+      })}
+    </div> : <p className="muted">Nessun incasso presente nei risultati filtrati.</p>}
+  </div>;
+}
+
 export default async function IncomesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await requireWorkspace('/incomes');
   const filters = (await searchParams) ?? {};
@@ -550,18 +584,22 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         billingPeriodYear={billingPeriodYearFilter}
         useFiscalPeriodFilter={useFiscalPeriodFilter}
       />
-      <p className="totals-period-note">{totalsPeriodLabel}</p>
-      <div className="dashboard-statement-panel list-totals-statement">
-        <table className="dashboard-statement-table list-totals-table" aria-label="Totali incassi filtrati">
-          <tbody>
-            <tr><td>Entrate totali</td><td><strong className={badgeClass()}>{euro(totals.total)}</strong></td></tr>
-            <tr><td>Incasso fiscale</td><td><strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong></td></tr>
-            <tr><td>Incasso non fiscale</td><td><strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong></td></tr>
-            <tr><td>Debito IVA prodotto</td><td><strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong></td></tr>
-            {/*<tr><td>Debito IVA residuo</td><td><strong>{residualVatDebt === null ? <span className="total-placeholder">Seleziona periodo fiscale</span> : <span className={moneyTone(residualVatDebt)}>{euro(residualVatDebt)}</span>}</strong></td></tr>*/}
-            <tr><td>Fatture non inviate</td><td><strong>{totals.invoicesNotSent}</strong></td></tr>
-          </tbody>
-        </table>
+      {/*<p className="totals-period-note">{totalsPeriodLabel}</p>*/}
+      <div className="income-summary-row">
+        <div className="dashboard-statement-panel list-totals-statement">
+          <h2>{totalsPeriodLabel}</h2>
+          <table className="dashboard-statement-table list-totals-table" aria-label="Totali incassi filtrati">
+            <tbody>
+              <tr><td>Entrate totali</td><td><strong className={badgeClass()}>{euro(totals.total)}</strong></td></tr>
+              <tr><td>Incasso fiscale</td><td><strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong></td></tr>
+              <tr><td>Incasso non fiscale</td><td><strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong></td></tr>
+              <tr><td>Debito IVA prodotto</td><td><strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong></td></tr>
+              {/*<tr><td>Debito IVA residuo</td><td><strong>{residualVatDebt === null ? <span className="total-placeholder">Seleziona periodo fiscale</span> : <span className={moneyTone(residualVatDebt)}>{euro(residualVatDebt)}</span>}</strong></td></tr>*/}
+              <tr><td>Fatture non inviate</td><td><strong>{totals.invoicesNotSent}</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <IncomeVerticalBarChart title="Entrate per canale di vendita" description="Distribuzione degli incassi sui risultati filtrati." data={incomesBySalesChannel} />
       </div>
 
       <div className="list-heading recurring-list-heading">
@@ -915,7 +953,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
       </tbody></table></div>
     </div>
     <div className="card expenses-list-card">
-      <div className="charts-grid"><IncomeBreakdownChart title="Grafico entrate per canale di vendita" description="Distribuzione degli incassi per canale di vendita sui risultati filtrati." data={incomesBySalesChannel} /><IncomeBreakdownChart title="Grafico entrate dichiarate" description="Distribuzione degli incassi fiscali e non fiscali sui risultati filtrati." data={incomesByFiscalStatus} /></div>
+      <div className="charts-grid"><IncomeBreakdownChart title="Grafico entrate dichiarate" description="Distribuzione degli incassi fiscali e non fiscali sui risultati filtrati." data={incomesByFiscalStatus} /></div>
     </div>
   </div>;
 }

@@ -3515,6 +3515,7 @@ table th, table td {
     margin: 12px 0 18px;
 }
 
+.income-summary-row .list-totals-statement h2,
 .expense-summary-row .list-totals-statement h2 {
     font-size: 16px;
     line-height: 1.12;
@@ -3584,7 +3585,8 @@ table th, table td {
 
 .expense-column-bar {
     position: relative;
-    width: clamp(12px, 55%, 22px);
+    /*width: clamp(12px, 55%, 22px);*/
+    width: 100%;
     min-height: 6px;
     overflow: hidden;
     border-radius: 5px 5px 2px 2px;
@@ -3594,7 +3596,8 @@ table th, table td {
 
 @media (max-width: 900px) {
     .expense-column-bar {
-        width: clamp(12px, 55%, 22px);
+        /*width: clamp(12px, 55%, 22px);*/
+        width: 100%;
     }
 }
 
@@ -3613,7 +3616,7 @@ table th, table td {
     color: #273142;
     font-size: 11px;
     line-height: 1;
-    text-overflow: ellipsis;
+    /*text-overflow: ellipsis;*/
     white-space: nowrap;
 }
 
@@ -5350,6 +5353,139 @@ button {
     margin-top: 18px;
 }
 
+.income-summary-row {
+    display: grid;
+    grid-template-columns: minmax(360px, .9fr) minmax(360px, 1.1fr);
+    gap: 14px;
+    align-items: stretch;
+    margin: 12px 0 18px;
+}
+
+.income-summary-row .list-totals-statement {
+    margin: 0;
+}
+
+.income-sales-channel-chart {
+    min-width: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+    background: #fff;
+}
+
+.income-sales-channel-chart .card-heading-row {
+    justify-content: space-between;
+}
+
+.income-sales-channel-chart h2 {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.15;
+}
+
+.income-sales-channel-chart .muted {
+    margin: 4px 0 0;
+    font-size: 12px;
+    line-height: 1.25;
+}
+
+.income-vertical-chart {
+    min-height: 210px;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(74px, 1fr);
+    gap: 10px;
+    align-items: end;
+    overflow-x: auto;
+    padding: 4px 2px 0;
+}
+
+.income-vertical-chart-item {
+    min-width: 0;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto minmax(116px, 1fr) auto;
+    gap: 7px;
+    align-items: end;
+    justify-content: center;
+}
+
+.income-vertical-chart-value {
+    min-height: 38px;
+    display: grid;
+    gap: 2px;
+    justify-items: center;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.income-vertical-chart-value strong {
+    font-size: 12px;
+    line-height: 1.1;
+}
+
+.income-vertical-chart-value small {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.income-vertical-chart-bar-wrap {
+    width: 100%;
+    height: 100%;
+    min-height: 116px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    border-radius: 10px;
+    background: #eef1f7;
+    overflow: hidden;
+}
+
+.income-vertical-chart-bar {
+    width: 100%;
+    min-height: 6px;
+    border-radius: 10px 10px 0 0;
+    background: var(--accent);
+}
+
+.income-vertical-chart-label {
+    min-width: 0;
+    display: grid;
+    gap: 3px;
+    justify-items: center;
+    text-align: center;
+}
+
+.income-vertical-chart-label strong {
+    display: inline-flex;
+    max-width: 100%;
+    justify-content: center;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #2649b8;
+    font-size: 10px;
+    line-height: 1.1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.income-vertical-chart-label span {
+    max-width: 100%;
+    min-height: 28px;
+    color: #374151;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .compact-expenses-table th:first-child,
 .compact-expenses-table td:first-child,
 .compact-incomes-table th:first-child,
@@ -5455,6 +5591,10 @@ button {
 
 @media (max-width: 900px) {
     .charts-grid {
+        grid-template-columns:1fr;
+    }
+
+    .income-summary-row {
         grid-template-columns:1fr;
     }
 
@@ -10098,4 +10238,3 @@ table .cell-description {
         display: grid !important;
     }
 }
-
