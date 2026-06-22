@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
+import { appendFlash } from '@/lib/flash';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -36,6 +37,12 @@ function safePath(value: string | null, fallback: string, requestUrl: string) {
   } catch {
     return value.startsWith('/') ? value : fallback;
   }
+}
+
+function redirectTarget(request: Request, fallback: string) {
+  const requestUrl = request.url;
+  const explicitReturnTo = new URL(requestUrl).searchParams.get('returnTo');
+  return safePath(explicitReturnTo, fallback, requestUrl);
 }
 
 async function resolveSupplierReference(data: z.infer<typeof RecurringExpenseSchema>, workspaceId: number) {
@@ -75,7 +82,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const formData = await request.formData();
   const raw = Object.fromEntries(formData.entries());
   const action = String(raw._action || 'update');
-  const returnTo = new URL(request.url).searchParams.get('returnTo');
 
   if (!Number.isInteger(recurringExpenseId) || recurringExpenseId <= 0) {
     return NextResponse.json({ error: 'ID spesa ricorrente non valido' }, { status: 400 });
@@ -83,11 +89,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   if (action === 'delete') {
     await prisma.recurringExpense.deleteMany({ where: { id: recurringExpenseId, workspaceId: current.workspace.id } });
-    return NextResponse.redirect(new URL(safePath(returnTo, '/recurring-expenses', request.url), request.url), 303);
+    return NextResponse.redirect(new URL(appendFlash(redirectTarget(request, '/recurring-expenses'), { saved: 'deleted' }), request.url), 303);
   }
 
   const existing = await prisma.recurringExpense.findFirst({ where: { id: recurringExpenseId, workspaceId: current.workspace.id } });
-  if (!existing) return NextResponse.json({ error: 'Spesa ricorrente non trovata' }, { status: 404 });
+  if (!existing) return NextResponse.redirect(new URL(appendFlash(redirectTarget(request, '/recurring-expenses'), { error: 'not_found' }), request.url), 303);
 
   const data = RecurringExpenseSchema.parse(raw);
   const supplierRef = await resolveSupplierReference(data, current.workspace.id);
@@ -120,5 +126,5 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
   });
 
-  return NextResponse.redirect(new URL(safePath(returnTo, `/recurring-expenses/${recurringExpenseId}`, request.url), request.url), 303);
+  return NextResponse.redirect(new URL(appendFlash(redirectTarget(request, `/recurring-expenses/${recurringExpenseId}`), { saved: 'updated' }), request.url), 303);
 }

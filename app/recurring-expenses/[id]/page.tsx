@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import RecurringExpenseDetailEditModalController from '@/components/RecurringExpenseDetailEditModalController';
+import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import { euro } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
@@ -102,6 +103,18 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
   const orderedBanks = orderBanks(banks);
   const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
   const paymentChannelName = item.paymentMethod?.name ?? item.paymentChannel;
+  const flashMessages = {
+    savedMessages: {
+      created: 'Spesa ricorrente creata.',
+      updated: 'Spesa ricorrente aggiornata.',
+      deleted: 'Spesa ricorrente rimossa.'
+    },
+    errorMessages: {
+      invalid: 'Controlla i dati della spesa ricorrente.',
+      not_found: 'Spesa ricorrente non trovata.',
+      in_use: 'La spesa ricorrente è collegata ad altri movimenti.'
+    }
+  };
 
   return <div className="grid">
     <RecurringExpenseDetailEditModalController
@@ -110,6 +123,13 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
       paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
       suppliers={suppliers.map(supplier => ({ id: supplier.id, businessName: supplier.businessName, alias: supplier.alias, email: supplier.email, phone: supplier.phone, pec: supplier.pec, taxCodeSdi: supplier.taxCodeSdi, internalNotes: supplier.internalNotes }))}
       returnTo={currentDetailReturnTo}
+    />
+    <ActionFeedbackBanner
+      searchParams={query}
+      savedMessages={flashMessages.savedMessages}
+      errorMessages={flashMessages.errorMessages}
+      defaultSavedMessage="Operazione completata."
+      defaultErrorMessage="Impossibile completare l’operazione."
     />
 
     <section className="expense-detail-hero card recurring-detail-hero">

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
+import { appendFlash } from '@/lib/flash';
 
 const SupplierSchema = z.object({
   businessName: z.string().trim().min(1),
@@ -30,7 +31,7 @@ function redirectAfterFormSave(request: Request, fallback: string) {
   const explicitReturnTo = new URL(requestUrl).searchParams.get('returnTo');
   const referer = request.headers.get('referer');
   const target = safePath(explicitReturnTo, safePath(referer, fallback, requestUrl), requestUrl);
-  return NextResponse.redirect(new URL(target, requestUrl), 303);
+  return target;
 }
 
 export async function GET(request: Request) {
@@ -59,5 +60,7 @@ export async function POST(request: Request) {
   const raw = isForm ? Object.fromEntries((await request.formData()).entries()) : await request.json();
   const data = SupplierSchema.parse(raw);
   const supplier = await prisma.supplier.create({ data: { ...data, workspaceId: current.workspace.id } });
-  return isForm ? redirectAfterFormSave(request, '/suppliers') : NextResponse.json(supplier);
+  return isForm
+    ? NextResponse.redirect(new URL(appendFlash(redirectAfterFormSave(request, '/suppliers'), { saved: 'created' }), request.url), 303)
+    : NextResponse.json(supplier);
 }

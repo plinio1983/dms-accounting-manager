@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
+import { appendFlash } from '@/lib/flash';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -36,6 +37,12 @@ function safePath(value: string | null, fallback: string, requestUrl: string) {
   } catch {
     return value.startsWith('/') ? value : fallback;
   }
+}
+
+function redirectTarget(request: Request, fallback: string) {
+  const requestUrl = request.url;
+  const explicitReturnTo = new URL(requestUrl).searchParams.get('returnTo');
+  return safePath(explicitReturnTo, fallback, requestUrl);
 }
 
 async function resolveSupplierReference(data: z.infer<typeof RecurringExpenseSchema>, workspaceId: number) {
@@ -77,8 +84,6 @@ export async function POST(request: Request) {
   const categoryId = await resolveCategoryId(data.categoryId, current.workspace.id);
   const paymentMethod = await resolvePaymentMethod(data.paymentMethodId, data.paymentChannel, current.workspace.id);
   const isYearly = data.cadence === 'YEARLY' || data.cadence === 'EVERY_2_YEARS';
-  const returnTo = new URL(request.url).searchParams.get('returnTo');
-
   await prisma.recurringExpense.create({
     data: {
       workspaceId: current.workspace.id,
@@ -104,5 +109,5 @@ export async function POST(request: Request) {
     }
   });
 
-  return NextResponse.redirect(new URL(safePath(returnTo, '/recurring-expenses', request.url), request.url), 303);
+  return NextResponse.redirect(new URL(appendFlash(redirectTarget(request, '/recurring-expenses'), { saved: 'created' }), request.url), 303);
 }

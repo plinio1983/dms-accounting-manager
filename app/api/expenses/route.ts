@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
+import { appendFlash } from '@/lib/flash';
 
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -168,12 +169,12 @@ async function resolvePaymentInputs(payments: PaymentInput[], workspaceId: numbe
   });
 }
 
-function redirectAfterFormSave(request: Request, fallback: string) {
+function redirectAfterFormSaveTarget(request: Request, fallback: string) {
   const requestUrl = request.url;
   const explicitReturnTo = new URL(requestUrl).searchParams.get('returnTo');
   const referer = request.headers.get('referer');
   const target = safePath(explicitReturnTo, safePath(referer, fallback, requestUrl), requestUrl);
-  return NextResponse.redirect(new URL(target, requestUrl), 303);
+  return target;
 }
 
 async function saveAttachments(files: FormDataEntryValue[]) {
@@ -271,5 +272,7 @@ export async function POST(request: Request) {
     }
   }});
 
-  return isForm ? redirectAfterFormSave(request, '/expenses') : NextResponse.json({ ok: true });
+  return isForm
+    ? NextResponse.redirect(new URL(appendFlash(redirectAfterFormSaveTarget(request, '/expenses'), { saved: 'created' }), request.url), 303)
+    : NextResponse.json({ ok: true });
 }

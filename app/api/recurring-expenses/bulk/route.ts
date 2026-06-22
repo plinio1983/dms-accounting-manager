@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getWorkspaceContext } from '@/lib/auth';
+import { appendFlash } from '@/lib/flash';
 
 function safePath(value: string | null, fallback: string, requestUrl: string) {
   if (!value) return fallback;
@@ -41,12 +42,12 @@ export async function POST(request: Request) {
         });
       }
     }
-    return NextResponse.redirect(new URL(safePath(returnTo, '/recurring-expenses', request.url), request.url), 303);
+    return NextResponse.redirect(new URL(appendFlash(safePath(returnTo, '/recurring-expenses', request.url), { saved: 'bulk_updated' }), request.url), 303);
   }
 
   if (bulkAction === 'delete') {
     await prisma.recurringExpense.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
   }
 
-  return NextResponse.redirect(new URL(safePath(returnTo, '/recurring-expenses', request.url), request.url), 303);
+  return NextResponse.redirect(new URL(appendFlash(safePath(returnTo, '/recurring-expenses', request.url), { saved: 'bulk_deleted' }), request.url), 303);
 }

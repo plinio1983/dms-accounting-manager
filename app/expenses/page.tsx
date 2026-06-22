@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { euro, moneyTone } from '@/lib/money';
 import NewExpensePanel from '@/components/NewExpensePanel';
 import ExpenseEditModalController from '@/components/ExpenseEditModalController';
+import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import ExpenseFiltersDrawer from '@/components/ExpenseFiltersDrawer';
 import ExpenseTrendSelectors from '@/components/ExpenseTrendSelectors';
 import SupplierFilterInput from '@/components/SupplierFilterInput';
@@ -612,6 +613,20 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   const unpaidTotalsHref = totalsFilterHref({ residual: 'open' });
   const invoicesNotReceivedHref = totalsFilterHref({ invoiceStatus: 'not_received' });
   const overduePaymentsHref = totalsFilterHref({ paymentStatus: 'overdue' });
+  const flashMessages = {
+    savedMessages: {
+      created: 'Spesa creata.',
+      updated: 'Spesa aggiornata.',
+      deleted: 'Spesa rimossa.',
+      bulk_updated: 'Spese aggiornate.',
+      bulk_deleted: 'Spese rimosse.'
+    },
+    errorMessages: {
+      invalid: 'Controlla i campi della spesa.',
+      not_found: 'Spesa non trovata.',
+      in_use: 'La spesa è collegata ad altri movimenti.'
+    }
+  };
 
   const periodExpenses = expenses.filter(expense => {
     if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey)) return false;
@@ -723,6 +738,13 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
       suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
       initialOpen={inputDefault(filters, 'new') === '1'}
+    />
+    <ActionFeedbackBanner
+      searchParams={filters}
+      savedMessages={flashMessages.savedMessages}
+      errorMessages={flashMessages.errorMessages}
+      defaultSavedMessage="Operazione completata."
+      defaultErrorMessage="Impossibile completare l’operazione."
     />
 
     <div className="card expenses-list-card">

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
+import { appendFlash } from '@/lib/flash';
 
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -72,6 +73,17 @@ async function resolvePaymentInputs(payments: PaymentInput[], workspaceId: numbe
     if (payment.paymentMethodId && !method) throw new Error('Metodo pagamento non valido');
     return { ...payment, paymentMethodId: method?.id ?? null, channel: method?.name ?? payment.channel };
   });
+}
+
+function safePath(value: string | null, fallback: string, requestUrl: string) {
+  if (!value) return fallback;
+  try {
+    const url = value.startsWith('http') ? new URL(value) : new URL(value, requestUrl);
+    if (url.origin !== new URL(requestUrl).origin) return fallback;
+    return `${url.pathname}${url.search}`;
+  } catch {
+    return value.startsWith('/') ? value : fallback;
+  }
 }
 
 function normalizeInvoiceFields(data: z.infer<typeof ExpenseSchema>) {
@@ -169,7 +181,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const returnTo = new URL(request.url).searchParams.get('returnTo');
   if (action === 'delete') {
     await prisma.expense.deleteMany({ where: { id: expenseId, workspaceId: current.workspace.id } });
-    return NextResponse.redirect(new URL(returnTo || '/expenses', request.url), 303);
+    const target = safePath(returnTo, '/expenses', request.url);
+    return NextResponse.redirect(new URL(appendFlash(target, { saved: 'deleted' }), request.url), 303);
   }
   const data = ExpenseSchema.parse(raw);
   const invoiceFields = normalizeInvoiceFields(data);
@@ -183,7 +196,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const firstPaidBy = firstPayment?.paidBy ?? 'HERBAL_MARKET';
 
   const existing = await prisma.expense.findFirst({ where: { id: expenseId, workspaceId: current.workspace.id }, include: { attachments: true } });
-  if (!existing) return NextResponse.json({ error: 'Spesa non trovata' }, { status: 404 });
+  if (!existing) {
+    const target = safePath(returnTo, '/expenses', request.url);
+    return NextResponse.redirect(new URL(appendFlash(target, { error: 'not_found' }), request.url), 303);
+  }
   const nextIsRecurring = existing.isRecurring ? data.isRecurring : false;
 
   const attachments = await saveAttachments(formData.getAll('attachments'), existing.attachments.length);
@@ -230,5 +246,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
   });
 
-  return NextResponse.redirect(new URL(returnTo || `/expenses/${expenseId}`, request.url), 303);
+  const target = safePath(returnTo, `/expenses/${expenseId}`, request.url);
+  return NextResponse.redirect(new URL(appendFlash(target, { saved: 'updated' }), request.url), 303);
 }

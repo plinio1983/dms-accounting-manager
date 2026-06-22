@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { euro, moneyTone } from '@/lib/money';
 import NewIncomePanel from '@/components/NewIncomePanel';
 import IncomeEditModalController from '@/components/IncomeEditModalController';
+import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import IncomeFiltersDrawer from '@/components/IncomeFiltersDrawer';
 import IncomeTrendSelectors from '@/components/IncomeTrendSelectors';
 import {
@@ -545,6 +546,20 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
     creditDateFromDefault,
     creditDateToDefault
   });
+  const flashMessages = {
+    savedMessages: {
+      created: 'Incasso creato.',
+      updated: 'Incasso aggiornato.',
+      deleted: 'Incasso rimosso.',
+      bulk_updated: 'Incassi aggiornati.',
+      bulk_deleted: 'Incassi rimossi.'
+    },
+    errorMessages: {
+      invalid: 'Controlla i campi dell’incasso.',
+      not_found: 'Incasso non trovato.',
+      in_use: 'L’incasso è collegato ad altri movimenti.'
+    }
+  };
 
   const incomesBySalesChannel = Array.from(filteredIncomes.reduce((map, income) => {
     const name = income.salesChannel ?? 'Senza canale';
@@ -603,6 +618,13 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
       returnTo={listHref}
       banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
       paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+    />
+    <ActionFeedbackBanner
+      searchParams={filters}
+      savedMessages={flashMessages.savedMessages}
+      errorMessages={flashMessages.errorMessages}
+      defaultSavedMessage="Operazione completata."
+      defaultErrorMessage="Impossibile completare l’operazione."
     />
 
     <div className="card expenses-list-card">

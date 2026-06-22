@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
+import { appendFlash } from '@/lib/flash';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -41,7 +42,7 @@ function redirectAfterFormSave(request: Request, fallback: string) {
   const explicitReturnTo = new URL(requestUrl).searchParams.get('returnTo');
   const referer = request.headers.get('referer');
   const target = safePath(explicitReturnTo, safePath(referer, fallback, requestUrl), requestUrl);
-  return NextResponse.redirect(new URL(target, requestUrl), 303);
+  return target;
 }
 
 export async function GET() {
@@ -84,5 +85,7 @@ export async function POST(request: Request) {
       notes: parsed.notes || null
     }
   });
-  return isForm ? redirectAfterFormSave(request, '/incomes') : NextResponse.json(income);
+  return isForm
+    ? NextResponse.redirect(new URL(appendFlash(redirectAfterFormSave(request, '/incomes'), { saved: 'created' }), request.url), 303)
+    : NextResponse.json(income);
 }

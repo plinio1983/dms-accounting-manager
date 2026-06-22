@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
+import { appendFlash } from '@/lib/flash';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -35,7 +36,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   if (action === 'delete') {
     await prisma.income.deleteMany({ where: { id: incomeId, workspaceId: current.workspace.id } });
-    return NextResponse.redirect(new URL(returnTo || '/incomes', request.url), 303);
+    return NextResponse.redirect(new URL(appendFlash(returnTo || '/incomes', { saved: 'deleted' }), request.url), 303);
   }
 
   const parsed = IncomeSchema.parse(raw);
@@ -45,7 +46,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   ]);
   if (!paymentMethod || !creditBank) return NextResponse.json({ error: 'Metodo o banca non validi' }, { status: 400 });
   const existing = await prisma.income.findFirst({ where: { id: incomeId, workspaceId: current.workspace.id }, select: { id: true } });
-  if (!existing) return NextResponse.json({ error: 'Incasso non trovato' }, { status: 404 });
+  if (!existing) {
+    return NextResponse.redirect(new URL(appendFlash(returnTo || '/incomes', { error: 'not_found' }), request.url), 303);
+  }
   const [billingYear, billingMonth] = parsed.billingPeriod.split('-').map(Number);
   await prisma.income.update({
     where: { id: incomeId },
@@ -69,5 +72,5 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
   });
 
-  return NextResponse.redirect(new URL(returnTo || `/incomes/${incomeId}`, request.url), 303);
+  return NextResponse.redirect(new URL(appendFlash(returnTo || `/incomes/${incomeId}`, { saved: 'updated' }), request.url), 303);
 }

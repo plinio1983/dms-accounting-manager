@@ -3,6 +3,7 @@ import BulkSelectionController from '@/components/BulkSelectionController';
 import { prisma } from '@/lib/prisma';
 import { euro } from '@/lib/money';
 import NewSupplierPanel from '@/components/NewSupplierPanel';
+import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import SupplierFiltersDrawer from '@/components/SupplierFiltersDrawer';
 import { requireWorkspace } from '@/lib/auth';
 
@@ -80,6 +81,20 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
     inputDefault(filters, 'pec') && { label: 'PEC', value: inputDefault(filters, 'pec') },
     inputDefault(filters, 'taxCodeSdi') && { label: 'Codice SDI/C.F.', value: inputDefault(filters, 'taxCodeSdi') }
   ].filter(Boolean) as Array<{ label: string; value: string }>;
+  const flashMessages = {
+    savedMessages: {
+      created: 'Fornitore creato.',
+      updated: 'Fornitore aggiornato.',
+      deleted: 'Fornitore rimosso.',
+      bulk_updated: 'Fornitori aggiornati.',
+      bulk_deleted: 'Fornitori rimossi.'
+    },
+    errorMessages: {
+      invalid: 'Controlla i dati del fornitore.',
+      not_found: 'Fornitore non trovato.',
+      in_use: 'Il fornitore è collegato ad altri movimenti.'
+    }
+  };
 
   return <div className="grid">
     <div className="toolbar-card toolbar-card-wrap">
@@ -89,6 +104,14 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
       </div>
       <NewSupplierPanel initialOpen={inputDefault(filters, 'new') === '1'} />
     </div>
+
+    <ActionFeedbackBanner
+      searchParams={filters}
+      savedMessages={flashMessages.savedMessages}
+      errorMessages={flashMessages.errorMessages}
+      defaultSavedMessage="Operazione completata."
+      defaultErrorMessage="Impossibile completare l’operazione."
+    />
 
     <script dangerouslySetInnerHTML={{ __html: `document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-delete-form')) { const message = form.getAttribute('data-confirm') || 'Confermi la rimozione?'; if (!confirm(message)) event.preventDefault(); } });` }} />
 

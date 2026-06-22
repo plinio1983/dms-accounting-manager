@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import RecurringExpensesList from '@/components/RecurringExpensesList';
 import NewRecurringExpensePanel from '@/components/NewRecurringExpensePanel';
+import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 
@@ -65,6 +66,20 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
   const orderedBanks = orderBanks(banks);
   const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
   const orderedCategories = orderExpenseCategories(categories);
+  const flashMessages = {
+    savedMessages: {
+      created: 'Spesa ricorrente creata.',
+      updated: 'Spesa ricorrente aggiornata.',
+      deleted: 'Spesa ricorrente rimossa.',
+      bulk_updated: 'Spese ricorrenti aggiornate.',
+      bulk_deleted: 'Spese ricorrenti rimosse.'
+    },
+    errorMessages: {
+      invalid: 'Controlla i dati della spesa ricorrente.',
+      not_found: 'Spesa ricorrente non trovata.',
+      in_use: 'La spesa ricorrente è collegata ad altri movimenti.'
+    }
+  };
 
   return <div className="grid">
     <div className="toolbar-card expense-toolbar-card">
@@ -76,6 +91,13 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
         suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
       />
     </div>
+    <ActionFeedbackBanner
+      searchParams={filters}
+      savedMessages={flashMessages.savedMessages}
+      errorMessages={flashMessages.errorMessages}
+      defaultSavedMessage="Operazione completata."
+      defaultErrorMessage="Impossibile completare l’operazione."
+    />
     <RecurringExpensesList
       items={items}
       filters={filters}

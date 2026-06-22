@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import IncomeEditModalController from '@/components/IncomeEditModalController';
+import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import { euro } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
 import { vatStyles } from '@/lib/expense-ui';
@@ -85,12 +86,31 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
   const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
   const creditStatus = incomeCreditStatus(income);
   const vatStyle = vatStyles[String(vatRate)] ?? vatStyles['0'];
+  const flashMessages = {
+    savedMessages: {
+      created: 'Incasso creato.',
+      updated: 'Incasso aggiornato.',
+      deleted: 'Incasso rimosso.'
+    },
+    errorMessages: {
+      invalid: 'Controlla i campi dell’incasso.',
+      not_found: 'Incasso non trovato.',
+      in_use: 'L’incasso è collegato ad altri movimenti.'
+    }
+  };
 
   return <div className="grid income-detail-page">
     <IncomeEditModalController
       returnTo={currentDetailReturnTo}
       banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
       paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+    />
+    <ActionFeedbackBanner
+      searchParams={query}
+      savedMessages={flashMessages.savedMessages}
+      errorMessages={flashMessages.errorMessages}
+      defaultSavedMessage="Operazione completata."
+      defaultErrorMessage="Impossibile completare l’operazione."
     />
 
 

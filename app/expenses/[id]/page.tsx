@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import ExpenseDetailEditModalController from '@/components/ExpenseDetailEditModalController';
+import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import { euro } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
@@ -85,6 +86,18 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
     ? `${paymentStatusStyles.SCADUTO.icon} ${paymentStatusStyles.SCADUTO.label}`
     : `${paymentStyle.icon} ${paymentStyle.label}`;
   const paidPercent = amount > 0 ? Math.min((paid / amount) * 100, 100) : 0;
+  const flashMessages = {
+    savedMessages: {
+      created: 'Spesa creata.',
+      updated: 'Spesa aggiornata.',
+      deleted: 'Spesa rimossa.'
+    },
+    errorMessages: {
+      invalid: 'Controlla i campi della spesa.',
+      not_found: 'Spesa non trovata.',
+      in_use: 'La spesa è collegata ad altri movimenti.'
+    }
+  };
 
   return <div className="grid expense-detail-page">
     <ExpenseDetailEditModalController
@@ -93,6 +106,13 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
       suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
       returnTo={currentDetailReturnTo}
+    />
+    <ActionFeedbackBanner
+      searchParams={query}
+      savedMessages={flashMessages.savedMessages}
+      errorMessages={flashMessages.errorMessages}
+      defaultSavedMessage="Operazione completata."
+      defaultErrorMessage="Impossibile completare l’operazione."
     />
 
     <div className="expense-detail-shell">

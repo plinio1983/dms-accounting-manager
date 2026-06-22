@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getWorkspaceContext } from '@/lib/auth';
+import { appendFlash } from '@/lib/flash';
 
 function selectedIds(formData: FormData) {
   return formData.getAll('ids').map(value => Number(value)).filter(value => Number.isInteger(value) && value > 0);
@@ -38,7 +39,8 @@ export async function POST(request: Request) {
       }),
       prisma.supplier.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } })
     ]);
+    return NextResponse.redirect(new URL(appendFlash(redirectTo, { saved: 'bulk_deleted' }), request.url), 303);
   }
 
-  return NextResponse.redirect(new URL(redirectTo, request.url), 303);
+  return NextResponse.redirect(new URL(appendFlash(redirectTo, { saved: 'bulk_updated' }), request.url), 303);
 }
