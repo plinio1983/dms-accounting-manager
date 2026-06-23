@@ -796,12 +796,19 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
 
       {activeFilterItems.length ? <div className="recurring-active-filters">
         <div>
-          <span className="recurring-active-filters-title">Filtri attivi</span>
-          <div className="recurring-active-filter-tags">
-            {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
+          <div className="flex justify-start align-start">
+            <span className="flex-grow recurring-active-filters-title">Filtri attivi</span>
+            <Link className="table-action secondary recurring-active-filters-reset reset-button" href="/expenses">↺ Reset</Link>
+          </div>
+          <div className="flex justify-end align-start">
+            <div className="recurring-active-filter-tags">
+              {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
+            </div>
+            <div>
+
+            </div>
           </div>
         </div>
-        <Link className="table-action secondary recurring-active-filters-reset reset-button" href="/expenses">↺ Reset</Link>
       </div> : null}
 
       <BulkSelectionController />

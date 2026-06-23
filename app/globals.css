@@ -27,6 +27,30 @@ a {
 .flex {
     display: flex;
 }
+.flex-grow {
+    flex-grow: 1;
+}
+.flex-nowrap {
+    flex-wrap: nowrap;
+}
+.justify-start {
+    justify-content: flex-start;
+}
+.justify-end {
+    justify-content: flex-end;
+}
+.justify-center {
+    justify-content: center;
+}
+.align-center {
+    align-items: center;
+}
+.align-start {
+    align-items: flex-start;
+}
+.align-end {
+    align-items: flex-end;
+}
 
 .text-rright {
     text-align: right;
@@ -940,7 +964,7 @@ button {
 
 .recurring-active-filters-title {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 14px;
     color: var(--muted);
     font-size: 12px;
     font-weight: 900;
@@ -956,6 +980,8 @@ button {
 
 .recurring-active-filters-reset {
     white-space: nowrap;
+    position: absolute;
+    right: 36px;
 }
 
 @media (max-width: 760px) {
