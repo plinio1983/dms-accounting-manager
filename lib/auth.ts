@@ -129,7 +129,9 @@ export async function requireWorkspaceRole(roles: WorkspaceRoleName[], nextPath 
 
 export async function requireSystemAdmin(nextPath = '/admin') {
   const current = await requireSession(nextPath);
-  if (!current.user.isSystemAdmin) redirect('/');
+  if (!current.user.isSystemAdmin) {
+    redirect(`/admin/login?next=${encodeURIComponent(nextPath)}&error=forbidden`);
+  }
   return current;
 }
 

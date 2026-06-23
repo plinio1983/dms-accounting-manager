@@ -13,14 +13,16 @@ export default async function AdminLoginPage({ searchParams }: { searchParams?: 
   const params = (await searchParams) ?? {};
   const next = Array.isArray(params.next) ? params.next[0] : params.next;
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
-  if (current) redirect(next && next.startsWith('/') ? next : '/');
+  const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : '/admin';
+  if (current?.user.isSystemAdmin) redirect(safeNext);
 
   return <div className="admin-auth-page">
     <form action={loginAction} className="card form admin-auth-card">
       <h2>Login amministrazione</h2>
       <p className="muted">Accedi alla tua area di lavoro Tabularium.</p>
-      {error ? <div className="inline-modal-error">Credenziali non valide.</div> : null}
-      <input type="hidden" name="next" value={next && next.startsWith('/') ? next : '/'} />
+      {error === 'forbidden' ? <div className="inline-modal-error">L'utente corrente non ha accesso all'amministrazione.</div> : null}
+      {error && error !== 'forbidden' ? <div className="inline-modal-error">Credenziali non valide.</div> : null}
+      <input type="hidden" name="next" value={safeNext} />
       <input type="hidden" name="failurePath" value="/admin/login" />
       <label>Email<input name="email" type="email" autoComplete="email" required /></label>
       <label>Password<input name="password" type="password" autoComplete="current-password" required /></label>

@@ -1,6 +1,7 @@
 node_modules
 .next
 .env
+.env.production
 .DS_Store
 prisma/migrations
 data/Spese-Ricavi.xlsx

@@ -13,8 +13,10 @@ services:
     volumes:
       - tabularium_uploads:/app/public/uploads
     networks:
-      - frontend
-      - backend
+      frontend:
+        aliases:
+          - tabularium
+      backend: {}
 
   db:
     image: postgres:16-alpine
