@@ -59,7 +59,7 @@ a {
 .shell {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 28px;
+    padding: 18px;
 }
 
 .nav {
@@ -8686,7 +8686,7 @@ button.bulk-direct-danger {
     }
 
     .expenses-list-card .dashboard-statement-panel {
-        padding: 14px 0;
+        padding: 14px 8px;
     }
 
     .expense-mobile-list {

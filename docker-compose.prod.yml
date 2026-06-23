@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: tabularium:latest
-    container_name: tabularium-app
+    container_name: tabularium
     restart: unless-stopped
     env_file:
       - .env.production
