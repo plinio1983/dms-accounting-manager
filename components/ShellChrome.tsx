@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import MainNav from '@/components/MainNav';
 import SettingsMenu from '@/components/SettingsMenu';
+import logoHorizontal from '../tabularium-logo-horiz.png';
 
 type Props = {
   slot: 'header' | 'footer';
@@ -26,7 +27,9 @@ function DesktopHeader({ compactOnMobile = false }: { compactOnMobile?: boolean 
   const className = compactOnMobile ? "nav compact-mobile-header-path" : "nav";
 
   return <div className={className}>
-    <div><h1>Tabularium</h1><div className="muted">Gestionale web per incassi, spese, fornitori e report mensili</div></div>
+    <div className="site-header-brand">
+      <img className="site-header-logo" src={logoHorizontal.src} alt="Tabularium" width={logoHorizontal.width} height={logoHorizontal.height} />
+    </div>
     <div className="site-header-actions">
       <Suspense fallback={null}>
         <MainNav />
