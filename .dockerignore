@@ -6,6 +6,7 @@ tsconfig.tsbuildinfo
 .env.*
 !.env.example
 data
+!data/seed.generated.json
 *.dump
 *.sql
 public/uploads/invoices/*
