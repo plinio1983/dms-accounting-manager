@@ -1,9 +1,6 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: tabularium:latest
+    image: ${APP_IMAGE:-tabularium:latest}
     container_name: tabularium
     restart: unless-stopped
     env_file:

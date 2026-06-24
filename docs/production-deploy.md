@@ -68,7 +68,9 @@ Il compose assegna all'app l'alias `tabularium` sulla rete Docker `frontend`; no
 
 ## Procedura deploy
 
-Strategia iniziale: build dell'immagine direttamente sul server da repository Git. Non e' necessario pubblicare l'immagine su GitHub Container Registry per andare in produzione; il registry conviene in una fase successiva, quando si vuole una pipeline CI/CD con immagini taggate e rollback.
+Strategia iniziale: build dell'immagine fuori dal server di produzione, trasferimento dell'immagine gia' pronta e riavvio con Docker Compose. Il server di produzione non deve compilare l'applicazione.
+
+Non e' necessario pubblicare l'immagine su GitHub Container Registry per il primo deploy. GHCR conviene in una fase successiva, quando si vuole una pipeline CI/CD con immagini taggate, rollback e pull autenticato dal server.
 
 Server:
 
@@ -95,25 +97,109 @@ mkdir -p /app/tabularium
 cd /app/tabularium
 ```
 
-Porta il codice sul server con `git clone` o `git pull` nel percorso `/app/tabularium`. Il file `.env.production` va creato direttamente sul server partendo da `.env.production.example`.
+Porta sul server i file operativi versionati, in particolare `docker-compose.prod.yml` e `.env.production.example`, nel percorso `/app/tabularium`. Il file `.env.production` va creato direttamente sul server partendo da `.env.production.example`.
 
-Prima partenza o aggiornamento:
+Il repository sul server serve solo per avere `docker-compose.prod.yml` e `.env.production`; la build dell'immagine resta esterna.
+
+Deploy da macchina locale o runner CI:
 
 ```bash
-cd /app/tabularium
-docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
-docker compose -f docker-compose.prod.yml --env-file .env.production exec app npx prisma db push
-docker compose -f docker-compose.prod.yml --env-file .env.production logs -f app
+cp deploy.conf.example deploy.conf
+# modifica deploy.conf
+./scripts/deploy-prod.sh
 ```
 
-Deploy successivi:
+Lo script:
+
+- builda localmente `tabularium:<git-sha>`
+- esporta l'immagine in `/tmp/tabularium-<git-sha>.tar.gz`
+- copia l'archivio su `178.18.248.213:/app/tabularium`
+- se richiesto, copia un dump PostgreSQL e/o un archivio upload
+- esegue `docker load` sul server
+- riavvia Compose usando `APP_IMAGE=tabularium:<git-sha>`
+- se richiesto, ripristina il dump nel container `db`
+- applica lo schema Prisma con `npx prisma db push`
+- se richiesto, ripristina gli upload nel volume applicativo
+
+Configurazione locale dello script:
+
+```bash
+cp deploy.conf.example deploy.conf
+```
+
+`deploy.conf` e' ignorato da Git e contiene i valori stabili di deploy:
+
+```bash
+SERVER_HOST="178.18.248.213"
+SERVER_USER="root"
+SSH_KEY=".devops/contabo_rsa"
+REMOTE_DIR="/app/tabularium"
+```
+
+Puoi usare un file diverso:
+
+```bash
+./scripts/deploy-prod.sh \
+  --config ./deploy-prod.contabo.conf
+```
+
+Le opzioni CLI sovrascrivono la configurazione:
+
+```bash
+./scripts/deploy-prod.sh \
+  --config ./deploy.conf \
+  --server-user root \
+  --server-host 178.18.248.213 \
+  --ssh-key .devops/contabo_rsa \
+  --remote-dir /app/tabularium
+```
+
+Deploy con import database da dump PostgreSQL custom:
+
+```bash
+./scripts/deploy-prod.sh --import-db --db-dump ./tabularium.dump
+```
+
+Il dump deve essere creato con `pg_dump --format=custom`, ad esempio:
+
+```bash
+docker exec dms-spese-ricavi-db pg_dump -U dms -d dms_spese_ricavi --format=custom --no-owner --no-acl > tabularium.dump
+```
+
+L'import database e' distruttivo: lo script esegue `pg_restore --clean --if-exists` sul database di produzione. Per evitare import accidentali, `--db-dump` funziona solo insieme a `--import-db`.
+
+Deploy con ripristino upload:
+
+```bash
+tar -czf tabularium-uploads.tar.gz -C public uploads
+./scripts/deploy-prod.sh --uploads-archive ./tabularium-uploads.tar.gz
+```
+
+Deploy completo con database e upload:
+
+```bash
+./scripts/deploy-prod.sh --import-db --db-dump ./tabularium.dump --uploads-archive ./tabularium-uploads.tar.gz
+```
+
+Comandi equivalenti manuali:
+
+```bash
+IMAGE_TAG="$(git rev-parse --short HEAD)"
+IMAGE_NAME="tabularium:${IMAGE_TAG}"
+docker build --pull -t "${IMAGE_NAME}" .
+docker save "${IMAGE_NAME}" | gzip > "/tmp/tabularium-${IMAGE_TAG}.tar.gz"
+scp -i .devops/contabo_rsa "/tmp/tabularium-${IMAGE_TAG}.tar.gz" root@178.18.248.213:/app/tabularium/
+ssh -i .devops/contabo_rsa root@178.18.248.213
+```
+
+Sul server:
 
 ```bash
 cd /app/tabularium
-git pull --ff-only
-docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
-docker compose -f docker-compose.prod.yml --env-file .env.production exec app npx prisma db push
-docker compose -f docker-compose.prod.yml --env-file .env.production ps
+docker load -i "tabularium-${IMAGE_TAG}.tar.gz"
+APP_IMAGE="${IMAGE_NAME}" docker compose -f docker-compose.prod.yml --env-file .env.production up -d
+APP_IMAGE="${IMAGE_NAME}" docker compose -f docker-compose.prod.yml --env-file .env.production exec app npx prisma db push
+APP_IMAGE="${IMAGE_NAME}" docker compose -f docker-compose.prod.yml --env-file .env.production ps
 ```
 
 Verifica HTTP dal server, passando da Nginx o dalla rete Docker:

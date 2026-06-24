@@ -1,0 +1,17 @@
+# Copia questo file in deploy.conf e modifica i valori reali.
+# deploy.conf e' ignorato da Git.
+
+SERVER_HOST="178.18.248.213"
+SERVER_USER="root"
+SSH_KEY=".devops/contabo_rsa"
+REMOTE_DIR="/app/tabularium"
+
+# Se vuoto, lo script usa il git short SHA corrente.
+# IMAGE_TAG="manual-tag"
+
+# Se vuoto, lo script usa tabularium:<IMAGE_TAG>.
+# IMAGE_NAME="tabularium:${IMAGE_TAG}"
+
+# Se vuoti, lo script usa:
+# ARCHIVE_NAME="tabularium-${IMAGE_TAG}.tar.gz"
+# ARCHIVE_PATH="/tmp/${ARCHIVE_NAME}"
