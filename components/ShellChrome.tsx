@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import MainNav from '@/components/MainNav';
 import SettingsMenu from '@/components/SettingsMenu';
-import logoHorizontal from '../tabularium-logo-horiz.png';
+import logoHorizontal from '../public/img/tabularium-logo-horiz.png';
 
 type Props = {
   slot: 'header' | 'footer';

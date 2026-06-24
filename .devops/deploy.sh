@@ -19,7 +19,7 @@ REMOTE_UPLOADS_ARCHIVE=""
 usage() {
   cat <<'USAGE'
 Uso:
-  scripts/deploy-prod.sh [opzioni]
+  .devops/deploy.sh [opzioni]
 
 Opzioni:
   --config PATH                   File configurazione. Default: ./deploy.conf se esiste.
@@ -38,10 +38,10 @@ Config richiesti via file o CLI:
   SERVER_HOST, SERVER_USER, SSH_KEY, REMOTE_DIR
 
 Esempi:
-  scripts/deploy-prod.sh
-  scripts/deploy-prod.sh --import-db --db-dump ./tabularium.dump
-  scripts/deploy-prod.sh --uploads-archive ./tabularium-uploads.tar.gz
-  scripts/deploy-prod.sh --import-db --db-dump ./tabularium.dump --uploads-archive ./tabularium-uploads.tar.gz
+  .devops/deploy.sh
+  .devops/deploy.sh --import-db --db-dump ./tabularium.dump
+  .devops/deploy.sh --uploads-archive ./tabularium-uploads.tar.gz
+  .devops/deploy.sh --import-db --db-dump ./tabularium.dump --uploads-archive ./tabularium-uploads.tar.gz
 USAGE
 }
 
@@ -196,14 +196,22 @@ fi
 ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" \
   "set -euo pipefail; \
    cd '${REMOTE_DIR}'; \
+   if docker compose version >/dev/null 2>&1; then \
+     COMPOSE='docker compose'; \
+   elif command -v docker-compose >/dev/null 2>&1; then \
+     COMPOSE='docker-compose'; \
+   else \
+     echo 'Docker Compose non trovato sul server. Installa il plugin docker compose o docker-compose.' >&2; \
+     exit 1; \
+   fi; \
    docker load -i '${ARCHIVE_NAME}'; \
-   APP_IMAGE='${IMAGE_NAME}' docker compose -f docker-compose.prod.yml --env-file .env.production up -d; \
+   APP_IMAGE='${IMAGE_NAME}' \$COMPOSE -f docker-compose.prod.yml --env-file .env.production up -d; \
    if [ '${IMPORT_DB}' = '1' ] && [ -n '${REMOTE_DB_DUMP}' ]; then \
-     APP_IMAGE='${IMAGE_NAME}' docker compose -f docker-compose.prod.yml --env-file .env.production exec -T db sh -c 'pg_restore --clean --if-exists --no-owner --no-acl -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\"' < '${REMOTE_DB_DUMP}'; \
+     APP_IMAGE='${IMAGE_NAME}' \$COMPOSE -f docker-compose.prod.yml --env-file .env.production exec -T db sh -c 'pg_restore --clean --if-exists --no-owner --no-acl -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\"' < '${REMOTE_DB_DUMP}'; \
    fi; \
-   APP_IMAGE='${IMAGE_NAME}' docker compose -f docker-compose.prod.yml --env-file .env.production exec -T app npx prisma db push; \
+   APP_IMAGE='${IMAGE_NAME}' \$COMPOSE -f docker-compose.prod.yml --env-file .env.production exec -T app npx prisma db push; \
    if [ -n '${REMOTE_UPLOADS_ARCHIVE}' ]; then \
-     APP_IMAGE='${IMAGE_NAME}' docker compose -f docker-compose.prod.yml --env-file .env.production cp '${REMOTE_UPLOADS_ARCHIVE}' app:/tmp/tabularium-uploads.tar.gz; \
-     APP_IMAGE='${IMAGE_NAME}' docker compose -f docker-compose.prod.yml --env-file .env.production exec -T app sh -c 'rm -rf /app/public/uploads/* && tar -xzf /tmp/tabularium-uploads.tar.gz -C /app/public/uploads --strip-components=1'; \
+     APP_IMAGE='${IMAGE_NAME}' \$COMPOSE -f docker-compose.prod.yml --env-file .env.production cp '${REMOTE_UPLOADS_ARCHIVE}' app:/tmp/tabularium-uploads.tar.gz; \
+     APP_IMAGE='${IMAGE_NAME}' \$COMPOSE -f docker-compose.prod.yml --env-file .env.production exec -T app sh -c 'rm -rf /app/public/uploads/* && tar -xzf /tmp/tabularium-uploads.tar.gz -C /app/public/uploads --strip-components=1'; \
    fi; \
-   APP_IMAGE='${IMAGE_NAME}' docker compose -f docker-compose.prod.yml --env-file .env.production ps"
+   APP_IMAGE='${IMAGE_NAME}' \$COMPOSE -f docker-compose.prod.yml --env-file .env.production ps"
