@@ -17,6 +17,7 @@ REMOTE_DB_DUMP=""
 REMOTE_UPLOADS_ARCHIVE=""
 COMPOSE_FILE="docker-compose.prod.yml"
 ENV_FILE=".env.production"
+COMPOSE_ENV_PATH=""
 
 usage() {
   cat <<'USAGE'
@@ -192,6 +193,12 @@ fi
 
 docker build --pull -t "${IMAGE_NAME}" .
 docker save "${IMAGE_NAME}" | gzip > "${ARCHIVE_PATH}"
+COMPOSE_ENV_PATH="$(mktemp /tmp/tabularium-compose-env.XXXXXX)"
+trap '[[ -n "${COMPOSE_ENV_PATH}" ]] && rm -f "${COMPOSE_ENV_PATH}"' EXIT
+{
+  echo "APP_IMAGE=\"${IMAGE_NAME}\""
+  cat "${ENV_FILE}"
+} > "${COMPOSE_ENV_PATH}"
 
 ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" "mkdir -p '${REMOTE_DIR}'"
 
@@ -199,7 +206,11 @@ scp -i "${SSH_KEY}" \
   "${ARCHIVE_PATH}" \
   "${COMPOSE_FILE}" \
   "${ENV_FILE}" \
+  "${COMPOSE_ENV_PATH}" \
   "${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/"
+
+ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" \
+  "mv '${REMOTE_DIR}/$(basename "${COMPOSE_ENV_PATH}")' '${REMOTE_DIR}/.env'"
 
 if [[ "${IMPORT_DB}" == "1" && -n "${DB_DUMP}" ]]; then
   REMOTE_DB_DUMP="${REMOTE_DIR}/$(basename "${DB_DUMP}")"
@@ -223,13 +234,13 @@ ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" \
      exit 1; \
    fi; \
    docker load -i '${ARCHIVE_NAME}'; \
-   APP_IMAGE='${IMAGE_NAME}' \$COMPOSE -f docker-compose.prod.yml --env-file .env.production up -d; \
+   \$COMPOSE -f docker-compose.prod.yml up -d; \
    if [ '${IMPORT_DB}' = '1' ] && [ -n '${REMOTE_DB_DUMP}' ]; then \
-     APP_IMAGE='${IMAGE_NAME}' \$COMPOSE -f docker-compose.prod.yml --env-file .env.production exec -T db sh -c 'pg_restore --clean --if-exists --no-owner --no-acl -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\"' < '${REMOTE_DB_DUMP}'; \
+     \$COMPOSE -f docker-compose.prod.yml exec -T tabularium-db sh -c 'pg_restore --clean --if-exists --no-owner --no-acl -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\"' < '${REMOTE_DB_DUMP}'; \
    fi; \
-   APP_IMAGE='${IMAGE_NAME}' \$COMPOSE -f docker-compose.prod.yml --env-file .env.production exec -T app npx prisma db push; \
+   \$COMPOSE -f docker-compose.prod.yml exec -T tabularium npx prisma db push; \
    if [ -n '${REMOTE_UPLOADS_ARCHIVE}' ]; then \
-     APP_IMAGE='${IMAGE_NAME}' \$COMPOSE -f docker-compose.prod.yml --env-file .env.production cp '${REMOTE_UPLOADS_ARCHIVE}' app:/tmp/tabularium-uploads.tar.gz; \
-     APP_IMAGE='${IMAGE_NAME}' \$COMPOSE -f docker-compose.prod.yml --env-file .env.production exec -T app sh -c 'rm -rf /app/public/uploads/* && tar -xzf /tmp/tabularium-uploads.tar.gz -C /app/public/uploads --strip-components=1'; \
+     \$COMPOSE -f docker-compose.prod.yml cp '${REMOTE_UPLOADS_ARCHIVE}' tabularium:/tmp/tabularium-uploads.tar.gz; \
+     \$COMPOSE -f docker-compose.prod.yml exec -T tabularium sh -c 'rm -rf /app/public/uploads/* && tar -xzf /tmp/tabularium-uploads.tar.gz -C /app/public/uploads --strip-components=1'; \
    fi; \
-   APP_IMAGE='${IMAGE_NAME}' \$COMPOSE -f docker-compose.prod.yml --env-file .env.production ps"
+   \$COMPOSE -f docker-compose.prod.yml ps"
