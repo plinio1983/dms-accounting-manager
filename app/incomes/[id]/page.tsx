@@ -120,7 +120,7 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
     <div className="income-detail-shell">
       <article className={['income-detail-document', detailToneClass].filter(Boolean).join(' ')}>
         <div className="income-detail-action-row">
-          <Link className="expense-detail-back" href={returnTo}>↩ Indietro</Link>
+          <Link className="expense-detail-back table-action secondary" href={returnTo}>↩ Indietro</Link>
           <Link className="table-action" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
         </div>
 
@@ -140,12 +140,10 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
           <div className="income-detail-section-heading">
             <h2>Dati incasso</h2>
           </div>
-          <div className="income-detail-fields">
-            <div><span>Canale vendita</span><strong><span className={badgeClass(salesStyle?.className)}>{salesStyle?.icon ?? '•'} {income.salesChannel}</span></strong></div>
-            <div><span>Categoria vendita</span><strong><span className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {income.saleCategory}</span></strong></div>
-          </div>
 
           <div className="income-detail-fields last-row">
+            <div><span>Canale vendita</span><strong><span className={badgeClass(salesStyle?.className)}>{salesStyle?.icon ?? '•'} {income.salesChannel}</span></strong></div>
+            <div><span>Categoria vendita</span><strong><span className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {income.saleCategory}</span></strong></div>
             <div><span>Data accredito</span><strong>{dateLabel(income.creditDate)}</strong></div>
             <div><span>Metodo pagamento</span><strong><span className={badgeClass(paymentStyle?.className)}>{paymentStyle?.icon ?? '•'} {incomePaymentMethodName}</span></strong></div>
             <div><span>Canale accredito</span><strong>{incomeCreditChannelName}</strong></div>

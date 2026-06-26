@@ -370,7 +370,7 @@ function IncomeBreakdownChart({ title, description, data }: { title: string; des
   const max = Math.max(...data.map(item => item.total), 0);
   const total = data.reduce((sum, item) => sum + item.total, 0);
 
-  return <div className="card expense-category-chart-card embedded-chart-card">
+  return <div className="card expense-category-chart-card embedded-chart-card income-chart">
     <div className="card-heading-row">
       <div>
         <h2>{title}</h2>
@@ -383,7 +383,14 @@ function IncomeBreakdownChart({ title, description, data }: { title: string; des
         const percentage = total ? (item.total / total) * 100 : 0;
         const width = max ? Math.max((item.total / max) * 100, 4) : 0;
         return <div className="category-chart-row" key={`${item.code}-${item.name}`}>
-          <div className="category-chart-label"><strong>{item.code}</strong><span>{item.name}</span></div>
+          <div className="category-chart-label">
+            <strong>{item.code}</strong>
+            <span>{item.name}</span>
+            {/*<div className="category-chart-value">*/}
+            {/*  <span className={moneyTone(item.total)}>{euro(item.total)}</span>*/}
+            {/*  <small>{percentage.toFixed(1)}%</small>*/}
+            {/*</div>*/}
+          </div>
           <div className="category-chart-bar-wrap" aria-label={`${item.name}: ${euro(item.total)}`}>
             <div className="category-chart-bar" style={{ width: `${width}%` }} />
           </div>
@@ -1047,7 +1054,10 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
       </tbody></table></div>
     </div>
     <div className="card expenses-list-card">
-      <div className="charts-grid"><IncomeBreakdownChart title="Grafico entrate dichiarate" description="Distribuzione degli incassi fiscali e non fiscali sui risultati filtrati." data={incomesByFiscalStatus} /></div>
+      <div className="charts-grid">
+        <IncomeBreakdownChart title="Entrate per canale di vendita" description="Distribuzione degli incassi sui risultati filtrati." data={incomesBySalesChannel} />
+        <IncomeBreakdownChart title="Grafico entrate dichiarate" description="Distribuzione degli incassi fiscali e non fiscali sui risultati filtrati." data={incomesByFiscalStatus} />
+      </div>
     </div>
   </div>;
 }
