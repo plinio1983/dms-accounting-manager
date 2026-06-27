@@ -59,27 +59,28 @@ export async function createSession(userId: number, workspaceId?: number | null)
 
 export async function destroyCurrentSession() {
   const cookieStore = await cookies();
-  const token = cookieStore.get(sessionCookieName)?.value;
-  if (token) {
-    await prisma.authSession.deleteMany({ where: { tokenHash: tokenHash(token) } });
+  const tokens = cookieStore.getAll(sessionCookieName).map(cookie => cookie.value).filter(Boolean);
+  if (tokens.length) {
+    await prisma.authSession.deleteMany({ where: { tokenHash: { in: tokens.map(tokenHash) } } });
   }
   cookieStore.delete(sessionCookieName);
 }
 
 export async function getCurrentSession() {
   const cookieStore = await cookies();
-  const token = cookieStore.get(sessionCookieName)?.value;
-  if (!token) return null;
+  const tokens = Array.from(new Set(cookieStore.getAll(sessionCookieName).map(cookie => cookie.value).filter(Boolean)));
+  if (!tokens.length) return null;
 
-  const session = await prisma.authSession.findUnique({
-    where: { tokenHash: tokenHash(token) },
+  const sessions = await prisma.authSession.findMany({
+    where: { tokenHash: { in: tokens.map(tokenHash) } },
     include: {
       user: true,
       workspace: true
     }
   });
+  const session = sessions.find(item => item.expiresAt > new Date() && item.user.isActive);
 
-  if (!session || session.expiresAt <= new Date() || !session.user.isActive) return null;
+  if (!session) return null;
 
   const memberships = await prisma.workspaceMember.findMany({
     where: { userId: session.userId },

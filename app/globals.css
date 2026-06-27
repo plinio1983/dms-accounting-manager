@@ -4486,9 +4486,9 @@ html, body {
         align-items: stretch;
     }
 
-    .category-chart-value {
-        justify-content: space-between;
-    }
+    /*.category-chart-value {*/
+    /*    justify-content: space-between;*/
+    /*}*/
 }
 
 .money-warning {
