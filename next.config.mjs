@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
 const securityHeaders = [
   {
     key: 'Content-Security-Policy',
@@ -7,11 +9,10 @@ const securityHeaders = [
       "base-uri 'self'",
       "connect-src 'self'",
       "font-src 'self' data:",
-      "form-action 'self'",
       "frame-ancestors 'none'",
       "img-src 'self' data: blob:",
       "manifest-src 'self'",
-      "script-src 'self' 'unsafe-inline'",
+      `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ''}`,
       "style-src 'self' 'unsafe-inline'",
       "worker-src 'self' blob:"
     ].join('; ')

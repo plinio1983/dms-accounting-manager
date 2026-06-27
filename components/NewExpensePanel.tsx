@@ -59,7 +59,7 @@ export default function NewExpensePanel({ categories, banks, paymentMethods, sup
       <div className="toolbar-actions expense-toolbar-actions">
         <Link className="button-standard secondary-action expense-import-btn-large" href="/expenses/import"><span className="btn-icon">⬆</span>Importa Excel</Link>
         <Link className="button-standard secondary-action" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>
-        <button className="button-standard primary-action" type="button" data-expense-new><span className="btn-icon">+</span>Aggiungi spesa</button>
+        <button className="button-standard primary-action" type="button" data-expense-new><span className="btn-icon">+</span><span className="hidden-mobile">Aggiungi </span>Spesa</button>
       </div>
     </div>
 

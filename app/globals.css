@@ -161,11 +161,13 @@ a {
     background: rgba(255, 255, 255, .98);
     transform: translateX(105%);
     transition: transform .22s ease;
+    pointer-events: none;
 }
 
 .settings-drawer.is-open {
     transform: translateX(0);
     box-shadow: -24px 0 52px rgba(15, 23, 42, .22);
+    pointer-events: auto;
 }
 
 .settings-drawer-header {
@@ -1002,13 +1004,25 @@ button {
     right: 36px;
 }
 
+@media (min-width: 900px) {
+    .recurring-active-filters-reset {
+        right: 48px;
+    }
+}
+
 @media (max-width: 760px) {
+
+    .hidden-mobile {
+        display: none !important;
+    }
+
     .recurring-active-filters {
         display: grid;
     }
 
     .recurring-active-filters-reset {
         width: fit-content;
+        right: 36px;
     }
 
     .recurring-bulk-actions-bar .bulk-direct-actions {
@@ -1138,7 +1152,6 @@ button {
     gap: 12px;
     font-size: 13px;
     justify-content: flex-start;
-    margin-top: 12px;
 }
 
 @media (max-width: 760px) {
@@ -1150,6 +1163,7 @@ button {
         flex-wrap: wrap;
         gap: 4px;
         justify-content: space-between;
+        margin-top: 12px;
     }
 
     .expense-trend-quick-button {
@@ -1204,8 +1218,10 @@ body.drawer-open {
     position: relative;
 }
 
-.filter-drawer-wrapper {
-    position: relative;
+.filter-drawer-wrapper button {
+    border: none;
+    background: transparent;
+    color: var(--text);
 }
 
 .filter-drawer-wrapper .recurring-filter-trigger {
@@ -10480,5 +10496,49 @@ table .cell-description {
 @media (max-width: 760px) {
     .app-form-model .expense-form .form-sticky-actions {
         display: grid !important;
+    }
+}
+
+@media (min-width: 761px) {
+    .expense-form.form-sticky-actions,
+    .expense-form .form-sticky-actions,
+    .recurring-expense-form .form-sticky-actions,
+    .income-form .form-sticky-actions {
+        position: static !important;
+        bottom: auto !important;
+        z-index: auto !important;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        backdrop-filter: none;
+    }
+
+    .app-form-modal .expense-form {
+        padding-bottom: 0;
+    }
+
+    .app-form-modal .expense-form .form-actions-row,
+    .app-form-modal .expense-form .form-sticky-actions,
+    .app-form-modal .recurring-expense-form .form-actions-row,
+    .app-form-modal .recurring-expense-form .form-sticky-actions,
+    .app-form-modal .income-form .form-actions-row,
+    .app-form-modal .income-form .form-sticky-actions {
+        position: static !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        width: auto !important;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: flex-end;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        backdrop-filter: none;
     }
 }

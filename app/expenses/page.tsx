@@ -1129,7 +1129,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         <div className="bulk-inner-container">
           <button className="bulk-direct-link button-standard primary-action" type="button" data-expense-new>
             <span className="btn-icon">+</span>
-            <span className="bulk-label">Aggiungi spesa</span>
+            <span className="bulk-label"><span className="hidden-mobile">Aggiungi</span> spesa</span>
           </button>
         </div>
       </form>
