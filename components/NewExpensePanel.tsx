@@ -48,11 +48,11 @@ export default function NewExpensePanel({ categories, banks, paymentMethods, sup
       <div className="expense-toolbar-card-content">
         <div className="expense-toolbar-card-title">
           <h2>Spese</h2>
-          <Link className="button-standard secondary-action expense-import-btn" href="/expenses/import">
-            <span className="btn-icon">⬆</span>
-            <span className="expense-import-btn-text"> Importa Excel</span>
-            <span className="expense-import-btn-text-compact"> XLS</span>
-          </Link>
+          {/*<Link className="button-standard secondary-action expense-import-btn" href="/expenses/import">*/}
+          {/*  <span className="btn-icon">⬆</span>*/}
+          {/*  <span className="expense-import-btn-text"> Importa Excel</span>*/}
+          {/*  <span className="expense-import-btn-text-compact"> XLS</span>*/}
+          {/*</Link>*/}
         </div>
         <div className="expense-toolbar-card-text">
           <p className="muted">Gestisci le spese registrate le spese ricorrenti.</p>

@@ -3469,7 +3469,7 @@ table th, table td {
 
 .copyable-detail-field {
     position: relative;
-    padding-right: 48px !important;
+    padding-right: 37px !important;
 }
 
 .copy-value-button {
@@ -3496,6 +3496,54 @@ table th, table td {
 .supplier-detail-grid .copyable-detail-field {
     min-height: 76px;
 }
+
+.supplier-detail-document .copyable-detail-field {
+    min-height: 72px;
+}
+
+.supplier-detail-document .copy-value-button {
+    border: 0;
+    background: transparent;
+    font-size: 22px;
+}
+
+.supplier-detail-page {
+
+}
+
+.supplier-detail-page .expense-detail-amount-panel-header {
+    padding: 0;
+}
+
+.supplier-detail-page .expense-detail-title-block {
+    display: grid;
+    gap: 12px;
+}
+
+.supplier-detail-page .expense-detail-badge-row {
+    margin-top: 0;
+}
+
+.supplier-detail-page .expense-detail-kicker {
+    margin: 0;
+    height: 18px;
+}
+
+.supplier-detail-page .expense-detail-meta-line {
+    margin-top: 0;
+}
+
+.supplier-detail-page .expense-detail-amount-panel {
+    padding: 0;
+}
+
+.supplier-detail-page .supplier-detail-info-strip {
+    grid-template-columns: 1fr;
+}
+
+/*.expense-detail-status-strip.supplier-detail-info-strip {*/
+/*    grid-template-columns: repeat(3, minmax(0, 1fr));*/
+/*}*/
 
 @media (max-width: 900px) {
     .income-totals-row {
@@ -9049,6 +9097,12 @@ button.bulk-direct-danger {
     display: flex;
     align-items: center;
     gap: 4px;
+}
+
+.expense-mobile-subtitle-left .expense-mobile-subtitle-description {
+    max-width: 76%;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .expense-mobile-subtitle div:first-child {

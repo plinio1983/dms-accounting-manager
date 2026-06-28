@@ -47,15 +47,22 @@ function invoiceBadge(value: boolean, invoiceStatus?: string) {
 
 function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
   const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
+  let icon = '';
   let state = invoiceStatus;
   if (invoiceStatus === "IN_ATTESA") {
-    state = " Wait";
+    icon = "×";
+    state = "Fatt: Wait";
   }
   if (invoiceStatus === "RICEVUTA") {
-    state = " Ok";
+    icon = "✓";
+    state = "Fatt: Ok";
+  }
+  if (invoiceStatus === "NON_PREVISTA") {
+    icon = "×";
+    state = "No Fatt";
   }
   const label = !value ? 'Fatt' : '@bill';
-  return <span className={badgeClass(style.className)}>{label}{state}</span>;
+  return <span className={badgeClass(style.className)}>{icon} {state}</span>;
 }
 
 function mobileDateLabel(value?: Date | null) {
@@ -105,18 +112,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const supplierDetailHref = `/suppliers/${supplier.id}`;
   const encodedSupplierDetailHref = encodeURIComponent(supplierDetailHref);
 
-  return <div className="grid">
-    <div className="toolbar-card supplier-toolbar-card">
-      <div className="actions-row">
-        <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
-        <Link className="table-action" href={`/suppliers/${supplier.id}/edit`}>✎ Modifica</Link>
-      </div>
-      <div>
-        <h2>Dettaglio fornitore</h2>
-        <p className="muted">{supplier.businessName}</p>
-      </div>
-    </div>
-
+  return <div className="grid expense-detail-page supplier-detail-page">
     <script dangerouslySetInnerHTML={{ __html: `
       document.addEventListener('click', async function(event) {
         const button = event.target.closest('[data-copy]');
@@ -127,16 +123,80 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       });
     ` }} />
 
-    <div className="card detail-grid supplier-detail-grid">
-      <CopyableField label="Ragione Sociale" value={supplier.businessName} />
-      <CopyableField label="Alias" value={supplier.alias} />
-      <CopyableField label="Email" value={supplier.email} />
-      <CopyableField label="Telefono" value={supplier.phone} />
-      <CopyableField label="PEC" value={supplier.pec} />
-      <CopyableField label="Codice SDI/Codice Fiscale" value={supplier.taxCodeSdi} />
-      <div><span>Ordini da saldare</span><strong>{openExpenses.length}</strong></div>
-      <div><span>Importo da saldare</span><strong className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong></div>
-      <CopyableField label="Note interne" value={supplier.internalNotes} />
+    <div className="expense-detail-shell">
+      <article className="expense-detail-document supplier-detail-document">
+        <div className="expense-detail-action-row">
+          <div className="left-side">
+            <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
+          </div>
+          <div className="right-side">
+            <Link className="table-action" href={`/suppliers/${supplier.id}/edit`}>✎ Modifica</Link>
+          </div>
+        </div>
+
+        <section className="expense-detail-hero">
+          <div>
+            <div className="expense-detail-title-block">
+              <p className="expense-detail-kicker">Fornitore #{supplier.id}</p>
+              <h1>{supplier.businessName}</h1>
+              <div className="expense-detail-meta-line">
+                <span>{valueOrDash(supplier.alias)}</span>
+                <span className="badge">{supplier.expenses.length} spese collegate</span>
+                {/*<span>{valueOrDash(supplier.email)}</span>*/}
+              </div>
+            </div>
+          </div>
+
+          <aside className="expense-detail-amount-panel">
+            <div className="expense-detail-amount-panel-header-row">
+              <span className="expense-detail-amount-panel-header">Da saldare</span>
+            </div>
+            <strong className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong>
+            <div className="expense-detail-badge-row">
+              {/*<span className={badgeClass(amountToPay > 0 ? paymentStatusStyles.DA_PAGARE.className : yesNoStyles.yes.className)}>*/}
+              {/*  {amountToPay > 0 ? `${paymentStatusStyles.DA_PAGARE.icon} Da saldare` : `${yesNoStyles.yes.icon} In pari`}*/}
+              {/*</span>*/}
+              {/*<span className="badge">{supplier.expenses.length} spese collegate</span>*/}
+              <span className={badgeClass(amountToPay > 0 ? paymentStatusStyles.DA_PAGARE.className : yesNoStyles.yes.className)}>
+                {openExpenses.length} ordini aperti
+              </span>
+            </div>
+          </aside>
+        </section>
+
+        <section className="expense-detail-status-strip">
+          <div>
+            <span>Spese collegate</span>
+            <strong>{supplier.expenses.length}</strong>
+          </div>
+          <div>
+            <span>Ordini da saldare</span>
+            <strong>{openExpenses.length}</strong>
+          </div>
+          <div>
+            <span>Importo da saldare</span>
+            <strong className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong>
+          </div>
+          <CopyableField label="Email" value={supplier.email} />
+        </section>
+
+        <section className="expense-detail-section">
+          <div className="expense-detail-section-heading">
+            <div>
+              <h2>Anagrafica</h2>
+              <p>Dati principali del fornitore.</p>
+            </div>
+          </div>
+          <div className="expense-detail-status-strip supplier-detail-info-strip">
+            <CopyableField label="R. Sociale" value={supplier.businessName} />
+            <CopyableField label="Alias" value={supplier.alias} />
+            <CopyableField label="Telefono" value={supplier.phone} />
+            <CopyableField label="PEC" value={supplier.pec} />
+            <CopyableField label="Cod. SDI" value={supplier.taxCodeSdi} />
+            <CopyableField label="Note interne" value={supplier.internalNotes} />
+          </div>
+        </section>
+      </article>
     </div>
 
     <div className="card expenses-list-card">
@@ -194,7 +254,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
                 </div>
                 <div className="expense-mobile-subtitle">
                   <div className="expense-mobile-subtitle-left">
-                    <span>{expense.description || 'Spesa senza descrizione'}</span>
+                    <span className="expense-mobile-subtitle-description">{expense.description || 'Spesa senza descrizione'}</span>
                     <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate.toString())}%</span>
                   </div>
                   <div><span className={badgeClass(statusStyle.className)}>{statusStyle.label}</span></div>
