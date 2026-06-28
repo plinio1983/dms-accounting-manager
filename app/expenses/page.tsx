@@ -1235,11 +1235,11 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           <th className="cell-type"><span className="th-wrap">Tipo</span></th>
           <th className="cell-supplier">Esercente</th>
           <th className="cell-amount">Importo</th>
-          <th className="cell-fiscal">Fiscale</th>
-          <th className="cell-payment-state"><span className="th-wrap">Stato Pag.</span></th>
-          <th className="cell-invoice-state"><span className="th-wrap">Stato<br />Fatt.</span></th>
-          <th className="cell-ebilling"><span className="th-wrap">E-Bill</span></th>
-          <th className="cell-description">Descrizione</th>
+            <th className="cell-description">Descrizione</th>
+            <th className="cell-fiscal">Fiscale</th>
+            <th className="cell-payment-state"><span className="th-wrap">Stato Pag.</span></th>
+            <th className="cell-invoice-state"><span className="th-wrap">Stato<br />Fatt.</span></th>
+            <th className="cell-ebilling"><span className="th-wrap">E-Bill</span></th>
           <th className="cell-residual">Residuo</th>
           </tr></thead>
           <tbody>
@@ -1261,11 +1261,11 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
               <td className="cell-type"><span className={e.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{e.isRecurring ? 'R' : 'S'}</span></td>
               <td className="cell-supplier cell-compact" title={e.merchant ?? ''}>{e.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${e.supplierId}`}>{e.merchant}</Link> : e.merchant}</td>
               <td className="cell-amount"><strong className={moneyTone(amount)}>{euro(e.amount.toString())}</strong></td>
+              <td className="cell-description" title={e.description ?? ''}>{e.description}</td>
               <td className="cell-fiscal">{fiscalBadge(e.isDeclared)}</td>
               <td className="cell-payment-state">{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>
               <td className="cell-invoice-state"><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
               <td className="cell-ebilling">{InvoiceBadge(e.hasElectronicInvoice, e.invoiceStatus)}</td>
-              <td className="cell-description" title={e.description ?? ''}>{e.description}</td>
               <td className="cell-residual"><strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong></td>
             </tr>;
           })}
