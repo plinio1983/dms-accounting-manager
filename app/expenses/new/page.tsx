@@ -32,7 +32,7 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
         <h2>{copyExpense ? `Copia spesa #${copyExpense.id}` : 'Nuova spesa'}</h2>
         <p className="muted">{copyExpense ? 'I dati sono precompilati, pagamenti e stato pagamento restano azzerati.' : 'Inserisci una nuova spesa.'}</p>
       </div>
-      <Link className="table-action secondary" href={returnTo}>↩ Annulla</Link>
+      <Link className="table-action secondary" href={returnTo}>× Annulla</Link>
     </div>
     <ExpenseCreationSwitcher
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}

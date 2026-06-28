@@ -62,6 +62,6 @@ export default function ShellChrome({ slot }: Props) {
 
   return <footer className="app-footer">
     <div>Tabularium</div>
-    <div className="muted">Footer generico — contenuti e link da definire.</div>
+    <div className="muted">Tabularium - DM Solutions</div>
   </footer>;
 }

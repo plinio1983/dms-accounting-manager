@@ -51,7 +51,7 @@ export default function BulkChangeCategoryModal({
           <h2 id={`${formId}-category-modal-title`}>{title}</h2>
           <p className="muted">Record selezionati: <strong>{selectedIds.length}</strong></p>
         </div>
-        {/*<button type="button" className="table-action secondary" onClick={() => setIsOpen(false)}>Annulla</button>*/}
+        {/*<button type="button" className="table-action secondary" onClick={() => setIsOpen(false)}>× Annulla</button>*/}
       </div>
       <form action={action} method="post" className="form bulk-category-modal-form">
         <input type="hidden" name="bulkAction" value="change_category" />
@@ -63,7 +63,7 @@ export default function BulkChangeCategoryModal({
           </option>)}
         </select></label>
         <div className="actions-row form-actions-row">
-          <button type="button" className="secondary-button" onClick={() => setIsOpen(false)}>Annulla</button>
+          <button type="button" className="secondary-button" onClick={() => setIsOpen(false)}>× Annulla</button>
           <button type="submit" className="button-standard primary-action">Salva</button>
         </div>
       </form>

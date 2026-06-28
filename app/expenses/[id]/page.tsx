@@ -124,7 +124,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       <article className="expense-detail-document">
         <div className="expense-detail-action-row">
           <div className="left-side">
-            <Link className="expense-detail-back" href={returnTo}>Indietro</Link>
+            <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
           </div>
           <div className="right-side">
             <button className="table-action secondary" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉ Copia</button>
@@ -143,8 +143,6 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
               </div>
               <div className="expense-detail-meta-line">
                 <span>{expense.category ? categoryLabel(expense.category, expense.category.name) : 'Senza categoria'}</span>
-                {/*<span>Periodo {formatPeriod(expense.month, expense.year)}</span>*/}
-                {/*<span>Ordine {dateLabel(expense.receivedDate)}</span>*/}
               </div>
             </div>
           </div>
@@ -162,11 +160,6 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           </aside>
         </section>
 
-        {/*<div className="expense-detail-action-row">*/}
-        {/*  <button className="table-action secondary" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉ Copia</button>*/}
-        {/*  <Link className="table-action" href="#" data-expense-detail-edit-id={expense.id}>✎ Modifica</Link>*/}
-        {/*</div>*/}
-
         <section className="expense-detail-status-strip">
           <div>
             <span>Pagato</span>
@@ -177,7 +170,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong>
           </div>
           <div className="expense-detail-payment span-2">
-            {/*<div className="expense-detail-payment-icon">{paymentStyle.icon}</div>*/}
+            <div className="expense-detail-payment-icon">{paymentStyle.icon}</div>
             <span>Stato pagamento</span>
             {/*<strong className={badgeClass(isOverdue ? paymentStatusStyles.SCADUTO.className : paymentStyle.className)}>*/}
             <strong>
@@ -230,21 +223,6 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
         <section className="expense-detail-section">
           <div className="expense-detail-section-heading">
             <div>
-              <h2>Informazioni</h2>
-              <p>Dati fiscali, contabili e descrittivi della spesa.</p>
-            </div>
-          </div>
-          <div className="">
-            <div className="expense-detail-item expense-detail-item-wide">
-              <span>Note</span>
-              <strong>{expense.notes ?? '-'}</strong>
-            </div>
-          </div>
-        </section>
-
-        <section className="expense-detail-section">
-          <div className="expense-detail-section-heading">
-            <div>
               <h2>Pagamenti</h2>
               <p>{expense.payments.length ? 'Movimenti registrati per questa spesa.' : 'Nessun movimento registrato.'}</p>
             </div>
@@ -264,6 +242,21 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
               </div>
             </article>)}
           </div> : <div className="expense-empty-panel">Nessun pagamento registrato.</div>}
+        </section>
+
+        <section className="expense-detail-section">
+          <div className="expense-detail-section-heading">
+            <div>
+              <h2>Altre Informazioni</h2>
+              <p>Altri dati della spesa.</p>
+            </div>
+          </div>
+          <div className="">
+            <div className="expense-detail-item expense-detail-item-wide">
+              <span>Note</span>
+              <strong>{expense.notes ?? '-'}</strong>
+            </div>
+          </div>
         </section>
 
         <section className="expense-detail-section">

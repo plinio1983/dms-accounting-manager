@@ -259,7 +259,7 @@ function SupplierAutocomplete({
               <label className="full">Note interne<textarea rows={3} value={createData.internalNotes} onChange={(e) => setCreateData((d) => ({ ...d, internalNotes: e.target.value }))} /></label>
             </div>
             <div className="actions-row right-actions">
-              <button type="button" className="secondary-button" onClick={() => setShowCreate(false)}>Annulla</button>
+              <button type="button" className="secondary-button" onClick={() => setShowCreate(false)}>× Annulla</button>
               <button type="button" disabled={isSaving} onClick={createSupplier}>✓ Salva e seleziona</button>
             </div>
           </div>

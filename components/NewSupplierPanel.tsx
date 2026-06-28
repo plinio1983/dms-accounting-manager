@@ -27,7 +27,7 @@ export default function NewSupplierPanel({ initialOpen = false }: { initialOpen?
   }, []);
 
   return <>
-    <button className="button-standard primary-action" type="button" data-supplier-new><span className="btn-icon">＋</span>Aggiungi nuovo fornitore</button>
+    <button className="button-standard primary-action" type="button" data-supplier-new><span className="btn-icon">＋</span>Nuovo fornitore</button>
     {isOpen && <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Aggiungi nuovo fornitore" onMouseDown={() => setIsOpen(false)}>
       <div className="modal-card modal-card-wide" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-title">

@@ -7922,19 +7922,22 @@ button.bulk-direct-danger {
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 4px;
+    padding: 12px;
 }
 
 .expense-detail-action-row {
     display: flex;
     align-items: center;
-    gap: 20px;
-    padding: 16px 28px;
+    gap: 12px;
+    padding: 12px;
 }
 
 .expense-detail-action-row .right-side {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-grow: 1;
+    justify-content: flex-end;
 }
 
 .expense-detail-action-row .right-side a,
@@ -8249,8 +8252,10 @@ text-align: center;
 }
 
 .expense-detail-action-row {
-    padding: 12px 18px;
-    gap: 10px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 16px 28px;
 }
 
 .expense-detail-action-row button,
@@ -8267,6 +8272,7 @@ text-align: center;
     display: flex;
     gap: 8px;
     flex-grow: 1;
+    justify-content: flex-end;
 }
 }
 
@@ -8292,16 +8298,12 @@ text-align: center;
         grid-template-columns: 1fr 1fr;
     }
 
-    /*.expense-payment-card {*/
-    /*    grid-template-columns: 1fr 1fr;;*/
-    /*}*/
-
     .expense-payment-card .expense-payment-data {
         grid-template-columns: 1fr 1fr;
     }
 
     .expense-detail-status-strip > div {
-        border-right: 0;
+        /*border-right: 0;*/
         border-bottom: 1px solid rgba(226, 232, 240, .85);
     }
 
@@ -10588,9 +10590,15 @@ table .cell-description {
 }
 
 .expense-detail-payment {
-
+    position: relative;
+    padding-left: 74px !important;
 }
 
 .expense-detail-payment .expense-detail-payment-icon {
-
+    position: absolute;
+    left: 19px;
+    top: 20px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 999px;
 }
