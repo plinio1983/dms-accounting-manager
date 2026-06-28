@@ -1230,7 +1230,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           <thead><tr>
           <th className="cell-option cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="expenseBulkForm" aria-label="Seleziona tutte le spese" /></th>
           <th className="cell-order-date"><span className="th-wrap">Data<br />ordine</span></th>
-          <th className="cell-billing-period"><span className="th-wrap">Per.<br />Cont.</span></th>
+          <th className="cell-billing-period"><span className="th-wrap">Periodo<br />Cont.</span></th>
             <th className="cell-type"><span className="th-wrap">Tipo</span></th>
             <th className="cell-category">Categ.</th>
           <th className="cell-supplier">Esercente</th>

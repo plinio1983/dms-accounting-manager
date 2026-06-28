@@ -3005,9 +3005,9 @@ body.drawer-open {
 }
 
 .compact-expenses-table {
-    min-width: 1120px;
     font-size: 12px;
-    table-layout: auto;
+    table-layout: fixed;
+    min-width: 980px;
 }
 
 .compact-expenses-table th {
@@ -3076,10 +3076,6 @@ body.drawer-open {
 
 table th, table td {
     vertical-align: middle;
-}
-
-.compact-expenses-table {
-    min-width: 1080px;
 }
 
 .table-action.danger, .danger {
@@ -4312,12 +4308,6 @@ table {
     max-width: 100%;
 }
 
-.compact-expenses-table {
-    min-width: 1120px;
-    table-layout: fixed;
-    font-size: 12px;
-}
-
 .compact-incomes-table {
     table-layout: fixed;
     font-size: 12px;
@@ -4357,10 +4347,6 @@ table {
 
     .expense-filters, .compact-filters {
         grid-template-columns:1fr;
-    }
-
-    .compact-expenses-table {
-        min-width: 1080px;
     }
 
     .compact-incomes-table {
@@ -5770,11 +5756,6 @@ button {
     color: #9f1239;
 }
 
-.compact-expenses-table {
-    min-width: 1080px;
-    table-layout: fixed;
-}
-
 .supplier-table-link {
     color: var(--accent);
     font-weight: 850;
@@ -5802,11 +5783,6 @@ button {
     .income-totals-row .total-card {
         min-height: auto;
     }
-}
-
-/* v48: allineamento e compattezza lista spese */
-.compact-expenses-table {
-    min-width: 1035px;
 }
 
 .compact-expenses-table .badge {
@@ -5843,11 +5819,6 @@ button {
     max-width: 128px;
     white-space: nowrap;
 }
-
-.compact-expenses-table {
-    min-width: 995px;
-}
-
 
 .incomes-table {
     font-size: 13px;
@@ -6140,10 +6111,6 @@ button {
     cursor: pointer;
 }
 
-.compact-expenses-table {
-    min-width: 1035px;
-}
-
 .compact-incomes-table col.income-col-select {
     width: 30px;
 }
@@ -6432,10 +6399,6 @@ button {
 
 .bulk-action-menu-panel .danger-menu-item {
     color: #b91c1c;
-}
-
-.compact-expenses-table {
-    min-width: 1120px;
 }
 
 .compact-expenses-table .expense-invoice-status-cell .badge {
@@ -7168,9 +7131,9 @@ button.bulk-direct-link {
     grid-template-columns: repeat(3, minmax(160px, 1fr));
 }
 
-.supplier-linked-expenses-table {
-    min-width: 1180px;
-}
+/*.supplier-linked-expenses-table {*/
+/*    min-width: 1180px;*/
+/*}*/
 
 .supplier-linked-expenses-table th,
 .supplier-linked-expenses-table td {
@@ -7928,7 +7891,6 @@ button.bulk-direct-danger {
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 4px;
-    /*padding: 12px;*/
 }
 
 .expense-detail-action-row {
