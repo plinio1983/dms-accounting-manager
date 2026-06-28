@@ -3482,6 +3482,12 @@ table th, table td {
     font-size: 15px;
 }
 
+.supplier-detail-grid .copyable-detail-field .copy-value-button {
+    border: none;
+    background: transparent;
+    font-size: 26px;
+}
+
 .supplier-detail-grid .copyable-detail-field {
     min-height: 76px;
 }
@@ -7922,7 +7928,7 @@ button.bulk-direct-danger {
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 4px;
-    padding: 12px;
+    /*padding: 12px;*/
 }
 
 .expense-detail-action-row {
