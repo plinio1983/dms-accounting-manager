@@ -10,7 +10,7 @@ const persistedFilterKeys: Record<string, string> = {
 };
 
 const filterMaxAgeMs = 24 * 60 * 60 * 1000;
-const transientParams = new Set(['new', 'copyId', 'returnTo']);
+const transientParams = new Set(['new', 'copyId', 'returnTo', 'saved', 'error', 'usage']);
 
 function readStoredFilter(storageKey: string) {
   const raw = window.localStorage.getItem(storageKey);

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import IncomeForm from "@/components/IncomeForm";
+import { flashParamNames } from '@/lib/flash';
 
 type Option = { id: number; name: string; isFallback?: boolean | null };
 type PaymentMethodOption = Option & { kind?: string };
@@ -13,6 +14,7 @@ export default function NewIncomePanel({ initialOpen = false, banks, paymentMeth
   useEffect(() => {
     const url = new URL(window.location.href);
     url.searchParams.delete('new');
+    flashParamNames.forEach(key => url.searchParams.delete(key));
     const returnTo = `${url.pathname}${url.search}`;
     setReturnAction(`/api/incomes?returnTo=${encodeURIComponent(returnTo)}`);
   }, []);

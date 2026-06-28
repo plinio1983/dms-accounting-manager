@@ -6,6 +6,7 @@ import NewSupplierPanel from '@/components/NewSupplierPanel';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import SupplierFiltersDrawer from '@/components/SupplierFiltersDrawer';
 import { requireWorkspace } from '@/lib/auth';
+import { stripFlashRecord, stripFlashSearchParams } from '@/lib/flash';
 
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
   const value = searchParams[key];
@@ -26,13 +27,15 @@ function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: s
 
 export default async function SuppliersPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await requireWorkspace('/suppliers');
-  const filters = (await searchParams) ?? {};
+  const rawFilters = (await searchParams) ?? {};
+  const filters = stripFlashRecord(rawFilters);
   const currentYear = new Date().getFullYear();
   const currentQuery = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
     if (Array.isArray(value)) value.forEach(item => item && currentQuery.append(key, item));
     else if (value) currentQuery.set(key, value);
   });
+  stripFlashSearchParams(currentQuery);
   const currentQueryString = currentQuery.toString();
   const supplierListHref = `/suppliers${currentQueryString ? `?${currentQueryString}` : ''}`;
   const returnTo = encodeURIComponent(supplierListHref);
@@ -106,7 +109,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
     </div>
 
     <ActionFeedbackBanner
-      searchParams={filters}
+      searchParams={rawFilters}
       savedMessages={flashMessages.savedMessages}
       errorMessages={flashMessages.errorMessages}
       defaultSavedMessage="Operazione completata."

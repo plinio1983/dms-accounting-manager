@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { euro, moneyTone } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
+import { stripFlashParams } from '@/lib/flash';
 import {
   badgeClass,
   categoryLabel,
@@ -88,7 +89,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const { id } = await params;
   const query = (await searchParams) ?? {};
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
-  const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : '/suppliers';
+  const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? stripFlashParams(rawReturnTo) : '/suppliers';
   const supplier = await prisma.supplier.findUnique({
     where: { id: Number(id) },
     include: { expenses: { include: { payments: true, category: true }, orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }] } }

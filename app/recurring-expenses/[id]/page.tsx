@@ -6,6 +6,7 @@ import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import { euro } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
+import { stripFlashParams } from '@/lib/flash';
 import {
   badgeClass,
   bankIcons,
@@ -69,7 +70,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
   const { id } = await params;
   const query = (await searchParams) ?? {};
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
-  const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : '/recurring-expenses';
+  const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? stripFlashParams(rawReturnTo) : '/recurring-expenses';
   const currentDetailReturnTo = `/recurring-expenses/${id}?returnTo=${encodeURIComponent(returnTo)}`;
 
   const [item, categories, banks, paymentMethods, suppliers] = await Promise.all([

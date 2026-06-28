@@ -4,6 +4,7 @@ import NewRecurringExpensePanel from '@/components/NewRecurringExpensePanel';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
+import { stripFlashRecord } from '@/lib/flash';
 
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
   const value = searchParams[key];
@@ -21,7 +22,8 @@ function decimalFilter(minValue: string, maxValue: string) {
 
 export default async function RecurringExpensesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await requireWorkspace('/recurring-expenses');
-  const filters = (await searchParams) ?? {};
+  const rawFilters = (await searchParams) ?? {};
+  const filters = stripFlashRecord(rawFilters);
   const merchantFilter = inputDefault(filters, 'merchant').trim();
   const descriptionFilter = inputDefault(filters, 'description').trim();
   const categoryFilter = inputDefault(filters, 'categoryId');
@@ -92,7 +94,7 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
       />
     </div>
     <ActionFeedbackBanner
-      searchParams={filters}
+      searchParams={rawFilters}
       savedMessages={flashMessages.savedMessages}
       errorMessages={flashMessages.errorMessages}
       defaultSavedMessage="Operazione completata."

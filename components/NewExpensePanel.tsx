@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import ExpenseCreationSwitcher from '@/components/ExpenseCreationSwitcher';
+import { flashParamNames } from '@/lib/flash';
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
 type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; phone?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
@@ -23,6 +24,7 @@ export default function NewExpensePanel({ categories, banks, paymentMethods, sup
   useEffect(() => {
     const url = new URL(window.location.href);
     url.searchParams.delete('new');
+    flashParamNames.forEach(key => url.searchParams.delete(key));
     const returnTo = `${url.pathname}${url.search}`;
     setReturnAction(`/api/expenses?returnTo=${encodeURIComponent(returnTo)}`);
     setRecurringAction(`/api/recurring-expenses?returnTo=${encodeURIComponent(returnTo)}`);

@@ -22,6 +22,7 @@ import {
 import { vatStyles } from '@/lib/expense-ui';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
+import { stripFlashRecord, stripFlashSearchParams } from '@/lib/flash';
 
 const salesChannelOptions = ['Shop', 'Online Shop', 'Altro Canale'];
 const saleCategoryOptions = ['B2C', 'B2B', 'Altro'];
@@ -437,12 +438,14 @@ function IncomeVerticalBarChart({ title, description, data }: { title: string; d
 
 export default async function IncomesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await requireWorkspace('/incomes');
-  const filters = (await searchParams) ?? {};
+  const rawFilters = (await searchParams) ?? {};
+  const filters = stripFlashRecord(rawFilters);
   const currentQuery = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
     if (Array.isArray(value)) value.forEach(item => item && currentQuery.append(key, item));
     else if (value) currentQuery.set(key, value);
   });
+  stripFlashSearchParams(currentQuery);
   const currentQueryString = currentQuery.toString();
   const listHref = `/incomes${currentQueryString ? `?${currentQueryString}` : ''}`;
   const returnTo = encodeURIComponent(listHref);
@@ -627,7 +630,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
       paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
     />
     <ActionFeedbackBanner
-      searchParams={filters}
+      searchParams={rawFilters}
       savedMessages={flashMessages.savedMessages}
       errorMessages={flashMessages.errorMessages}
       defaultSavedMessage="Operazione completata."

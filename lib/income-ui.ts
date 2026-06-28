@@ -1,7 +1,7 @@
 export const salesChannelStyles: Record<string, { label: string; icon: string; className: string }> = {
   Shop: { label: 'Shop', icon: '🏬', className: 'tone-goods' },
   'Online Shop': { label: 'Online Shop', icon: '🛒', className: 'tone-web' },
-  'Altro Canale': { label: 'Altro Canale', icon: '➕', className: 'tone-services' }
+  'Altro Canale': { label: 'Altro Canale', icon: '🔀', className: 'tone-services' }
 };
 
 export const saleCategoryStyles: Record<string, { label: string; icon: string; className: string }> = {

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import RecurringExpenseForm from '@/components/RecurringExpenseForm';
+import { flashParamNames } from '@/lib/flash';
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
 type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; phone?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
@@ -20,6 +21,7 @@ export default function NewRecurringExpensePanel({ categories, banks, paymentMet
 
   useEffect(() => {
     const url = new URL(window.location.href);
+    flashParamNames.forEach(key => url.searchParams.delete(key));
     const returnTo = `${url.pathname}${url.search}`;
     setAction(`/api/recurring-expenses?returnTo=${encodeURIComponent(returnTo)}`);
   }, []);

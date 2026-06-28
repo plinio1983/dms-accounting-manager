@@ -7866,6 +7866,43 @@ button.bulk-direct-danger {
     font-weight: 800;
 }
 
+
+.income-detail-document .expense-detail-payment .expense-detail-payment-icon {
+    top: 21px;
+    left: 10px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 28px;
+}
+
+.income-detail-document .expense-detail-payment {
+    padding: 18px 22px !important;
+}
+
+.income-detail-document .expense-detail-title-block {
+    display: grid;
+    align-content: baseline;
+    gap: 12px;
+    /*padding: 0 12px 12px;*/
+}
+
+.income-detail-document .expense-detail-kicker {
+    min-height: 23px;
+    margin: 0;
+}
+
+.income-detail-document .expense-detail-amount-panel {
+    padding: 0;
+}
+
+.income-detail-document .expense-detail-meta-line {
+    margin-top: 0;
+}
+
 .expense-detail-amount-panel {
     display: grid;
     align-content: baseline;
@@ -7887,6 +7924,13 @@ button.bulk-direct-danger {
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: .055em;
+}
+
+.expense-detail-amount-panel-header-row > .badge {
+    border-width: 1px;
+    border-style: solid;
+    margin-left: 6px;
+    border-color: #cfe5ff;
 }
 
 .expense-detail-amount-panel > strong {
@@ -7927,7 +7971,8 @@ button.bulk-direct-danger {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0;
-    border-bottom: 1px solid rgba(226, 232, 240, .9);
+    border-top: 1px solid rgba(226, 232, 240, .9);
+    border-left: 1px solid rgba(226, 232, 240, .9);
     background: #fff;
 }
 
@@ -7942,10 +7987,6 @@ button.bulk-direct-danger {
     .expense-detail-status-strip strong {
         font-size: 16px !important;
     }
-}
-
-.expense-detail-status-strip > div:last-child {
-    border-right: 0;
 }
 
 .expense-detail-status-strip span {
@@ -7981,7 +8022,7 @@ button.bulk-direct-danger {
 
 .expense-detail-section {
     padding: 26px 28px;
-    border-bottom: 1px solid rgba(226, 232, 240, .8);
+    /*border-bottom: 1px solid rgba(226, 232, 240, .8);*/
     display: grid;
     gap: 16px;
 }
@@ -8184,6 +8225,10 @@ button.bulk-direct-danger {
     font-weight: 800;
 }
 
+.mobile-expense-empty-panel {
+    display: none;
+}
+
 .expense-empty-panel {
     padding: 18px;
     border: 1px dashed rgba(148, 163, 184, .75);
@@ -8208,10 +8253,6 @@ button.bulk-direct-danger {
 
     .expense-detail-status-strip {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .expense-detail-status-strip > div:nth-child(2) {
-        border-right: 0;
     }
 
     .expense-detail-status-strip > div:nth-child(-n+2) {
@@ -8259,6 +8300,10 @@ button.bulk-direct-danger {
         border-radius: 20px;
     }
 
+    .mobile-expense-empty-panel {
+        display: block;
+    }
+
     .expense-detail-info-grid,
     .expense-detail-status-strip,
     .expense-payment-data {
@@ -8271,10 +8316,6 @@ button.bulk-direct-danger {
 
     .expense-detail-status-strip > div {
         border-bottom: 1px solid rgba(226, 232, 240, .85);
-    }
-
-    .expense-detail-status-strip > div:last-child {
-        border-bottom: 0;
     }
 
     .expense-payment-timeline {
@@ -9320,6 +9361,54 @@ button.bulk-direct-danger {
 
 .form-summary strong {
     font-size: 16px;
+}
+
+.action-feedback {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 44px 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    font-weight: 850;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, .08);
+}
+
+.action-feedback-success {
+    border-color: #cdeed8;
+    background: linear-gradient(135deg, #eaf8ef, #f6fff9);
+    color: #19733b;
+}
+
+.action-feedback-error {
+    border-color: #fecaca;
+    background: linear-gradient(135deg, #fef2f2, #fff7f7);
+    color: #991b1b;
+}
+
+.action-feedback-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .72);
+    color: currentColor;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.action-feedback-close:hover {
+    background: rgba(255, 255, 255, .95);
 }
 
 .expense-form .form-summary .muted {
@@ -10594,7 +10683,7 @@ table .cell-description {
 
 .expense-detail-payment {
     position: relative;
-    padding: 12px 22px 12px 74px !important;
+    /*padding: 12px 22px 12px 74px !important;*/
 }
 
 .expense-detail-payment .expense-detail-payment-icon {

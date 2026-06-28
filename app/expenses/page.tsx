@@ -11,14 +11,17 @@ import ExpenseTrendSelectors from '@/components/ExpenseTrendSelectors';
 import SupplierFilterInput from '@/components/SupplierFilterInput';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
+import { stripFlashRecord, stripFlashSearchParams } from '@/lib/flash';
 import {
   badgeClass,
   categoryLabel,
   categoryTone,
   formatPeriod,
   invoiceStatusStyles,
-  paymentStatusStyles, vatKey,
-  vatRateLabel, vatStyles,
+  paymentStatusStyles,
+  vatKey,
+  vatRateLabel,
+  vatStyles,
   yesNoStyles
 } from '@/lib/expense-ui';
 
@@ -569,12 +572,14 @@ function matchesIsoDate(value: Date | null | undefined, from: string, to: string
 
 export default async function ExpensesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await requireWorkspace('/expenses');
-  const filters = (await searchParams) ?? {};
+  const rawFilters = (await searchParams) ?? {};
+  const filters = stripFlashRecord(rawFilters);
   const currentQuery = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
     if (Array.isArray(value)) value.forEach(item => item && currentQuery.append(key, item));
     else if (value) currentQuery.set(key, value);
   });
+  stripFlashSearchParams(currentQuery);
   const currentQueryString = currentQuery.toString();
   const listHref = `/expenses${currentQueryString ? `?${currentQueryString}` : ''}`;
   const returnTo = encodeURIComponent(listHref);
@@ -780,7 +785,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       initialOpen={inputDefault(filters, 'new') === '1'}
     />
     <ActionFeedbackBanner
-      searchParams={filters}
+      searchParams={rawFilters}
       savedMessages={flashMessages.savedMessages}
       errorMessages={flashMessages.errorMessages}
       defaultSavedMessage="Operazione completata."
@@ -1237,7 +1242,6 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           <tbody>
             {filteredExpenses.map(e => {
             const amount = Number(e.amount.toString());
-            const vatStyle = vatStyles[vatKey(e.vatRate)] ?? vatStyles['22'];
             const paid = e.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
             const residual = Math.max(0, amount - paid);
             const categoryClassName = categoryTone(e.category);
@@ -1254,9 +1258,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
               <td className="cell-category">{e.category ? <span title={e.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(e.category, e.category.code)}</span> : '-'}</td>
               <td className="cell-supplier cell-compact" title={e.merchant ?? ''}>{e.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${e.supplierId}`}>{e.merchant}</Link> : e.merchant}</td>
               <td className="cell-amount"><strong className={moneyTone(amount)}>{euro(e.amount.toString())}</strong></td>
-              <td className="cell-vat">
-                <span className={badgeClass(vatStyle.className)}>{Number(e.vatRate.toString())}%</span>
-              </td>
+              <td className="cell-vat">{vatRateLabel(e.vatRate)}</td>
               <td className="cell-description" title={e.description ?? ''}>{e.description}</td>
               <td className="cell-fiscal">{fiscalBadge(e.isDeclared)}</td>
               <td className="cell-payment-state">{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>

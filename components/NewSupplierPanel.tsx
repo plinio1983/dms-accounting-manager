@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { flashParamNames } from '@/lib/flash';
 
 export default function NewSupplierPanel({ initialOpen = false }: { initialOpen?: boolean }) {
   const [isOpen, setIsOpen] = useState(initialOpen);
@@ -9,6 +10,7 @@ export default function NewSupplierPanel({ initialOpen = false }: { initialOpen?
   useEffect(() => {
     const url = new URL(window.location.href);
     url.searchParams.delete('new');
+    flashParamNames.forEach(key => url.searchParams.delete(key));
     const returnTo = `${url.pathname}${url.search}`;
     setAction(`/api/suppliers?returnTo=${encodeURIComponent(returnTo)}`);
   }, []);
