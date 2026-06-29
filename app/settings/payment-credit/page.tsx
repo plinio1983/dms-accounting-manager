@@ -110,7 +110,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
               <small>{usageCount === 1 ? 'movimento' : 'movimenti'}</small>
             </div>
             <div className="category-settings-actions">
-              <button type="submit" className="table-action">Salva</button>
+              <button type="submit" className="table-action">✓ Salva</button>
             </div>
           </form>
           {bank.isFallback ? <div className="category-settings-delete-form"><button type="button" className="table-action danger-action" disabled>Rimuovi</button></div> : <form action={deleteBankAction} className="category-settings-delete-form">
@@ -150,7 +150,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
               <small>{method.isFallback ? 'generico' : kindLabels[method.kind] ?? method.kind}</small>
             </div>
             <div className="category-settings-actions">
-              <button type="submit" className="table-action">Salva</button>
+              <button type="submit" className="table-action">✓ Salva</button>
             </div>
           </form>
           {method.isFallback ? <div className="category-settings-delete-form"><button type="button" className="table-action danger-action" disabled>Rimuovi</button></div> : <form action={deletePaymentMethodAction} className="category-settings-delete-form">

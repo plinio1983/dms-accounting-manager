@@ -384,7 +384,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
       <div className="dashboard-statement-body">
         <table className="dashboard-statement-table dashboard-annual-statement-table">
           <tbody>
-          <tr><td>Entrate totali anno</td><td><span className="money-highlight"><strong className={moneyTone(report.totals.incassoTotale)}>{euro(report.totals.incassoTotale)}</strong></span></td></tr>
+          <tr className="dashboard-statement-result"><td>Entrate totali anno</td><td><span className="money-highlight"><strong className={moneyTone(report.totals.incassoTotale)}>{euro(report.totals.incassoTotale)}</strong></span></td></tr>
           <tr><td>Uscite anno</td><td><strong className={moneyTone(report.totals.speseTotali)}>{euro(report.totals.speseTotali)}</strong></td></tr>
           <tr className="dashboard-statement-result"><td>Utile netto anno</td><td><strong className={moneyTone(report.totals.utileNetto, 'money-highlight')}>{euro(report.totals.utileNetto)}</strong></td></tr>
           <tr><td>Entrate non fiscali</td><td><strong className={moneyTone(report.totals.incassoNonFiscale)}>{euro(report.totals.incassoNonFiscale)}</strong></td></tr>
@@ -425,8 +425,8 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
             <td><Link className="badge" href={`/months/${m.year}/${m.month}`}>{monthName(m.month)}</Link></td>
             <td><Link href={periodLink('/incomes', [{ year: m.year, month: m.month }])}><MoneyCell value={m.totals.incassoTotale} highlight /></Link></td>
             <td><Link href={periodLink('/expenses', [{ year: m.year, month: m.month }])}><MoneyCell value={m.totals.speseTotali} /></Link></td>
-            <td><MoneyCell value={m.totals.utileNetto} highlight /></td>
-            <td><MoneyCell value={m.totals.utileFiscale} highlight /></td>
+            <td className="money-value-col"><MoneyCell value={m.totals.utileNetto} highlight /></td>
+            <td className="money-value-col"><MoneyCell value={m.totals.utileFiscale} highlight /></td>
             {/*<td><Link href={periodLink('/incomes', [{ year: m.year, month: m.month }], { fiscal: 'yes' })}><MoneyCell value={m.totals.incassoFiscale} /></Link></td>*/}
             <td><Link href={periodLink('/incomes', [{ year: m.year, month: m.month }], { fiscal: 'no' })}><MoneyCell value={m.totals.incassoNonFiscale} /></Link></td>
             <td><Link href={periodLink('/expenses', [{ year: m.year, month: m.month }], { declared: 'no' })}><MoneyCell value={m.totals.usciteNonFiscali} tone="money-warning" /></Link></td>

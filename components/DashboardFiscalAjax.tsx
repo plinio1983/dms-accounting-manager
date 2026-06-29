@@ -97,7 +97,7 @@ function dateRangeLink(path: '/expenses' | '/incomes', year: number, month: numb
 }
 
 function StatementMoneyRow({ label, value, highlight = false, warning = false, vat = false, href }: { label: string; value: number; highlight?: boolean; warning?: boolean; vat?: boolean; href?: string }) {
-  const valueClass = [highlight ? 'money-highlight' : '', warning ? 'money-warning' : '', vat ? 'money-vat' : ''].filter(Boolean).join(' ');
+  const valueClass = [highlight ? 'money-highlight' : '', warning ? 'money-warning' : '', vat ? '' : ''].filter(Boolean).join(' ');
   const valueNode = <strong className={moneyTone(value, valueClass)}>{euro(value)}</strong>;
 
   const recordAddClass = warning ? `row-warning` : '';

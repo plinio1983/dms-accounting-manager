@@ -211,6 +211,7 @@ a {
 .settings-drawer-nav button {
     display: flex;
     align-items: center;
+    gap: 10px;
     width: 100%;
     min-height: 46px;
     padding: 0 14px;
@@ -222,6 +223,16 @@ a {
     font-weight: 850;
     text-decoration: none;
     cursor: pointer;
+}
+
+.settings-drawer-item-icon {
+    width: 24px;
+    min-width: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    line-height: 1;
 }
 
 .settings-drawer-nav a:hover,
@@ -3779,10 +3790,6 @@ table th, table td {
     font-size: 16px;
 }
 
-.dashboard-report-table {
-    min-width: 1050px;
-}
-
 .dashboard-report-table th, .dashboard-report-table td {
     vertical-align: middle;
     white-space: nowrap;
@@ -3870,10 +3877,6 @@ table th, table td {
     font-size: 12px;
 }
 
-.dashboard-report-table {
-    min-width: 1180px;
-}
-
 .dashboard-report-table td:nth-child(4),
 .dashboard-report-table td:nth-child(9),
 .dashboard-report-table td:nth-child(10) {
@@ -3917,6 +3920,12 @@ table th, table td {
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: .03em;
+}
+
+.dashboard-report-table .money-value-col .money-positive {
+    background: #f1fbf7;
+    color: #09724f;
+    border-color: #cceee1;
 }
 
 .dashboard-report-table {
@@ -10305,7 +10314,7 @@ table .cell-category {
 }
 
 table .cell-ebilling {
-    width: 5% !important;
+    width: 6% !important;
     text-align: center;
 }
 
@@ -10339,6 +10348,11 @@ table .cell-invoice-state {
 table .cell-payment-state {
     width: 8% !important;
     text-align: center;
+}
+
+table .cell-payment-state > * {
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 table .cell-description {

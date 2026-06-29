@@ -181,9 +181,10 @@ function InvoiceBadge(value: boolean, invoiceStatus?: string) {
   const label = (status?: string) => {
     let label = "";
     if (!value) {
-      label = status === 'NON_PREVISTA' ? 'N.P.' : 'Fatt';
+      label = status === 'NON_PREVISTA' ? '✕ N.P.' : 'Fatt';
+      // style = yesNoStyles.no;
     } else {
-      label = "@bill"
+      label = "✓ @Fatt"
     }
     return label;
   }

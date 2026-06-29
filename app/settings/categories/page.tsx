@@ -78,7 +78,7 @@ export default async function CategoriesSettingsPage({ searchParams }: { searchP
               </div>
             </div>
             <div className="category-settings-actions">
-              <button type="submit" className="table-action">Salva</button>
+              <button type="submit" className="table-action">✓ Salva</button>
             </div>
           </form>
           <CategoryDeleteForm id={category.id} name={category.name} action={deleteCategoryAction} />

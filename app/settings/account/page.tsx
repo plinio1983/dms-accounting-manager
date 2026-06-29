@@ -44,7 +44,7 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
       </div>
       <div className="actions-row full form-actions-row card form account-settings-form">
         <AccountCancelButton />
-        <button type="submit" className="button-standard primary-action">Salva account</button>
+        <button type="submit" className="button-standard primary-action">✓ Salva account</button>
       </div>
     </form>
   </div>;

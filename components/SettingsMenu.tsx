@@ -4,13 +4,13 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 const settingsLinks = [
-  { href: '/settings/account', label: 'Account' },
-  { href: '/account/workspace', label: 'Workspace' },
-  { href: '/settings/company', label: 'Azienda' },
-  { href: '/settings/company-settings', label: 'Impostazioni Società' },
-  { href: '/settings/categories', label: 'Categorie' },
-  { href: '/settings/payment-credit', label: 'Pagamento e Accredito' },
-  { href: '/expenses/import', label: 'Importazione spese' },
+  { href: '/settings/account', label: 'Account', icon: '👤' },
+  { href: '/account/workspace', label: 'Workspace', icon: '▦' },
+  { href: '/settings/company', label: 'Azienda', icon: '🏢' },
+  { href: '/settings/company-settings', label: 'Impostazioni Società', icon: '⚙' },
+  { href: '/settings/categories', label: 'Categorie', icon: '🏷' },
+  { href: '/settings/payment-credit', label: 'Pagamento e Accredito', icon: '💳' },
+  { href: '/expenses/import', label: 'Importazione spese', icon: '⬆' },
 ];
 
 export default function SettingsMenu() {
@@ -52,9 +52,15 @@ export default function SettingsMenu() {
         <button className="settings-drawer-close" type="button" aria-label="Chiudi impostazioni" onClick={() => setIsOpen(false)}>×</button>
       </div>
       <nav className="settings-drawer-nav" aria-label="Menu impostazioni">
-        {settingsLinks.map(link => <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)}>{link.label}</Link>)}
+        {settingsLinks.map(link => <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)}>
+          <span className="settings-drawer-item-icon" aria-hidden="true">{link.icon}</span>
+          <span>{link.label}</span>
+        </Link>)}
         <form action="/logout" method="post">
-          <button type="submit" onClick={() => setIsOpen(false)}>Logout</button>
+          <button type="submit" onClick={() => setIsOpen(false)}>
+            <span className="settings-drawer-item-icon" aria-hidden="true">↪</span>
+            <span>Logout</span>
+          </button>
         </form>
       </nav>
     </aside>
