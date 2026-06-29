@@ -83,9 +83,9 @@ function isExpenseUnpaid(expense: { paymentStatus?: string | null }) {
   return expense.paymentStatus === 'DA_PAGARE' || expense.paymentStatus === 'PAGATO_PARZIALMENTE';
 }
 
-function CopyableField({ label, value }: { label: string; value?: string | null }) {
+function CopyableField({ label, value, className }: { label: string; value?: string | null; className?: string | undefined }) {
   const displayValue = valueOrDash(value);
-  return <div className="copyable-detail-field">
+  return <div className={`${className} copyable-detail-field`}>
     <span>{label}</span>
     <strong>{displayValue}</strong>
     <button type="button" className="copy-value-button" data-copy={displayValue === '-' ? '' : displayValue} title="Copia valore">⧉</button>
@@ -201,7 +201,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
             <CopyableField label="Telefono" value={supplier.phone} />
             <CopyableField label="PEC" value={supplier.pec} />
             <CopyableField label="Cod. SDI" value={supplier.taxCodeSdi} />
-            <CopyableField label="Note interne" value={supplier.internalNotes} />
+            <CopyableField label="Note interne" value={supplier.internalNotes} className="span-2"/>
           </div>
         </section>
       </article>
