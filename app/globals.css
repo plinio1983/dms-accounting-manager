@@ -3835,7 +3835,7 @@ table th, table td {
 }
 
 .money-zero {
-    color: var(--muted);
+    color: var(--muted) !important;
 }
 
 .money-highlight {
@@ -3928,6 +3928,10 @@ table th, table td {
     background: #f1fbf7;
     color: #365e37;
     border-color: #cceee1;
+}
+
+.dashboard-report-table td .badge {
+    border: none;
 }
 
 .dashboard-report-table {
@@ -4584,8 +4588,10 @@ html, body {
     color: #a15c00 !important;
 }
 
-.dashboard-report-table td:nth-child(6) strong {
+.tone-warning {
+    background: #fff8e8;
     color: #a15c00;
+    border-color: #f8d89c;
 }
 
 .summary-metric-warning {
