@@ -254,6 +254,9 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
               <strong>{dueLabel(item)}</strong>
             </div>
           </div>
+        </section>
+
+        <section className="expense-detail-section">
           <div className="expense-detail-item expense-detail-item-wide">
             <span>Note</span>
             <strong>{item.notes ?? '-'}</strong>
