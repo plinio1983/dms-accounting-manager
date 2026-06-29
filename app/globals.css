@@ -5412,7 +5412,7 @@ button {
 
 .dashboard-header-card .dashboard-year-selector select {
     width: auto;
-    min-width: 130px;
+    min-width: 230px;
 }
 
 .dashboard-header-card .dashboard-year-selector button {
