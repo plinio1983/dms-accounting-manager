@@ -24,7 +24,7 @@ export default async function RegisterSuccessPage() {
           </p>
         </div>
         <div className="actions-row right-actions login-actions register-success-actions">
-          {current ? <Link className="button-standard primary-action" href="/">Vai all'app</Link> : <Link className="button-standard primary-action" href="/login">Accedi</Link>}
+          {current ? <Link className="btn btn-md btn-primary" href="/">Vai all'app</Link> : <Link className="btn btn-md btn-primary" href="/login">Accedi</Link>}
         </div>
       </section>
     </section>

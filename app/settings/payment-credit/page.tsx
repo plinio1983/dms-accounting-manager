@@ -110,12 +110,12 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
               <small>{usageCount === 1 ? 'movimento' : 'movimenti'}</small>
             </div>
             <div className="category-settings-actions">
-              <button type="submit" className="table-action">✓ Salva</button>
+              <button type="submit" className="btn btn-xs btn-primary">✓ Salva</button>
             </div>
           </form>
-          {bank.isFallback ? <div className="category-settings-delete-form"><button type="button" className="table-action danger-action" disabled>Rimuovi</button></div> : <form action={deleteBankAction} className="category-settings-delete-form">
+          {bank.isFallback ? <div className="category-settings-delete-form"><button type="button" className="btn btn-xs btn-danger" disabled>Rimuovi</button></div> : <form action={deleteBankAction} className="category-settings-delete-form">
             <input type="hidden" name="id" value={bank.id} />
-            <button type="submit" className="table-action danger-action">Rimuovi</button>
+            <button type="submit" className="btn btn-xs btn-danger">Rimuovi</button>
           </form>}
         </div>;
       }) : <p className="muted">Nessuna banca configurata.</p>}
@@ -150,12 +150,12 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
               <small>{method.isFallback ? 'generico' : kindLabels[method.kind] ?? method.kind}</small>
             </div>
             <div className="category-settings-actions">
-              <button type="submit" className="table-action">✓ Salva</button>
+              <button type="submit" className="btn btn-xs btn-primary">✓ Salva</button>
             </div>
           </form>
-          {method.isFallback ? <div className="category-settings-delete-form"><button type="button" className="table-action danger-action" disabled>Rimuovi</button></div> : <form action={deletePaymentMethodAction} className="category-settings-delete-form">
+          {method.isFallback ? <div className="category-settings-delete-form"><button type="button" className="btn btn-xs btn-danger" disabled>Rimuovi</button></div> : <form action={deletePaymentMethodAction} className="category-settings-delete-form">
             <input type="hidden" name="id" value={method.id} />
-            <button type="submit" className="table-action danger-action">Rimuovi</button>
+            <button type="submit" className="btn btn-xs btn-danger">Rimuovi</button>
           </form>}
         </div>;
       }) : <p className="muted">Nessun metodo configurato.</p>}

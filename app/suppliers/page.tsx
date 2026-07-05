@@ -21,7 +21,7 @@ function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: s
   return <div className="active-filter-summary">
     <span className="active-filter-summary-title">Filtri attivi:</span>
     {items.length ? items.map(item => <span className="active-filter-chip" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>) : <span className="active-filter-empty">nessun filtro impostato</span>}
-    <Link className="button-standard secondary-action reset-btn" href="/suppliers"><span className="">↺</span> Reset</Link>
+    <Link className="btn btn-md btn-default reset-btn" href="/suppliers"><span className="">↺</span> Reset</Link>
   </div>;
 }
 
@@ -136,7 +136,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
             {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
           </div>
         </div>
-        <Link className="table-action secondary recurring-active-filters-reset reset-button" href="/suppliers">↺ Reset</Link>
+        <Link className="btn btn-xs btn-default recurring-active-filters-reset reset-button" href="/suppliers">↺ Reset</Link>
       </div> : null}
 
       <script dangerouslySetInnerHTML={{ __html: `
@@ -250,7 +250,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
             </span>
           </summary>
           <div className="bulk-action-menu-panel">
-            <button type="submit" name="bulkAction" value="delete"><span className="btn-icon">🗑</span><span className="bulk-label">Elimina selezionati</span></button>
+            <button className="btn btn-sm btn-danger" type="submit" name="bulkAction" value="delete"><span className="btn-icon">🗑</span><span className="bulk-label">Elimina selezionati</span></button>
           </div>
         </details>
         <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="supplierBulkForm" data-edit-base="/suppliers/" data-copy-base="/suppliers/new?copyId=" data-return-to={returnTo}>
@@ -259,7 +259,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
           <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
         </div>
         <div className="bulk-inner-container">
-          <button className="bulk-direct-link button-standard primary-action" type="button" data-bulk-new data-supplier-new data-floating-label="Fornitore">
+          <button className="bulk-direct-link btn btn-md btn-primary" type="button" data-bulk-new data-supplier-new data-floating-label="Fornitore">
             <span className="btn-icon">+</span>
             <span className="bulk-label">Fornitore</span>
           </button>

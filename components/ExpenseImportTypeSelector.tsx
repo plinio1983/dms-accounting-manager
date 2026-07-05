@@ -31,7 +31,7 @@ export default function ExpenseImportTypeSelector() {
         <option value="recurring_definitions">Definizioni spese ricorrenti</option>
       </select>
     </label>
-    {/*<a className="button-standard primary-action" href={current.href} download>*/}
+    {/*<a className="btn btn-md btn-primary" href={current.href} download>*/}
     {/*  <span className="btn-icon">⬇</span>Scarica modello XLSX*/}
     {/*</a>*/}
     <a className="import-template-download" href={current.href} download>

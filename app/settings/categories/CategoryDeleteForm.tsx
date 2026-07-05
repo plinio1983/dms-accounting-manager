@@ -17,6 +17,6 @@ export default function CategoryDeleteForm({ id, name, action }: Props) {
     }}
   >
     <input type="hidden" name="id" value={id} />
-    <button type="submit" className="table-action danger-action">Rimuovi</button>
+    <button type="submit" className="btn btn-xs btn-danger">Rimuovi</button>
   </form>;
 }

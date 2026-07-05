@@ -29,7 +29,7 @@ export default function NewSupplierPanel({ initialOpen = false }: { initialOpen?
   }, []);
 
   return <>
-    <button className="button-standard primary-action" type="button" data-supplier-new><span className="btn-icon">＋</span>Nuovo fornitore</button>
+    <button className="btn btn-md btn-primary" type="button" data-supplier-new><span className="btn-icon">＋</span>Nuovo fornitore</button>
     {isOpen && <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Aggiungi nuovo fornitore" onMouseDown={() => setIsOpen(false)}>
       <div className="modal-card modal-card-wide" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-title">
@@ -37,7 +37,7 @@ export default function NewSupplierPanel({ initialOpen = false }: { initialOpen?
             <h3>Nuovo fornitore</h3>
             <p className="muted">Inserisci i dati del fornitore senza uscire dalla lista.</p>
           </div>
-          <button className="secondary-button modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
+          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
         </div>
         <form className="card form income-form expense-form supplier-form supplier-styled-form inline-create-form" action={action} method="post">
           <details className="form-section full income-form-section supplier-form-section" open>
@@ -65,7 +65,7 @@ export default function NewSupplierPanel({ initialOpen = false }: { initialOpen?
             </div>
           </details>
 
-          <div className="full actions-row right-actions form-actions-row supplier-form-actions"><button className="secondary-button button-standard" type="button" onClick={() => setIsOpen(false)}>✕ Annulla</button><button className="button-standard primary-action" type="submit">✓ Salva fornitore</button></div>
+          <div className="full actions-row right-actions form-actions-row supplier-form-actions"><button className="btn btn-md btn-default" type="button" onClick={() => setIsOpen(false)}>✕ Annulla</button><button className="btn btn-md btn-primary" type="submit">✓ Salva fornitore</button></div>
         </form>
       </div>
     </div>}

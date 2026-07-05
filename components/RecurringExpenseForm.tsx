@@ -207,7 +207,7 @@ function SupplierAutocomplete({
           />
           <button
             type="button"
-            className="inline-link-button"
+            className="btn btn-sm btn-link inline-link-button"
             onClick={() => {
               setCreateData((data) => ({ ...data, businessName: query }));
               setShowCreate(true);
@@ -247,7 +247,7 @@ function SupplierAutocomplete({
           <div className="modal-card">
             <div className="modal-title">
               <h3>➕ Nuovo esercente/fornitore</h3>
-              <button type="button" onClick={() => setShowCreate(false)}>✕</button>
+              <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setShowCreate(false)}>✕</button>
             </div>
             <div className="modal-form-grid">
               <label>Ragione Sociale<input value={createData.businessName} onChange={(e) => setCreateData((d) => ({ ...d, businessName: e.target.value }))} required /></label>
@@ -259,8 +259,8 @@ function SupplierAutocomplete({
               <label className="full">Note interne<textarea rows={3} value={createData.internalNotes} onChange={(e) => setCreateData((d) => ({ ...d, internalNotes: e.target.value }))} /></label>
             </div>
             <div className="actions-row right-actions">
-              <button type="button" className="secondary-button" onClick={() => setShowCreate(false)}>× Annulla</button>
-              <button type="button" disabled={isSaving} onClick={createSupplier}>✓ Salva e seleziona</button>
+              <button type="button" className="btn btn-sm btn-default" onClick={() => setShowCreate(false)}>× Annulla</button>
+              <button className="btn btn-md btn-primary" type="button" disabled={isSaving} onClick={createSupplier}>✓ Salva e seleziona</button>
             </div>
           </div>
         </div>
@@ -526,11 +526,11 @@ export default function RecurringExpenseForm({
       </details>
 
       <div className="actions-row full form-actions-row form-sticky-actions">
-        <button className="button-standard" type="submit"><span className="btn-icon">✓</span> Salva spesa</button>
+        <button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">✓</span> Salva spesa</button>
         {onCancel ? (
-          <button type="button" className="secondary-button button-standard" onClick={onCancel}><span className="btn-icon">×</span> Annulla</button>
+          <button type="button" className="btn btn-md btn-default" onClick={onCancel}><span className="btn-icon">×</span> Annulla</button>
         ) : cancelHref ? (
-          <a className="secondary-button button-standard" href={cancelHref}><span className="btn-icon">×</span> Annulla</a>
+          <a className="btn btn-md btn-default" href={cancelHref}><span className="btn-icon">×</span> Annulla</a>
         ) : null}
       </div>
     </form>

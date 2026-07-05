@@ -502,7 +502,7 @@ body:has(.register-page) .shell {
     }
 }
 
-.nav-links a, .btn {
+.nav-links a {
     border: 1px solid var(--line);
     background: #fff;
     padding: 10px 13px;
@@ -601,13 +601,8 @@ input, select, textarea {
 }
 
 button {
+    font: inherit;
     cursor: pointer;
-    border: 0;
-    background: var(--accent);
-    color: white;
-    border-radius: 12px;
-    padding: 11px 14px;
-    font-weight: 800;
 }
 
 .full {
@@ -2399,7 +2394,7 @@ body.drawer-open {
 
 .filter-actions {
     display: flex;
-    align-items: end;
+    align-items: flex-end;
 }
 
 .filter-actions button {
@@ -4625,13 +4620,13 @@ html, body {
     }
 }
 
-.button-standard,
 .btn,
+.button-standard,
 .primary-link,
 .secondary-button,
+.secondary-action,
 .reset-button,
-.table-action,
-button {
+.table-action {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -4640,19 +4635,133 @@ button {
     max-width: max-content;
     white-space: nowrap;
     line-height: 1.1;
+    border: 1px solid transparent;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease;
 }
 
-.button-standard {
-    min-height: 40px;
-    padding: 10px 14px;
-    border-radius: 12px;
+.btn-xs,
+.table-action {
+    min-height: 30px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.btn-sm {
+    min-height: 36px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
     font-weight: 850;
 }
 
+.btn-md,
+.button-standard {
+    min-height: 40px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 850;
+}
+
+.btn-lg,
+.primary-link {
+    min-height: 44px;
+    padding: 11px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 850;
+}
+
+.btn-icon-only {
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    min-height: 38px;
+    padding: 0;
+    border-radius: 8px;
+    font-size: 18px;
+}
+
+.btn-primary,
 .primary-action {
     background: var(--accent) !important;
     color: #fff !important;
     border: 1px solid var(--accent) !important;
+}
+
+.btn-primary:hover,
+.primary-action:hover {
+    background: #1f49bf !important;
+    border-color: #1f49bf !important;
+}
+
+.btn-default,
+.secondary-button,
+.secondary-action,
+.reset-button {
+    background: #fff;
+    color: var(--accent);
+    border: 1px solid #cfd7ff;
+}
+
+.btn-default:hover,
+.secondary-button:hover,
+.secondary-action:hover,
+.reset-button:hover {
+    background: #f8faff;
+    border-color: #b9c7ff;
+}
+
+.btn-danger,
+.danger-action {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.btn-danger:hover,
+.danger-action:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid transparent;
+}
+
+.btn-ghost:hover {
+    background: #eef2ff;
+}
+
+.btn-link,
+.inline-link-button {
+    min-height: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    font-weight: 850;
+}
+
+.btn-block {
+    width: 100%;
+    max-width: none;
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"],
+.button-standard:disabled,
+.secondary-button:disabled,
+.table-action:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .form-actions-row {
@@ -4661,7 +4770,8 @@ button {
     gap: 10px;
 }
 
-.form-actions-row .secondary-button {
+.form-actions-row .secondary-button,
+.form-actions-row .btn-default {
     text-decoration: none;
 }
 
@@ -4871,9 +4981,11 @@ button {
     }
 
     .toolbar-card .button-standard,
+    .toolbar-card .btn,
     .toolbar-card > button,
     .actions-row .button-standard,
-    .actions-row .primary-link {
+    .actions-row .primary-link,
+    .actions-row .btn {
         max-width: none;
         /*width: 100%;*/
     }
@@ -4883,7 +4995,8 @@ button {
     }
 
     .form-actions-row .button-standard,
-    .form-actions-row .secondary-button {
+    .form-actions-row .secondary-button,
+    .form-actions-row .btn {
         max-width: none;
         flex: 1 1 auto;
     }
@@ -4912,7 +5025,8 @@ button {
 
 .filter-actions .button-standard,
 .filter-actions button.button-standard,
-.filter-actions .reset-button.button-standard {
+.filter-actions .reset-button.button-standard,
+.filter-actions .btn {
     width: auto;
     max-width: max-content;
     min-height: 40px;
@@ -4936,7 +5050,8 @@ button {
 
     .filter-actions .button-standard,
     .filter-actions button.button-standard,
-    .filter-actions .reset-button.button-standard {
+    .filter-actions .reset-button.button-standard,
+    .filter-actions .btn {
         width: 100%;
         max-width: none;
         flex: 1 1 auto;
@@ -7071,14 +7186,17 @@ button.bulk-direct-link {
 }
 
 .form .actions-row .secondary-button,
+.form .actions-row .btn-default,
 .modal-form-actions .secondary-button,
-.form-actions-row .secondary-button {
+.modal-form-actions .btn-default,
+.form-actions-row .secondary-button,
+.form-actions-row .btn-default {
     order: 1;
 }
 
-.form .actions-row button:not(.secondary-button),
-.modal-form-actions button:not(.secondary-button),
-.form-actions-row button:not(.secondary-button) {
+.form .actions-row button:not(.secondary-button):not(.btn-default),
+.modal-form-actions button:not(.secondary-button):not(.btn-default),
+.form-actions-row button:not(.secondary-button):not(.btn-default) {
     order: 2;
 }
 
@@ -9939,7 +10057,8 @@ button.bulk-direct-danger {
 }
 
 .expense-form .form-sticky-actions .button-standard,
-.expense-form .form-sticky-actions .secondary-button {
+.expense-form .form-sticky-actions .secondary-button,
+.expense-form .form-sticky-actions .btn {
     min-width: 150px;
 }
 
@@ -10046,7 +10165,8 @@ button.bulk-direct-danger {
     }
 
     .expense-form .form-sticky-actions .button-standard,
-    .expense-form .form-sticky-actions .secondary-button {
+    .expense-form .form-sticky-actions .secondary-button,
+    .expense-form .form-sticky-actions .btn {
         min-width: 0;
     }
 
@@ -10061,7 +10181,7 @@ button.bulk-direct-danger {
     /*grid-template-columns: minmax(0, 1fr) 140px;*/
     display: flex;
     gap: 14px;
-    align-items: end;
+    align-items: flex-end;
 }
 
 .expense-form .payment-edit-actions {
@@ -10073,14 +10193,16 @@ button.bulk-direct-danger {
 }
 
 .expense-form .payment-edit-actions .remove-row,
-.expense-form .payment-edit-actions .secondary-button {
+.expense-form .payment-edit-actions .secondary-button,
+.expense-form .payment-edit-actions .btn {
     min-width: 130px;
 }
 
 @media (max-width: 760px) {
 
     .expense-form .payment-edit-actions .remove-row,
-    .expense-form .payment-edit-actions .secondary-button {
+    .expense-form .payment-edit-actions .secondary-button,
+    .expense-form .payment-edit-actions .btn {
         min-width: 0;
         width: 100%;
         justify-content: center;
@@ -10116,16 +10238,6 @@ button.bulk-direct-danger {
     color: #b91c1c;
 }
 
-/*@media (max-width: 760px) {*/
-/*    .edit-expense-client-modal {*/
-/*        padding: 10px;*/
-/*    }*/
-
-/*    .edit-expense-client-modal .modal-card {*/
-/*        min-height: calc(100vh - 20px);*/
-/*    }*/
-/*}*/
-
 .app-form-modal .expense-form {
     padding-bottom: 96px;
 }
@@ -10156,9 +10268,9 @@ button.bulk-direct-danger {
 }
 
 @media (max-width: 760px) {
-    .app-form-modal .expense-form {
-        padding-bottom: calc(104px + env(safe-area-inset-bottom));
-    }
+    /*.app-form-modal .expense-form {*/
+    /*    padding-bottom: calc(104px + env(safe-area-inset-bottom));*/
+    /*}*/
 
     .app-form-modal .expense-form .form-actions-row,
     .app-form-modal .expense-form .form-sticky-actions {

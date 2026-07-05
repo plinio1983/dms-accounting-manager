@@ -100,7 +100,7 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
             <h3>{mode === "copy" ? `Copia incasso #${income.id}` : `Modifica incasso #${income.id}`}</h3>
             <p className="muted">{mode === "copy" ? "I dati sono precompilati: puoi modificarli prima di salvare il nuovo incasso." : "Aggiorna l'incasso senza uscire dalla pagina attuale."}</p>
           </div>
-          <button className="secondary-button modal-close-button" type="button" onClick={() => setIncome(null)}>×</button>
+          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIncome(null)}>×</button>
         </div>
         <IncomeForm
           key={`${mode}-${income.id}`}

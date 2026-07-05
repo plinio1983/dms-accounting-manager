@@ -17,7 +17,7 @@ export default function DeleteActionButton({
   confirmMessage,
   title = 'Elimina',
   ariaLabel = 'Elimina',
-  className = 'table-action danger icon-action',
+  className = 'btn btn-xs btn-danger icon-action',
   children = '🗑️'
 }: DeleteActionButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false);

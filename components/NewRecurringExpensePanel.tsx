@@ -41,8 +41,8 @@ export default function NewRecurringExpensePanel({ categories, banks, paymentMet
 
   return <>
     <div className="toolbar-actions expense-toolbar-actions">
-      <Link className="button-standard secondary-action" href="/expenses">↩ Lista spese</Link>
-      <button className="button-standard primary-action" type="button" data-recurring-expense-new><span className="btn-icon">＋</span>Spesa ricorrente</button>
+      <Link className="btn btn-md btn-default" href="/expenses">↩ Lista spese</Link>
+      <button className="btn btn-md btn-primary" type="button" data-recurring-expense-new><span className="btn-icon">＋</span>Spesa ricorrente</button>
     </div>
 
     {isOpen ? <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Aggiungi spesa ricorrente" onMouseDown={() => setIsOpen(false)}>
@@ -52,7 +52,7 @@ export default function NewRecurringExpensePanel({ categories, banks, paymentMet
             <h3>Nuova spesa ricorrente</h3>
             <p className="muted">Configura una regola ricorrente senza uscire dalla lista.</p>
           </div>
-          <button className="secondary-button modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
+          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
         </div>
         <RecurringExpenseForm
           categories={categories}

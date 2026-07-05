@@ -20,7 +20,7 @@ export default async function AdminSetupPage({ searchParams }: { searchParams?: 
       <label>Password<input name="password" type="password" autoComplete="new-password" minLength={8} required /></label>
       <label>Nome workspace<input name="workspaceName" defaultValue="Area principale" required /></label>
       <div className="actions-row right-actions">
-        <button type="submit" className="button-standard primary-action">Crea amministratore</button>
+        <button type="submit" className="btn btn-md btn-primary">Crea amministratore</button>
       </div>
     </form>
   </div>;

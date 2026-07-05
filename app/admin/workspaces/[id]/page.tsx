@@ -35,7 +35,7 @@ export default async function SystemWorkspaceDetailPage({ params }: { params: Pr
   return <div className="grid admin-page">
     <div className="toolbar-card">
       <div>
-        <Link className="table-action secondary" href="/admin/workspaces">↩ Workspace</Link>
+        <Link className="btn btn-xs btn-default" href="/admin/workspaces">↩ Workspace</Link>
         <h2>{workspace.name}</h2>
         <p className="muted">Owner: {workspace.owner.email}</p>
       </div>
@@ -52,7 +52,7 @@ export default async function SystemWorkspaceDetailPage({ params }: { params: Pr
         {roles.map(([role, label]) => <option key={role} value={role}>{label}</option>)}
       </select></label>
       <div className="actions-row right-actions full">
-        <button className="button-standard primary-action" name="action" value="assign" type="submit">Assegna</button>
+        <button className="btn btn-md btn-primary" name="action" value="assign" type="submit">Assegna</button>
       </div>
     </form>
 
@@ -80,8 +80,8 @@ export default async function SystemWorkspaceDetailPage({ params }: { params: Pr
             </form>
           </td>
           <td className="actions-row">
-            <button form={`system-member-${member.id}`} className="table-action secondary" name="action" value="assign" type="submit">Salva</button>
-            <button form={`system-member-${member.id}`} className="table-action secondary" name="action" value="remove" type="submit">Rimuovi</button>
+            <button form={`system-member-${member.id}`} className="btn btn-xs btn-default" name="action" value="assign" type="submit">Salva</button>
+            <button form={`system-member-${member.id}`} className="btn btn-xs btn-default" name="action" value="remove" type="submit">Rimuovi</button>
           </td>
         </tr>)}
       </tbody></table></div>

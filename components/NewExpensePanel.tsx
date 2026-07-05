@@ -48,7 +48,7 @@ export default function NewExpensePanel({ categories, banks, paymentMethods, sup
       <div className="expense-toolbar-card-content">
         <div className="expense-toolbar-card-title">
           <h2>Spese</h2>
-          {/*<Link className="button-standard secondary-action expense-import-btn" href="/expenses/import">*/}
+          {/*<Link className="btn btn-md btn-default expense-import-btn" href="/expenses/import">*/}
           {/*  <span className="btn-icon">⬆</span>*/}
           {/*  <span className="expense-import-btn-text"> Importa Excel</span>*/}
           {/*  <span className="expense-import-btn-text-compact"> XLS</span>*/}
@@ -59,9 +59,9 @@ export default function NewExpensePanel({ categories, banks, paymentMethods, sup
         </div>
       </div>
       <div className="toolbar-actions expense-toolbar-actions">
-        <Link className="button-standard secondary-action expense-import-btn-large" href="/expenses/import"><span className="btn-icon">⬆</span>Importa Excel</Link>
-        <Link className="button-standard secondary-action" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>
-        <button className="button-standard primary-action" type="button" data-expense-new><span className="btn-icon">+</span><span className="hidden-mobile">Aggiungi </span>Spesa</button>
+        <Link className="btn btn-md btn-default expense-import-btn-large" href="/expenses/import"><span className="btn-icon">⬆</span>Importa Excel</Link>
+        <Link className="btn btn-md btn-default" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>
+        <button className="btn btn-md btn-primary" type="button" data-expense-new><span className="btn-icon">+</span><span className="hidden-mobile">Aggiungi </span>Spesa</button>
       </div>
     </div>
 
@@ -72,7 +72,7 @@ export default function NewExpensePanel({ categories, banks, paymentMethods, sup
             <h3>Nuova spesa</h3>
             <p className="muted">Inserisci una nuova spesa singola o ricorrente.</p>
           </div>
-          <button className="secondary-button modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
+          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
         </div>
         <ExpenseCreationSwitcher categories={categories} banks={banks} paymentMethods={paymentMethods} suppliers={suppliers} expenseAction={returnAction} recurringAction={recurringAction} onCancel={() => setIsOpen(false)} />
       </div>

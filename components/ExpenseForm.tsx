@@ -327,7 +327,7 @@ function SupplierAutocomplete({
                     />
                     <button
                         type="button"
-                        className="inline-link-button"
+                        className="btn btn-sm btn-link inline-link-button"
                         onClick={() => {
                             setCreateData((data) => ({...data, businessName: query}));
                             setShowCreate(true);
@@ -367,7 +367,7 @@ function SupplierAutocomplete({
                     <div className="modal-card">
                         <div className="modal-title">
                             <h3>➕ Nuovo esercente/fornitore</h3>
-                            <button type="button" onClick={() => setShowCreate(false)}>
+                            <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setShowCreate(false)}>
                                 ✕
                             </button>
                         </div>
@@ -447,13 +447,14 @@ function SupplierAutocomplete({
                         <div className="actions-row right-actions">
                             <button
                                 type="button"
-                                className="secondary-button"
+                                className="btn btn-sm btn-default"
                                 onClick={() => setShowCreate(false)}
                             >
                                 ✕ Annulla
                             </button>
                             <button
                                 type="button"
+                                className="btn btn-md btn-primary"
                                 disabled={isSaving}
                                 onClick={createSupplier}
                             >
@@ -1004,7 +1005,7 @@ export default function ExpenseForm({
                             </div>
                             <button
                                 type="button"
-                                className="secondary-button"
+                                className="btn btn-sm btn-default"
                                 onClick={addPaymentRow}
                                 disabled={!canAddPayment}
                             >
@@ -1026,14 +1027,14 @@ export default function ExpenseForm({
                                         <div className="payment-row-actions">
                                             <button
                                                 type="button"
-                                                className="secondary-button"
+                                                className="btn btn-sm btn-default"
                                                 onClick={() => setOpenPaymentKey(payment.key)}
                                             >
                                                 ✎ Modifica
                                             </button>
                                             <button
                                                 type="button"
-                                                className="remove-row"
+                                                className="btn btn-sm btn-danger remove-row"
                                                 onClick={() => removePaymentRow(index)}
                                             >
                                                 🗑️ Elimina
@@ -1126,14 +1127,14 @@ export default function ExpenseForm({
                                     <div className="payment-edit-actions">
                                         <button
                                             type="button"
-                                            className="remove-row"
+                                            className="btn btn-sm btn-danger remove-row"
                                             onClick={() => removePaymentRow(index)}
                                         >
                                             🗑️ Rimuovi
                                         </button>
                                         <button
                                             type="button"
-                                            className="secondary-button"
+                                            className="btn btn-sm btn-default"
                                             onClick={() => payment.id ? setOpenPaymentKey(null) : removePaymentRow(index)}
                                         >
                                             × Annulla
@@ -1206,13 +1207,13 @@ export default function ExpenseForm({
             </details>
 
             <div className="actions-row full form-actions-row form-sticky-actions">
-                <button className="button-standard" type="submit"><span className="btn-icon">✓</span> {submitLabel}
+                <button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">✓</span> {submitLabel}
                 </button>
                 {onCancel ? (
-                    <button className="secondary-button button-standard" type="button" onClick={onCancel}><span
+                    <button className="btn btn-md btn-default" type="button" onClick={onCancel}><span
                         className="btn-icon">×</span> Annulla</button>
                 ) : (
-                    <a className="secondary-button button-standard" href={cancelHref ?? "/expenses"}><span
+                    <a className="btn btn-md btn-default" href={cancelHref ?? "/expenses"}><span
                         className="btn-icon">×</span> Annulla</a>
                 )}
             </div>

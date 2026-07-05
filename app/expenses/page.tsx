@@ -197,7 +197,7 @@ function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: s
   return <div className="active-filter-summary">
     <span className="active-filter-summary-title">Filtri attivi:</span>
     {items.length ? items.map(item => <span className="active-filter-chip" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>) : <span className="active-filter-empty">nessun filtro impostato</span>}
-    <Link className="button-standard secondary-action reset-btn" href="/expenses"><span className="">↺</span> Reset</Link>
+    <Link className="btn btn-md btn-default reset-btn" href="/expenses"><span className="">↺</span> Reset</Link>
   </div>;
 }
 
@@ -781,7 +781,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   ].filter(Boolean) as Array<{ label: string; value: string }>;
 
   return <div className="grid">
-    {/*<Link className="button-standard secondary-action" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>*/}
+    {/*<Link className="btn btn-md btn-default" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>*/}
     <NewExpensePanel
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
@@ -841,7 +841,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         <div>
           <div className="flex justify-start align-start">
             <span className="flex-grow recurring-active-filters-title">Filtri attivi</span>
-            <Link className="table-action secondary recurring-active-filters-reset reset-button" href="/expenses">↺ Reset</Link>
+            <Link className="btn btn-xs btn-default recurring-active-filters-reset reset-button" href="/expenses">↺ Reset</Link>
           </div>
           <div className="flex justify-end align-start">
             <div className="recurring-active-filter-tags">
@@ -1114,8 +1114,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             </span>
           </summary>
           <div className="bulk-action-menu-panel">
-            <button type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
-            <button type="submit" name="bulkAction" value="payment_completed"><span className="btn-icon">€</span><span className="bulk-label">Pagamento completato</span></button>
+            <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
+            <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="payment_completed"><span className="btn-icon">€</span><span className="bulk-label">Pagamento completato</span></button>
             <BulkChangeCategoryModal
               formId="expenseBulkForm"
               action={`/api/expenses/bulk?returnTo=${returnTo}`}
@@ -1139,7 +1139,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           </button>
         </div>
         <div className="bulk-inner-container">
-          <button className="bulk-direct-link button-standard primary-action" type="button" data-expense-new>
+          <button className="bulk-direct-link btn btn-md btn-primary" type="button" data-expense-new>
             <span className="btn-icon">+</span>
             <span className="bulk-label"><span className="hidden-mobile">Aggiungi</span> spesa</span>
           </button>

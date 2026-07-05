@@ -19,7 +19,7 @@ export default async function AdminPage() {
         <p className="muted">Area globale riservata agli amministratori di sistema.</p>
       </div>
       <form action={logoutAction}>
-        <button className="table-action secondary" type="submit">Logout</button>
+        <button className="btn btn-xs btn-default" type="submit">Logout</button>
       </form>
     </div>
 
@@ -29,9 +29,9 @@ export default async function AdminPage() {
       <p className="muted">Utenti registrati: {users}</p>
       <p className="muted">Workspace: {workspaces}</p>
       <div className="actions-row">
-        <Link className="button-standard primary-action" href="/">Vai all’applicazione</Link>
-        <Link className="button-standard secondary-action" href="/admin/users">Utenti</Link>
-        <Link className="button-standard secondary-action" href="/admin/workspaces">Workspace</Link>
+        <Link className="btn btn-md btn-primary" href="/">Vai all’applicazione</Link>
+        <Link className="btn btn-md btn-default" href="/admin/users">Utenti</Link>
+        <Link className="btn btn-md btn-default" href="/admin/workspaces">Workspace</Link>
       </div>
     </div>
   </div>;

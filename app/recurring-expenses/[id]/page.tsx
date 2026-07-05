@@ -138,10 +138,10 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
       <article className="expense-detail-document recurring-detail-document">
         <div className="expense-detail-action-row">
           <div className="left-side">
-            <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
+            <Link className="btn btn-xs btn-default" href={returnTo}>↩ Indietro</Link>
           </div>
           <div className="right-side">
-            <Link className="table-action" href="#" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</Link>
+            <Link className="btn btn-xs btn-primary" href="#" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</Link>
           </div>
         </div>
 
@@ -282,7 +282,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
                   <td>{dateLabel(expense.receivedDate)}</td>
                   <td>{expense.description ?? '-'}</td>
                   <td><strong>{euro(expense.amount.toString())}</strong></td>
-                  <td><Link className="table-action secondary icon-action" href={`/expenses/${expense.id}?returnTo=${encodeURIComponent(`/recurring-expenses/${item.id}`)}`}>👁</Link></td>
+                  <td><Link className="btn btn-xs btn-default icon-action" href={`/expenses/${expense.id}?returnTo=${encodeURIComponent(`/recurring-expenses/${item.id}`)}`}>👁</Link></td>
                 </tr>) : <tr><td colSpan={5}>Nessuna spesa generata da questa ricorrenza.</td></tr>}
               </tbody>
             </table>

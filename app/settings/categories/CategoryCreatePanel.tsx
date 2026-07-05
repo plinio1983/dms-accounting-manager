@@ -28,7 +28,7 @@ export default function CategoryCreatePanel({ action, iconOptions }: Props) {
         {iconOptions.map(icon => <option key={icon} value={icon}>{icon}</option>)}
       </select></label>
       <div className="actions-row">
-        <button type="submit" className="button-standard primary-action">Aggiungi categoria</button>
+        <button type="submit" className="btn btn-md btn-primary">Aggiungi categoria</button>
       </div>
     </form> : null}
   </section>;

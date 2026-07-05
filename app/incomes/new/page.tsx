@@ -29,7 +29,7 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
         <h2>{copyIncome ? `Copia incasso #${copyIncome.id}` : 'Nuovo incasso'}</h2>
         <p className="muted">{copyIncome ? 'I dati sono precompilati: puoi modificarli prima di salvare il nuovo incasso.' : 'Inserisci un nuovo incasso.'}</p>
       </div>
-      <Link className="table-action secondary" href={returnTo}>× Annulla</Link>
+      <Link className="btn btn-xs btn-default" href={returnTo}>× Annulla</Link>
     </div>
     <IncomeForm
       initialIncome={copyIncome ? {

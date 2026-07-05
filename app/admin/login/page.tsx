@@ -27,7 +27,7 @@ export default async function AdminLoginPage({ searchParams }: { searchParams?: 
       <label>Email<input name="email" type="email" autoComplete="email" required /></label>
       <label>Password<input name="password" type="password" autoComplete="current-password" required /></label>
       <div className="actions-row right-actions">
-        <button type="submit" className="button-standard primary-action">Accedi</button>
+        <button type="submit" className="btn btn-md btn-primary">Accedi</button>
       </div>
     </form>
   </div>;

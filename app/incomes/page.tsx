@@ -358,7 +358,7 @@ function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: s
   return <div className="active-filter-summary">
     <span className="active-filter-summary-title">Filtri attivi:</span>
     {items.length ? items.map(item => <span className="active-filter-chip" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>) : <span className="active-filter-empty">nessun filtro impostato</span>}
-    <Link className="button-standard secondary-action reset-btn" href="/incomes"><span className="">↺</span> Reset</Link>
+    <Link className="btn btn-md btn-default reset-btn" href="/incomes"><span className="">↺</span> Reset</Link>
   </div>;
 }
 
@@ -683,7 +683,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
           </div>
         </div>
-        <Link className="table-action secondary recurring-active-filters-reset reset-button" href="/incomes">↺ Reset</Link>
+        <Link className="btn btn-xs btn-default recurring-active-filters-reset reset-button" href="/incomes">↺ Reset</Link>
       </div> : null}
 
       <div className="list-heading recurring-list-heading">
@@ -912,7 +912,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
               <span className="floating-bulk-label">Bulk </span>Actions</span>
           </summary>
           <div className="bulk-action-menu-panel">
-            <button type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
+            <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
             <BulkChangeCategoryModal
               formId="incomeBulkForm"
               action={`/api/incomes/bulk?returnTo=${returnTo}`}
@@ -928,7 +928,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
         </div>
         <div className="bulk-inner-container">
-          <button className="bulk-direct-link button-standard primary-action" type="button" data-bulk-new data-income-new data-floating-label="Incasso">
+          <button className="bulk-direct-link btn btn-md btn-primary" type="button" data-bulk-new data-income-new data-floating-label="Incasso">
             <span className="btn-icon">+</span>
             <span className="bulk-label">Incasso</span>
           </button>

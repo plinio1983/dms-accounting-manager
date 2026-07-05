@@ -36,10 +36,10 @@ export default async function RegisterPage({ searchParams }: { searchParams?: Pr
           <label>Password<input name="password" type="password" autoComplete="new-password" minLength={8} required /></label>
           <label>Nome workspace<input name="workspaceName" placeholder="Il mio workspace" /></label>
         </div>
-        <a className="button-standard secondary-button full login-google-button" href="/api/auth/google?next=/register/success">Registrati con Google</a>
+        <a className="btn btn-md btn-default full login-google-button" href="/api/auth/google?next=/register/success">Registrati con Google</a>
         <div className="actions-row right-actions login-actions">
-          <Link className="table-action secondary" href="/login">Ho già un account</Link>
-          <button type="submit" className="button-standard primary-action">Registrati</button>
+          <Link className="btn btn-xs btn-default" href="/login">Ho già un account</Link>
+          <button type="submit" className="btn btn-md btn-primary">Registrati</button>
         </div>
       </form>
     </section>

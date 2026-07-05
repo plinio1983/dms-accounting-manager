@@ -3,7 +3,7 @@
 export default function AccountCancelButton() {
   return <button
     type="button"
-    className="secondary-button button-standard"
+    className="btn btn-md btn-default"
     onClick={() => {
       if (window.history.length > 1) {
         window.history.back();

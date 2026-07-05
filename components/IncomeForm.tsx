@@ -281,11 +281,11 @@ export default function IncomeForm({
       </details>
 
       <div className="actions-row full form-actions-row form-sticky-actions">
-        <button className="button-standard" type="submit"><span className="btn-icon">✓</span> {submitLabel}</button>
+        <button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">✓</span> {submitLabel}</button>
         {onCancel ? (
-          <button className="secondary-button button-standard" type="button" onClick={onCancel}><span className="btn-icon">×</span> Annulla</button>
+          <button className="btn btn-md btn-default" type="button" onClick={onCancel}><span className="btn-icon">×</span> Annulla</button>
         ) : (
-          <a className="secondary-button button-standard" href={cancelHref ?? "/incomes"}><span className="btn-icon">×</span> Annulla</a>
+          <a className="btn btn-md btn-default" href={cancelHref ?? "/incomes"}><span className="btn-icon">×</span> Annulla</a>
         )}
       </div>
     </form>

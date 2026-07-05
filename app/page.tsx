@@ -366,9 +366,9 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
         <p className="muted">Sintesi fiscale, incassi e spese.</p>
       </div>
       <div className="actions-row dashboard-top-actions">
-        <Link className="btn primary-link" href="/expenses?new=1"><span className="btn-icon">＋</span> Spesa</Link>
-        <Link className="btn primary-link" href="/incomes?new=1"><span className="btn-icon">＋</span> Incasso</Link>
-        {/*<Link className="btn primary-link" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>*/}
+        <Link className="btn btn-lg btn-primary" href="/expenses?new=1"><span className="btn-icon">＋</span> Spesa</Link>
+        <Link className="btn btn-lg btn-primary" href="/incomes?new=1"><span className="btn-icon">＋</span> Incasso</Link>
+        {/*<Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>*/}
       </div>
       <form className="period-selector dashboard-year-selector" method="get">
         <span className="selector-label">Anno fiscale</span>
@@ -461,9 +461,9 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
         <p className="muted">Inserisci rapidamente una nuova operazione.</p>
       </div>
       <div className="actions-row">
-        <Link className="btn primary-link" href="/expenses?new=1"><span className="btn-icon">＋</span> Spesa</Link>
-        <Link className="btn primary-link" href="/incomes?new=1"><span className="btn-icon">＋</span> Incasso</Link>
-        <Link className="btn primary-link" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>
+        <Link className="btn btn-lg btn-primary" href="/expenses?new=1"><span className="btn-icon">＋</span> Spesa</Link>
+        <Link className="btn btn-lg btn-primary" href="/incomes?new=1"><span className="btn-icon">＋</span> Incasso</Link>
+        <Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>
       </div>
     </div>
   </div>;

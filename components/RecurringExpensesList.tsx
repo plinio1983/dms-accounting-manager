@@ -110,7 +110,7 @@ export default function RecurringExpensesList({
           {activeFilterItems.map(item => <span className="badge" key={item}>{item}</span>)}
         </div>
       </div>
-      <Link className="table-action secondary recurring-active-filters-reset" href="/recurring-expenses">↺ Reset</Link>
+      <Link className="btn btn-xs btn-default recurring-active-filters-reset" href="/recurring-expenses">↺ Reset</Link>
     </div> : null}
 
     <BulkSelectionController />
@@ -154,7 +154,7 @@ export default function RecurringExpensesList({
         <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
       </div>
       <div className="bulk-inner-container">
-        <button className="bulk-direct-link button-standard primary-action" type="button" data-bulk-new data-recurring-expense-new data-floating-label="Spesa ricorrente">
+        <button className="bulk-direct-link btn btn-md btn-primary" type="button" data-bulk-new data-recurring-expense-new data-floating-label="Spesa ricorrente">
           <span className="btn-icon">+</span>
           <span className="bulk-label">Spesa ricorrente</span>
         </button>

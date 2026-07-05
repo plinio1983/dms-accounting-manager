@@ -43,12 +43,12 @@ export default async function WorkspaceAccountPage({ searchParams }: { searchPar
       {canEditWorkspace ? <form action={updateWorkspaceNameAction} className="form">
         <label>Nome workspace<input name="name" defaultValue={current.workspace.name} required /></label>
         <div className="actions-row">
-          <Link className="secondary-button button-standard" href="/">× Annulla</Link>
-          <button type="submit" className="button-standard primary-action">Salva workspace</button>
+          <Link className="btn btn-md btn-default" href="/">× Annulla</Link>
+          <button type="submit" className="btn btn-md btn-primary">Salva workspace</button>
         </div>
       </form> : null}
       {/*<div className="actions-row">*/}
-        {/*<Link className="button-standard primary-action" href="/">Vai all’applicazione</Link>*/}
+        {/*<Link className="btn btn-md btn-primary" href="/">Vai all’applicazione</Link>*/}
       {/*</div>*/}
     </div>
   </div>;

@@ -134,11 +134,11 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       <article className="expense-detail-document">
         <div className="expense-detail-action-row">
           <div className="left-side">
-            <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
+            <Link className="btn btn-xs btn-default" href={returnTo}>↩ Indietro</Link>
           </div>
           <div className="right-side">
-            <button className="table-action secondary" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉ Copia</button>
-            <Link className="table-action" href="#" data-expense-detail-edit-id={expense.id}>✎ Modifica</Link>
+            <button className="btn btn-xs btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉ Copia</button>
+            <Link className="btn btn-xs btn-primary" href="#" data-expense-detail-edit-id={expense.id}>✎ Modifica</Link>
           </div>
         </div>
         <section className="expense-detail-hero">

@@ -146,10 +146,10 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       <article className="expense-detail-document supplier-detail-document">
         <div className="expense-detail-action-row">
           <div className="left-side">
-            <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
+            <Link className="btn btn-xs btn-default" href={returnTo}>↩ Indietro</Link>
           </div>
           <div className="right-side">
-            <Link className="table-action" href={`/suppliers/${supplier.id}/edit`}>✎ Modifica</Link>
+            <Link className="btn btn-xs btn-primary" href={`/suppliers/${supplier.id}/edit`}>✎ Modifica</Link>
           </div>
         </div>
 

@@ -18,7 +18,7 @@ export default async function SystemUsersPage() {
   return <div className="grid admin-page">
     <div className="toolbar-card">
       <div>
-        <Link className="table-action secondary" href="/admin">↩ Admin</Link>
+        <Link className="btn btn-xs btn-default" href="/admin">↩ Admin</Link>
         <h2>Utenti sistema</h2>
         <p className="muted">Vista globale riservata agli amministratori.</p>
       </div>
@@ -39,7 +39,7 @@ export default async function SystemUsersPage() {
         </span>
       </label>
       <div className="actions-row right-actions full">
-        <button type="submit" className="button-standard primary-action">Crea utente</button>
+        <button type="submit" className="btn btn-md btn-primary">Crea utente</button>
       </div>
     </form>
 
@@ -63,11 +63,11 @@ export default async function SystemUsersPage() {
           <td className="actions-row">
             <form action={systemToggleUserAction}>
               <input type="hidden" name="userId" value={user.id} />
-              <button className="table-action secondary" name="action" value={user.isActive ? 'deactivate' : 'activate'} type="submit" disabled={user.id === current.user.id}>{user.isActive ? 'Disattiva' : 'Attiva'}</button>
+              <button className="btn btn-xs btn-default" name="action" value={user.isActive ? 'deactivate' : 'activate'} type="submit" disabled={user.id === current.user.id}>{user.isActive ? 'Disattiva' : 'Attiva'}</button>
             </form>
             <form action={systemToggleUserAction}>
               <input type="hidden" name="userId" value={user.id} />
-              <button className="table-action secondary" name="action" value={user.isSystemAdmin ? 'system_admin_off' : 'system_admin_on'} type="submit" disabled={user.id === current.user.id}>{user.isSystemAdmin ? 'Rimuovi admin' : 'Rendi admin'}</button>
+              <button className="btn btn-xs btn-default" name="action" value={user.isSystemAdmin ? 'system_admin_off' : 'system_admin_on'} type="submit" disabled={user.id === current.user.id}>{user.isSystemAdmin ? 'Rimuovi admin' : 'Rendi admin'}</button>
             </form>
           </td>
         </tr>)}

@@ -295,7 +295,7 @@ function makeFloatingBar(sourceBar: HTMLElement) {
     const label = newItem.getAttribute("data-floating-label") ?? "Aggiungi spesa";
     const icon = newItem.getAttribute("data-floating-icon") ?? "+";
     newItemWrap.className = "bulk-inner-container";
-    newItemWrap.appendChild(buildFloatingButton(newItem, label, icon, "floating-bulk-new primary-action"));
+    newItemWrap.appendChild(buildFloatingButton(newItem, label, icon, "floating-bulk-new btn-primary"));
     inner.appendChild(newItemWrap);
   }
 

@@ -36,10 +36,10 @@ export default async function LoginPage({ searchParams }: { searchParams?: Promi
         <input type="hidden" name="failurePath" value="/login" />
         <label>Email<input name="email" type="email" autoComplete="email" required /></label>
         <label>Password<input name="password" type="password" autoComplete="current-password" required /></label>
-        <a className="button-standard secondary-button full login-google-button" href={`/api/auth/google?next=${encodeURIComponent(next && next.startsWith('/') ? next : '/')}`}>Accedi con Google</a>
+        <a className="btn btn-md btn-default full login-google-button" href={`/api/auth/google?next=${encodeURIComponent(next && next.startsWith('/') ? next : '/')}`}>Accedi con Google</a>
         <div className="actions-row right-actions login-actions">
-          <Link className="table-action secondary" href="/register">Registrati</Link>
-          <button type="submit" className="button-standard primary-action">Accedi</button>
+          <Link className="btn btn-xs btn-default" href="/register">Registrati</Link>
+          <button type="submit" className="btn btn-md btn-primary">Accedi</button>
         </div>
       </form>
     </section>

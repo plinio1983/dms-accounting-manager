@@ -136,7 +136,7 @@ export default function ExpenseFiltersDrawer({
             <h3>Filtri spese</h3>
             {/*<p className="muted">Cerca per periodo, fornitore, stato pagamento, fattura e importo.</p>*/}
           </div>
-          <button className="secondary-button modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
+          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
         </div>
 
         <form className="expense-filters recurring-drawer-filters expense-drawer-filters" action="/expenses" method="get" onSubmit={handleFiltersSubmit}>
@@ -204,8 +204,8 @@ export default function ExpenseFiltersDrawer({
           </select></label>
 
           <div className="filter-drawer-actions">
-            <Link className="button-standard secondary-button reset-button" href="/expenses" onClick={() => setOpen(false)}><span className="btn-icon">↺</span> Reset</Link>
-            <button className="button-standard primary-action" type="submit"><span className="btn-icon">🔎</span> Filtra</button>
+            <Link className="btn btn-md btn-default reset-button" href="/expenses" onClick={() => setOpen(false)}><span className="btn-icon">↺</span> Reset</Link>
+            <button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">🔎</span> Filtra</button>
           </div>
         </form>
       </aside>
@@ -214,7 +214,7 @@ export default function ExpenseFiltersDrawer({
   ) : null;
 
   return <>
-    <button className="button-standard secondary-button recurring-filter-trigger" type="button" onClick={() => setOpen(true)}>
+    <button className="btn btn-md btn-default recurring-filter-trigger" type="button" onClick={() => setOpen(true)}>
       <span className="btn-icon">☰</span> <span className="recurring-filter-trigger-text">Filtri</span>
     </button>
     {drawer}

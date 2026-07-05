@@ -124,7 +124,7 @@ export default function ExpenseDetailEditModalController({ categories, banks, pa
             <h3>{mode === "copy" ? `Copia spesa #${expense.id}` : `Modifica spesa #${expense.id}`}</h3>
             <p className="muted">{mode === "copy" ? "I dati sono precompilati, pagamenti e stato pagamento restano azzerati." : "Aggiorna dati, pagamenti e allegati senza uscire dalla pagina dettaglio."}</p>
           </div>
-          <button className="secondary-button modal-close-button" type="button" onClick={() => setExpense(null)}>×</button>
+          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setExpense(null)}>×</button>
         </div>
         <ExpenseForm
           key={`${mode}-${expense.id}`}

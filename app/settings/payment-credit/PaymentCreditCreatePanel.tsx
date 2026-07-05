@@ -36,7 +36,7 @@ export default function PaymentCreditCreatePanel({ action, type }: Props) {
         <option value="EXPENSE">Spese</option>
       </select></label> : null}
       <div className="actions-row">
-        <button type="submit" className="button-standard primary-action">{isBank ? 'Aggiungi' : 'Aggiungi metodo'}</button>
+        <button type="submit" className="btn btn-md btn-primary">{isBank ? 'Aggiungi' : 'Aggiungi metodo'}</button>
       </div>
     </form> : null}
   </section>;

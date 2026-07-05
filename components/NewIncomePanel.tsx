@@ -39,7 +39,7 @@ export default function NewIncomePanel({ initialOpen = false, banks, paymentMeth
           <h2>Incassi</h2>
           <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
         </div>
-        <button className="button-standard primary-action income-add-btn" type="button" data-income-new>
+        <button className="btn btn-md btn-primary income-add-btn" type="button" data-income-new>
           <span className="btn-icon">+</span>Aggiungi nuovo incasso
         </button>
       </div>
@@ -51,7 +51,7 @@ export default function NewIncomePanel({ initialOpen = false, banks, paymentMeth
               <h3>Nuovo incasso</h3>
               <p className="muted">Inserisci un nuovo incasso senza uscire dalla lista.</p>
             </div>
-            <button className="secondary-button modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
+            <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
           </div>
           <IncomeForm action={returnAction} onCancel={() => setIsOpen(false)} banks={banks} paymentMethods={paymentMethods} />
         </div>
