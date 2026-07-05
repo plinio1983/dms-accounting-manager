@@ -113,6 +113,7 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
 
   const vatBalance = computeVatBalance(incomes, expenses, periods);
   const ivaGenerataIncassi = vatBalance.generated;
+  const imponibileIncassi = incassoFiscale - ivaGenerataIncassi;
   const ivaVersataSpese = vatBalance.paid;
   const debitoIva = vatBalance.balance;
   const ivaComplessivaDaConsiderare = ivaVersataSpese + debitoIva;
@@ -137,6 +138,7 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
     debitoIva,
     utileNetto,
     incassoFiscale,
+    imponibileIncassi,
     incassoNonFiscale,
     speseInDetrazione,
     usciteFiscali,

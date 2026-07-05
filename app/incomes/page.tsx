@@ -351,7 +351,7 @@ function incomeCreditStatus(income: { isCredited: boolean; creditDate: Date | nu
 
 function fiscalBadge(value: boolean) {
   const item = value ? fiscalStyles.yes : fiscalStyles.no;
-  const label = value ? 'DF' : 'NF';
+  const label = value ? '✓ DF' : '✕ NF';
   return <span className={`${badgeClass(item.className)} income-badge-compact`}>{label}</span>;
 }
 function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: string }> }) {
@@ -543,10 +543,11 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
     acc.vatDebt += vatDebt;
     if (income.isFiscal) {
       acc.fiscal += amount;
+      acc.taxable += amount - vatDebt;
       if (income.invoiceStatus !== 'EMESSA') acc.invoicesNotSent += 1;
     } else acc.nonFiscal += amount;
     return acc;
-  }, { total: 0, fiscal: 0, nonFiscal: 0, vatDebt: 0, invoicesNotSent: 0 });
+  }, { total: 0, fiscal: 0, nonFiscal: 0, taxable: 0, vatDebt: 0, invoicesNotSent: 0 });
 
   const totals = summarizeIncomes(filteredIncomes);
   const totalsPeriodLabel = periodTotalsLabel({
@@ -672,6 +673,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             <tbody>
               <tr><td>Entrate totali</td><td><strong className={badgeClass()}>{euro(totals.total)}</strong></td></tr>
               <tr><td>Incasso fiscale</td><td><Link href={fiscalTotalsHref}><strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong></Link></td></tr>
+              <tr><td>Imponibile</td><td><strong className={moneyTone(totals.taxable)}>{euro(totals.taxable)}</strong></td></tr>
               <tr><td>Incasso non fiscale</td><td><Link href={nonFiscalTotalsHref}><strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong></Link></td></tr>
               <tr><td>Debito IVA prodotto</td><td><strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong></td></tr>
               {/*<tr><td>Debito IVA residuo</td><td><strong>{residualVatDebt === null ? <span className="total-placeholder">Seleziona periodo fiscale</span> : <span className={moneyTone(residualVatDebt)}>{euro(residualVatDebt)}</span>}</strong></td></tr>*/}

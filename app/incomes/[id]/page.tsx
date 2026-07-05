@@ -134,10 +134,10 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
       <article className={['expense-detail-document', 'income-detail-document', detailToneClass].filter(Boolean).join(' ')}>
         <div className="expense-detail-action-row">
           <div className="left-side">
-            <Link className="btn btn-xs btn-default" href={returnTo}>↩ Indietro</Link>
+            <Link className="btn btn-sm btn-default" href={returnTo}>↩ Indietro</Link>
           </div>
           <div className="right-side">
-            <Link className="btn btn-xs btn-primary" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
+            <Link className="btn btn-sm btn-primary" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
           </div>
         </div>
 
@@ -197,6 +197,10 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
               <h2>Dati incasso</h2>
               <p>Canale, categoria, accredito e metodo di pagamento.</p>
             </div>
+          </div>
+          <div className="expense-detail-item expense-detail-item-wide">
+            <span>Descrizione</span>
+            <strong>{income.description ?? 'Nessuna descrizione inserita.'}</strong>
           </div>
           <div className="expense-detail-status-strip">
             <div>

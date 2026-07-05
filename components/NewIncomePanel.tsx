@@ -40,11 +40,11 @@ export default function NewIncomePanel({ initialOpen = false, banks, paymentMeth
           <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
         </div>
         <button className="btn btn-md btn-primary income-add-btn" type="button" data-income-new>
-          <span className="btn-icon">+</span>Aggiungi nuovo incasso
+          <span className="btn-icon">+</span>Inserisci incasso
         </button>
       </div>
 
-      {isOpen ? <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Aggiungi nuovo incasso" onMouseDown={() => setIsOpen(false)}>
+      {isOpen ? <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Inserisci incasso" onMouseDown={() => setIsOpen(false)}>
         <div className="modal-card modal-card-wide" onMouseDown={(event) => event.stopPropagation()}>
           <div className="modal-title">
             <div>

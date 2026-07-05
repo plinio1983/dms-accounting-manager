@@ -220,7 +220,7 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, d
         return <button
           key={value}
           type="button"
-          className={isActive ? "expense-trend-quick-button is-active" : "expense-trend-quick-button"}
+          className={isActive ? "btn-xs btn-action btn-active expense-trend-quick-btn" : "btn-xs btn-action expense-trend-quick-btn"}
           aria-pressed={isActive}
           onClick={() => goWithQuick(mode, target.value, target.year)}
         >

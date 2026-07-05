@@ -185,11 +185,7 @@ export default function IncomeForm({
           <span>Pagamento</span>
           <small>Metodo, accredito e conto di destinazione</small>
         </summary>
-        <div className="form-section-grid income-form-section-grid">
-          <label>
-            Data accredito
-            <input type="date" name="creditDate" required defaultValue={toDateInput(initialIncome?.creditDate) || today} />
-          </label>
+        <div className="form-section-grid income-form-section-grid flex-grid">
 
           <div className="income-form-section-credit">
             <label>Accreditato</label>
@@ -206,6 +202,11 @@ export default function IncomeForm({
               <span>{isCredited ? "Si" : "No"}</span>
             </label>
           </div>
+
+          <label>
+            Data accredito
+            <input type="date" name="creditDate" required defaultValue={toDateInput(initialIncome?.creditDate) || today} />
+          </label>
 
           <label>
             Metodo di accredito
@@ -231,10 +232,10 @@ export default function IncomeForm({
           <span>Fiscale</span>
           <small>Fiscalità, fattura e aliquota IVA</small>
         </summary>
-        <div className="form-section-grid income-form-section-grid">
-          <div className="toggle-field-wrap full">
-            <div className="toggle-field switch-toggle-field">
-              <span>Fiscale</span>
+        <div className="form-section-grid income-form-section-grid flex-grid">
+          {/*<div className="toggle-field-wrap">*/}
+            <div className="toggle-field switch-toggle-field fiscal-toggle">
+              <label>Fiscale</label>
               <input type="hidden" name="isFiscal" value="false" />
               <label className="switch">
                 <input
@@ -248,7 +249,7 @@ export default function IncomeForm({
                 <span>{isFiscal ? "Si" : "No"}</span>
               </label>
             </div>
-          </div>
+          {/*</div>*/}
 
           <label>
             Stato fattura

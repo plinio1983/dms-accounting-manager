@@ -16,6 +16,7 @@ type Totals = {
   nonSaldato: number;
   fattureScaduteCount: number;
   incassoFiscale: number;
+  imponibileIncassi: number;
   usciteFiscali: number;
   utileFiscale: number;
   debitoIva: number;
@@ -262,6 +263,7 @@ function FiscalSummaryCard({
       <table className="dashboard-statement-table">
         <tbody>
           <StatementMoneyRow label="Entrate fiscali" value={totals.incassoFiscale} href={incomesHref} />
+          <StatementMoneyRow label="Imponibile" value={totals.imponibileIncassi} />
           <StatementMoneyRow label="Uscite fiscali" value={totals.usciteFiscali} href={fiscalExpensesHref} />
           <StatementMoneyRow label="Utile fiscale" value={totals.utileFiscale} highlight />
           <StatementMoneyRow label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />

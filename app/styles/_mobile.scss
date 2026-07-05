@@ -1,25 +1,3 @@
-@media (max-width: 860px) {
-    .login-page,
-    .register-page {
-        grid-template-columns: 1fr;
-    }
-
-    .login-hero-panel {
-        display: none;
-    }
-
-    .login-form-panel {
-        min-height: 100vh;
-        padding: 24px;
-    }
-
-    .login-page .admin-auth-card,
-    .register-page .admin-auth-card {
-        padding: 24px;
-        box-shadow: 0 16px 45px rgba(15, 23, 42, .10);
-    }
-}
-
 @media (max-width: 420px) {
     .login-form-panel {
         padding: 16px;
@@ -60,17 +38,6 @@
 @media (max-width: 576px) {
     .income-form-section-credit {
         justify-content: flex-start;
-    }
-}
-
-@media (max-width: 900px) {
-    .income-form .income-form-section-grid,
-    .income-form .income-amount-vat-row {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .income-form .income-amount-row {
-        grid-column: 1 / -1;
     }
 }
 
@@ -120,12 +87,6 @@
 
     .income-form .form-actions-row .btn {
         flex: 1 1 auto;
-    }
-}
-
-@media (max-width: 900px) {
-    .recurring-expense-form .recurring-form-section-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -209,7 +170,7 @@
         margin-top: 12px;
     }
 
-    .expense-trend-quick-button {
+    .expense-trend-quick-btn {
         flex-grow: 1;
         max-width: 100%;
     }
@@ -254,39 +215,6 @@
     }
 }
 
-@media (max-width: 900px) {
-    .grid-4, .grid-2, .form {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .shell {
-        padding: 16px;
-    }
-
-}
-
-@media (max-width: 900px) {
-    .span-2 {
-        grid-column: 1 / -1;
-    }
-}
-
-@media (max-width: 1000px) {
-    .payment-row {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 1080px) {
-    .payment-row {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .payment-row .remove-row {
-        grid-column: 1 / -1;
-    }
-}
-
 @media (max-width: 760px) {
     .payment-row {
         grid-template-columns: 1fr 1fr;
@@ -300,36 +228,9 @@
     }
 }
 
-@media (max-width: 900px) {
-    .import-layout-grid,
-    .import-result-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .import-hero-actions,
-    .import-status-heading,
-    .import-card-heading {
-        width: 100%;
-        flex-direction: column;
-        align-items: stretch;
-    }
-}
-
-@media (max-width: 900px) {
-    .detail-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
 @media (max-width: 576px) {
     .detail-grid {
         grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 1120px) {
-    .income-detail-summary-strip {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -347,16 +248,6 @@
 
     .income-detail-grid-card {
         padding: 14px;
-    }
-}
-
-@media (max-width: 1120px) {
-    .expense-detail-priority-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .expense-detail-priority-card.supplier-card {
-        grid-column: 1 / -1;
     }
 }
 
@@ -418,21 +309,9 @@
     }
 }
 
-@media (max-width: 1100px) {
-    .expense-filters {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
 @media (max-width: 760px) {
     .expense-filters, .totals-row {
         grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 1100px) {
-    .compact-filters {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
@@ -462,128 +341,10 @@
     }
 }
 
-@media (max-width: 900px) {
-    .income-form {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .income-totals-row {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 900px) {
-    .income-totals-row {
-        grid-template-columns: 1fr;
-    }
-}
-
 @media (max-width: 496px) {
     .expense-summary-row .expense-column-panel,
     .income-sales-channel-chart {
         display: none !important;
-    }
-}
-
-@media (max-width: 900px) {
-    .expense-column-bar {
-        /*width: clamp(12px, 55%, 22px);*/
-        width: 100%;
-    }
-}
-
-@media (max-width: 900px) {
-    .summary-metrics-grid {
-        grid-template-columns:1fr;
-    }
-
-    .expense-summary-row {
-        grid-template-columns: 1fr;
-    }
-
-    .expense-column-chart {
-        min-height: 126px;
-    }
-
-    .expense-column {
-        grid-template-rows: 88px auto auto;
-    }
-
-    .expense-column-plot {
-        height: 88px;
-    }
-}
-
-@media (max-width: 900px) {
-    .period-selector {
-        justify-content: flex-start;
-    }
-
-    .dashboard-actions .actions-row {
-        justify-content: flex-start;
-    }
-}
-
-@media (max-width: 900px) {
-    .dashboard-report-table {
-        min-width: 920px;
-    }
-
-    .dashboard-report-card .card-heading-row {
-        flex-direction: column;
-        align-items: stretch;
-    }
-}
-
-@media (max-width: 900px) {
-    .period-selector {
-        flex-wrap: wrap;
-        white-space: normal;
-    }
-}
-
-@media (max-width: 1180px) {
-    .dashboard-period-cards {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-@media (max-width: 1200px) {
-    .income-expense-chart-label {
-        display: flex;
-        justify-content: space-between;
-        font-size: 14px;
-        /*white-space: break-spaces;*/
-    }
-
-    .income-expense-chart-value-inline {
-        display: none !important;
-    }
-
-    .income-expense-chart-row {
-        padding: 6px 0;
-        display: grid;
-        grid-template-columns: 12px minmax(0, 1fr);
-    }
-
-    .income-expense-chart-value {
-        display: flex;
-    }
-
-    .income-expense-chart-bar-wrap,
-    .income-expense-chart-value {
-        grid-column: 2;
-        justify-content: flex-start;
-    }
-
-    .income-expense-chart-value > strong {
-        flex-grow: 1;
-    }
-}
-
-@media (max-width: 900px) {
-    .dashboard-statement-cards {
-        flex-direction: column;
     }
 }
 
@@ -622,74 +383,9 @@
     }
 }
 
-@media (max-width: 900px) {
-    .toolbar-card, .card-heading-row, .dashboard-actions {
-        align-items: stretch;
-    }
-
-    .toolbar-card {
-        flex-direction: column;
-    }
-
-    .actions-row {
-        justify-content: flex-start;
-        flex-wrap: wrap;
-    }
-
-    .expense-filters, .compact-filters {
-        grid-template-columns:1fr;
-    }
-
-    .compact-incomes-table {
-        min-width: 1040px;
-    }
-}
-
-@media (max-width: 900px) {
-    .shell {
-        padding: 12px;
-    }
-
-    .card {
-        padding: 14px;
-    }
-
-    .table-scroll {
-        margin-left: 0;
-        margin-right: 0;
-        border-radius: 12px;
-    }
-
-    .compact-expenses-table {
-        min-width: 1040px;
-    }
-
-    .compact-incomes-table {
-        min-width: 1000px;
-    }
-}
-
-@media (max-width: 900px) {
-    .summary-metrics-grid-priority {
-        grid-template-columns:1fr;
-    }
-
-    .category-chart-row {
-        grid-template-columns: 1fr;
-        gap: 7px;
-        align-items: stretch;
-    }
-}
-
 @media (max-width: 700px) {
     .embedded-chart-card .card-heading-row {
         align-items: flex-start;
-    }
-}
-
-@media (max-width: 1100px) {
-    .annual-totals-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -726,51 +422,6 @@
         width: 100%;
         max-width: none;
         flex: 1 1 auto;
-    }
-}
-
-@media (max-width: 1024px) {
-    .dashboard-period-cards .fiscal-summary-card .card-heading-row,
-    .dashboard-report-card .card-heading-row,
-    .dashboard-annual-card .card-heading-row {
-        flex-direction: column-reverse;
-        align-items: stretch;
-        gap: 12px;
-    }
-
-    .dashboard-period-cards .period-selector,
-    .dashboard-report-card .period-selector,
-    .dashboard-annual-card .period-selector {
-        width: 100%;
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        align-items: center;
-        gap: 8px;
-        justify-content: stretch;
-        white-space: normal;
-    }
-
-    .dashboard-period-cards .period-selector .selector-label,
-    .dashboard-report-card .period-selector .selector-label,
-    .dashboard-annual-card .period-selector .selector-label {
-        grid-column: 1 / -1;
-    }
-
-    .dashboard-period-cards .period-selector select,
-    .dashboard-report-card .period-selector select,
-    .dashboard-annual-card .period-selector select {
-        width: 100%;
-        min-width: 0;
-    }
-
-    .dashboard-period-cards .period-selector button,
-    .dashboard-report-card .period-selector button,
-    .dashboard-annual-card .period-selector button {
-        width: auto;
-        max-width: none;
-        min-width: 84px;
-        padding-left: 12px;
-        padding-right: 12px;
     }
 }
 
@@ -849,19 +500,6 @@
     }
 }
 
-@media (max-width: 900px) {
-    .invoice-summary-grid {
-        grid-template-columns:1fr;
-    }
-}
-
-@media (max-width: 1200px) {
-    .income-totals-row,
-    .totals-row {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
 @media (max-width: 760px) {
     .income-totals-row,
     .totals-row {
@@ -876,30 +514,6 @@
     .totals-row .total-card span,
     .income-totals-row .total-card span {
         min-height: auto;
-    }
-}
-
-@media (max-width: 900px) {
-    .dashboard-actions .actions-row,
-    .dashboard-actions-bottom .actions-row {
-        justify-content: flex-end;
-    }
-}
-
-@media (max-width: 1100px) {
-    .dashboard-header-card {
-        grid-template-columns: 1fr;
-        align-items: stretch;
-    }
-
-    .dashboard-header-card .dashboard-year-selector,
-    .dashboard-header-card .actions-row {
-        justify-self: stretch;
-        justify-content: flex-end;
-    }
-
-    .fiscal-summary-metrics-ordered {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -955,40 +569,6 @@
 
     .dashboard-header-card .dashboard-year-selector button {
         width: 100%;
-    }
-}
-
-@media (max-width: 900px) {
-    .charts-grid {
-        grid-template-columns:1fr;
-    }
-
-    .income-summary-row {
-        grid-template-columns:1fr;
-    }
-
-    .totals-row .total-card,
-    .income-totals-row .total-card {
-        min-height: auto;
-    }
-
-    .compact-incomes-table {
-        min-width: 960px;
-    }
-
-    .income-amount-row {
-        grid-template-columns:1fr;
-    }
-
-    .net-amount-inline {
-        justify-content: flex-start;
-        width: 100%;
-    }
-}
-
-@media (max-width: 1000px) {
-    .search-totals-row {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
@@ -1242,12 +822,6 @@
     }
 }
 
-@media (max-width: 1120px) {
-    .recurring-detail-priority-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
 @media (max-width: 760px) {
     .recurring-detail-priority-grid {
         grid-template-columns: 1fr;
@@ -1284,36 +858,6 @@
     }
 }
 
-@media (max-width: 900px) {
-    .grouped-filters {
-        grid-template-columns: 1fr;
-    }
-
-    .grouped-filters .filter-group {
-        grid-column: 1 / -1;
-        grid-template-columns: 1fr;
-    }
-
-    .payment-status-note {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 900px) {
-    .grouped-filters {
-        grid-template-columns: 1fr;
-    }
-
-    .grouped-filters .filter-group {
-        grid-column: 1 / -1;
-        grid-template-columns: 1fr;
-    }
-
-    .payment-status-note {
-        grid-template-columns: 1fr;
-    }
-}
-
 @media (max-width: 760px) {
     .fiscal-summary-card .summary-metrics-grid,
     .fiscal-summary-card .summary-metrics-grid-priority,
@@ -1346,13 +890,6 @@
 @media (max-width: 576px) {
     .supplier-filters {
         grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 900px) {
-
-    .floating-bulk-actions-inner .floating-bulk-select-all-inline {
-        padding-left: 15px;
     }
 }
 
@@ -1422,31 +959,6 @@
         right: auto !important;
         min-width: 230px !important;
         max-width: calc(100vw - 24px) !important;
-    }
-}
-
-@media (max-width: 900px) {
-    .payment-detail-header {
-        display: none;
-    }
-
-    .payment-detail-row {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-    }
-
-    .payment-detail-row span {
-        display: block;
-        margin-bottom: 3px;
-        color: var(--muted);
-        font-size: 10px;
-        font-weight: 850;
-        text-transform: uppercase;
-        letter-spacing: .025em;
-    }
-
-    .payment-detail-row strong {
-        white-space: normal;
     }
 }
 
@@ -1527,21 +1039,6 @@
 @media (max-width: 760px) {
     .expense-detail-info-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-@media (max-width: 1020px) {
-    .expense-detail-hero,
-    .expense-detail-two-columns {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .expense-detail-status-strip {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .expense-detail-status-strip > div:nth-child(-n+2) {
-        border-bottom: 1px solid rgba(226, 232, 240, .85);
     }
 }
 
@@ -1651,20 +1148,6 @@
     }
 }
 
-@media (max-width: 1020px) {
-    .income-detail-hero {
-        grid-template-columns: 1fr;
-    }
-
-    .income-detail-amount-panel {
-        justify-items: start;
-    }
-
-    .income-detail-fields {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
 @media (max-width: 700px) {
     .income-detail-action-row {
         padding: 12px 16px;
@@ -1717,16 +1200,6 @@
 @media (max-width: 700px) {
     .income-add-btn {
         max-width: max-content !important;
-    }
-}
-
-@media (max-width: 1100px) {
-    .recurring-expense-row {
-        grid-template-columns:repeat(3, minmax(0, 1fr));
-    }
-
-    .recurring-expense-row > div:first-child {
-        /*grid-column: 1/-1;*/
     }
 }
 
@@ -1946,7 +1419,7 @@
     }
 
     .expense-form .toggle-field {
-        min-height: 54px;
+        //min-height: 54px;
     }
 
     .expense-form .payments-box {
