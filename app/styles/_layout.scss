@@ -3866,8 +3866,9 @@ html, body {
 }
 
 .expense-category-chart-card {
-    display: grid;
-    gap: 16px;
+    //display: grid;
+    //gap: 16px;
+    max-height: fit-content;
 }
 
 .expense-category-chart-card h2 {
@@ -3973,11 +3974,8 @@ html, body {
 }
 
 .embedded-chart-card {
-    margin-top: 18px;
     box-shadow: none;
 }
-
-
 
 .btn,
 .reset-button {
@@ -4707,7 +4705,6 @@ html, body {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
-    margin-top: 18px;
 }
 
 .income-summary-row {
@@ -7279,33 +7276,16 @@ button.bulk-direct-danger {
     white-space: pre-wrap;
 }
 
-
-
-
-
-
-
-.income-chart {
-
-}
-
-.income-chart .category-chart-row {
+.category-chart-row {
     grid-template-columns: auto;
 }
 
-.income-chart .category-chart-value {
+.category-chart-value {
     flex-grow: 1;
     text-align: right;
     justify-content: flex-end;
 }
 
-
-
-
-
-
-
-/* v089: recurring expenses corrected flow */
 .expense-type-toggle {
     display: flex;
     align-items: center;

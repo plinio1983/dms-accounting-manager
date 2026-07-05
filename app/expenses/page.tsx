@@ -248,33 +248,33 @@ function ExpenseCategoryColumnChart({ data, total }: { data: ExpenseCategoryDatu
   </div>;
 }
 
-function ExpenseCategoryChart({ data }: { data: ExpenseCategoryDatum[] }) {
-  const max = Math.max(...data.map(item => item.total), 0);
-  const total = data.reduce((sum, item) => sum + item.total, 0);
-
-  return <div className="card expense-category-chart-card embedded-chart-card">
-    <div className="card-heading-row">
-      <div>
-        <h2>Grafico spese per categoria</h2>
-        <p className="muted">Distribuzione delle spese in base ai risultati attualmente filtrati.</p>
-      </div>
-      <span className="badge">Totale {euro(total)}</span>
-    </div>
-    {data.length ? <div className="category-chart-list">
-      {data.map(item => {
-        const percentage = total ? (item.total / total) * 100 : 0;
-        const width = max ? Math.max((item.total / max) * 100, 4) : 0;
-        return <div className="category-chart-row" key={`${item.code}-${item.name}`}>
-          <div className="category-chart-label"><strong>{item.code}</strong><span>{item.name}</span></div>
-          <div className="category-chart-bar-wrap" aria-label={`${item.name}: ${euro(item.total)}`}>
-            <div className="category-chart-bar" style={{ width: `${width}%` }} />
-          </div>
-          <div className="category-chart-value"><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
-        </div>;
-      })}
-    </div> : <p className="muted">Nessuna spesa presente nei risultati filtrati.</p>}
-  </div>;
-}
+// function ExpenseCategoryChart({ data }: { data: ExpenseCategoryDatum[] }) {
+//   const max = Math.max(...data.map(item => item.total), 0);
+//   const total = data.reduce((sum, item) => sum + item.total, 0);
+//
+//   return <div className="card expense-category-chart-card embedded-chart-card">
+//     <div className="card-heading-row">
+//       <div>
+//         <h2>Grafico spese per categoria</h2>
+//         <p className="muted">Distribuzione delle spese in base ai risultati attualmente filtrati.</p>
+//       </div>
+//       <span className="badge">Totale {euro(total)}</span>
+//     </div>
+//     {data.length ? <div className="category-chart-list">
+//       {data.map(item => {
+//         const percentage = total ? (item.total / total) * 100 : 0;
+//         const width = max ? Math.max((item.total / max) * 100, 4) : 0;
+//         return <div className="category-chart-row" key={`${item.code}-${item.name}`}>
+//           <div className="category-chart-label"><strong>{item.code}</strong><span>{item.name}</span></div>
+//           <div className="category-chart-bar-wrap" aria-label={`${item.name}: ${euro(item.total)}`}>
+//             <div className="category-chart-bar" style={{ width: `${width}%` }} />
+//           </div>
+//           <div className="category-chart-value"><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
+//         </div>;
+//       })}
+//     </div> : <p className="muted">Nessuna spesa presente nei risultati filtrati.</p>}
+//   </div>;
+// }
 
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
   const value = searchParams[key];
@@ -1290,8 +1290,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         </table>
       </div>
     </div>
-    <div className="card expenses-list-card">
-      <ExpenseCategoryChart data={expensesByCategory} />
-    </div>
+    {/*<div className="card expenses-list-card">*/}
+    {/*  <ExpenseCategoryChart data={expensesByCategory} />*/}
+    {/*</div>*/}
   </div>;
 }

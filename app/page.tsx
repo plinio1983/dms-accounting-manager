@@ -206,18 +206,28 @@ function nonFiscalExpensePercentTone(value: number, total: number) {
 }
 
 function ExpensesByCategoryChart({ data }: { data: Array<{ name: string; code: string; total: number }> }) {
-  const max = Math.max(...data.map(item => item.total), 0);
   const total = data.reduce((sum, item) => sum + item.total, 0);
+  const groupedData = total > 0 ? data.reduce((items, item) => {
+    const percentage = (item.total / total) * 100;
+    if (percentage >= 5) return [...items, item];
+    const other = items.find(entry => entry.code === 'ALTRO');
+    if (other) {
+      other.total += item.total;
+      return items;
+    }
+    return [...items, { name: 'Altro', code: 'ALTRO', total: item.total }];
+  }, [] as Array<{ name: string; code: string; total: number }>).sort((a, b) => b.total - a.total) : data;
+  const max = Math.max(...groupedData.map(item => item.total), 0);
   return <div className="card expense-category-chart-card">
     <div className="card-heading-row">
       <div>
         <h2>Grafico spese per categoria</h2>
         <p className="muted">Distribuzione delle spese sullo stesso anno fiscale del report mensile.</p>
       </div>
-      <span className="badge">Totale {euro(total)}</span>
+      <div><span className="badge">Totale {euro(total)}</span></div>
     </div>
-    {data.length ? <div className="category-chart-list">
-      {data.map(item => {
+    {groupedData.length ? <div className="category-chart-list">
+      {groupedData.map(item => {
         const percentage = total ? (item.total / total) * 100 : 0;
         const width = max ? Math.max((item.total / max) * 100, 4) : 0;
         return <div className="category-chart-row" key={`${item.code}-${item.name}`}>
@@ -232,6 +242,51 @@ function ExpensesByCategoryChart({ data }: { data: Array<{ name: string; code: s
   </div>;
 }
 
+function ExpenseCategoryIncomeImpactChart({
+  data,
+  incomeTotal
+}: {
+  data: Array<{ name: string; code: string; total: number }>;
+  incomeTotal: number;
+}) {
+  const groupedData = incomeTotal > 0 ? data.reduce((items, item) => {
+    const percentage = (item.total / incomeTotal) * 100;
+    if (percentage >= 5) return [...items, item];
+    const other = items.find(entry => entry.code === 'ALTRO');
+    if (other) {
+      other.total += item.total;
+      return items;
+    }
+    return [...items, { name: 'Altro', code: 'ALTRO', total: item.total }];
+  }, [] as Array<{ name: string; code: string; total: number }>).sort((a, b) => b.total - a.total) : data;
+  const maxImpact = Math.max(...groupedData.map(item => incomeTotal ? (item.total / incomeTotal) * 100 : 0), 0);
+
+  return <div className="card expense-category-chart-card">
+    <div className="card-heading-row">
+      <div>
+        <h2>Impatto spese su incasso totale</h2>
+        <p className="muted">Percentuale di ogni categoria spese rispetto alle entrate totali dell’anno fiscale.</p>
+      </div>
+      <div>
+        <span className="badge">Incasso {euro(incomeTotal)}</span>
+      </div>
+    </div>
+    {groupedData.length && incomeTotal > 0 ? <div className="category-chart-list">
+      {groupedData.map(item => {
+        const percentage = (item.total / incomeTotal) * 100;
+        const width = maxImpact ? Math.max((percentage / maxImpact) * 100, 4) : 0;
+        return <div className="category-chart-row" key={`${item.code}-${item.name}`}>
+          <div className="category-chart-label"><strong>{item.code}</strong><span>{item.name}</span></div>
+          <div className="category-chart-bar-wrap" aria-label={`${item.name}: ${percentage.toFixed(1)}% dell'incasso totale`}>
+            <div className="category-chart-bar" style={{ width: `${width}%` }} />
+          </div>
+          <div className="category-chart-value"><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
+        </div>;
+      })}
+    </div> : <p className="muted">Nessun incasso disponibile per calcolare l’impatto percentuale.</p>}
+  </div>;
+}
+
 function IncomeBreakdownChart({ title, description, data }: { title: string; description: string; data: Array<{ name: string; code: string; total: number }> }) {
   const max = Math.max(...data.map(item => item.total), 0);
   const total = data.reduce((sum, item) => sum + item.total, 0);
@@ -242,7 +297,7 @@ function IncomeBreakdownChart({ title, description, data }: { title: string; des
         <h2>{title}</h2>
         <p className="muted">{description}</p>
       </div>
-      <span className="badge">Totale {euro(total)}</span>
+      <div><span className="badge">Totale {euro(total)}</span></div>
     </div>
     {data.length ? <div className="category-chart-list">
       {data.map(item => {
@@ -489,10 +544,10 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
     </div>
 
     <div className="dashboard-report-charts">
-      <ExpensesByCategoryChart data={report.expensesByCategory} />
       <div className="charts-grid">
+        <ExpenseCategoryIncomeImpactChart data={report.expensesByCategory} incomeTotal={report.totals.incassoTotale} />
+        <ExpensesByCategoryChart data={report.expensesByCategory} />
         <IncomeBreakdownChart title="Entrate per canale di vendita" description={`Distribuzione degli incassi nell’anno fiscale ${report.annualYear}.`} data={report.incomesBySalesChannel} />
-        <IncomeBreakdownChart title="Grafico entrate dichiarate" description={`Distribuzione degli incassi fiscali e non fiscali nell’anno fiscale ${report.annualYear}.`} data={report.incomesByFiscalStatus} />
       </div>
     </div>
 
