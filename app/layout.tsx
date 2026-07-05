@@ -1,12 +1,12 @@
 import './globals.css';
+import type { Metadata, Viewport } from 'next';
 import ShellChrome from '@/components/ShellChrome';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Tabularium',
   description: 'Gestionale interno per incassi, spese, fornitori e report mensili',
   manifest: '/manifest.webmanifest',
-  themeColor: '#0b2f66',
   icons: {
     icon: [
       { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
@@ -14,6 +14,10 @@ export const metadata = {
     ],
     apple: [{ url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }]
   }
+};
+
+export const viewport: Viewport = {
+  themeColor: '#0b2f66'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,4 +1,4 @@
-# DMS Accounting Manager
+# Tabularium
 
 Gestionale web interno per sostituire il file Excel di incassi e spese.
 
@@ -40,6 +40,7 @@ http://localhost:3000
 ## Prisma 7
 
 La connessione al database è configurata in `prisma.config.ts`, non nel file `schema.prisma`.
+Non configurare manualmente `DATABASE_URL`: l'app e Prisma la costruiscono dalle variabili `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` e `POSTGRES_SCHEMA`, sia in locale sia in produzione.
 
 Comando rapido consigliato dopo ogni aggiornamento della struttura:
 

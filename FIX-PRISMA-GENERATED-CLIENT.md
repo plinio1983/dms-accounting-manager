@@ -29,5 +29,3 @@ npm run db:sync
 npm run db:seed
 npm run dev
 ```
-
-Nota: la cartella root del progetto è ora sempre `dms-accounting-manager`.

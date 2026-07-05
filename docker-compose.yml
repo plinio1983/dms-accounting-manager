@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: dms-spese-ricavi-db
+    container_name: tabularium-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: dms_spese_ricavi
@@ -14,3 +14,5 @@ services:
 
 volumes:
   pgdata:
+    name: dms-accounting-manager_pgdata
+    external: true

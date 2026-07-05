@@ -2,8 +2,9 @@ import XLSX from 'xlsx';
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, CompanyCode, InvoiceStatus } from "../generated/prisma/client";
+import { getDatabaseUrl } from "../lib/database-url";
 
-const connectionString = process.env.DATABASE_URL ?? "postgresql://dms:dms@localhost:5433/dms_spese_ricavi?schema=public";
+const connectionString = getDatabaseUrl();
 
 
 const prisma = new PrismaClient({
