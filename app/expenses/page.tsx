@@ -1,10 +1,8 @@
 import Link from 'next/link';
-import BulkSelectionController from '@/components/BulkSelectionController';
-import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
 import { prisma } from '@/lib/prisma';
 import { euro, moneyTone } from '@/lib/money';
 import NewExpensePanel from '@/components/NewExpensePanel';
-import ExpenseEditModalController from '@/components/ExpenseEditModalController';
+import ExpensesList from '@/components/ExpensesList';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import ExpenseFiltersDrawer from '@/components/ExpenseFiltersDrawer';
 import ExpenseTrendSelectors from '@/components/ExpenseTrendSelectors';
@@ -13,18 +11,7 @@ import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 import { stripFlashRecord, stripFlashSearchParams } from '@/lib/flash';
 import { isExpenseInvoiceNotReceived } from '@/lib/expense-invoice';
-import {
-  badgeClass,
-  categoryLabel,
-  categoryTone,
-  formatPeriod,
-  invoiceStatusStyles,
-  paymentStatusStyles,
-  vatKey,
-  vatRateLabel,
-  vatStyles,
-  yesNoStyles
-} from '@/lib/expense-ui';
+import { badgeClass, formatPeriod } from '@/lib/expense-ui';
 
 const paymentStatusOptions = [
   ['overdue', 'Scaduto'],
@@ -44,18 +31,6 @@ const invoiceStatusFilterLabels = [
   ...invoiceStatusOptions,
   ['not_received', 'Fatture non ricevute']
 ];
-
-function dateLabel(value?: Date | null) {
-  return value
-    ? new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' }).format(value)
-    : '-';
-}
-
-function mobileDateLabel(value?: Date | null) {
-  return value
-    ? new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(value).replace('.', '')
-    : '-';
-}
 
 function formatDateInputLabel(value: string) {
   if (!value) return '';
@@ -145,54 +120,6 @@ function periodTotalsLabel({
   return value ? `Totali andamento ${formatDateTextInputLabel(value)}` : 'Totali andamento date selezionate';
 }
 
-function booleanBadge(value: boolean) {
-  const item = value ? yesNoStyles.yes : yesNoStyles.no;
-  return <span className={badgeClass(item.className)}>{item.icon} {item.label}</span>;
-}
-
-function fiscalBadge(value: boolean) {
-  const item = value ? yesNoStyles.yes : yesNoStyles.no;
-  const label = value ? '✓ Fisc.' : '✕ N.F.';
-  return <span className={badgeClass(item.className)}>{label}</span>;
-}
-function fiscalBadgeMobile(value: boolean) {
-  const item = value ? { className: '' } : yesNoStyles.no;
-  const label = value ? '✓ DF' : '✕ NF';
-  return <span className={badgeClass(item.className)}>{label}</span>;
-}
-function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
-  const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
-  let label = !value ? 'PDF' : 'Fatt';
-  let state = invoiceStatus;
-  if (invoiceStatus === "IN_ATTESA") {
-    state = "✕ "
-  }
-  if (invoiceStatus === "RICEVUTA") {
-    state = '✓ ';
-  }
-  if (invoiceStatus === "NON_PREVISTA") {
-    state = '✕ ';
-    label = 'N.P.';
-  }
-
-  return <span className={badgeClass(style.className)}>{state}{label}</span>;
-}
-function InvoiceBadge(value: boolean, invoiceStatus?: string) {
-  //let style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
-  let style = !value ? yesNoStyles.no.className : yesNoStyles.yes.className;
-  let label = "";
-  if (!value) {
-    if (invoiceStatus === 'NON_PREVISTA') {
-      label = '✕';
-    } else {
-      style = "";
-      label = 'PDF';
-    }
-  } else {
-    label = "✓ eBill."
-  }
-  return <span className={badgeClass(style)}>{label}</span>;
-}
 function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: string }> }) {
   return <div className="active-filter-summary">
     <span className="active-filter-summary-title">Filtri attivi:</span>
@@ -355,10 +282,6 @@ function expenseResidualAmount(expense: { amount: unknown; payments?: Array<{ am
   const expenseAmount = Number(expense.amount);
   const paidAmount = (expense.payments ?? []).reduce((partial, payment) => partial + Number(payment.amount), 0);
   return Math.max(expenseAmount - paidAmount, 0);
-}
-
-function isExpenseOverdue(expense: any) {
-  return expenseResidualAmount(expense) > 0;
 }
 
 function isExpensePastDueForBadge(expense: any) {
@@ -884,8 +807,6 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         </div>
       </div>
 
-      <BulkSelectionController />
-
       <script dangerouslySetInnerHTML={{ __html: `
         document.addEventListener('click', function(event) {
           const row = event.target.closest && event.target.closest('[data-row-href]');
@@ -1113,182 +1034,19 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         })();
       ` }} />
 
-      <form id="expenseBulkForm" action={`/api/expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
-        <label className="bulk-select-all-inline">
-          <input type="checkbox" className="bulk-select-all" data-bulk-target="expenseBulkForm" aria-label="Seleziona tutte le spese visibili" />
-        </label>
-        <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="expenseBulkForm">
-          <summary className="bulk-action-trigger">
-            <span className="btn-icon">⚙</span>
-            <span className="bulk-label">
-              <span className="floating-bulk-label">Bulk </span>Actions
-            </span>
-          </summary>
-          <div className="bulk-action-menu-panel">
-            <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
-            <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="payment_completed"><span className="btn-icon">€</span><span className="bulk-label">Pagamento completato</span></button>
-            <BulkChangeCategoryModal
-              formId="expenseBulkForm"
-              action={`/api/expenses/bulk?returnTo=${returnTo}`}
-              fieldName="categoryId"
-              categories={orderedCategories.map(category => ({ value: String(category.id), label: category.name, icon: category.icon }))}
-            />
-          </div>
-        </details>
-        <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="expenseBulkForm"
-             data-edit-base="/expenses/" data-copy-base="/expenses/new?copyId=" data-edit-trigger-attr="data-expense-edit-id" data-copy-trigger-attr="data-expense-copy-id" data-return-to={returnTo}>
-          <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
-            <span className="btn-icon">✎</span><span className="bulk-label">Modifica</span>
-          </a>
-          <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true">
-            <span className="btn-icon">⧉</span><span className="bulk-label">Copia</span>
-          </a>
-          <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete"
-                  data-bulk-delete data-confirm-label="Elimina" disabled>
-            <span className="btn-icon">🗑</span>
-            <span className="bulk-label">Elimina</span>
-          </button>
-        </div>
-        <div className="bulk-inner-container">
-          <button className="bulk-direct-link btn btn-md btn-primary" type="button" data-expense-new>
-            <span className="btn-icon">+</span>
-            <span className="bulk-label"><span className="hidden-mobile">Aggiungi</span> spesa</span>
-          </button>
-        </div>
-      </form>
-
-      <ExpenseEditModalController
-          categories={orderedCategories.map(c => ({id: c.id, code: c.code, name: c.name, icon: c.icon }))}
+      <ExpensesList
+        expenses={filteredExpenses}
+        mobileExpenses={mobileSortedExpenses}
+        returnTo={returnTo}
+        showSupplierColumn
+        selectable
+        formId="expenseBulkForm"
+        categories={orderedCategories.map(c => ({id: c.id, code: c.code, name: c.name, icon: c.icon }))}
         banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
         paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
         suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
-        listHref={listHref}
+        emptyMessage="Nessuna spesa trovata con i filtri selezionati."
       />
-
-      <div className="expense-mobile-list" aria-label="Lista spese mobile">
-        {mobileSortedExpenses.map(e => {
-          const amount = Number(e.amount.toString());
-          const supplierName = expenseSupplierName(e);
-          const vatStyle = vatStyles[vatKey(e.vatRate)] ?? vatStyles['22'];
-          const paid = e.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
-          const residual = Math.max(0, amount - paid);
-          const categoryClassName = categoryTone(e.category);
-          const paymentStyle = paymentStatusStyles[e.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
-          const invoiceStyle = invoiceStatusStyles[e.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
-          const overdue = isExpensePastDueForBadge(e);
-          const upaid = isExpenseOverdue(e);
-          const invoiceWaiting = e.invoiceStatus === 'IN_ATTESA';
-          const statusStyle = overdue ? paymentStatusStyles.SCADUTO : paymentStyle;
-          const detailHref = e.recurringExpenseId
-            ? `/recurring-expenses/${e.recurringExpenseId}?returnTo=${returnTo}`
-            : `/expenses/${e.id}?returnTo=${returnTo}`;
-          // const recordClass = overdue ? `expense-mobile-item expense-mobile-item-overdue` : "expense-mobile-item";
-          let recordAddClass = "";
-          if (overdue) {
-            recordAddClass = "expense-mobile-item-overdue";
-          } else if (upaid) {
-            recordAddClass = "expense-mobile-item-unpaid";
-          } else if (invoiceWaiting) {
-            recordAddClass = "expense-mobile-item-invoice-waiting";
-          }
-          const recordClass = `expense-mobile-item ${recordAddClass}`;
-
-          // return <div className={overdue ? "expense-mobile-item expense-mobile-item-overdue" : "expense-mobile-item"} key={`mobile-${e.id}`}>
-          return <div className={recordClass} key={`mobile-${e.id}`}>
-            <div className="expense-mobile-select">
-              <input form="expenseBulkForm" type="checkbox" name="ids" value={e.id} aria-label={`Seleziona spesa ${e.id}`} />
-            </div>
-            <Link className="expense-mobile-link" href={detailHref}>
-              <div className="expense-mobile-main">
-                <div className="expense-mobile-meta">
-                  <div className="expense-mobile-meta-left">
-                    {e.category ? <span title={e.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(e.category, e.category.code)}</span> : null}
-                    {fiscalBadgeMobile(e.isDeclared)}
-                    <span className="expense-mobile-date">
-                      {formatPeriod(e.month, e.year)}
-                    </span>
-                  </div>
-                  <div className="expense-mobile-meta-right">
-                    {e.isDeclared ? electronicInvoiceBadge(e.hasElectronicInvoice, e.invoiceStatus) : null}
-                    <span className="expense-mobile-date">{mobileDateLabel(e.dueDate)}</span>
-                  </div>
-                </div>
-                <div className="expense-mobile-title-row">
-                  <span className={e.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{e.isRecurring ? 'R' : 'S'}</span>
-                  <div className="expense-mobile-title-left">
-                    <strong>{supplierName}</strong>
-                  </div>
-                  <div className="expense-mobile-title-right">
-                    <span className={moneyTone(amount)}>{euro(e.amount.toString())}</span>
-                  </div>
-                </div>
-                <div className="expense-mobile-subtitle">
-                  <div className="expense-mobile-subtitle-left">
-                    <span>{e.description || 'Spesa senza descrizione'} </span>
-                    <span className={badgeClass(vatStyle.className)}>{Number(e.vatRate.toString())}%</span>
-                  </div>
-                  <div>
-                    {/*<span className={badgeClass(statusStyle.className)}>{statusStyle.icon} {statusStyle.label}</span>*/}
-                    <span className={badgeClass(statusStyle.className)}> {statusStyle.label}</span>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          </div>;
-        })}
-      </div>
-
-      <div className="table-scroll">
-        <table className="expenses-table compact-expenses-table">
-          <thead><tr>
-            <th className="cell-option cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="expenseBulkForm" aria-label="Seleziona tutte le spese" /></th>
-            <th className="cell-order-date"><span className="th-wrap">Data<br />ordine</span></th>
-            <th className="cell-billing-period"><span className="th-wrap">Periodo<br />Cont.</span></th>
-            <th className="cell-type"><span className="th-wrap">Tipo</span></th>
-            <th className="cell-category">Categ.</th>
-            <th className="cell-supplier">Esercente</th>
-            <th className="cell-amount">Importo</th>
-            <th className="cell-vat">IVA</th>
-            <th className="cell-description">Descrizione</th>
-            {/*<th className="cell-fiscal">Fiscale</th>*/}
-            <th className="cell-payment-state"><span className="th-wrap">Stato Pag.</span></th>
-            <th className="cell-invoice-state"><span className="th-wrap">Stato<br />Fatt.</span></th>
-            <th className="cell-ebilling"><span className="th-wrap">E-Bill</span></th>
-            <th className="cell-residual">Residuo</th>
-          </tr></thead>
-          <tbody>
-            {filteredExpenses.map(e => {
-            const amount = Number(e.amount.toString());
-            const supplierName = expenseSupplierName(e);
-            const paid = e.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
-            const residual = Math.max(0, amount - paid);
-            const categoryClassName = categoryTone(e.category);
-            const paymentStyle = paymentStatusStyles[e.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
-            const invoiceStyle = invoiceStatusStyles[e.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
-            const overdue = isExpensePastDueForBadge(e);
-            const paymentWaiting = e.paymentStatus !== 'COMPLETATO' || residual > 0;
-            const invoiceWaiting = e.invoiceStatus === 'IN_ATTESA';
-            const vatStyle = vatStyles[vatKey(e.vatRate)] ?? vatStyles['22'];
-            return <tr key={e.id} className={['clickable-desktop-row', overdue ? 'expense-row-overdue' : paymentWaiting || invoiceWaiting ? 'expense-row-warning' : ''].filter(Boolean).join(' ')} data-row-href={`/expenses/${e.id}?returnTo=${returnTo}`} tabIndex={0}>
-              <td className="cell-option cell-center"><input form="expenseBulkForm" type="checkbox" name="ids" value={e.id} aria-label={`Seleziona spesa ${e.id}`} /></td>
-              <td className="cell-order-date">{dateLabel(e.receivedDate)}</td>
-              <td className="cell-billing-period">{formatPeriod(e.month, e.year)}</td>
-              <td className="cell-type"><span className={e.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{e.isRecurring ? 'R' : 'S'}</span></td>
-              <td className="cell-category">{e.category ? <span title={e.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(e.category, e.category.code)}</span> : '-'}</td>
-              <td className="cell-supplier cell-compact" title={supplierName}>{e.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${e.supplierId}?returnTo=${returnTo}`}>{supplierName}</Link> : supplierName}</td>
-              <td className="cell-amount"><strong className={moneyTone(amount)}>{euro(e.amount.toString())}</strong></td>
-              <td className="cell-vat"><span className={badgeClass(vatStyle.className)}>{Number(e.vatRate.toString())}%</span></td>
-              <td className="cell-description" title={e.description ?? ''}>{e.description}</td>
-              {/*<td className="cell-fiscal">{fiscalBadge(e.isDeclared)}</td>*/}
-              <td className="cell-payment-state">{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>
-              <td className="cell-invoice-state"><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
-              <td className="cell-ebilling">{InvoiceBadge(e.hasElectronicInvoice, e.invoiceStatus)}</td>
-              <td className="cell-residual"><strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong></td>
-            </tr>;
-          })}
-          </tbody>
-        </table>
-      </div>
     </div>
     {/*<div className="card expenses-list-card">*/}
     {/*  <ExpenseCategoryChart data={expensesByCategory} />*/}

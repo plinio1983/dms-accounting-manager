@@ -138,10 +138,10 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
       <article className="expense-detail-document recurring-detail-document">
         <div className="expense-detail-action-row">
           <div className="left-side">
-            <Link className="btn btn-xs btn-default" href={returnTo}>↩ Indietro</Link>
+            <Link className="btn btn-sm btn-default" href={returnTo}>↩ Indietro</Link>
           </div>
           <div className="right-side">
-            <Link className="btn btn-xs btn-primary" href="#" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</Link>
+            <Link className="btn btn-sm btn-primary" href="#" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</Link>
           </div>
         </div>
 
