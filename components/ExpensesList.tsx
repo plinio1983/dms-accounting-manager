@@ -3,6 +3,7 @@ import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
 import ExpenseEditModalController from '@/components/ExpenseEditModalController';
+import SortableTableController from '@/components/SortableTableController';
 import { euro, moneyTone } from '@/lib/money';
 import {
   badgeClass,
@@ -147,6 +148,10 @@ function expenseDetailHref(expense: ExpenseListItem, returnTo: string) {
     : `/expenses/${expense.id}?returnTo=${returnTo}`;
 }
 
+function dateSortValue(value?: Date | null) {
+  return value ? String(new Date(value).getTime()) : '';
+}
+
 export default function ExpensesList({
   expenses,
   mobileExpenses,
@@ -166,6 +171,7 @@ export default function ExpensesList({
 
   return <>
     <ClickableDesktopRows />
+    <SortableTableController />
     {hasBulkControls ? <>
       <BulkSelectionController />
       <form id={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
@@ -278,21 +284,21 @@ export default function ExpensesList({
     </div>
 
     <div className="table-scroll">
-      <table className="expenses-table compact-expenses-table">
+      <table className="expenses-table compact-expenses-table" data-sortable-table data-default-sort="order-date" data-default-sort-dir="desc">
         <thead><tr>
           {selectable ? <th className="cell-option cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutte le spese" /></th> : null}
-          <th className="cell-order-date"><span className="th-wrap">Data<br />ordine</span></th>
-          <th className="cell-billing-period"><span className="th-wrap">Periodo<br />Cont.</span></th>
-          <th className="cell-type"><span className="th-wrap">Tipo</span></th>
-          <th className="cell-category">Categ.</th>
-          {showSupplierColumn ? <th className="cell-supplier">Esercente</th> : null}
-          <th className="cell-amount">Importo</th>
-          <th className="cell-vat">IVA</th>
-          <th className="cell-description">Descrizione</th>
-          <th className="cell-payment-state"><span className="th-wrap">Stato Pag.</span></th>
-          <th className="cell-invoice-state"><span className="th-wrap">Stato<br />Fatt.</span></th>
-          <th className="cell-ebilling"><span className="th-wrap">E-Bill</span></th>
-          <th className="cell-residual">Residuo</th>
+          <th className="cell-order-date" data-sort-key="order-date" data-sort-type="date"><span className="th-wrap">Data<br />ordine</span></th>
+          <th className="cell-billing-period" data-sort-key="billing-period" data-sort-type="number"><span className="th-wrap">Periodo<br />Cont.</span></th>
+          <th className="cell-type" data-sort-key="type"><span className="th-wrap">Tipo</span></th>
+          <th className="cell-category" data-sort-key="category">Categ.</th>
+          {showSupplierColumn ? <th className="cell-supplier" data-sort-key="supplier">Esercente</th> : null}
+          <th className="cell-amount" data-sort-key="amount" data-sort-type="number">Importo</th>
+          <th className="cell-vat" data-sort-key="vat" data-sort-type="number">IVA</th>
+          <th className="cell-description" data-sort-key="description">Descrizione</th>
+          <th className="cell-payment-state" data-sort-key="payment-state"><span className="th-wrap">Stato Pag.</span></th>
+          <th className="cell-invoice-state" data-sort-key="invoice-state"><span className="th-wrap">Stato<br />Fatt.</span></th>
+          <th className="cell-ebilling" data-sort-key="ebill" data-sort-type="number"><span className="th-wrap">E-Bill</span></th>
+          <th className="cell-residual" data-sort-key="residual" data-sort-type="number">Residuo</th>
         </tr></thead>
         <tbody>
           {expenses.map(expense => {
@@ -308,7 +314,25 @@ export default function ExpensesList({
             const vatStyle = vatStyles[vatKey(expense.vatRate)] ?? vatStyles['22'];
             const detailHref = expenseDetailHref(expense, returnTo);
 
-            return <tr key={expense.id} className={['clickable-desktop-row', overdue ? 'expense-row-overdue' : paymentWaiting || invoiceWaiting ? 'expense-row-warning' : ''].filter(Boolean).join(' ')} data-row-href={detailHref} tabIndex={0}>
+            return <tr
+              key={expense.id}
+              className={['clickable-desktop-row', overdue ? 'expense-row-overdue' : paymentWaiting || invoiceWaiting ? 'expense-row-warning' : ''].filter(Boolean).join(' ')}
+              data-row-href={detailHref}
+              data-sort-row
+              data-sort-order-date={dateSortValue(expense.receivedDate)}
+              data-sort-billing-period={String(Number(expense.year) * 12 + Number(expense.month))}
+              data-sort-type={expense.isRecurring ? 'R' : 'S'}
+              data-sort-category={`${expense.category?.code ?? ''} ${expense.category?.name ?? ''}`}
+              data-sort-supplier={supplierName}
+              data-sort-amount={String(amount)}
+              data-sort-vat={String(Number(expense.vatRate))}
+              data-sort-description={expense.description ?? ''}
+              data-sort-payment-state={overdue ? paymentStatusStyles.SCADUTO.label : paymentStyle.label}
+              data-sort-invoice-state={invoiceStyle.label}
+              data-sort-ebill={expense.hasElectronicInvoice ? '1' : '0'}
+              data-sort-residual={String(residual)}
+              tabIndex={0}
+            >
               {selectable ? <td className="cell-option cell-center"><input form={formId} type="checkbox" name="ids" value={expense.id} aria-label={`Seleziona spesa ${expense.id}`} /></td> : null}
               <td className="cell-order-date">{dateLabel(expense.receivedDate)}</td>
               <td className="cell-billing-period">{formatPeriod(expense.month, expense.year)}</td>

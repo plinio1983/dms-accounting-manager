@@ -5,6 +5,7 @@ import { euro } from '@/lib/money';
 import NewSupplierPanel from '@/components/NewSupplierPanel';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import SupplierFiltersDrawer from '@/components/SupplierFiltersDrawer';
+import SortableTableController from '@/components/SortableTableController';
 import { requireWorkspace } from '@/lib/auth';
 import { stripFlashRecord, stripFlashSearchParams } from '@/lib/flash';
 
@@ -265,6 +266,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
           </button>
         </div>
       </form>
+      <SortableTableController />
 
       <div className="supplier-mobile-list expense-mobile-list" aria-label="Lista fornitori mobile">
         {filteredSupplierRows.map(({ supplier, openExpensesCount, amountToPay, annualOrdersCount, annualPurchasedAmount }) => {
@@ -303,19 +305,31 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
         {!filteredSupplierRows.length && <div className="expense-empty-panel">Nessun fornitore trovato.</div>}
       </div>
 
-      <div className="table-scroll"><table className="suppliers-table compact-suppliers-table"><thead><tr>
+      <div className="table-scroll"><table className="suppliers-table compact-suppliers-table" data-sortable-table data-default-sort="business-name" data-default-sort-dir="asc"><thead><tr>
         <th className="cell-center">
           <input type="checkbox" className="bulk-select-all" data-bulk-target="supplierBulkForm" aria-label="Seleziona tutti i fornitori" />
         </th>
-        <th>Ragione <br />Sociale</th>
-        <th>Alias</th>
-        <th className="text-center">Ordini <br />da saldare</th>
-        <th className="text-right supplier-amount-header">Importo <br />da saldare</th>
-        <th className="text-center">Ordini <br />anno</th>
-        <th className="text-right">Acquisti <br />anno</th>
+        <th data-sort-key="business-name">Ragione <br />Sociale</th>
+        <th data-sort-key="alias">Alias</th>
+        <th className="text-center" data-sort-key="open-count" data-sort-type="number">Ordini <br />da saldare</th>
+        <th className="text-right supplier-amount-header" data-sort-key="open-amount" data-sort-type="number">Importo <br />da saldare</th>
+        <th className="text-center" data-sort-key="annual-count" data-sort-type="number">Ordini <br />anno</th>
+        <th className="text-right" data-sort-key="annual-amount" data-sort-type="number">Acquisti <br />anno</th>
       </tr></thead><tbody>
         {filteredSupplierRows.map(({ supplier, openExpensesCount, amountToPay, annualOrdersCount, annualPurchasedAmount }) => {
-          return <tr className="clickable-desktop-row" data-row-href={`/suppliers/${supplier.id}?returnTo=${encodeURIComponent(supplierListHref)}`} tabIndex={0} key={supplier.id}>
+          return <tr
+            className="clickable-desktop-row"
+            data-row-href={`/suppliers/${supplier.id}?returnTo=${encodeURIComponent(supplierListHref)}`}
+            data-sort-row
+            data-sort-business-name={supplier.businessName}
+            data-sort-alias={supplier.alias ?? ''}
+            data-sort-open-count={String(openExpensesCount)}
+            data-sort-open-amount={String(amountToPay)}
+            data-sort-annual-count={String(annualOrdersCount)}
+            data-sort-annual-amount={String(annualPurchasedAmount)}
+            tabIndex={0}
+            key={supplier.id}
+          >
             <td className="cell-center"><input form="supplierBulkForm" className="bulk-select-all" type="checkbox" name="ids" value={supplier.id} aria-label={`Seleziona fornitore ${supplier.businessName}`} /></td>
             <td><strong>{supplier.businessName}</strong></td>
             <td>{supplier.alias ?? '-'}</td>

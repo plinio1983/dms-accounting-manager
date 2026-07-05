@@ -25,7 +25,7 @@ function syncDirectActionGroup(group: HTMLElement) {
   const firstId = selectedInputs[0]?.value ?? "";
   const returnTo = group.getAttribute("data-return-to") ?? "";
   const edit = group.querySelector<HTMLAnchorElement>("[data-bulk-edit]");
-  const copy = group.querySelector<HTMLAnchorElement>("[data-bulk-copy]");
+  const copy = group.querySelector<HTMLElement>("[data-bulk-copy]");
   const del = group.querySelector<HTMLButtonElement>("[data-bulk-delete]");
   const singleEnabled = selected === 1;
   const anyEnabled = selected > 0;
@@ -48,17 +48,19 @@ function syncDirectActionGroup(group: HTMLElement) {
   }
 
   if (copy) {
-    copy.classList.toggle("is-disabled", !singleEnabled);
-    copy.setAttribute("aria-disabled", singleEnabled ? "false" : "true");
+    copy.classList.toggle("is-disabled", !anyEnabled);
+    copy.setAttribute("aria-disabled", anyEnabled ? "false" : "true");
     const triggerAttr = group.getAttribute("data-copy-trigger-attr");
-    if (triggerAttr) {
+    if (triggerAttr && copy instanceof HTMLAnchorElement) {
       copy.href = "#";
       if (singleEnabled) copy.setAttribute(triggerAttr, firstId);
       else copy.removeAttribute(triggerAttr);
-    } else {
+      copy.dataset.bulkCopyMode = selected > 1 ? "bulk" : "single";
+    } else if (copy instanceof HTMLAnchorElement) {
       copy.href = singleEnabled
         ? `${group.getAttribute("data-copy-base") ?? ""}${firstId}&returnTo=${returnTo}`
         : "#";
+      copy.dataset.bulkCopyMode = selected > 1 ? "bulk" : "single";
     }
   }
 
@@ -132,6 +134,21 @@ function formSubject(form: HTMLFormElement) {
   if (form.id === "expenseBulkForm") return "spese";
   if (form.id === "recurringExpenseBulkForm") return "spese ricorrenti";
   return "record";
+}
+
+function submitBulkAction(formId: string, action: string, confirmLabel: string) {
+  const form = document.getElementById(formId);
+  if (!(form instanceof HTMLFormElement)) return;
+
+  const submitter = document.createElement("button");
+  submitter.type = "submit";
+  submitter.name = "bulkAction";
+  submitter.value = action;
+  submitter.hidden = true;
+  submitter.setAttribute("data-confirm-label", confirmLabel);
+  form.appendChild(submitter);
+  form.requestSubmit(submitter);
+  window.setTimeout(() => submitter.remove(), 0);
 }
 
 function shouldUseBulkModal() {
@@ -420,6 +437,16 @@ export default function BulkSelectionController() {
       const disabledLink = target.closest<HTMLAnchorElement>(".bulk-direct-link.is-disabled");
       if (disabledLink) {
         event.preventDefault();
+        return;
+      }
+
+      const bulkCopy = target.closest<HTMLElement>("[data-bulk-copy]");
+      if (bulkCopy?.dataset.bulkCopyMode === "bulk") {
+        const group = bulkCopy.closest<HTMLElement>("[data-bulk-direct-actions]");
+        const formId = group?.getAttribute("data-bulk-form") ?? "";
+        if (!formId) return;
+        event.preventDefault();
+        submitBulkAction(formId, "copy", "Copia");
         return;
       }
 

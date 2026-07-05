@@ -18,6 +18,36 @@ function todayAtMidnight() {
   return date;
 }
 
+function daysInMonth(year: number, monthIndex: number) {
+  return new Date(year, monthIndex + 1, 0).getDate();
+}
+
+function sameDayInCurrentMonth(value: Date | null | undefined, now = new Date()) {
+  const year = now.getFullYear();
+  const monthIndex = now.getMonth();
+  const sourceDay = value ? value.getDate() : now.getDate();
+  const day = Math.min(sourceDay, daysInMonth(year, monthIndex));
+  const date = new Date(year, monthIndex, day);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+function dayOffset(from?: Date | null, to?: Date | null) {
+  if (!from || !to) return null;
+  const start = new Date(from);
+  const end = new Date(to);
+  start.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+  return Math.round((end.getTime() - start.getTime()) / (24 * 60 * 60 * 1000));
+}
+
+function addDays(date: Date, days: number) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  next.setHours(0, 0, 0, 0);
+  return next;
+}
+
 export async function POST(request: Request) {
   const current = await getWorkspaceContext();
   if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
@@ -50,6 +80,56 @@ export async function POST(request: Request) {
   if (action === 'delete') {
     await prisma.expense.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
     return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_deleted' }));
+  }
+
+  if (action === 'copy') {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+    const expenses = await prisma.expense.findMany({
+      where: { id: { in: ids }, workspaceId: current.workspace.id },
+      orderBy: { id: 'asc' }
+    });
+
+    await prisma.$transaction(expenses.map(expense => {
+      const receivedDate = sameDayInCurrentMonth(expense.receivedDate, now);
+      const dueOffset = dayOffset(expense.receivedDate, expense.dueDate);
+      return prisma.expense.create({
+        data: {
+          workspaceId: expense.workspaceId,
+          receivedDate,
+          merchant: expense.merchant,
+          supplierId: expense.supplierId,
+          categoryId: expense.categoryId,
+          description: expense.description,
+          amount: expense.amount,
+          paymentDate: null,
+          dueDate: dueOffset === null ? null : addDays(receivedDate, dueOffset),
+          vatRate: expense.vatRate,
+          channel: expense.channel,
+          bankId: expense.bankId,
+          isComplete: false,
+          isDeclared: expense.isDeclared,
+          hasElectronicInvoice: expense.hasElectronicInvoice,
+          isRecurring: false,
+          isAutomaticPayment: false,
+          invoiceStatus: expense.invoiceStatus,
+          companyId: expense.companyId,
+          paidByCurrentAccount: false,
+          month: currentMonth,
+          year: currentYear,
+          notes: expense.notes,
+          paymentStatus: 'DA_PAGARE',
+          paidAmount: 0,
+          paidBy: expense.paidBy,
+          invoiceDocumentPath: null,
+          recurringExpenseId: null,
+          recurringExpensePeriodKey: null
+        }
+      });
+    }));
+
+    return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_copied' }));
   }
 
   if (action === 'invoice_emitted') {

@@ -600,7 +600,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       updated: 'Spesa aggiornata.',
       deleted: 'Spesa rimossa.',
       bulk_updated: 'Spese aggiornate.',
-      bulk_deleted: 'Spese rimosse.'
+      bulk_deleted: 'Spese rimosse.',
+      bulk_copied: 'Spese copiate.'
     },
     errorMessages: {
       invalid: 'Controlla i campi della spesa.',

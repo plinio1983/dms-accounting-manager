@@ -9,6 +9,7 @@ import IncomeEditModalController from '@/components/IncomeEditModalController';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import IncomeFiltersDrawer from '@/components/IncomeFiltersDrawer';
 import IncomeTrendSelectors from '@/components/IncomeTrendSelectors';
+import SortableTableController from '@/components/SortableTableController';
 import {
   badgeClass,
   creditChannelStyles,
@@ -42,6 +43,10 @@ function mobileDateLabel(value?: Date | null) {
   return value
     ? new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(value).replace('.', '')
     : '-';
+}
+
+function dateSortValue(value?: Date | null) {
+  return value ? String(new Date(value).getTime()) : '';
 }
 
 function formatDateInputLabel(value: string) {
@@ -942,6 +947,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           </button>
         </div>
       </form>
+      <SortableTableController />
 
       <div className="income-mobile-list expense-mobile-list" aria-label="Lista incassi mobile">
         {mobileSortedIncomes.map(income => {
@@ -1015,7 +1021,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         {!filteredIncomes.length && <div className="expense-empty-panel">Nessun incasso trovato con i filtri selezionati.</div>}
       </div>
 
-      <div className="table-scroll incomes-table-scroll"><table className="expenses-table incomes-table compact-incomes-table"><colgroup>
+      <div className="table-scroll incomes-table-scroll"><table className="expenses-table incomes-table compact-incomes-table" data-sortable-table data-default-sort="credit-date" data-default-sort-dir="desc"><colgroup>
         <col className="cell-option" />
         <col className="cell-billing-period" />
         <col className="cell-order-date" />
@@ -1031,18 +1037,18 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         <col className="cell-invoice-state" />
       </colgroup><thead><tr>
         <th className="cell-option"><input type="checkbox" className="bulk-select-all" data-bulk-target="incomeBulkForm" aria-label="Seleziona tutti gli incassi" /></th>
-        <th className="cell-billing-period"><span className="th-wrap">Periodo<br />Fatt.</span></th>
-        <th className="cell-order-date"><span className="th-wrap">Data<br />accr.</span></th>
-        <th className="cell-selling"><span className="th-wrap">Canale<br />vendita</span></th>
-        <th className="cell-fiscal">Fisc.</th>
-        <th className="cell-category">Cat.</th>
-        <th className="cell-description">Descrizione</th>
-        <th className="cell-amount">Importo</th>
-        <th className="cell-amount">IVA</th>
-        <th className="cell-supplier"><span className="th-wrap">Metodo<br />pag.</span></th>
-        <th className="cell-cchannel"><span className="th-wrap">Canale<br />accr.</span></th>
-        <th className="cell-invoice-state">Accr.</th>
-        <th className="cell-invoice-state"><span className="th-wrap">Stato<br />fatt.</span></th>
+        <th className="cell-billing-period" data-sort-key="billing-period" data-sort-type="number"><span className="th-wrap">Periodo<br />Fatt.</span></th>
+        <th className="cell-order-date" data-sort-key="credit-date" data-sort-type="date"><span className="th-wrap">Data<br />accr.</span></th>
+        <th className="cell-selling" data-sort-key="sales-channel"><span className="th-wrap">Canale<br />vendita</span></th>
+        <th className="cell-fiscal" data-sort-key="fiscal" data-sort-type="number">Fisc.</th>
+        <th className="cell-category" data-sort-key="category">Cat.</th>
+        <th className="cell-description" data-sort-key="description">Descrizione</th>
+        <th className="cell-amount" data-sort-key="amount" data-sort-type="number">Importo</th>
+        <th className="cell-amount" data-sort-key="vat" data-sort-type="number">IVA</th>
+        <th className="cell-supplier" data-sort-key="payment-method"><span className="th-wrap">Metodo<br />pag.</span></th>
+        <th className="cell-cchannel" data-sort-key="credit-channel"><span className="th-wrap">Canale<br />accr.</span></th>
+        <th className="cell-invoice-state" data-sort-key="credit-status">Accr.</th>
+        <th className="cell-invoice-state" data-sort-key="invoice-state"><span className="th-wrap">Stato<br />fatt.</span></th>
         {/*<th className="cell-center"><span className="sr-only">Elimina</span></th>*/}
       </tr></thead><tbody>
         {filteredIncomes.map(income => {
@@ -1056,7 +1062,25 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           const creditStatus = incomeCreditStatus(income);
           const creditOverdue = isIncomeCreditOverdue(income);
           const vatStyle = vatStyles[String(Number(income.vatRate.toString()))] ?? vatStyles['0'];
-          return <tr className={['clickable-desktop-row', creditOverdue ? 'income-row-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : ''].filter(Boolean).join(' ')} data-row-href={`/incomes/${income.id}?returnTo=${returnTo}`} tabIndex={0} key={income.id}>
+          return <tr
+            className={['clickable-desktop-row', creditOverdue ? 'income-row-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : ''].filter(Boolean).join(' ')}
+            data-row-href={`/incomes/${income.id}?returnTo=${returnTo}`}
+            data-sort-row
+            data-sort-billing-period={String(Number(income.billingYear) * 12 + Number(income.billingMonth))}
+            data-sort-credit-date={dateSortValue(income.creditDate)}
+            data-sort-sales-channel={income.salesChannel}
+            data-sort-fiscal={income.isFiscal ? '1' : '0'}
+            data-sort-category={income.saleCategory}
+            data-sort-description={income.description ?? ''}
+            data-sort-amount={String(Number(income.amount.toString()))}
+            data-sort-vat={String(Number(income.vatRate.toString()))}
+            data-sort-payment-method={incomePaymentMethodName}
+            data-sort-credit-channel={incomeCreditChannelName}
+            data-sort-credit-status={creditStatus.label}
+            data-sort-invoice-state={invoiceStyle.label}
+            tabIndex={0}
+            key={income.id}
+          >
             <td className="cell-option"><input form="incomeBulkForm" type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`} /></td>
             <td className="cell-billing-period">{formatPeriod(income.billingMonth, income.billingYear)}</td>
             <td className="cell-order-date">{dateLabel(income.creditDate)}</td>
