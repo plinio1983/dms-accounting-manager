@@ -1,4 +1,4 @@
-import './globals.css';
+import './globals.scss';
 import type { Metadata, Viewport } from 'next';
 import ShellChrome from '@/components/ShellChrome';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
