@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import ExpenseDetailEditModalController from '@/components/ExpenseDetailEditModalController';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
+import DeleteActionButton from '@/components/DeleteActionButton';
 import { euro } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
@@ -139,6 +140,13 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           <div className="right-side">
             <button className="btn btn-sm btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉ Copia</button>
             <Link className="btn btn-sm btn-primary" href="#" data-expense-detail-edit-id={expense.id}>✎ Modifica</Link>
+            <DeleteActionButton
+              action={`/api/expenses/${expense.id}?returnTo=${encodedReturnTo}`}
+              confirmMessage="Confermi la rimozione della spesa? L’operazione non può essere annullata."
+              className="btn btn-sm btn-danger"
+            >
+              🗑 Elimina
+            </DeleteActionButton>
           </div>
         </div>
         <section className="expense-detail-hero">

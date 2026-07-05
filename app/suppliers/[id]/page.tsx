@@ -5,6 +5,7 @@ import { euro, moneyTone } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
 import { stripFlashParams } from '@/lib/flash';
 import ExpensesList from '@/components/ExpensesList';
+import DeleteActionButton from '@/components/DeleteActionButton';
 import { badgeClass, paymentStatusStyles, yesNoStyles } from '@/lib/expense-ui';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 
@@ -73,6 +74,13 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
           </div>
           <div className="right-side">
             <Link className="btn btn-sm btn-primary" href={`/suppliers/${supplier.id}/edit`}>✎ Modifica</Link>
+            <DeleteActionButton
+              action={`/api/suppliers/${supplier.id}`}
+              confirmMessage="Confermi la rimozione del fornitore? L’operazione non può essere annullata."
+              className="btn btn-sm btn-danger"
+            >
+              🗑 Elimina
+            </DeleteActionButton>
           </div>
         </div>
 

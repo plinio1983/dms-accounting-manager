@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import RecurringExpenseDetailEditModalController from '@/components/RecurringExpenseDetailEditModalController';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
+import DeleteActionButton from '@/components/DeleteActionButton';
 import { euro } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
@@ -142,6 +143,13 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
           </div>
           <div className="right-side">
             <Link className="btn btn-sm btn-primary" href="#" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</Link>
+            <DeleteActionButton
+              action={`/api/recurring-expenses/${item.id}?returnTo=${encodeURIComponent(returnTo)}`}
+              confirmMessage="Confermi la rimozione della spesa ricorrente? L’operazione non può essere annullata."
+              className="btn btn-sm btn-danger"
+            >
+              🗑 Elimina
+            </DeleteActionButton>
           </div>
         </div>
 

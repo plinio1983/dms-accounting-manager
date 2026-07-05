@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import IncomeEditModalController from '@/components/IncomeEditModalController';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
+import DeleteActionButton from '@/components/DeleteActionButton';
 import { euro } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
@@ -138,6 +139,13 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
           </div>
           <div className="right-side">
             <Link className="btn btn-sm btn-primary" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
+            <DeleteActionButton
+              action={`/api/incomes/${income.id}?returnTo=${encodedReturnTo}`}
+              confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata."
+              className="btn btn-sm btn-danger"
+            >
+              🗑 Elimina
+            </DeleteActionButton>
           </div>
         </div>
 
