@@ -7426,11 +7426,6 @@ button.bulk-direct-danger {
 
 
 
-/* v090: recurring form parity with expense form */
-.recurring-expense-form .supplier-picker.span-2 {
-    grid-column: span 2;
-}
-
 .recurring-expense-form {
     display: flex;
     flex-direction: column;
@@ -7537,16 +7532,6 @@ button.bulk-direct-danger {
     border-color: rgba(37, 99, 235, .18);
     background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
 }
-
-
-
-/* v096: fiscal overdue counts, fiscal links and totals period labels */
-/*.toolbar-card > div:first-child,*/
-/*.toolbar-card-wrap > div:first-child {*/
-/*    min-width: 0;*/
-/*    display: grid;*/
-/*    gap: 4px;*/
-/*}*/
 
 .toolbar-card > div:first-child h2,
 .toolbar-card-wrap > div:first-child h2 {

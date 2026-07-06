@@ -212,6 +212,10 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
           </div>
           <div className="expense-detail-status-strip">
             <div>
+              <span>Descrizione</span>
+              <strong>{item.description ?? '-'}</strong>
+            </div>
+            <div>
               <span>Fornitore</span>
               <strong>{item.supplierId ? <Link href={`/suppliers/${item.supplierId}`}>{merchant}</Link> : merchant}</strong>
             </div>

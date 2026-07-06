@@ -189,7 +189,7 @@ function SupplierAutocomplete({
   }
 
   return (
-    <div className="supplier-picker supplier-picker-wide span-2" ref={containerRef}>
+    <div className="supplier-picker supplier-picker-wide" ref={containerRef}>
       <input type="hidden" name="supplierId" value={selected?.id ?? ""} />
       <input type="hidden" name="merchant" value={selected?.businessName ?? query} />
       <label>
@@ -351,7 +351,10 @@ function ProductServiceAutocomplete({ initialValue = "" }: { initialValue?: stri
               key={`${value}-${index}`}
               className={index === activeIndex ? "active" : ""}
               onMouseEnter={() => setActiveIndex(index)}
-              onClick={() => selectSuggestion(value)}
+              onMouseDown={(event) => {
+                event.preventDefault();
+                selectSuggestion(value);
+              }}
             >
               {value}
             </button>

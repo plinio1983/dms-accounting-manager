@@ -573,7 +573,10 @@ function ProductServiceAutocomplete({
                             key={`${value}-${index}`}
                             className={index === activeIndex ? "active" : ""}
                             onMouseEnter={() => setActiveIndex(index)}
-                            onClick={() => selectSuggestion(value)}
+                            onMouseDown={(event) => {
+                                event.preventDefault();
+                                selectSuggestion(value);
+                            }}
                         >
                             {value}
                         </button>
