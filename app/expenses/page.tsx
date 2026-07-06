@@ -6,12 +6,14 @@ import ExpensesList from '@/components/ExpensesList';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import ExpenseFiltersDrawer from '@/components/ExpenseFiltersDrawer';
 import ExpenseTrendSelectors from '@/components/ExpenseTrendSelectors';
+import MobileSortControl from '@/components/MobileSortControl';
 import SupplierFilterInput from '@/components/SupplierFilterInput';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 import { stripFlashRecord, stripFlashSearchParams } from '@/lib/flash';
 import { isExpenseInvoiceNotReceived } from '@/lib/expense-invoice';
 import { badgeClass, formatPeriod } from '@/lib/expense-ui';
+import { compareDate, compareNumber, compareText } from '@/lib/mobile-sort';
 
 const paymentStatusOptions = [
   ['overdue', 'Scaduto'],
@@ -30,6 +32,48 @@ const invoiceStatusOptions = [
 const invoiceStatusFilterLabels = [
   ...invoiceStatusOptions,
   ['not_received', 'Fatture non ricevute']
+];
+
+const expenseMobileSortOptions = [
+  { value: 'receivedDate_desc', label: 'Data ordine recente' },
+  { value: 'receivedDate_asc', label: 'Data ordine meno recente' },
+  { value: 'dueDate_desc', label: 'Scadenza recente' },
+  { value: 'dueDate_asc', label: 'Scadenza meno recente' },
+  { value: 'paymentDate_desc', label: 'Data pagamento recente' },
+  { value: 'paymentDate_asc', label: 'Data pagamento meno recente' },
+  { value: 'billingPeriod_desc', label: 'Periodo fatt. recente' },
+  { value: 'billingPeriod_asc', label: 'Periodo fatt. meno recente' },
+  { value: 'supplier_asc', label: 'Fornitore A-Z' },
+  { value: 'supplier_desc', label: 'Fornitore Z-A' },
+  { value: 'merchant_asc', label: 'Esercente A-Z' },
+  { value: 'merchant_desc', label: 'Esercente Z-A' },
+  { value: 'description_asc', label: 'Descrizione A-Z' },
+  { value: 'description_desc', label: 'Descrizione Z-A' },
+  { value: 'notes_asc', label: 'Note A-Z' },
+  { value: 'category_asc', label: 'Categoria A-Z' },
+  { value: 'category_desc', label: 'Categoria Z-A' },
+  { value: 'bank_asc', label: 'Banca A-Z' },
+  { value: 'channel_asc', label: 'Canale pagamento A-Z' },
+  { value: 'amount_desc', label: 'Importo alto' },
+  { value: 'amount_asc', label: 'Importo basso' },
+  { value: 'paidAmount_desc', label: 'Pagato alto' },
+  { value: 'paidAmount_asc', label: 'Pagato basso' },
+  { value: 'residual_desc', label: 'Residuo alto' },
+  { value: 'residual_asc', label: 'Residuo basso' },
+  { value: 'paymentStatus_asc', label: 'Stato pagamento A-Z' },
+  { value: 'invoiceStatus_asc', label: 'Stato fattura A-Z' },
+  { value: 'declared_desc', label: 'Fiscali prima' },
+  { value: 'electronicInvoice_desc', label: 'Fattura elettronica prima' },
+  { value: 'complete_desc', label: 'Complete prima' },
+  { value: 'automaticPayment_desc', label: 'Pagamento automatico prima' },
+  { value: 'paidByCurrentAccount_desc', label: 'C/C pagato prima' },
+  { value: 'paidBy_asc', label: 'Pagato da A-Z' },
+  { value: 'vatRate_desc', label: 'IVA alta' },
+  { value: 'recurring_desc', label: 'Ricorrenti prima' },
+  { value: 'createdAt_desc', label: 'Creazione recente' },
+  { value: 'updatedAt_desc', label: 'Aggiornamento recente' },
+  { value: 'id_desc', label: 'ID decrescente' },
+  { value: 'id_asc', label: 'ID crescente' }
 ];
 
 function formatDateInputLabel(value: string) {
@@ -274,8 +318,8 @@ function amountMatchesFilter(amount: number, filterValue: AmountFilter | null) {
 }
 
 
-function expenseSupplierName(expense: { supplier: { businessName: string } }) {
-  return expense.supplier.businessName;
+function expenseSupplierName(expense: { supplier?: { businessName: string } | null; merchant?: string | null }) {
+  return expense.supplier?.businessName ?? expense.merchant ?? '';
 }
 
 function expenseResidualAmount(expense: { amount: unknown; payments?: Array<{ amount: unknown }> }) {
@@ -678,10 +722,54 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     orderDateToDefault
   });
 
+  const mobileSort = inputDefault(filters, 'mobileSort') || expenseMobileSortOptions[0].value;
   const mobileSortedExpenses = [...filteredExpenses].sort((a, b) => {
-    const aTime = a.receivedDate ? new Date(a.receivedDate).getTime() : -Infinity;
-    const bTime = b.receivedDate ? new Date(b.receivedDate).getTime() : -Infinity;
-    return bTime - aTime;
+    const billingA = (a.year * 100) + a.month;
+    const billingB = (b.year * 100) + b.month;
+    const residualA = Math.max(0, Number(a.amount.toString()) - a.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0));
+    const residualB = Math.max(0, Number(b.amount.toString()) - b.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0));
+
+    switch (mobileSort) {
+      case 'receivedDate_asc': return compareDate(a.receivedDate, b.receivedDate, 'asc');
+      case 'dueDate_desc': return compareDate(a.dueDate, b.dueDate, 'desc');
+      case 'dueDate_asc': return compareDate(a.dueDate, b.dueDate, 'asc');
+      case 'paymentDate_desc': return compareDate(a.paymentDate, b.paymentDate, 'desc');
+      case 'paymentDate_asc': return compareDate(a.paymentDate, b.paymentDate, 'asc');
+      case 'billingPeriod_desc': return compareNumber(billingA, billingB, 'desc');
+      case 'billingPeriod_asc': return compareNumber(billingA, billingB, 'asc');
+      case 'supplier_asc': return compareText(expenseSupplierName(a), expenseSupplierName(b), 'asc');
+      case 'supplier_desc': return compareText(expenseSupplierName(a), expenseSupplierName(b), 'desc');
+      case 'merchant_asc': return compareText(a.merchant, b.merchant, 'asc');
+      case 'merchant_desc': return compareText(a.merchant, b.merchant, 'desc');
+      case 'description_asc': return compareText(a.description, b.description, 'asc');
+      case 'description_desc': return compareText(a.description, b.description, 'desc');
+      case 'notes_asc': return compareText(a.notes, b.notes, 'asc');
+      case 'category_asc': return compareText(a.category?.name, b.category?.name, 'asc');
+      case 'category_desc': return compareText(a.category?.name, b.category?.name, 'desc');
+      case 'bank_asc': return compareText(a.bank?.name, b.bank?.name, 'asc');
+      case 'channel_asc': return compareText(a.channel, b.channel, 'asc');
+      case 'amount_desc': return compareNumber(a.amount, b.amount, 'desc');
+      case 'amount_asc': return compareNumber(a.amount, b.amount, 'asc');
+      case 'paidAmount_desc': return compareNumber(a.paidAmount, b.paidAmount, 'desc');
+      case 'paidAmount_asc': return compareNumber(a.paidAmount, b.paidAmount, 'asc');
+      case 'residual_desc': return compareNumber(residualA, residualB, 'desc');
+      case 'residual_asc': return compareNumber(residualA, residualB, 'asc');
+      case 'paymentStatus_asc': return compareText(a.paymentStatus, b.paymentStatus, 'asc');
+      case 'invoiceStatus_asc': return compareText(a.invoiceStatus, b.invoiceStatus, 'asc');
+      case 'declared_desc': return compareNumber(Number(a.isDeclared), Number(b.isDeclared), 'desc');
+      case 'electronicInvoice_desc': return compareNumber(Number(a.hasElectronicInvoice), Number(b.hasElectronicInvoice), 'desc');
+      case 'complete_desc': return compareNumber(Number(a.isComplete), Number(b.isComplete), 'desc');
+      case 'automaticPayment_desc': return compareNumber(Number(a.isAutomaticPayment), Number(b.isAutomaticPayment), 'desc');
+      case 'paidByCurrentAccount_desc': return compareNumber(Number(a.paidByCurrentAccount), Number(b.paidByCurrentAccount), 'desc');
+      case 'paidBy_asc': return compareText(a.paidBy, b.paidBy, 'asc');
+      case 'vatRate_desc': return compareNumber(a.vatRate, b.vatRate, 'desc');
+      case 'recurring_desc': return compareNumber(Number(a.isRecurring), Number(b.isRecurring), 'desc');
+      case 'createdAt_desc': return compareDate(a.createdAt, b.createdAt, 'desc');
+      case 'updatedAt_desc': return compareDate(a.updatedAt, b.updatedAt, 'desc');
+      case 'id_desc': return compareNumber(a.id, b.id, 'desc');
+      case 'id_asc': return compareNumber(a.id, b.id, 'asc');
+      default: return compareDate(a.receivedDate, b.receivedDate, 'desc');
+    }
   });
 
   const expensesByCategory = Array.from(filteredExpenses.reduce((map, expense) => {
@@ -807,6 +895,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           />
         </div>
       </div>
+      <MobileSortControl action="/expenses" currentValue={mobileSort} options={expenseMobileSortOptions} searchParams={filters} />
 
       <script dangerouslySetInnerHTML={{ __html: `
         document.addEventListener('click', function(event) {

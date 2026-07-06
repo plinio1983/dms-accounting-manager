@@ -36,6 +36,8 @@ services:
       - tabularium
     env_file:
       - .env.production
+    environment:
+      TZ: Europe/Rome
     command: >
       sh -c '
         apk add --no-cache curl &&

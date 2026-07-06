@@ -173,6 +173,7 @@
     .expense-trend-quick-btn {
         flex-grow: 1;
         max-width: 100%;
+        padding: 8px 6px;
     }
 }
 
@@ -1219,6 +1220,24 @@
 }
 
 @media (max-width: 760px) {
+    .expenses-list-card > .list-heading {
+        display: flex !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+
+    .expenses-list-card > .list-heading > div:first-child {
+        display: block !important;
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+    }
+
+    .expenses-list-card > .list-heading > div:last-child {
+        display: flex !important;
+        flex: 0 0 auto !important;
+        justify-content: flex-end !important;
+    }
+
     .expenses-list-card .table-scroll {
         display: none;
     }
@@ -1229,6 +1248,24 @@
 
     .expense-mobile-list {
         display: grid;
+    }
+
+    .mobile-sort-control {
+        display: flex !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .mobile-sort-control select {
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    .recurring-expenses-card > .mobile-sort-control {
+        display: flex !important;
+        max-width: 100% !important;
     }
 
     .expense-mobile-link .badge {

@@ -6,8 +6,35 @@ import NewSupplierPanel from '@/components/NewSupplierPanel';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import SupplierFiltersDrawer from '@/components/SupplierFiltersDrawer';
 import SortableTableController from '@/components/SortableTableController';
+import MobileSortControl from '@/components/MobileSortControl';
 import { requireWorkspace } from '@/lib/auth';
 import { stripFlashRecord, stripFlashSearchParams } from '@/lib/flash';
+import { compareDate, compareNumber, compareText } from '@/lib/mobile-sort';
+
+const supplierMobileSortOptions = [
+  { value: 'businessName_asc', label: 'Ragione sociale A-Z' },
+  { value: 'businessName_desc', label: 'Ragione sociale Z-A' },
+  { value: 'alias_asc', label: 'Alias A-Z' },
+  { value: 'alias_desc', label: 'Alias Z-A' },
+  { value: 'email_asc', label: 'Email A-Z' },
+  { value: 'vatNumber_asc', label: 'P.IVA A-Z' },
+  { value: 'iban_asc', label: 'IBAN A-Z' },
+  { value: 'pec_asc', label: 'PEC A-Z' },
+  { value: 'taxCodeSdi_asc', label: 'Codice SDI/C.F. A-Z' },
+  { value: 'internalNotes_asc', label: 'Note interne A-Z' },
+  { value: 'openExpensesCount_desc', label: 'Ordini da saldare alti' },
+  { value: 'openExpensesCount_asc', label: 'Ordini da saldare bassi' },
+  { value: 'amountToPay_desc', label: 'Importo da saldare alto' },
+  { value: 'amountToPay_asc', label: 'Importo da saldare basso' },
+  { value: 'annualOrdersCount_desc', label: 'Ordini anno alti' },
+  { value: 'annualOrdersCount_asc', label: 'Ordini anno bassi' },
+  { value: 'annualPurchasedAmount_desc', label: 'Acquisti anno alti' },
+  { value: 'annualPurchasedAmount_asc', label: 'Acquisti anno bassi' },
+  { value: 'createdAt_desc', label: 'Creazione recente' },
+  { value: 'updatedAt_desc', label: 'Aggiornamento recente' },
+  { value: 'id_desc', label: 'ID decrescente' },
+  { value: 'id_asc', label: 'ID crescente' }
+];
 
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
   const value = searchParams[key];
@@ -78,6 +105,33 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
     if (taxCodeSdiFilter && !normalize(supplier.taxCodeSdi).includes(taxCodeSdiFilter)) return false;
     return true;
   });
+  const mobileSort = inputDefault(filters, 'mobileSort') || supplierMobileSortOptions[0].value;
+  const mobileSortedSupplierRows = [...filteredSupplierRows].sort((a, b) => {
+    switch (mobileSort) {
+      case 'businessName_desc': return compareText(a.supplier.businessName, b.supplier.businessName, 'desc');
+      case 'alias_asc': return compareText(a.supplier.alias, b.supplier.alias, 'asc');
+      case 'alias_desc': return compareText(a.supplier.alias, b.supplier.alias, 'desc');
+      case 'email_asc': return compareText(a.supplier.email, b.supplier.email, 'asc');
+      case 'vatNumber_asc': return compareText(a.supplier.vatNumber, b.supplier.vatNumber, 'asc');
+      case 'iban_asc': return compareText(a.supplier.iban, b.supplier.iban, 'asc');
+      case 'pec_asc': return compareText(a.supplier.pec, b.supplier.pec, 'asc');
+      case 'taxCodeSdi_asc': return compareText(a.supplier.taxCodeSdi, b.supplier.taxCodeSdi, 'asc');
+      case 'internalNotes_asc': return compareText(a.supplier.internalNotes, b.supplier.internalNotes, 'asc');
+      case 'openExpensesCount_desc': return compareNumber(a.openExpensesCount, b.openExpensesCount, 'desc');
+      case 'openExpensesCount_asc': return compareNumber(a.openExpensesCount, b.openExpensesCount, 'asc');
+      case 'amountToPay_desc': return compareNumber(a.amountToPay, b.amountToPay, 'desc');
+      case 'amountToPay_asc': return compareNumber(a.amountToPay, b.amountToPay, 'asc');
+      case 'annualOrdersCount_desc': return compareNumber(a.annualOrdersCount, b.annualOrdersCount, 'desc');
+      case 'annualOrdersCount_asc': return compareNumber(a.annualOrdersCount, b.annualOrdersCount, 'asc');
+      case 'annualPurchasedAmount_desc': return compareNumber(a.annualPurchasedAmount, b.annualPurchasedAmount, 'desc');
+      case 'annualPurchasedAmount_asc': return compareNumber(a.annualPurchasedAmount, b.annualPurchasedAmount, 'asc');
+      case 'createdAt_desc': return compareDate(a.supplier.createdAt, b.supplier.createdAt, 'desc');
+      case 'updatedAt_desc': return compareDate(a.supplier.updatedAt, b.supplier.updatedAt, 'desc');
+      case 'id_desc': return compareNumber(a.supplier.id, b.supplier.id, 'desc');
+      case 'id_asc': return compareNumber(a.supplier.id, b.supplier.id, 'asc');
+      default: return compareText(a.supplier.businessName, b.supplier.businessName, 'asc');
+    }
+  });
 
   const activeFilterItems = [
     inputDefault(filters, 'businessName') && { label: 'Ragione sociale', value: inputDefault(filters, 'businessName') },
@@ -132,6 +186,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
           <SupplierFiltersDrawer filters={filters} />
         </div>
       </div>
+      <MobileSortControl action="/suppliers" currentValue={mobileSort} options={supplierMobileSortOptions} searchParams={filters} />
 
       {activeFilterItems.length ? <div className="recurring-active-filters">
         <div>
@@ -272,7 +327,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
       <SortableTableController />
 
       <div className="supplier-mobile-list expense-mobile-list" aria-label="Lista fornitori mobile">
-        {filteredSupplierRows.map(({ supplier, openExpensesCount, amountToPay, annualOrdersCount, annualPurchasedAmount }) => {
+        {mobileSortedSupplierRows.map(({ supplier, openExpensesCount, amountToPay, annualOrdersCount, annualPurchasedAmount }) => {
           const detailHref = `/suppliers/${supplier.id}?returnTo=${encodeURIComponent(supplierListHref)}`;
           return <div className={amountToPay > 0 ? "supplier-mobile-item expense-mobile-item expense-mobile-item-overdue" : "supplier-mobile-item expense-mobile-item"} key={`mobile-supplier-${supplier.id}`}>
             <div className="expense-mobile-select">

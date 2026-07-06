@@ -3,8 +3,10 @@ import BulkSelectionController from '@/components/BulkSelectionController';
 import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
 import RecurringExpenseFiltersDrawer from '@/components/RecurringExpenseFiltersDrawer';
 import RecurringExpenseDetailEditModalController from '@/components/RecurringExpenseDetailEditModalController';
+import MobileSortControl from '@/components/MobileSortControl';
 import { euro } from '@/lib/money';
 import { bankIcons, badgeClass, categoryLabel, categoryTone } from '@/lib/expense-ui';
+import { compareDate, compareNumber, compareText } from '@/lib/mobile-sort';
 
 const cadenceLabels: Record<string, string> = { MONTHLY:'Ogni mese', EVERY_2_MONTHS:'Ogni 2 mesi', EVERY_3_MONTHS:'Ogni 3 mesi', EVERY_6_MONTHS:'Ogni 6 mesi', YEARLY:'Annuale', EVERY_2_YEARS:'Ogni 2 anni' };
 const billingLabels: Record<string, string> = { SAME_MONTH:'Stesso mese', NEXT_MONTH:'Mese successivo', CUSTOM_MONTH:'Mese impostato' };
@@ -22,6 +24,35 @@ const billingStyles: Record<string, { icon: string; className: string }> = {
   NEXT_MONTH: { icon: '+1', className: 'tone-vat-10' },
   CUSTOM_MONTH: { icon: 'CAL', className: 'tone-vat-4' }
 };
+const recurringMobileSortOptions = [
+  { value: 'active_desc', label: 'Attive prima' },
+  { value: 'startDate_asc', label: 'Inizio meno recente' },
+  { value: 'startDate_desc', label: 'Inizio recente' },
+  { value: 'supplier_asc', label: 'Fornitore A-Z' },
+  { value: 'supplier_desc', label: 'Fornitore Z-A' },
+  { value: 'description_asc', label: 'Descrizione A-Z' },
+  { value: 'description_desc', label: 'Descrizione Z-A' },
+  { value: 'notes_asc', label: 'Note A-Z' },
+  { value: 'category_asc', label: 'Categoria A-Z' },
+  { value: 'category_desc', label: 'Categoria Z-A' },
+  { value: 'amount_desc', label: 'Importo alto' },
+  { value: 'amount_asc', label: 'Importo basso' },
+  { value: 'cadence_asc', label: 'Cadenza A-Z' },
+  { value: 'dueDay_asc', label: 'Giorno scadenza crescente' },
+  { value: 'dueMonth_asc', label: 'Mese scadenza crescente' },
+  { value: 'billingPeriodMode_asc', label: 'Periodo fatt. A-Z' },
+  { value: 'billingMonth_asc', label: 'Mese fatt. crescente' },
+  { value: 'accrualType_asc', label: 'Tipo maturazione A-Z' },
+  { value: 'paymentMethod_asc', label: 'Metodo pagamento A-Z' },
+  { value: 'bank_asc', label: 'Banca A-Z' },
+  { value: 'declared_desc', label: 'Fiscali prima' },
+  { value: 'electronicInvoice_desc', label: 'Fattura elettronica prima' },
+  { value: 'vatRate_desc', label: 'IVA alta' },
+  { value: 'createdAt_desc', label: 'Creazione recente' },
+  { value: 'updatedAt_desc', label: 'Aggiornamento recente' },
+  { value: 'id_desc', label: 'ID decrescente' },
+  { value: 'id_asc', label: 'ID crescente' }
+];
 
 function dateLabel(value?: Date | string | null) {
   if (!value) return '-';
@@ -81,6 +112,43 @@ export default function RecurringExpensesList({
 }) {
   const itemCount = items.length;
   const currentFilters = filters ?? {};
+  const mobileSort = inputDefault(currentFilters, 'mobileSort') || recurringMobileSortOptions[0].value;
+  const mobileSortedItems = [...items].sort((a, b) => {
+    const supplierA = a.supplier?.businessName || a.merchant;
+    const supplierB = b.supplier?.businessName || b.merchant;
+    const paymentA = a.paymentMethod?.name ?? a.paymentChannel;
+    const paymentB = b.paymentMethod?.name ?? b.paymentChannel;
+
+    switch (mobileSort) {
+      case 'startDate_asc': return compareDate(a.startDate, b.startDate, 'asc');
+      case 'startDate_desc': return compareDate(a.startDate, b.startDate, 'desc');
+      case 'supplier_asc': return compareText(supplierA, supplierB, 'asc');
+      case 'supplier_desc': return compareText(supplierA, supplierB, 'desc');
+      case 'description_asc': return compareText(a.description, b.description, 'asc');
+      case 'description_desc': return compareText(a.description, b.description, 'desc');
+      case 'notes_asc': return compareText(a.notes, b.notes, 'asc');
+      case 'category_asc': return compareText(a.category?.name, b.category?.name, 'asc');
+      case 'category_desc': return compareText(a.category?.name, b.category?.name, 'desc');
+      case 'amount_desc': return compareNumber(a.amount, b.amount, 'desc');
+      case 'amount_asc': return compareNumber(a.amount, b.amount, 'asc');
+      case 'cadence_asc': return compareText(a.cadence, b.cadence, 'asc');
+      case 'dueDay_asc': return compareNumber(a.dueDay, b.dueDay, 'asc');
+      case 'dueMonth_asc': return compareNumber(a.dueMonth, b.dueMonth, 'asc');
+      case 'billingPeriodMode_asc': return compareText(a.billingPeriodMode, b.billingPeriodMode, 'asc');
+      case 'billingMonth_asc': return compareNumber(a.billingMonth, b.billingMonth, 'asc');
+      case 'accrualType_asc': return compareText(a.accrualType, b.accrualType, 'asc');
+      case 'paymentMethod_asc': return compareText(paymentA, paymentB, 'asc');
+      case 'bank_asc': return compareText(a.bank?.name, b.bank?.name, 'asc');
+      case 'declared_desc': return compareNumber(Number(a.isDeclared), Number(b.isDeclared), 'desc');
+      case 'electronicInvoice_desc': return compareNumber(Number(a.hasElectronicInvoice), Number(b.hasElectronicInvoice), 'desc');
+      case 'vatRate_desc': return compareNumber(a.vatRate, b.vatRate, 'desc');
+      case 'createdAt_desc': return compareDate(a.createdAt, b.createdAt, 'desc');
+      case 'updatedAt_desc': return compareDate(a.updatedAt, b.updatedAt, 'desc');
+      case 'id_desc': return compareNumber(a.id, b.id, 'desc');
+      case 'id_asc': return compareNumber(a.id, b.id, 'asc');
+      default: return compareNumber(Number(a.isActive), Number(b.isActive), 'desc') || compareDate(a.startDate, b.startDate, 'asc');
+    }
+  });
   const activeFilterItems = [
     inputDefault(currentFilters, 'merchant') ? `Fornitore: ${inputDefault(currentFilters, 'merchant')}` : '',
     inputDefault(currentFilters, 'description') ? `Descrizione: ${inputDefault(currentFilters, 'description')}` : '',
@@ -134,6 +202,7 @@ export default function RecurringExpensesList({
       });
     ` }} />
     <p className="muted">Risultati mostrati: {itemCount}</p>
+    <MobileSortControl action="/recurring-expenses" currentValue={mobileSort} options={recurringMobileSortOptions} searchParams={currentFilters} />
     <form id="recurringExpenseBulkForm" action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses" method="post" className="bulk-actions-bar confirm-bulk-form recurring-bulk-actions-bar">
       <label className="bulk-select-all-inline">
         <input type="checkbox" className="bulk-select-all" data-bulk-target="recurringExpenseBulkForm" aria-label="Seleziona tutte le spese ricorrenti visibili" />
@@ -205,7 +274,7 @@ export default function RecurringExpensesList({
       </div>
 
       <div className="recurring-expenses-mobile-list" aria-label="Lista spese ricorrenti mobile">
-        {items.map(item => {
+        {mobileSortedItems.map(item => {
           const cadence = cadenceLabels[item.cadence] ?? item.cadence;
           const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
           const supplier = item.supplier?.businessName || item.merchant || 'Fornitore non impostato';

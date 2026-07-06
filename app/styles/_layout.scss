@@ -1135,6 +1135,28 @@ body.drawer-open {
     display: none;
 }
 
+.mobile-sort-control {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    width: 100%;
+    max-width: 100%;
+}
+
+.mobile-sort-control label {
+    flex: 0 0 auto;
+    color: var(--muted);
+    font-size: .88rem;
+    font-weight: 800;
+}
+
+.mobile-sort-control select {
+    min-width: 0;
+    flex: 1 1 auto;
+    width: 100%;
+}
+
 .recurring-expenses-desktop-table-scroll {
     display: block;
 }
@@ -7507,7 +7529,6 @@ button.bulk-direct-danger {
 .expenses-list-card .list-heading .muted,
 .expenses-list-card .card-heading-row .muted {
     display: block;
-    margin: 0;
     white-space: normal;
     line-height: 1.35;
 }

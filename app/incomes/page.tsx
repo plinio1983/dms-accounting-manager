@@ -9,6 +9,7 @@ import IncomeEditModalController from '@/components/IncomeEditModalController';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import IncomeFiltersDrawer from '@/components/IncomeFiltersDrawer';
 import IncomeTrendSelectors from '@/components/IncomeTrendSelectors';
+import MobileSortControl from '@/components/MobileSortControl';
 import SortableTableController from '@/components/SortableTableController';
 import {
   badgeClass,
@@ -24,6 +25,7 @@ import { vatStyles } from '@/lib/expense-ui';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
 import { stripFlashRecord, stripFlashSearchParams } from '@/lib/flash';
+import { compareDate, compareNumber, compareText } from '@/lib/mobile-sort';
 
 const salesChannelOptions = ['Shop', 'Online Shop', 'Altro Canale'];
 const saleCategoryOptions = ['B2C', 'B2B', 'Altro'];
@@ -31,6 +33,32 @@ const invoiceStatusOptions = [
   ['NON_INVIATA', 'Non inviata'],
   ['EMESSA', 'Emessa'],
   ['not_emitted', 'Non emesse']
+];
+
+const incomeMobileSortOptions = [
+  { value: 'creditDate_desc', label: 'Data accredito recente' },
+  { value: 'creditDate_asc', label: 'Data accredito meno recente' },
+  { value: 'billingPeriod_desc', label: 'Periodo fatt. recente' },
+  { value: 'billingPeriod_asc', label: 'Periodo fatt. meno recente' },
+  { value: 'salesChannel_asc', label: 'Canale vendita A-Z' },
+  { value: 'salesChannel_desc', label: 'Canale vendita Z-A' },
+  { value: 'saleCategory_asc', label: 'Categoria vendita A-Z' },
+  { value: 'saleCategory_desc', label: 'Categoria vendita Z-A' },
+  { value: 'description_asc', label: 'Descrizione A-Z' },
+  { value: 'description_desc', label: 'Descrizione Z-A' },
+  { value: 'notes_asc', label: 'Note A-Z' },
+  { value: 'amount_desc', label: 'Importo alto' },
+  { value: 'amount_asc', label: 'Importo basso' },
+  { value: 'paymentMethod_asc', label: 'Metodo pagamento A-Z' },
+  { value: 'creditChannel_asc', label: 'Canale accredito A-Z' },
+  { value: 'fiscal_desc', label: 'Fiscali prima' },
+  { value: 'invoiceStatus_asc', label: 'Stato fattura A-Z' },
+  { value: 'credited_desc', label: 'Accreditati prima' },
+  { value: 'vatRate_desc', label: 'IVA alta' },
+  { value: 'createdAt_desc', label: 'Creazione recente' },
+  { value: 'updatedAt_desc', label: 'Aggiornamento recente' },
+  { value: 'id_desc', label: 'ID decrescente' },
+  { value: 'id_asc', label: 'ID crescente' }
 ];
 
 function dateLabel(value?: Date | null) {
@@ -624,10 +652,40 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
     vatRateFilter && { label: 'IVA', value: `${vatRateFilter}%` }
   ].filter(Boolean) as Array<{ label: string; value: string }>;
 
+  const mobileSort = inputDefault(filters, 'mobileSort') || incomeMobileSortOptions[0].value;
   const mobileSortedIncomes = [...filteredIncomes].sort((a, b) => {
-    const aTime = a.creditDate ? new Date(a.creditDate).getTime() : -Infinity;
-    const bTime = b.creditDate ? new Date(b.creditDate).getTime() : -Infinity;
-    return bTime - aTime;
+    const billingA = ((a.billingYear ?? 0) * 100) + (a.billingMonth ?? 0);
+    const billingB = ((b.billingYear ?? 0) * 100) + (b.billingMonth ?? 0);
+    const paymentA = a.paymentMethodRef?.name ?? a.paymentMethod;
+    const paymentB = b.paymentMethodRef?.name ?? b.paymentMethod;
+    const creditA = a.creditBank?.name ?? a.creditChannel;
+    const creditB = b.creditBank?.name ?? b.creditChannel;
+
+    switch (mobileSort) {
+      case 'creditDate_asc': return compareDate(a.creditDate, b.creditDate, 'asc');
+      case 'billingPeriod_desc': return compareNumber(billingA, billingB, 'desc');
+      case 'billingPeriod_asc': return compareNumber(billingA, billingB, 'asc');
+      case 'salesChannel_asc': return compareText(a.salesChannel, b.salesChannel, 'asc');
+      case 'salesChannel_desc': return compareText(a.salesChannel, b.salesChannel, 'desc');
+      case 'saleCategory_asc': return compareText(a.saleCategory, b.saleCategory, 'asc');
+      case 'saleCategory_desc': return compareText(a.saleCategory, b.saleCategory, 'desc');
+      case 'description_asc': return compareText(a.description, b.description, 'asc');
+      case 'description_desc': return compareText(a.description, b.description, 'desc');
+      case 'notes_asc': return compareText(a.notes, b.notes, 'asc');
+      case 'amount_desc': return compareNumber(a.amount, b.amount, 'desc');
+      case 'amount_asc': return compareNumber(a.amount, b.amount, 'asc');
+      case 'paymentMethod_asc': return compareText(paymentA, paymentB, 'asc');
+      case 'creditChannel_asc': return compareText(creditA, creditB, 'asc');
+      case 'fiscal_desc': return compareNumber(Number(a.isFiscal), Number(b.isFiscal), 'desc');
+      case 'invoiceStatus_asc': return compareText(a.invoiceStatus, b.invoiceStatus, 'asc');
+      case 'credited_desc': return compareNumber(Number(a.isCredited), Number(b.isCredited), 'desc');
+      case 'vatRate_desc': return compareNumber(a.vatRate, b.vatRate, 'desc');
+      case 'createdAt_desc': return compareDate(a.createdAt, b.createdAt, 'desc');
+      case 'updatedAt_desc': return compareDate(a.updatedAt, b.updatedAt, 'desc');
+      case 'id_desc': return compareNumber(a.id, b.id, 'desc');
+      case 'id_asc': return compareNumber(a.id, b.id, 'asc');
+      default: return compareDate(a.creditDate, b.creditDate, 'desc');
+    }
   });
 
   return <div className="grid">
@@ -718,6 +776,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           />
         </div>
       </div>
+      <MobileSortControl action="/incomes" currentValue={mobileSort} options={incomeMobileSortOptions} searchParams={filters} />
 
       <BulkSelectionController />
 
