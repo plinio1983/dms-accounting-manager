@@ -28,6 +28,23 @@ services:
     networks:
       - cluster_backend
 
+  tabularium-cron:
+    image: alpine:3.20
+    container_name: tabularium-cron
+    restart: unless-stopped
+    depends_on:
+      - tabularium
+    env_file:
+      - .env.production
+    command: >
+      sh -c '
+        apk add --no-cache curl &&
+        echo "0 6 * * * curl -fsS -H \"Authorization: Bearer $$CRON_SECRET\" \"http://tabularium:3000/api/cron/recurring-expenses?task=all\"" > /etc/crontabs/root &&
+        crond -f -l 8
+      '
+    networks:
+      - cluster_frontend
+
 volumes:
   tabularium_pgdata:
   tabularium_uploads:
