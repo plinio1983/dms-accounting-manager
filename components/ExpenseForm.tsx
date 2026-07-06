@@ -9,7 +9,8 @@ type SupplierOption = {
     businessName: string;
     alias?: string | null;
     email?: string | null;
-    phone?: string | null;
+    vatNumber?: string | null;
+    iban?: string | null;
     pec?: string | null;
     taxCodeSdi?: string | null;
     internalNotes?: string | null;
@@ -208,7 +209,8 @@ function SupplierAutocomplete({
     const [createData, setCreateData] = useState({
         businessName: "",
         email: "",
-        phone: "",
+        vatNumber: "",
+        iban: "",
         pec: "",
         taxCodeSdi: "",
         alias: "",
@@ -292,7 +294,8 @@ function SupplierAutocomplete({
         setCreateData({
             businessName: "",
             email: "",
-            phone: "",
+            vatNumber: "",
+            iban: "",
             pec: "",
             taxCodeSdi: "",
             alias: "",
@@ -395,11 +398,20 @@ function SupplierAutocomplete({
                                 />
                             </label>
                             <label>
-                                Telefono
+                                P.IVA
                                 <input
-                                    value={createData.phone}
+                                    value={createData.vatNumber}
                                     onChange={(e) =>
-                                        setCreateData((d) => ({...d, phone: e.target.value}))
+                                        setCreateData((d) => ({...d, vatNumber: e.target.value}))
+                                    }
+                                />
+                            </label>
+                            <label>
+                                IBAN
+                                <input
+                                    value={createData.iban}
+                                    onChange={(e) =>
+                                        setCreateData((d) => ({...d, iban: e.target.value}))
                                     }
                                 />
                             </label>

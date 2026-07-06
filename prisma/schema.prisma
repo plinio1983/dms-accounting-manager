@@ -177,7 +177,8 @@ model Supplier {
   id             Int       @id @default(autoincrement())
   businessName   String
   email          String?
-  phone          String?
+  vatNumber      String?
+  iban           String?
   pec            String?
   taxCodeSdi     String?
   alias          String?

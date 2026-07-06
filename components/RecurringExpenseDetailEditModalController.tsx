@@ -9,7 +9,8 @@ type SupplierOption = {
   businessName: string;
   alias?: string | null;
   email?: string | null;
-  phone?: string | null;
+  vatNumber?: string | null;
+  iban?: string | null;
   pec?: string | null;
   taxCodeSdi?: string | null;
   internalNotes?: string | null;

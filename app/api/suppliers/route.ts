@@ -8,7 +8,8 @@ import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 const SupplierSchema = z.object({
   businessName: z.string().trim().min(1),
   email: z.string().trim().optional().transform(value => value || null),
-  phone: z.string().trim().optional().transform(value => value || null),
+  vatNumber: z.string().trim().optional().transform(value => value || null),
+  iban: z.string().trim().optional().transform(value => value || null),
   pec: z.string().trim().optional().transform(value => value || null),
   taxCodeSdi: z.string().trim().optional().transform(value => value || null),
   alias: z.string().trim().optional().transform(value => value || null),
@@ -40,7 +41,9 @@ export async function GET(request: Request) {
       workspaceId: current.workspace.id,
       OR: [
         { businessName: { contains: search, mode: 'insensitive' } },
-        { alias: { contains: search, mode: 'insensitive' } }
+        { alias: { contains: search, mode: 'insensitive' } },
+        { vatNumber: { contains: search, mode: 'insensitive' } },
+        { iban: { contains: search, mode: 'insensitive' } }
       ]
     } : { workspaceId: current.workspace.id },
     orderBy: { businessName: 'asc' },

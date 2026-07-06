@@ -721,7 +721,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
       paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
-      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
+      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
       initialOpen={inputDefault(filters, 'new') === '1'}
     />
     <ActionFeedbackBanner
@@ -1045,7 +1045,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         categories={orderedCategories.map(c => ({id: c.id, code: c.code, name: c.name, icon: c.icon }))}
         banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
         paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
-        suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
+        suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
         emptyMessage="Nessuna spesa trovata con i filtri selezionati."
       />
     </div>

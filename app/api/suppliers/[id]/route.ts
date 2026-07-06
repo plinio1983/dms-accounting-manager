@@ -8,7 +8,8 @@ import { redirectToPath } from '@/lib/redirect';
 const SupplierSchema = z.object({
   businessName: z.string().trim().min(1),
   email: z.string().trim().optional().transform(value => value || null),
-  phone: z.string().trim().optional().transform(value => value || null),
+  vatNumber: z.string().trim().optional().transform(value => value || null),
+  iban: z.string().trim().optional().transform(value => value || null),
   pec: z.string().trim().optional().transform(value => value || null),
   taxCodeSdi: z.string().trim().optional().transform(value => value || null),
   alias: z.string().trim().optional().transform(value => value || null),
@@ -43,7 +44,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     data: {
       businessName: data.businessName,
       email: data.email,
-      phone: data.phone,
+      vatNumber: data.vatNumber,
+      iban: data.iban,
       pec: data.pec,
       taxCodeSdi: data.taxCodeSdi,
       alias: data.alias,

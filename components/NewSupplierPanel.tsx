@@ -49,7 +49,8 @@ export default function NewSupplierPanel({ initialOpen = false }: { initialOpen?
               <label className="span-2">Ragione Sociale<input name="businessName" required /></label>
               <label>Alias<input name="alias" placeholder="Nome breve o commerciale" /></label>
               <label>Email<input name="email" type="email" /></label>
-              <label>Telefono<input name="phone" /></label>
+              <label>P.IVA<input name="vatNumber" /></label>
+              <label>IBAN<input name="iban" /></label>
               <label>PEC<input name="pec" type="email" /></label>
               <label>Codice SDI/Codice Fiscale<input name="taxCodeSdi" /></label>
             </div>

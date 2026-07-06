@@ -144,7 +144,8 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
             <CopyableField label="R. Sociale" value={supplier.businessName} />
             <CopyableField label="Alias" value={supplier.alias} />
             <CopyableField label="Email" value={supplier.email} />
-            <CopyableField label="Telefono" value={supplier.phone} />
+            <CopyableField label="P.IVA" value={supplier.vatNumber} />
+            <CopyableField label="IBAN" value={supplier.iban} />
             <CopyableField label="PEC" value={supplier.pec} />
             <CopyableField label="Cod. SDI" value={supplier.taxCodeSdi} />
             <CopyableField label="Note interne" value={supplier.internalNotes} className="span-2"/>
@@ -170,7 +171,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
         categories={orderedCategories.map(c => ({id: c.id, code: c.code, name: c.name, icon: c.icon }))}
         banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
         paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
-        suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
+        suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
         mobileLabel="Spese collegate mobile"
         emptyMessage="Nessuna spesa collegata a questo fornitore."
       />

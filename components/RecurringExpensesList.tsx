@@ -62,7 +62,7 @@ const paymentChannelLabels: Record<string, string> = {
 
 type FilterOption = { id: number; name: string; kind?: string; isFallback?: boolean | null };
 type CategoryOption = { id: number; code?: string; name: string; icon?: string | null };
-type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; phone?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
+type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; vatNumber?: string | null; iban?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
 
 export default function RecurringExpensesList({
   items,

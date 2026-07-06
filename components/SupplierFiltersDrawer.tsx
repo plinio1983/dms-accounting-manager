@@ -51,7 +51,8 @@ export default function SupplierFiltersDrawer({ filters }: Props) {
           <label>Ragione sociale<input name="businessName" defaultValue={inputDefault(filters, "businessName")} /></label>
           <label>Alias<input name="alias" defaultValue={inputDefault(filters, "alias")} /></label>
           <label>Email<input name="email" type="email" defaultValue={inputDefault(filters, "email")} /></label>
-          <label>Telefono<input name="phone" defaultValue={inputDefault(filters, "phone")} /></label>
+          <label>P.IVA<input name="vatNumber" defaultValue={inputDefault(filters, "vatNumber")} /></label>
+          <label>IBAN<input name="iban" defaultValue={inputDefault(filters, "iban")} /></label>
           <label>PEC<input name="pec" defaultValue={inputDefault(filters, "pec")} /></label>
           <label>Codice SDI/C.F.<input name="taxCodeSdi" defaultValue={inputDefault(filters, "taxCodeSdi")} /></label>
 

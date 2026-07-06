@@ -27,7 +27,8 @@ export default async function EditSupplierPage({ params }: { params: Promise<{ i
           <label className="span-2">Ragione Sociale<input name="businessName" required defaultValue={supplier.businessName} /></label>
           <label>Alias<input name="alias" defaultValue={supplier.alias ?? ''} /></label>
           <label>Email<input name="email" type="email" defaultValue={supplier.email ?? ''} /></label>
-          <label>Telefono<input name="phone" defaultValue={supplier.phone ?? ''} /></label>
+          <label>P.IVA<input name="vatNumber" defaultValue={supplier.vatNumber ?? ''} /></label>
+          <label>IBAN<input name="iban" defaultValue={supplier.iban ?? ''} /></label>
           <label>PEC<input name="pec" type="email" defaultValue={supplier.pec ?? ''} /></label>
           <label>Codice SDI/Codice Fiscale<input name="taxCodeSdi" defaultValue={supplier.taxCodeSdi ?? ''} /></label>
         </div>

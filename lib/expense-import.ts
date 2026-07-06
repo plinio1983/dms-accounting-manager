@@ -238,12 +238,13 @@ async function getOrCreatePaymentMethod(nameRaw: unknown, workspaceId?: number) 
   });
 }
 
-async function getOrCreateSupplier(businessNameRaw: unknown, metadata: { alias?: string; email?: string; phone?: string; pec?: string; taxCodeSdi?: string; internalNotes?: string; workspaceId?: number } = {}) {
+async function getOrCreateSupplier(businessNameRaw: unknown, metadata: { alias?: string; email?: string; vatNumber?: string; iban?: string; pec?: string; taxCodeSdi?: string; internalNotes?: string; workspaceId?: number } = {}) {
   const businessName = textValue(businessNameRaw) || 'Senza esercente';
   const data = {
     alias: metadata.alias || null,
     email: metadata.email || null,
-    phone: metadata.phone || null,
+    vatNumber: metadata.vatNumber || null,
+    iban: metadata.iban || null,
     pec: metadata.pec || null,
     taxCodeSdi: metadata.taxCodeSdi || null,
     internalNotes: metadata.internalNotes || null
@@ -362,7 +363,8 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
     const { supplier, created } = await getOrCreateSupplier(supplierName, {
       alias: textValue(rowValue(row, ['Alias fornitore', 'Alias'])),
       email: textValue(rowValue(row, ['Email fornitore', 'Email'])),
-      phone: textValue(rowValue(row, ['Telefono fornitore', 'Telefono', 'Phone'])),
+      vatNumber: textValue(rowValue(row, ['P.IVA', 'Partita IVA', 'PIVA', 'VAT'])),
+      iban: textValue(rowValue(row, ['IBAN', 'Iban'])),
       pec: textValue(rowValue(row, ['PEC fornitore', 'PEC'])),
       taxCodeSdi: textValue(rowValue(row, ['Codice SDI', 'SDI', 'Codice destinatario', 'Codice fiscale/SDI'])),
       internalNotes: textValue(rowValue(row, ['Note fornitore', 'Note interne fornitore'])),

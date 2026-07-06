@@ -63,7 +63,8 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
   const businessNameFilter = normalize(inputDefault(filters, 'businessName'));
   const aliasFilter = normalize(inputDefault(filters, 'alias'));
   const emailFilter = normalize(inputDefault(filters, 'email'));
-  const phoneFilter = normalize(inputDefault(filters, 'phone'));
+  const vatNumberFilter = normalize(inputDefault(filters, 'vatNumber'));
+  const ibanFilter = normalize(inputDefault(filters, 'iban'));
   const pecFilter = normalize(inputDefault(filters, 'pec'));
   const taxCodeSdiFilter = normalize(inputDefault(filters, 'taxCodeSdi'));
 
@@ -71,7 +72,8 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
     if (businessNameFilter && !normalize(supplier.businessName).includes(businessNameFilter)) return false;
     if (aliasFilter && !normalize(supplier.alias).includes(aliasFilter)) return false;
     if (emailFilter && !normalize(supplier.email).includes(emailFilter)) return false;
-    if (phoneFilter && !normalize(supplier.phone).includes(phoneFilter)) return false;
+    if (vatNumberFilter && !normalize(supplier.vatNumber).includes(vatNumberFilter)) return false;
+    if (ibanFilter && !normalize(supplier.iban).includes(ibanFilter)) return false;
     if (pecFilter && !normalize(supplier.pec).includes(pecFilter)) return false;
     if (taxCodeSdiFilter && !normalize(supplier.taxCodeSdi).includes(taxCodeSdiFilter)) return false;
     return true;
@@ -81,7 +83,8 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
     inputDefault(filters, 'businessName') && { label: 'Ragione sociale', value: inputDefault(filters, 'businessName') },
     inputDefault(filters, 'alias') && { label: 'Alias', value: inputDefault(filters, 'alias') },
     inputDefault(filters, 'email') && { label: 'Email', value: inputDefault(filters, 'email') },
-    inputDefault(filters, 'phone') && { label: 'Telefono', value: inputDefault(filters, 'phone') },
+    inputDefault(filters, 'vatNumber') && { label: 'P.IVA', value: inputDefault(filters, 'vatNumber') },
+    inputDefault(filters, 'iban') && { label: 'IBAN', value: inputDefault(filters, 'iban') },
     inputDefault(filters, 'pec') && { label: 'PEC', value: inputDefault(filters, 'pec') },
     inputDefault(filters, 'taxCodeSdi') && { label: 'Codice SDI/C.F.', value: inputDefault(filters, 'taxCodeSdi') }
   ].filter(Boolean) as Array<{ label: string; value: string }>;

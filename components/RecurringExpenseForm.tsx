@@ -9,7 +9,8 @@ type SupplierOption = {
   businessName: string;
   alias?: string | null;
   email?: string | null;
-  phone?: string | null;
+  vatNumber?: string | null;
+  iban?: string | null;
   pec?: string | null;
   taxCodeSdi?: string | null;
   internalNotes?: string | null;
@@ -103,7 +104,8 @@ function SupplierAutocomplete({
   const [createData, setCreateData] = useState({
     businessName: "",
     email: "",
-    phone: "",
+    vatNumber: "",
+    iban: "",
     pec: "",
     taxCodeSdi: "",
     alias: "",
@@ -176,7 +178,8 @@ function SupplierAutocomplete({
     setCreateData({
       businessName: "",
       email: "",
-      phone: "",
+      vatNumber: "",
+      iban: "",
       pec: "",
       taxCodeSdi: "",
       alias: "",
@@ -252,7 +255,8 @@ function SupplierAutocomplete({
             <div className="modal-form-grid">
               <label>Ragione Sociale<input value={createData.businessName} onChange={(e) => setCreateData((d) => ({ ...d, businessName: e.target.value }))} required /></label>
               <label>Email<input value={createData.email} onChange={(e) => setCreateData((d) => ({ ...d, email: e.target.value }))} /></label>
-              <label>Telefono<input value={createData.phone} onChange={(e) => setCreateData((d) => ({ ...d, phone: e.target.value }))} /></label>
+              <label>P.IVA<input value={createData.vatNumber} onChange={(e) => setCreateData((d) => ({ ...d, vatNumber: e.target.value }))} /></label>
+              <label>IBAN<input value={createData.iban} onChange={(e) => setCreateData((d) => ({ ...d, iban: e.target.value }))} /></label>
               <label>PEC<input value={createData.pec} onChange={(e) => setCreateData((d) => ({ ...d, pec: e.target.value }))} /></label>
               <label>Codice SDI/Codice Fiscale<input value={createData.taxCodeSdi} onChange={(e) => setCreateData((d) => ({ ...d, taxCodeSdi: e.target.value }))} /></label>
               <label>Alias<input value={createData.alias} onChange={(e) => setCreateData((d) => ({ ...d, alias: e.target.value }))} /></label>
