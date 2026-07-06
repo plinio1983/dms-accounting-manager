@@ -119,6 +119,12 @@
     }
 }
 
+.recurring-expense-form {
+    .amount-vat-row {
+        grid-column: span 2;
+    }
+}
+
 @media (min-width: 761px) {
     .expense-form.form-sticky-actions,
     .expense-form .form-sticky-actions,

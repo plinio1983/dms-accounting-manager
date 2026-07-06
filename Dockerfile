@@ -9,6 +9,7 @@ RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 FROM node:20-bookworm-slim AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV TABULARIUM_ALLOW_BUILD_DATABASE_URL=1
 RUN apt-get update -y \
   && apt-get install -y --no-install-recommends openssl \
   && rm -rf /var/lib/apt/lists/*

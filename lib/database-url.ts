@@ -1,4 +1,5 @@
 const DEFAULT_SCHEMA = "public";
+const BUILD_DATABASE_URL = "postgresql://tabularium_build:tabularium_build@localhost:5432/tabularium_build?schema=public";
 
 function requiredEnv(name: string) {
   const value = process.env[name];
@@ -9,6 +10,10 @@ function requiredEnv(name: string) {
 }
 
 export function getDatabaseUrl() {
+  if (process.env.TABULARIUM_ALLOW_BUILD_DATABASE_URL === "1") {
+    return BUILD_DATABASE_URL;
+  }
+
   const host = requiredEnv("POSTGRES_HOST");
   const port = process.env.POSTGRES_PORT ?? "5432";
   const user = requiredEnv("POSTGRES_USER");
