@@ -34,7 +34,7 @@ export const incomeInvoiceStatusStyles: Record<string, { label: string; icon: st
   NON_INVIATA: { label: 'Non inviata', icon: '⏳', className: 'tone-waiting' },
   // EMESSA: { label: 'Emessa', icon: '✅', className: 'tone-received' },
   EMESSA: { label: 'Emessa', icon: '✓', className: 'tone-received' },
-  NONE: { label: 'NP', icon: '•', className: 'tone-neutral' }
+  NONE: { label: '', icon: '×', className: 'tone-neutral' }
 };
 
 export const incomeCreditStatusStyles: Record<string, { label: string; icon: string; className: string }> = {

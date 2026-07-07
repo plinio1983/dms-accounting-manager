@@ -363,7 +363,7 @@ function matchesBillingPeriod(month: number, year: number, fromKey: number | nul
 }
 
 function matchesIsoDate(value: Date | null | undefined, from: string, to: string) {
-  const formatted = value ? value.toISOString().slice(0, 10) : '';
+  const formatted = value ? localDateKey(value) : '';
   if (from && (!formatted || formatted < from)) return false;
   if (to && (!formatted || formatted > to)) return false;
   return true;
@@ -1039,7 +1039,9 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
                     <span title={income.saleCategory} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{catStyle?.icon ?? '•'} {income.saleCategory}</span>
                     {fiscalBadge(income.isFiscal)}
                     <span className="text-pre">{formatPeriod(income.billingMonth, income.billingYear)}</span>
-                    <span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span>
+                    {!income.isFiscal ? '' :
+                      <span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span>
+                    }
                   </div>
                   <div className="right-side">
                     <span className="text-pre">{mobileDateLabel(income.creditDate)}</span>

@@ -546,10 +546,14 @@ function matchesBillingPeriod(month: number, year: number, fromKey: number | nul
 }
 
 function matchesIsoDate(value: Date | null | undefined, from: string, to: string) {
-  const formatted = value ? value.toISOString().slice(0, 10) : '';
+  const formatted = value ? localDateKey(value) : '';
   if (from && (!formatted || formatted < from)) return false;
   if (to && (!formatted || formatted > to)) return false;
   return true;
+}
+
+function localDateKey(value: Date) {
+  return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
 }
 
 export default async function ExpensesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {

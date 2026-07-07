@@ -47,12 +47,14 @@ const quickBillingPeriodOptions = [
 ];
 
 const quickDateButtons = [
-  ["current_month", "Mese"],
-  ["previous_month", "Mese -1"],
-  ["current_quarter", "Trim"],
-  ["previous_quarter", "Trim -1"],
-  ["year_to_date", "Anno"],
+  "current_month",
+  "previous_month",
+  "current_quarter",
+  "previous_quarter",
+  "year_to_date",
 ] as const;
+
+const monthShortLabels = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"];
 
 function currentMonthQuickValue() {
   return `month_${String(new Date().getMonth() + 1).padStart(2, "0")}`;
@@ -60,6 +62,18 @@ function currentMonthQuickValue() {
 
 function currentYearValue() {
   return String(new Date().getFullYear());
+}
+
+function quickButtonLabel(value: (typeof quickDateButtons)[number]) {
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentQuarter = Math.floor(currentMonth / 3) + 1;
+
+  if (value === "current_month") return monthShortLabels[currentMonth];
+  if (value === "previous_month") return monthShortLabels[new Date(now.getFullYear(), currentMonth - 1, 1).getMonth()];
+  if (value === "current_quarter") return `Tri ${currentQuarter}`;
+  if (value === "previous_quarter") return `Tri ${currentQuarter > 1 ? currentQuarter - 1 : 4}`;
+  return "Anno";
 }
 
 function quickButtonTarget(value: string) {
@@ -202,8 +216,9 @@ export default function IncomeTrendSelectors({ dateQuick, billingPeriodQuick, da
     </label>}
     <section>
       <div className="expense-trend-quick-date" role="group" aria-label="Scorciatoie periodo">
-        {quickDateButtons.map(([value, label]) => {
+        {quickDateButtons.map((value) => {
           const target = quickButtonTarget(value);
+          const label = quickButtonLabel(value);
           const isActive = currentQuickValue === target.value && currentQuickYear === target.year;
           return <button
             key={value}
