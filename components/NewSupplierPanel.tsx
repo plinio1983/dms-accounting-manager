@@ -35,7 +35,7 @@ export default function NewSupplierPanel({ initialOpen = false }: { initialOpen?
         <div className="modal-title">
           <div>
             <h3>Nuovo fornitore</h3>
-            <p className="muted">Inserisci i dati del fornitore senza uscire dalla lista.</p>
+            <p className="muted">Inserisci i dati del fornitore.</p>
           </div>
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
         </div>

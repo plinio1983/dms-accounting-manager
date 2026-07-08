@@ -96,7 +96,7 @@ export default function RecurringExpenseDetailEditModalController({ categories, 
         <div className="modal-title">
           <div>
             <h3>Modifica spesa ricorrente #{expense.id}</h3>
-            <p className="muted">Aggiorna la regola ricorrente senza uscire dalla pagina dettaglio.</p>
+            <p className="muted">Aggiorna la definizione della regola di spesa ricorrente.</p>
           </div>
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setExpense(null)}>×</button>
         </div>

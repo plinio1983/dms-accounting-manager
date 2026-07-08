@@ -37,6 +37,12 @@ function monthValue(year: number, month: number) {
 function quarterValue(year: number, quarterIndex: number) {
   return `${year}-Q${quarterIndex + 1}`;
 }
+
+function capitalizedMonthName(month: number) {
+  const name = monthName(month);
+  return name ? `${name.charAt(0).toUpperCase()}${name.slice(1)}` : name;
+}
+
 function periodRangeQuery(periods: Array<{ year: number; month: number }>) {
   if (!periods.length) return '';
   const first = periods[0];
@@ -205,6 +211,16 @@ function nonFiscalExpensePercentTone(value: number, total: number) {
   return '';
 }
 
+function chartEuro(value: number | string | null | undefined) {
+  const n = Number(value ?? 0);
+  return new Intl.NumberFormat('it-IT', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(n);
+}
+
 const dashboardChartColors = ['#2563eb', '#16a34a', '#f59e0b', '#dc2626', '#7c3aed', '#0f766e', '#db2777', '#64748b'];
 
 type DashboardPieItem = {
@@ -268,7 +284,7 @@ function DashboardPieChart({
       <div className="expense-impact-pie" style={{ background }} aria-label={title}>
         <div>
           <span>{centerLabel}</span>
-          <strong className="main-label">{centerValue ?? euro(total)}</strong>
+          <strong className="main-label">{centerValue ?? chartEuro(total)}</strong>
         </div>
       </div>
       <div className="expense-impact-pie-legend">
@@ -279,7 +295,7 @@ function DashboardPieChart({
             <div className="expense-impact-pie-legend-row">
               <span className="expense-impact-pie-dot" style={{ background: dashboardChartColors[index % dashboardChartColors.length] }} />
               <div><strong>{item.code}</strong><span>{item.name}</span></div>
-              <div><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
+              <div><strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
             </div>
             <div className="expense-impact-pie-bar" style={{ width: `${barWidth.toFixed(1)}%`, background: `${dashboardChartColors[index % dashboardChartColors.length]}` }} />
           </>;
@@ -290,34 +306,11 @@ function DashboardPieChart({
         {denominator > chartTotal && remainderLabel && remainderName ? <div className="expense-impact-pie-legend-row">
           <span className="expense-impact-pie-dot expense-impact-pie-dot-muted" />
           <div><strong>{remainderLabel}</strong><span>{remainderName}</span></div>
-          <div><strong>{euro(denominator - chartTotal)}</strong><small>{(((denominator - chartTotal) / percentageDenominator) * 100).toFixed(1)}%</small></div>
+          <div><strong>{chartEuro(denominator - chartTotal)}</strong><small>{(((denominator - chartTotal) / percentageDenominator) * 100).toFixed(1)}%</small></div>
         </div> : null}
       </div>
     </div> : <p className="muted">{emptyMessage}</p>}
   </div>;
-}
-
-function ExpensesByCategoryChart({ data }: { data: Array<{ name: string; code: string; total: number }> }) {
-  const total = data.reduce((sum, item) => sum + item.total, 0);
-  const groupedData = total > 0 ? data.reduce((items, item) => {
-    const percentage = (item.total / total) * 100;
-    if (percentage >= 3) return [...items, item];
-    const other = items.find(entry => entry.code === 'ALTRO');
-    if (other) {
-      other.total += item.total;
-      return items;
-    }
-    return [...items, { name: 'Altro', code: 'ALTRO', total: item.total }];
-  }, [] as Array<{ name: string; code: string; total: number }>).sort((a, b) => b.total - a.total) : data;
-  return <DashboardPieChart
-    title="Grafico spese per categoria"
-    description="Distribuzione delle spese sullo stesso anno fiscale del report mensile."
-    badge={<>Totale {euro(total)}</>}
-    data={groupedData}
-    total={total}
-    centerLabel="Spese"
-    emptyMessage="Nessuna spesa presente per l’anno selezionato."
-  />;
 }
 
 function groupedExpenseIncomeImpactData(data: Array<{ name: string; code: string; total: number }>, incomeTotal: number) {
@@ -345,7 +338,7 @@ function ExpenseCategoryIncomeImpactChart({
   return <DashboardPieChart
     title="Impatto spese su incasso totale"
     description="Percentuale di ogni categoria spese rispetto alle entrate totali dell’anno fiscale."
-    badge={<>Incasso {euro(incomeTotal)}</>}
+    badge={<>Incasso {chartEuro(incomeTotal)}</>}
     data={groupedData}
     total={expenseTotal}
     visualTotal={Math.max(incomeTotal, expenseTotal)}
@@ -363,12 +356,131 @@ function IncomeBreakdownChart({ title, description, data }: { title: string; des
   return <DashboardPieChart
     title={title}
     description={description}
-    badge={<>Totale {euro(total)}</>}
+    badge={<>Totale {chartEuro(total)}</>}
     data={data}
     total={total}
     centerLabel="Entrate"
     emptyMessage="Nessun incasso presente per l’anno selezionato."
   />;
+}
+
+function MonthlyNonFiscalRatioChart({
+  months,
+  year
+}: {
+  months: Array<{ year: number; month: number; totals: any }>;
+  year: number;
+}) {
+  const totalIncome = months.reduce((sum, month) => sum + month.totals.incassoTotale, 0);
+  const totalNonFiscalExpenses = months.reduce((sum, month) => sum + month.totals.usciteNonFiscali, 0);
+  const totalNonFiscalIncomes = months.reduce((sum, month) => sum + month.totals.incassoNonFiscale, 0);
+  const expenseYearPercentage = totalIncome ? (totalNonFiscalExpenses / totalIncome) * 100 : 0;
+  const incomeYearPercentage = totalIncome ? (totalNonFiscalIncomes / totalIncome) * 100 : 0;
+
+  return <section className="card monthly-non-fiscal-chart-card" aria-labelledby="monthly-non-fiscal-chart-title">
+    <div className="card-heading-row">
+      <div>
+        <h2 id="monthly-non-fiscal-chart-title">Rapporto spese e incassi non fiscali su incasso totale per mese</h2>
+        <p className="muted">Percentuali mensili calcolate sull’incasso totale da inizio anno {year}.</p>
+      </div>
+      <div className="text-right chart-total">
+        <span className="badge">Spese {expenseYearPercentage.toFixed(1)}% · Incassi {incomeYearPercentage.toFixed(1)}%</span>
+      </div>
+    </div>
+    {months.length ? <div className="monthly-non-fiscal-chart-list">
+      {months.map(month => {
+        const incomeTotal = month.totals.incassoTotale;
+        const nonFiscalExpense = month.totals.usciteNonFiscali;
+        const nonFiscalIncome = month.totals.incassoNonFiscale;
+        const expensePercentage = incomeTotal ? (nonFiscalExpense / incomeTotal) * 100 : 0;
+        const incomePercentage = incomeTotal ? (nonFiscalIncome / incomeTotal) * 100 : 0;
+        const expenseWidth = Math.min(expensePercentage, 100);
+        const incomeWidth = Math.min(incomePercentage, 100);
+        const expenseTone = nonFiscalExpensePercentTone(nonFiscalExpense, incomeTotal);
+        const monthLabel = capitalizedMonthName(month.month);
+
+        return <Link
+          className="monthly-non-fiscal-chart-row"
+          href={periodLink('/expenses', [{ year: month.year, month: month.month }], { declared: 'no' })}
+          key={`${month.year}-${month.month}`}
+        >
+          <div className="monthly-non-fiscal-chart-month-row">
+            <span className="monthly-non-fiscal-chart-month">{monthLabel}</span>
+            <small>Incasso tot {chartEuro(incomeTotal)}</small>
+          </div>
+          <div className="monthly-non-fiscal-chart-top">
+            <span>Spese n.f.</span>
+            <small className={moneyTone(nonFiscalExpense)}>{chartEuro(nonFiscalExpense)}</small>
+            <strong>{expensePercentage.toFixed(1)}%</strong>
+          </div>
+          <span className="monthly-non-fiscal-chart-bar-wrap" aria-label={`${monthLabel} spese non fiscali: ${expensePercentage.toFixed(1)}%`}>
+            <span className={`monthly-non-fiscal-chart-bar monthly-non-fiscal-chart-expense-bar ${expenseTone}`} style={{ width: `${expenseWidth}%` }} />
+          </span>
+          <span className="monthly-non-fiscal-chart-bar-wrap" aria-label={`${monthLabel} incassi non fiscali: ${incomePercentage.toFixed(1)}%`}>
+            <span className="monthly-non-fiscal-chart-bar monthly-non-fiscal-chart-income-bar" style={{ width: `${incomeWidth}%` }} />
+          </span>
+          <div className="monthly-non-fiscal-chart-bottom">
+            <span>Incassi n.f.</span>
+            <small className={moneyTone(nonFiscalIncome)}>{chartEuro(nonFiscalIncome)}</small>
+            <strong>{incomePercentage.toFixed(1)}%</strong>
+          </div>
+        </Link>;
+      })}
+    </div> : <p className="muted">Nessun mese disponibile per l’anno selezionato.</p>}
+  </section>;
+}
+
+function MonthlyIncomeExpenseRatioChart({
+  months,
+  year
+}: {
+  months: Array<{ year: number; month: number; totals: any }>;
+  year: number;
+}) {
+  const totalIncome = months.reduce((sum, month) => sum + month.totals.incassoTotale, 0);
+  const totalExpenses = months.reduce((sum, month) => sum + month.totals.speseTotali, 0);
+  const yearPercentage = totalIncome ? (totalExpenses / totalIncome) * 100 : 0;
+
+  return <section className="card monthly-income-expense-ratio-chart-card" aria-labelledby="monthly-income-expense-ratio-chart-title">
+    <div className="card-heading-row">
+      <div>
+        <h2 id="monthly-income-expense-ratio-chart-title">Rapporto entrate e uscite per mese</h2>
+        <p className="muted">Percentuale delle uscite totali rispetto alle entrate totali mensili da inizio anno {year}.</p>
+      </div>
+      <div className="text-right chart-total">
+        <span className="badge">Anno {yearPercentage.toFixed(1)}%</span>
+      </div>
+    </div>
+    {months.length ? <div className="monthly-non-fiscal-chart-list">
+      {months.map(month => {
+        const incomeTotal = month.totals.incassoTotale;
+        const expenseTotal = month.totals.speseTotali;
+        const percentage = incomeTotal ? (expenseTotal / incomeTotal) * 100 : 0;
+        const width = Math.min(percentage, 100);
+        const monthLabel = capitalizedMonthName(month.month);
+        const tone = percentage > 100 ? 'tone-critical' : percentage > 75 ? 'tone-warning' : '';
+
+        return <Link
+          className="monthly-income-expense-ratio-chart-row"
+          href={periodLink('/expenses', [{ year: month.year, month: month.month }])}
+          key={`${month.year}-${month.month}`}
+        >
+          <div className="monthly-non-fiscal-chart-month-row">
+            <span className="monthly-non-fiscal-chart-month">{monthLabel}</span>
+            <small>Entrate {chartEuro(incomeTotal)}</small>
+          </div>
+          <div className="monthly-income-expense-ratio-chart-values">
+            <span>Uscite totali</span>
+            <small className={moneyTone(expenseTotal)}>{chartEuro(expenseTotal)}</small>
+            <strong>{percentage.toFixed(1)}%</strong>
+          </div>
+          <span className="monthly-non-fiscal-chart-bar-wrap" aria-label={`${monthLabel} rapporto uscite su entrate: ${percentage.toFixed(1)}%`}>
+            <span className={`monthly-non-fiscal-chart-bar monthly-income-expense-ratio-chart-bar ${tone}`} style={{ width: `${width}%` }} />
+          </span>
+        </Link>;
+      })}
+    </div> : <p className="muted">Nessun mese disponibile per l’anno selezionato.</p>}
+  </section>;
 }
 
 function IncomeExpenseBreakdownChart({
@@ -414,7 +526,7 @@ function IncomeExpenseBreakdownChart({
         <p className="muted">Ripartizione fiscale e non fiscale anno {periods[0]?.year ?? ''}.</p>
       </div>
       <div>
-        <span className="badge">Totale {euro(total)}</span>
+        <span className="badge">Totale {chartEuro(total)}</span>
       </div>
     </div>
     <div className="income-expense-chart-list">
@@ -427,16 +539,16 @@ function IncomeExpenseBreakdownChart({
           <span className="income-expense-chart-label">
             <span>{item.label}</span>
             <span className="income-expense-chart-value">
-              <strong className={moneyTone(item.value)}>{euro(item.value)}</strong>
+              <strong className={moneyTone(item.value)}>{chartEuro(item.value)}</strong>
               <small>{percentage.toFixed(1)}%</small>
             </span>
           </span>
-          <span className="income-expense-chart-bar-wrap" aria-label={`${item.label}: ${euro(item.value)}`}>
+          <span className="income-expense-chart-bar-wrap" aria-label={`${item.label}: ${chartEuro(item.value)}`}>
             <span className={`income-expense-chart-bar ${item.tone}`} style={{ width: `${width}%` }} />
           </span>
 
           <span className="income-expense-chart-value income-expense-chart-value-inline">
-            <strong className={moneyTone(item.value)}>{euro(item.value)}</strong>
+            <strong className={moneyTone(item.value)}>{chartEuro(item.value)}</strong>
             <small>{percentage.toFixed(1)}%</small>
           </span>
         </Link>;
@@ -498,6 +610,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
   const monthOptions = Array.from({ length: 12 }, (_, index) => ({ year: monthOptionYear, month: index + 1 }));
   const quarterOptions = Array.from({ length: 4 }, (_, index) => ({ year: quarterOptionYear, quarterIndex: index }));
   const annualPeriods = Array.from({ length: 12 }, (_, index) => ({ year: report.annualYear, month: index + 1 }));
+  const nonFiscalExpenseChartMonths = report.months.filter(month => report.annualYear === currentYear ? month.month <= currentMonth : true);
 
   return <div className="grid dashboard-grid">
     <div className="dashboard-actions toolbar-card dashboard-header-card">
@@ -599,8 +712,9 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
     <div className="dashboard-report-charts">
       <div className="charts-grid">
         <ExpenseCategoryIncomeImpactChart data={report.expensesByCategory} incomeTotal={report.totals.incassoTotale} />
-        <ExpensesByCategoryChart data={report.expensesByCategory} />
         <IncomeBreakdownChart title="Entrate per canale e categoria" description={`Distribuzione degli incassi per canale vendita e categoria nell’anno fiscale ${report.annualYear}.`} data={report.incomesBySalesChannel} />
+        <MonthlyNonFiscalRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear} />
+        <MonthlyIncomeExpenseRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear} />
       </div>
     </div>
 

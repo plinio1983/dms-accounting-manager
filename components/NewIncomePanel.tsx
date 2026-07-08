@@ -49,7 +49,7 @@ export default function NewIncomePanel({ initialOpen = false, banks, paymentMeth
           <div className="modal-title">
             <div>
               <h3>Nuovo incasso</h3>
-              <p className="muted">Inserisci un nuovo incasso senza uscire dalla lista.</p>
+              <p className="muted">Inserisci un nuovo incasso.</p>
             </div>
             <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
           </div>

@@ -165,7 +165,7 @@ export default function RecurringExpensesList({
     <RecurringExpenseDetailEditModalController categories={categories} banks={banks} paymentMethods={paymentMethods} suppliers={suppliers} returnTo="/recurring-expenses" />
     <div className="list-heading recurring-list-heading">
       <div>
-        <h2>Lista spese ricorrenti</h2>
+        <h2>Lista spese</h2>
       </div>
       <div>
         <RecurringExpenseFiltersDrawer filters={filters ?? {}} categories={categories} banks={banks} paymentMethods={paymentMethods} />
@@ -223,7 +223,7 @@ export default function RecurringExpensesList({
         <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
       </div>
       <div className="bulk-inner-container">
-        <button className="bulk-direct-link btn btn-md btn-primary" type="button" data-bulk-new data-recurring-expense-new data-floating-label="Spesa ricorrente">
+        <button className="bulk-direct-link btn btn-md btn-secondary" type="button" data-bulk-new data-recurring-expense-new data-floating-label="Spesa ricorrente">
           <span className="btn-icon">+</span>
           <span className="bulk-label">Spesa ricorrente</span>
         </button>
@@ -273,7 +273,7 @@ export default function RecurringExpensesList({
         </table>
       </div>
 
-      <div className="recurring-expenses-mobile-list" aria-label="Lista spese ricorrenti mobile">
+      <div className="recurring-expenses-mobile-list" aria-label="Lista spese ricorrenti">
         {mobileSortedItems.map(item => {
           const cadence = cadenceLabels[item.cadence] ?? item.cadence;
           const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
@@ -289,7 +289,7 @@ export default function RecurringExpensesList({
             <div className="recurring-mobile-top">
               <div className="recurring-mobile-main-title">
                 <span className={item.isActive ? 'recurring-mobile-status is-active' : 'recurring-mobile-status'}>{item.isActive ? 'ON' : 'OFF'}</span>
-                <span className="badge">{cadence}</span>
+                <span className="badge tone-insurance">{cadence}</span>
                 <span className="badge">{dueLabel(item)}</span>
               </div>
               <strong className="recurring-mobile-amount">{euro(item.amount.toString())}</strong>

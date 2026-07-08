@@ -137,7 +137,7 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
         <div className="modal-title">
           <div>
             <h3>{mode === "copy" ? `Copia spesa #${expense.id}` : `Modifica spesa #${expense.id}`}</h3>
-            <p className="muted">{mode === "copy" ? "I dati sono precompilati, pagamenti e stato pagamento restano azzerati." : "Aggiorna dati e pagamenti senza uscire dalla lista."}</p>
+            <p className="muted">{mode === "copy" ? "I dati sono precompilati, pagamenti e stato pagamento restano azzerati." : "Aggiorna dati e pagamenti."}</p>
           </div>
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setExpense(null)}>×</button>
         </div>

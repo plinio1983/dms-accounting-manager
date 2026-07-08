@@ -179,6 +179,18 @@ function optionLabel(options: Array<string[]>, value: string) {
 
 type ExpenseCategoryDatum = { name: string; code: string; total: number; residual: number };
 
+const expensePieChartColors = ['#2563eb', '#16a34a', '#f59e0b', '#dc2626', '#7c3aed', '#0f766e', '#db2777', '#64748b'];
+
+function chartEuro(value: number | string | null | undefined) {
+  const n = Number(value ?? 0);
+  return new Intl.NumberFormat('it-IT', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(n);
+}
+
 function ExpenseCategoryColumnChart({ data, total }: { data: ExpenseCategoryDatum[]; total: number }) {
   const groupedData = total ? data.reduce((items, item) => {
     const percentage = (item.total / total) * 100;
@@ -219,33 +231,59 @@ function ExpenseCategoryColumnChart({ data, total }: { data: ExpenseCategoryDatu
   </div>;
 }
 
-// function ExpenseCategoryChart({ data }: { data: ExpenseCategoryDatum[] }) {
-//   const max = Math.max(...data.map(item => item.total), 0);
-//   const total = data.reduce((sum, item) => sum + item.total, 0);
-//
-//   return <div className="card expense-category-chart-card embedded-chart-card">
-//     <div className="card-heading-row">
-//       <div>
-//         <h2>Grafico spese per categoria</h2>
-//         <p className="muted">Distribuzione delle spese in base ai risultati attualmente filtrati.</p>
-//       </div>
-//       <span className="badge">Totale {euro(total)}</span>
-//     </div>
-//     {data.length ? <div className="category-chart-list">
-//       {data.map(item => {
-//         const percentage = total ? (item.total / total) * 100 : 0;
-//         const width = max ? Math.max((item.total / max) * 100, 4) : 0;
-//         return <div className="category-chart-row" key={`${item.code}-${item.name}`}>
-//           <div className="category-chart-label"><strong>{item.code}</strong><span>{item.name}</span></div>
-//           <div className="category-chart-bar-wrap" aria-label={`${item.name}: ${euro(item.total)}`}>
-//             <div className="category-chart-bar" style={{ width: `${width}%` }} />
-//           </div>
-//           <div className="category-chart-value"><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
-//         </div>;
-//       })}
-//     </div> : <p className="muted">Nessuna spesa presente nei risultati filtrati.</p>}
-//   </div>;
-// }
+function ExpenseCategoryPieChart({ data }: { data: ExpenseCategoryDatum[] }) {
+  const total = data.reduce((sum, item) => sum + item.total, 0);
+  const groupedData = total > 0 ? data.reduce((items, item) => {
+    const percentage = (item.total / total) * 100;
+    if (percentage >= 3) return [...items, item];
+    const other = items.find(entry => entry.code === 'ALTRO');
+    if (other) {
+      other.total += item.total;
+      other.residual += item.residual;
+      return items;
+    }
+    return [...items, { name: 'Altro', code: 'ALTRO', total: item.total, residual: item.residual }];
+  }, [] as ExpenseCategoryDatum[]).sort((a, b) => b.total - a.total) : data;
+  let cursor = 0;
+  const segments = groupedData.map((item, index) => {
+    const start = total ? (cursor / total) * 100 : 0;
+    cursor += item.total;
+    const end = total ? (cursor / total) * 100 : 0;
+    return `${expensePieChartColors[index % expensePieChartColors.length]} ${start.toFixed(3)}% ${end.toFixed(3)}%`;
+  });
+  const background = segments.length ? `conic-gradient(${segments.join(', ')})` : undefined;
+
+  return <section className="expense-category-chart-card expense-impact-pie-card expense-page-category-pie-chart">
+    <div className="card-heading-row">
+      <div>
+        <h2>Spese per categoria</h2>
+        {/*<p className="muted">Distribuzione delle spese in base ai risultati filtrati.</p>*/}
+      </div>
+      <div className="text-right chart-total"><span className="badge">Totale {chartEuro(total)}</span></div>
+    </div>
+    {groupedData.length && total > 0 ? <div className="expense-impact-pie-layout">
+      <div className="expense-impact-pie" style={{ background }} aria-label="Grafico spese per categoria">
+        <div>
+          <span>Spese</span>
+          <strong className="main-label">{chartEuro(total)}</strong>
+        </div>
+      </div>
+      <div className="expense-impact-pie-legend">
+        {groupedData.map((item, index) => {
+          const percentage = total ? (item.total / total) * 100 : 0;
+          return <div className="expense-impact-pie-row-wrap" key={`${item.code}-${item.name}`}>
+            <div className="expense-impact-pie-legend-row">
+              <span className="expense-impact-pie-dot" style={{ background: expensePieChartColors[index % expensePieChartColors.length] }} />
+              <div><strong>{item.code}</strong><span>{item.name}</span></div>
+              <div><strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
+            </div>
+            <div className="expense-impact-pie-bar" style={{ width: `${percentage.toFixed(1)}%`, background: expensePieChartColors[index % expensePieChartColors.length] }} />
+          </div>;
+        })}
+      </div>
+    </div> : <p className="muted">Nessuna spesa presente nei risultati filtrati.</p>}
+  </section>;
+}
 
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
   const value = searchParams[key];
@@ -845,25 +883,6 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         useFiscalPeriodFilter={useFiscalPeriodFilter}
       />
 
-      <div className="expense-summary-row">
-        <div className="dashboard-statement-panel list-totals-statement">
-          {/*<p className="totals-period-note">{totalsPeriodLabel}</p>*/}
-          <h2>{totalsPeriodLabel}</h2>
-          <table className="dashboard-statement-table list-totals-table" aria-label="Totali spese filtrate">
-            <tbody>
-              {/*<tr><td>Spese totali IVA inclusa</td><td><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></td></tr>*/}
-              <tr><td>Spese totali IVA inclusa</td><td><strong className={badgeClass()}>{euro(totals.total)}</strong></td></tr>
-              <tr><td>Spese non dichiarate</td><td><Link href={nonDeclaredTotalsHref}><strong className={moneyTone(totals.nonDeclared)}>{euro(totals.nonDeclared)}</strong></Link></td></tr>
-              <tr className={totals.toPay > 0 ? 'list-totals-row-warning row-warning' : ''}><td>Non saldato</td><td><Link href={unpaidTotalsHref}><strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong></Link></td></tr>
-              <tr><td>IVA versata</td><td><strong className={moneyTone(totals.paidVat)}>{euro(totals.paidVat)}</strong></td></tr>
-              <tr className={totals.invoicesNotReceived > 0 ? 'list-totals-row-warning row-warning' : ''}><td>Fatture non ricevute</td><td><Link href={invoicesNotReceivedHref}><strong className="text-warning">{totals.invoicesNotReceived}</strong></Link></td></tr>
-              <tr className={totals.overdueCount > 0 ? 'list-totals-row-critical row-critical' : ''}><td>Pagamenti scaduti</td><td><Link href={overduePaymentsHref}><strong className="text-warning">{totals.overdueCount}</strong></Link></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <ExpenseCategoryColumnChart data={expensesByCategory} total={totals.total} />
-      </div>
-
       {activeFilterItems.length ? <div className="recurring-active-filters">
         <div>
           <div className="flex justify-start align-start">
@@ -880,6 +899,26 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           </div>
         </div>
       </div> : null}
+
+      <div className="expense-summary-row">
+        <div className="dashboard-statement-panel list-totals-statement">
+          {/*<p className="totals-period-note">{totalsPeriodLabel}</p>*/}
+          <h2>{totalsPeriodLabel}</h2>
+          <table className="dashboard-statement-table list-totals-table" aria-label="Totali spese filtrate">
+            <tbody>
+              {/*<tr><td>Spese totali IVA inclusa</td><td><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></td></tr>*/}
+              <tr><td>Spese totali IVA inclusa</td><td><strong className={badgeClass()}>{euro(totals.total)}</strong></td></tr>
+              <tr><td>Spese non dichiarate</td><td><Link href={nonDeclaredTotalsHref}><strong className={moneyTone(totals.nonDeclared)}>{euro(totals.nonDeclared)}</strong></Link></td></tr>
+              <tr className={totals.toPay > 0 ? 'list-totals-row-warning row-warning' : ''}><td>Non saldato</td><td><Link href={unpaidTotalsHref}><strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong></Link></td></tr>
+              <tr><td>IVA versata</td><td><strong className={moneyTone(totals.paidVat)}>{euro(totals.paidVat)}</strong></td></tr>
+              <tr className={totals.invoicesNotReceived > 0 ? 'list-totals-row-warning row-warning' : ''}><td>Fatture non ricevute</td><td><Link href={invoicesNotReceivedHref}><strong className="text-warning">{totals.invoicesNotReceived}</strong></Link></td></tr>
+              <tr className={totals.overdueCount > 0 ? 'list-totals-row-critical row-critical' : ''}><td>Pagamenti scaduti</td><td><Link href={overduePaymentsHref}><strong className="text-warning">{totals.overdueCount}</strong></Link></td></tr>
+            </tbody>
+          </table>
+        </div>
+        {/*<ExpenseCategoryColumnChart data={expensesByCategory} total={totals.total} />*/}
+        <ExpenseCategoryPieChart data={expensesByCategory} />
+      </div>
 
       <div className="list-heading recurring-list-heading">
         <div>
