@@ -435,6 +435,50 @@ function IncomeBreakdownChart({ title, description, data }: { title: string; des
   </div>;
 }
 
+const incomePieChartColors = ['#2563eb', '#16a34a', '#f59e0b', '#dc2626', '#7c3aed', '#0f766e', '#db2777', '#64748b'];
+
+function IncomePieBreakdownChart({ title, data }: { title: string; data: Array<{ name: string; code: string; total: number }> }) {
+  const total = data.reduce((sum, item) => sum + item.total, 0);
+  let cursor = 0;
+  const segments = data.map((item, index) => {
+    const start = total ? (cursor / total) * 100 : 0;
+    cursor += item.total;
+    const end = total ? (cursor / total) * 100 : 0;
+    return `${incomePieChartColors[index % incomePieChartColors.length]} ${start.toFixed(3)}% ${end.toFixed(3)}%`;
+  });
+  const background = segments.length ? `conic-gradient(${segments.join(', ')})` : undefined;
+
+  return <section className="expense-category-chart-card expense-impact-pie-card expense-page-category-pie-chart income-chart">
+    <div className="card-heading-row">
+      <div>
+        <h2>{title}</h2>
+      </div>
+      <div className="text-right chart-total"><span className="badge">Totale {euro(total)}</span></div>
+    </div>
+    {data.length && total > 0 ? <div className="expense-impact-pie-layout">
+      <div className="expense-impact-pie" style={{ background }} aria-label={title}>
+        <div>
+          <span>Incassi</span>
+          <strong className="main-label">{euro(total)}</strong>
+        </div>
+      </div>
+      <div className="expense-impact-pie-legend">
+        {data.map((item, index) => {
+          const percentage = total ? (item.total / total) * 100 : 0;
+          return <div className="expense-impact-pie-row-wrap" key={`${item.code}-${item.name}`}>
+            <div className="expense-impact-pie-legend-row">
+              <span className="expense-impact-pie-dot" style={{ background: incomePieChartColors[index % incomePieChartColors.length] }} />
+              <div><strong>{item.code}</strong><span>{item.name}</span></div>
+              <div><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
+            </div>
+            <div className="expense-impact-pie-bar" style={{ width: `${percentage.toFixed(1)}%`, background: incomePieChartColors[index % incomePieChartColors.length] }} />
+          </div>;
+        })}
+      </div>
+    </div> : <p className="muted">Nessun incasso presente nei risultati filtrati.</p>}
+  </section>;
+}
+
 function IncomeVerticalBarChart({ title, description, data }: { title: string; description: string; data: Array<{ name: string; code: string; total: number }> }) {
   const max = Math.max(...data.map(item => item.total), 0);
   const total = data.reduce((sum, item) => sum + item.total, 0);
@@ -744,7 +788,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             </tbody>
           </table>
         </div>
-        <IncomeVerticalBarChart title="Entrate per canale di vendita" description="Distribuzione degli incassi sui risultati filtrati." data={incomesBySalesChannel} />
+        <IncomePieBreakdownChart title="Entrate per canale di vendita" data={incomesBySalesChannel} />
       </div>
 
       {activeFilterItems.length ? <div className="recurring-active-filters">
@@ -754,7 +798,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
           </div>
         </div>
-        <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes">↺ Reset</Link>
+        <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes">× Reset</Link>
       </div> : null}
 
       <div className="list-heading recurring-list-heading">
@@ -1161,11 +1205,11 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         {!filteredIncomes.length && <tr><td colSpan={13}>Nessun incasso trovato con i filtri selezionati.</td></tr>}
       </tbody></table></div>
     </div>
-    <div className="card expenses-list-card">
-      <div className="charts-grid">
-        <IncomeBreakdownChart title="Entrate per canale di vendita" description="Distribuzione degli incassi sui risultati filtrati." data={incomesBySalesChannel} />
-        <IncomeBreakdownChart title="Grafico entrate dichiarate" description="Distribuzione degli incassi fiscali e non fiscali sui risultati filtrati." data={incomesByFiscalStatus} />
-      </div>
-    </div>
+    {/*<div className="card expenses-list-card">*/}
+    {/*  <div className="charts-grid">*/}
+    {/*    <IncomePieBreakdownChart title="Entrate per canale di vendita" data={incomesBySalesChannel} />*/}
+    {/*    <IncomeBreakdownChart title="Grafico entrate dichiarate" description="Distribuzione degli incassi fiscali e non fiscali sui risultati filtrati." data={incomesByFiscalStatus} />*/}
+    {/*  </div>*/}
+    {/*</div>*/}
   </div>;
 }

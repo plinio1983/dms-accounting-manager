@@ -13,7 +13,7 @@ const RecurringExpenseSchema = z.object({
   cadence: z.enum(['MONTHLY', 'EVERY_2_MONTHS', 'EVERY_3_MONTHS', 'EVERY_6_MONTHS', 'YEARLY', 'EVERY_2_YEARS']),
   dueDay: z.coerce.number().min(1).max(31).optional().nullable(),
   dueMonth: z.coerce.number().min(1).max(12).optional().nullable(),
-  accrualType: z.enum(['MANUALE', 'AUTOMATICO']).default('MANUALE'),
+  isAutomaticPayment: BooleanFromForm.default(false),
   billingPeriodMode: z.enum(['SAME_MONTH', 'NEXT_MONTH', 'CUSTOM_MONTH']).default('SAME_MONTH'),
   billingMonth: z.coerce.number().min(1).max(12).optional().nullable(),
   merchant: z.string().optional().default(''),
@@ -98,7 +98,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       cadence: data.cadence,
       dueDay: data.dueDay || null,
       dueMonth: isYearly ? (data.dueMonth || null) : null,
-      accrualType: data.accrualType,
+      isAutomaticPayment: data.isAutomaticPayment,
       billingPeriodMode: data.isDeclared ? data.billingPeriodMode : 'SAME_MONTH',
       billingMonth: data.isDeclared && data.billingPeriodMode === 'CUSTOM_MONTH' ? (data.billingMonth || null) : null,
       merchant: supplierRef.businessName,
@@ -109,9 +109,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       vatRate: data.vatRate,
       isDeclared: data.isDeclared,
       hasElectronicInvoice: data.isDeclared ? data.hasElectronicInvoice : false,
-      paymentChannel: data.accrualType === 'AUTOMATICO' ? (paymentMethod?.name ?? data.paymentChannel ?? null) : null,
-      paymentMethodId: data.accrualType === 'AUTOMATICO' ? (paymentMethod?.id ?? null) : null,
-      bankId: data.accrualType === 'AUTOMATICO' ? (data.bankId || null) : null,
+      paymentChannel: data.isAutomaticPayment ? (paymentMethod?.name ?? data.paymentChannel ?? null) : null,
+      paymentMethodId: data.isAutomaticPayment ? (paymentMethod?.id ?? null) : null,
+      bankId: data.isAutomaticPayment ? (data.bankId || null) : null,
       notes: data.notes || null
     }
   });

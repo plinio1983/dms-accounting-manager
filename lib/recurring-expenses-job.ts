@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/prisma';
 
 const LOOKAHEAD_DAYS = 30;
-const AUTO_PAYMENT_LOOKBACK_DAYS = 30;
 
 export type RecurringExpenseJobResult = {
   checked: number;
@@ -128,6 +127,10 @@ function getRecurringPaymentChannel(recurringExpense: any) {
   return getRecurringPaymentMethod(recurringExpense)?.name ?? recurringExpense.paymentChannel ?? null;
 }
 
+function isAutomaticRecurringPayment(recurringExpense: any) {
+  return Boolean(recurringExpense?.isAutomaticPayment);
+}
+
 export async function generateRecurringExpenses(todayInput = new Date()): Promise<RecurringExpenseJobResult> {
   const result: RecurringExpenseJobResult = { checked: 0, created: 0, skipped: 0, errors: [] };
 
@@ -191,7 +194,7 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
             hasElectronicInvoice: recurringExpense.hasElectronicInvoice,
             isDeclared: recurringExpense.isDeclared,
             isRecurring: true,
-            isAutomaticPayment: recurringExpense.accrualType === 'AUTOMATICA',
+            isAutomaticPayment: isAutomaticRecurringPayment(recurringExpense),
             bankId: recurringExpense.bankId || null,
             channel: getRecurringPaymentChannel(recurringExpense),
             notes: recurringExpense.notes || null,
@@ -216,16 +219,17 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
 export async function settleAutomaticRecurringPayments(todayInput = new Date()): Promise<AutomaticRecurringPaymentJobResult> {
   const result: AutomaticRecurringPaymentJobResult = { checked: 0, created: 0, skipped: 0, errors: [] };
   const today = startOfDay(todayInput);
-  const fromDate = addDays(today, -AUTO_PAYMENT_LOOKBACK_DAYS);
 
   const expenses = await prisma.expense.findMany({
     where: {
-      isAutomaticPayment: true,
       paymentStatus: { not: 'COMPLETATO' },
       dueDate: {
-        gte: fromDate,
         lte: today
-      }
+      },
+      OR: [
+        { isAutomaticPayment: true },
+        { recurringExpense: { isAutomaticPayment: true } }
+      ]
     },
     include: {
       payments: true,
@@ -246,6 +250,11 @@ export async function settleAutomaticRecurringPayments(todayInput = new Date()):
         continue;
       }
 
+      if (!isAutomaticRecurringPayment(expense.recurringExpense)) {
+        result.skipped += 1;
+        continue;
+      }
+
       const amount = Number(expense.amount.toString());
       const paid = expense.payments.reduce((sum: number, payment: any) => sum + Number(payment.amount.toString()), 0);
       const residual = Math.max(0, amount - paid);
@@ -257,7 +266,8 @@ export async function settleAutomaticRecurringPayments(todayInput = new Date()):
             paymentStatus: 'COMPLETATO',
             paidAmount: amount,
             isComplete: true,
-            paymentDate: expense.dueDate
+            paymentDate: expense.dueDate,
+            isAutomaticPayment: true
           }
         });
         result.skipped += 1;
@@ -285,6 +295,7 @@ export async function settleAutomaticRecurringPayments(todayInput = new Date()):
             paidAmount: amount,
             paymentStatus: 'COMPLETATO',
             isComplete: true,
+            isAutomaticPayment: true,
             paidByCurrentAccount: true,
             paidBy: 'HERBAL_MARKET'
           }

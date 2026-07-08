@@ -195,7 +195,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
             {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
           </div>
         </div>
-        <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/suppliers">↺ Reset</Link>
+        <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/suppliers">× Reset</Link>
       </div> : null}
 
       <script dangerouslySetInnerHTML={{ __html: `

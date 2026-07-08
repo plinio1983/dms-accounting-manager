@@ -308,9 +308,9 @@ function mapBillingPeriodMode(value: unknown) {
   return 'SAME_MONTH';
 }
 
-function mapAccrualType(value: unknown) {
+function mapAutomaticPayment(value: unknown) {
   const text = textValue(value).toLowerCase();
-  return text.includes('auto') ? 'AUTOMATICA' : 'MANUALE';
+  return text.includes('auto');
 }
 
 export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, options: { clearBeforeImport?: boolean; workspaceId?: number } = {}): Promise<ExpenseImportResult> {
@@ -357,7 +357,7 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
     const dueMonth = parseInteger(rowValue(row, ['Mese scadenza', 'Scadenza mese']));
     const billingPeriodMode = mapBillingPeriodMode(rowValue(row, ['Competenza', 'Periodo fatturazione', 'Modalità periodo fatturazione']));
     const billingMonth = parseInteger(rowValue(row, ['Mese competenza', 'Mese fatturazione']));
-    const accrualType = mapAccrualType(rowValue(row, ['Generazione pagamento', 'Tipo generazione', 'Accrual']));
+    const isAutomaticPayment = mapAutomaticPayment(rowValue(row, ['Generazione pagamento', 'Tipo generazione', 'Accrual']));
     const notes = textValue(rowValue(row, ['Note', 'Annotazioni', 'Memo']));
     const isActive = rowValue(row, ['Attiva', 'Attivo', 'Active']) === null ? true : parseBool(rowValue(row, ['Attiva', 'Attivo', 'Active']));
     const { supplier, created } = await getOrCreateSupplier(supplierName, {
@@ -394,7 +394,7 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
         cadence,
         dueDay,
         dueMonth,
-        accrualType,
+        isAutomaticPayment,
         billingPeriodMode,
         billingMonth: billingPeriodMode === 'CUSTOM_MONTH' ? billingMonth : null,
         merchant: supplier.businessName,

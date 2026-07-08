@@ -28,7 +28,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       cadence: expense.cadence,
       dueDay: expense.dueDay,
       dueMonth: expense.dueMonth,
-      accrualType: expense.accrualType,
+      isAutomaticPayment: expense.isAutomaticPayment,
       billingPeriodMode: expense.billingPeriodMode,
       billingMonth: expense.billingMonth,
       merchant: expense.merchant,

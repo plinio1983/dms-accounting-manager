@@ -4,9 +4,10 @@ import { prisma } from '@/lib/prisma';
 import RecurringExpenseDetailEditModalController from '@/components/RecurringExpenseDetailEditModalController';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import DeleteActionButton from '@/components/DeleteActionButton';
+import ExpensesList from '@/components/ExpensesList';
 import { euro } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
-import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
+import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 import { stripFlashParams } from '@/lib/flash';
 import {
   badgeClass,
@@ -32,11 +33,6 @@ const billingLabels: Record<string, string> = {
   SAME_MONTH: 'Stesso mese',
   NEXT_MONTH: 'Mese successivo',
   CUSTOM_MONTH: 'Mese impostato'
-};
-
-const accrualLabels: Record<string, string> = {
-  MANUALE: 'Manuale',
-  AUTOMATICA: 'Automatica'
 };
 
 const months = ['', 'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
@@ -83,7 +79,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
       bank: true,
       paymentMethod: true,
       generatedExpenses: {
-        include: { category: true, payments: true },
+        include: { category: true, supplier: true, payments: true },
         orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }],
         take: 24
       }
@@ -102,9 +98,12 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
   const generatedTotal = item.generatedExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
   const merchant = item.supplier?.businessName || item.merchant;
   const activeClass = item.isActive ? 'tone-yes' : 'tone-critical';
+  const orderedCategories = orderExpenseCategories(categories);
   const orderedBanks = orderBanks(banks);
   const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
   const paymentChannelName = item.paymentMethod?.name ?? item.paymentChannel;
+  const recurringDetailHref = `/recurring-expenses/${item.id}`;
+  const encodedRecurringDetailHref = encodeURIComponent(recurringDetailHref);
   const flashMessages = {
     savedMessages: {
       created: 'Spesa ricorrente creata.',
@@ -195,8 +194,8 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
             <strong>{billingLabel(item)}</strong>
           </div>
           <div>
-            <span>Competenza</span>
-            <strong>{accrualLabels[item.accrualType] ?? item.accrualType}</strong>
+            <span>Pagamento</span>
+            <strong>{item.isAutomaticPayment ? 'Automatico' : 'Manuale'}</strong>
           </div>
         </section>
         <div className="expense-detail-progress" aria-label={item.isActive ? 'Regola attiva' : 'Regola disattivata'}>
@@ -285,31 +284,19 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
             <span className="badge">{item.generatedExpenses.length} record · {euro(generatedTotal)}</span>
           </div>
 
-          <div className="table-scroll recurring-generated-desktop">
-            <table className="expense-payments-table recurring-generated-table">
-              <thead><tr><th>Periodo</th><th>Data ordine</th><th>Descrizione</th><th>Importo</th><th>Dettaglio</th></tr></thead>
-              <tbody>
-                {item.generatedExpenses.length ? item.generatedExpenses.map(expense => <tr key={expense.id}>
-                  <td>{formatPeriod(expense.month, expense.year)}</td>
-                  <td>{dateLabel(expense.receivedDate)}</td>
-                  <td>{expense.description ?? '-'}</td>
-                  <td><strong>{euro(expense.amount.toString())}</strong></td>
-                  <td><Link className="btn btn-xs btn-default icon-action" href={`/expenses/${expense.id}?returnTo=${encodeURIComponent(`/recurring-expenses/${item.id}`)}`}>👁</Link></td>
-                </tr>) : <tr><td colSpan={5}>Nessuna spesa generata da questa ricorrenza.</td></tr>}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="expense-payments-mobile">
-            {item.generatedExpenses.length ? item.generatedExpenses.map(expense => <Link className="expense-payment-mobile-card recurring-generated-mobile-card" href={`/expenses/${expense.id}?returnTo=${encodeURIComponent(`/recurring-expenses/${item.id}`)}`} key={`generated-mobile-${expense.id}`}>
-              <div className="expense-payment-mobile-top">
-                <strong>{euro(expense.amount.toString())}</strong>
-                <span>{formatPeriod(expense.month, expense.year)}</span>
-              </div>
-              <div className="expense-payment-mobile-row"><span>Data ordine</span><b>{dateLabel(expense.receivedDate)}</b></div>
-              <div className="expense-payment-mobile-row"><span>Descrizione</span><b>{expense.description ?? '-'}</b></div>
-            </Link>) : <p className="muted">Nessuna spesa generata da questa ricorrenza.</p>}
-          </div>
+          <ExpensesList
+            expenses={item.generatedExpenses}
+            returnTo={encodedRecurringDetailHref}
+            showSupplierColumn={false}
+            selectable
+            formId="recurringGeneratedExpenseBulkForm"
+            categories={orderedCategories.map(category => ({ id: category.id, code: category.code, name: category.name, icon: category.icon }))}
+            banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
+            paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+            suppliers={suppliers.map(supplier => ({ id: supplier.id, businessName: supplier.businessName, alias: supplier.alias, email: supplier.email, vatNumber: supplier.vatNumber, iban: supplier.iban, pec: supplier.pec, taxCodeSdi: supplier.taxCodeSdi, internalNotes: supplier.internalNotes }))}
+            mobileLabel="Spese generate mobile"
+            emptyMessage="Nessuna spesa generata da questa ricorrenza."
+          />
         </section>
       </article>
     </div>

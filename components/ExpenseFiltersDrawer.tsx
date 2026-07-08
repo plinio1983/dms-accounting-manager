@@ -282,6 +282,12 @@ export default function ExpenseFiltersDrawer({
             {categories.map(category => <option key={category.id} value={category.name}>{category.code} - {category.name}</option>)}
           </select></label>
 
+          <label>Tipo spesa<select name="expenseType" defaultValue={inputDefault(filters, "expenseType")}>
+            <option value="">Tutte</option>
+            <option value="single">Singola</option>
+            <option value="recurring">Ricorrente</option>
+          </select></label>
+
           <SupplierFilterInput initialValue={inputDefault(filters, "merchant")} />
           <label>Descrizione<input name="product" defaultValue={inputDefault(filters, "product")} /></label>
           <label>Importo<input name="amount" inputMode="decimal" defaultValue={inputDefault(filters, "amount")} /></label>

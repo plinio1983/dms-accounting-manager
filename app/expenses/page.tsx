@@ -650,6 +650,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   const orderDateFromFilter = useOrderDateFilter ? orderDateFromDefault : '';
   const orderDateToFilter = useOrderDateFilter ? orderDateToDefault : '';
   const categoryFilter = inputDefault(filters, 'category');
+  const expenseTypeFilter = inputDefault(filters, 'expenseType');
   const merchantFilter = normalize(inputDefault(filters, 'merchant'));
   const productFilter = normalize(inputDefault(filters, 'product'));
   const amountFilterRaw = inputDefault(filters, 'amount');
@@ -670,6 +671,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       if (orderDateFromDefault) query.set('orderDateFrom', orderDateFromDefault);
       if (orderDateToDefault) query.set('orderDateTo', orderDateToDefault);
     }
+    if (expenseTypeFilter) query.set('expenseType', expenseTypeFilter);
     Object.entries(extraFilters).forEach(([key, value]) => {
       if (value) query.set(key, value);
     });
@@ -711,6 +713,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey)) return false;
     if (!matchesIsoDate(expense.receivedDate, orderDateFromFilter, orderDateToFilter)) return false;
     if (categoryFilter && expense.category?.name !== categoryFilter) return false;
+    if (expenseTypeFilter === 'single' && expense.isRecurring) return false;
+    if (expenseTypeFilter === 'recurring' && !expense.isRecurring) return false;
     if (merchantFilter && !normalize(expenseSupplierName(expense)).includes(merchantFilter)) return false;
     if (productFilter && !normalize(expense.description).includes(productFilter)) return false;
     if (!amountMatchesFilter(amount, amountFilterValue)) return false;
@@ -834,6 +838,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     billingPeriodFromFilter && { label: 'Periodo fatt. da', value: billingPeriodFromFilter },
     billingPeriodToFilter && { label: 'Periodo fatt. a', value: billingPeriodToFilter },
     categoryFilter && { label: 'Categoria', value: categoryFilter },
+    expenseTypeFilter && { label: 'Tipo spesa', value: expenseTypeFilter === 'recurring' ? 'Ricorrente' : 'Singola' },
     inputDefault(filters, 'merchant') && { label: 'Esercente', value: inputDefault(filters, 'merchant') },
     inputDefault(filters, 'product') && { label: 'Descrizione', value: inputDefault(filters, 'product') },
     amountFilterRaw && { label: 'Importo', value: amountFilterRaw },
@@ -887,7 +892,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         <div>
           <div className="flex justify-start align-start">
             <span className="flex-grow recurring-active-filters-title">Filtri attivi</span>
-            <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/expenses">↺ Reset</Link>
+            <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/expenses">× Reset</Link>
           </div>
           <div className="flex justify-end align-start">
             <div className="recurring-active-filter-tags">

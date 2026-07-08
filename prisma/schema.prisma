@@ -203,7 +203,7 @@ model RecurringExpense {
   cadence              String
   dueDay               Int?
   dueMonth             Int?
-  accrualType          String    @default("MANUALE")
+  isAutomaticPayment   Boolean   @default(false)
   billingPeriodMode    String    @default("SAME_MONTH")
   billingMonth         Int?
   merchant             String

@@ -4039,6 +4039,20 @@ html, body {
     text-decoration: none;
 }
 
+.monthly-income-expense-ratio-year-row {
+    display: grid;
+    gap: 8px;
+    padding: 13px 14px;
+    border: 1px solid #dbe4f0;
+    border-radius: 10px;
+    background: #f8faff;
+}
+
+.monthly-income-expense-ratio-year-row .monthly-non-fiscal-chart-month {
+    font-size: 18px;
+    color: var(--accent);
+}
+
 .monthly-non-fiscal-chart-row:last-child {
     border-bottom: 0;
 }
@@ -4131,8 +4145,13 @@ html, body {
 .monthly-non-fiscal-chart-bar {
     display: block;
     height: 100%;
+    min-width: 0;
     border-radius: 999px;
     background: #16a34a;
+}
+
+.monthly-non-fiscal-chart-bar.is-empty {
+    min-width: 8px;
 }
 
 .monthly-non-fiscal-chart-bar.tone-warning {

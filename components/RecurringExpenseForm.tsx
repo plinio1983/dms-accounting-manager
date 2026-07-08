@@ -20,7 +20,7 @@ type InitialRecurringExpense = {
   cadence?: string | null;
   dueDay?: number | null;
   dueMonth?: number | null;
-  accrualType?: string | null;
+  isAutomaticPayment?: boolean | null;
   billingPeriodMode?: string | null;
   billingMonth?: number | null;
   supplierId?: number | null;
@@ -383,7 +383,7 @@ export default function RecurringExpenseForm({
   const [billingPeriodMode, setBillingPeriodMode] = useState(initialExpense?.billingPeriodMode ?? "SAME_MONTH");
   const [isDeclared, setIsDeclared] = useState(initialExpense?.isDeclared ?? true);
   const [hasElectronicInvoice, setHasElectronicInvoice] = useState(initialExpense?.hasElectronicInvoice ?? true);
-  const [isAutomaticAccrual, setIsAutomaticAccrual] = useState(initialExpense?.accrualType === "AUTOMATICO");
+  const [isAutomaticAccrual, setIsAutomaticAccrual] = useState(Boolean(initialExpense?.isAutomaticPayment));
   const isYearly = cadence === "YEARLY" || cadence === "EVERY_2_YEARS";
 
   useEffect(() => {
@@ -505,7 +505,7 @@ export default function RecurringExpenseForm({
         <div className="form-section-grid recurring-form-section-grid">
       <div className="toggle-field switch-toggle-field full recurring-accrual-toggle">
         <span>Tipo pagamento: {isAutomaticAccrual ? "Automatico" : "Manuale"}</span>
-        <input type="hidden" name="accrualType" value={isAutomaticAccrual ? "AUTOMATICO" : "MANUALE"} />
+        <input type="hidden" name="isAutomaticPayment" value={isAutomaticAccrual ? "true" : "false"} />
         <label className="switch">
           <input
             type="checkbox"

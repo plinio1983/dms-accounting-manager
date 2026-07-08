@@ -42,7 +42,7 @@ const recurringMobileSortOptions = [
   { value: 'dueMonth_asc', label: 'Mese scadenza crescente' },
   { value: 'billingPeriodMode_asc', label: 'Periodo fatt. (A-Z)' },
   { value: 'billingMonth_asc', label: 'Mese fatt. crescente' },
-  { value: 'accrualType_asc', label: 'Tipo maturazione (A-Z)' },
+  { value: 'automaticPayment_desc', label: 'Pagamento automatico prima' },
   { value: 'paymentMethod_asc', label: 'Metodo pagamento (A-Z)' },
   { value: 'bank_asc', label: 'Banca (A-Z)' },
   { value: 'declared_desc', label: 'Fiscali prima' },
@@ -136,7 +136,7 @@ export default function RecurringExpensesList({
       case 'dueMonth_asc': return compareNumber(a.dueMonth, b.dueMonth, 'asc');
       case 'billingPeriodMode_asc': return compareText(a.billingPeriodMode, b.billingPeriodMode, 'asc');
       case 'billingMonth_asc': return compareNumber(a.billingMonth, b.billingMonth, 'asc');
-      case 'accrualType_asc': return compareText(a.accrualType, b.accrualType, 'asc');
+      case 'automaticPayment_desc': return compareNumber(Number(a.isAutomaticPayment), Number(b.isAutomaticPayment), 'desc');
       case 'paymentMethod_asc': return compareText(paymentA, paymentB, 'asc');
       case 'bank_asc': return compareText(a.bank?.name, b.bank?.name, 'asc');
       case 'declared_desc': return compareNumber(Number(a.isDeclared), Number(b.isDeclared), 'desc');

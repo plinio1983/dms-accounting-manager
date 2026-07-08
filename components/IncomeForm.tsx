@@ -216,7 +216,7 @@ export default function IncomeForm({
           </label>
 
           <label>
-            Canale di accredito
+            Canale accr.
             <select name="creditBankId" value={cashPaymentSelected && fallbackBank ? String(fallbackBank.id) : creditBankId} onChange={(event) => setCreditBankId(event.currentTarget.value)} disabled={cashPaymentSelected} required>
               {banks.map(bank => (
                 <option key={bank.id} value={bank.id}>{bank.name}</option>

@@ -61,7 +61,7 @@ export type RecurringExpenseMinAggregateOutputType = {
   cadence: string | null
   dueDay: number | null
   dueMonth: number | null
-  accrualType: string | null
+  isAutomaticPayment: boolean | null
   billingPeriodMode: string | null
   billingMonth: number | null
   merchant: string | null
@@ -88,7 +88,7 @@ export type RecurringExpenseMaxAggregateOutputType = {
   cadence: string | null
   dueDay: number | null
   dueMonth: number | null
-  accrualType: string | null
+  isAutomaticPayment: boolean | null
   billingPeriodMode: string | null
   billingMonth: number | null
   merchant: string | null
@@ -115,7 +115,7 @@ export type RecurringExpenseCountAggregateOutputType = {
   cadence: number
   dueDay: number
   dueMonth: number
-  accrualType: number
+  isAutomaticPayment: number
   billingPeriodMode: number
   billingMonth: number
   merchant: number
@@ -172,7 +172,7 @@ export type RecurringExpenseMinAggregateInputType = {
   cadence?: true
   dueDay?: true
   dueMonth?: true
-  accrualType?: true
+  isAutomaticPayment?: true
   billingPeriodMode?: true
   billingMonth?: true
   merchant?: true
@@ -199,7 +199,7 @@ export type RecurringExpenseMaxAggregateInputType = {
   cadence?: true
   dueDay?: true
   dueMonth?: true
-  accrualType?: true
+  isAutomaticPayment?: true
   billingPeriodMode?: true
   billingMonth?: true
   merchant?: true
@@ -226,7 +226,7 @@ export type RecurringExpenseCountAggregateInputType = {
   cadence?: true
   dueDay?: true
   dueMonth?: true
-  accrualType?: true
+  isAutomaticPayment?: true
   billingPeriodMode?: true
   billingMonth?: true
   merchant?: true
@@ -340,7 +340,7 @@ export type RecurringExpenseGroupByOutputType = {
   cadence: string
   dueDay: number | null
   dueMonth: number | null
-  accrualType: string
+  isAutomaticPayment: boolean
   billingPeriodMode: string
   billingMonth: number | null
   merchant: string
@@ -390,7 +390,7 @@ export type RecurringExpenseWhereInput = {
   cadence?: Prisma.StringFilter<"RecurringExpense"> | string
   dueDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   dueMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
-  accrualType?: Prisma.StringFilter<"RecurringExpense"> | string
+  isAutomaticPayment?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   billingPeriodMode?: Prisma.StringFilter<"RecurringExpense"> | string
   billingMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   merchant?: Prisma.StringFilter<"RecurringExpense"> | string
@@ -423,7 +423,7 @@ export type RecurringExpenseOrderByWithRelationInput = {
   cadence?: Prisma.SortOrder
   dueDay?: Prisma.SortOrderInput | Prisma.SortOrder
   dueMonth?: Prisma.SortOrderInput | Prisma.SortOrder
-  accrualType?: Prisma.SortOrder
+  isAutomaticPayment?: Prisma.SortOrder
   billingPeriodMode?: Prisma.SortOrder
   billingMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   merchant?: Prisma.SortOrder
@@ -459,7 +459,7 @@ export type RecurringExpenseWhereUniqueInput = Prisma.AtLeast<{
   cadence?: Prisma.StringFilter<"RecurringExpense"> | string
   dueDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   dueMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
-  accrualType?: Prisma.StringFilter<"RecurringExpense"> | string
+  isAutomaticPayment?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   billingPeriodMode?: Prisma.StringFilter<"RecurringExpense"> | string
   billingMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   merchant?: Prisma.StringFilter<"RecurringExpense"> | string
@@ -492,7 +492,7 @@ export type RecurringExpenseOrderByWithAggregationInput = {
   cadence?: Prisma.SortOrder
   dueDay?: Prisma.SortOrderInput | Prisma.SortOrder
   dueMonth?: Prisma.SortOrderInput | Prisma.SortOrder
-  accrualType?: Prisma.SortOrder
+  isAutomaticPayment?: Prisma.SortOrder
   billingPeriodMode?: Prisma.SortOrder
   billingMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   merchant?: Prisma.SortOrder
@@ -527,7 +527,7 @@ export type RecurringExpenseScalarWhereWithAggregatesInput = {
   cadence?: Prisma.StringWithAggregatesFilter<"RecurringExpense"> | string
   dueDay?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
   dueMonth?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
-  accrualType?: Prisma.StringWithAggregatesFilter<"RecurringExpense"> | string
+  isAutomaticPayment?: Prisma.BoolWithAggregatesFilter<"RecurringExpense"> | boolean
   billingPeriodMode?: Prisma.StringWithAggregatesFilter<"RecurringExpense"> | string
   billingMonth?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
   merchant?: Prisma.StringWithAggregatesFilter<"RecurringExpense"> | string
@@ -552,7 +552,7 @@ export type RecurringExpenseCreateInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -581,7 +581,7 @@ export type RecurringExpenseUncheckedCreateInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -607,7 +607,7 @@ export type RecurringExpenseUpdateInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -636,7 +636,7 @@ export type RecurringExpenseUncheckedUpdateInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -664,7 +664,7 @@ export type RecurringExpenseCreateManyInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -689,7 +689,7 @@ export type RecurringExpenseUpdateManyMutationInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -712,7 +712,7 @@ export type RecurringExpenseUncheckedUpdateManyInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -749,7 +749,7 @@ export type RecurringExpenseCountOrderByAggregateInput = {
   cadence?: Prisma.SortOrder
   dueDay?: Prisma.SortOrder
   dueMonth?: Prisma.SortOrder
-  accrualType?: Prisma.SortOrder
+  isAutomaticPayment?: Prisma.SortOrder
   billingPeriodMode?: Prisma.SortOrder
   billingMonth?: Prisma.SortOrder
   merchant?: Prisma.SortOrder
@@ -790,7 +790,7 @@ export type RecurringExpenseMaxOrderByAggregateInput = {
   cadence?: Prisma.SortOrder
   dueDay?: Prisma.SortOrder
   dueMonth?: Prisma.SortOrder
-  accrualType?: Prisma.SortOrder
+  isAutomaticPayment?: Prisma.SortOrder
   billingPeriodMode?: Prisma.SortOrder
   billingMonth?: Prisma.SortOrder
   merchant?: Prisma.SortOrder
@@ -817,7 +817,7 @@ export type RecurringExpenseMinOrderByAggregateInput = {
   cadence?: Prisma.SortOrder
   dueDay?: Prisma.SortOrder
   dueMonth?: Prisma.SortOrder
-  accrualType?: Prisma.SortOrder
+  isAutomaticPayment?: Prisma.SortOrder
   billingPeriodMode?: Prisma.SortOrder
   billingMonth?: Prisma.SortOrder
   merchant?: Prisma.SortOrder
@@ -1095,7 +1095,7 @@ export type RecurringExpenseCreateWithoutWorkspaceInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1122,7 +1122,7 @@ export type RecurringExpenseUncheckedCreateWithoutWorkspaceInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1179,7 +1179,7 @@ export type RecurringExpenseScalarWhereInput = {
   cadence?: Prisma.StringFilter<"RecurringExpense"> | string
   dueDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   dueMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
-  accrualType?: Prisma.StringFilter<"RecurringExpense"> | string
+  isAutomaticPayment?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   billingPeriodMode?: Prisma.StringFilter<"RecurringExpense"> | string
   billingMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   merchant?: Prisma.StringFilter<"RecurringExpense"> | string
@@ -1204,7 +1204,7 @@ export type RecurringExpenseCreateWithoutCategoryInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1232,7 +1232,7 @@ export type RecurringExpenseUncheckedCreateWithoutCategoryInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1283,7 +1283,7 @@ export type RecurringExpenseCreateWithoutBankInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1311,7 +1311,7 @@ export type RecurringExpenseUncheckedCreateWithoutBankInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1362,7 +1362,7 @@ export type RecurringExpenseCreateWithoutPaymentMethodInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1390,7 +1390,7 @@ export type RecurringExpenseUncheckedCreateWithoutPaymentMethodInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1441,7 +1441,7 @@ export type RecurringExpenseCreateWithoutSupplierInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1469,7 +1469,7 @@ export type RecurringExpenseUncheckedCreateWithoutSupplierInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1520,7 +1520,7 @@ export type RecurringExpenseCreateWithoutGeneratedExpensesInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1548,7 +1548,7 @@ export type RecurringExpenseUncheckedCreateWithoutGeneratedExpensesInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1589,7 +1589,7 @@ export type RecurringExpenseUpdateWithoutGeneratedExpensesInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1617,7 +1617,7 @@ export type RecurringExpenseUncheckedUpdateWithoutGeneratedExpensesInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1643,7 +1643,7 @@ export type RecurringExpenseCreateManyWorkspaceInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1668,7 +1668,7 @@ export type RecurringExpenseUpdateWithoutWorkspaceInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1695,7 +1695,7 @@ export type RecurringExpenseUncheckedUpdateWithoutWorkspaceInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1722,7 +1722,7 @@ export type RecurringExpenseUncheckedUpdateManyWithoutWorkspaceInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1749,7 +1749,7 @@ export type RecurringExpenseCreateManyCategoryInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1773,7 +1773,7 @@ export type RecurringExpenseUpdateWithoutCategoryInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1801,7 +1801,7 @@ export type RecurringExpenseUncheckedUpdateWithoutCategoryInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1828,7 +1828,7 @@ export type RecurringExpenseUncheckedUpdateManyWithoutCategoryInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1854,7 +1854,7 @@ export type RecurringExpenseCreateManyBankInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1878,7 +1878,7 @@ export type RecurringExpenseUpdateWithoutBankInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1906,7 +1906,7 @@ export type RecurringExpenseUncheckedUpdateWithoutBankInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1933,7 +1933,7 @@ export type RecurringExpenseUncheckedUpdateManyWithoutBankInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1959,7 +1959,7 @@ export type RecurringExpenseCreateManyPaymentMethodInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -1983,7 +1983,7 @@ export type RecurringExpenseUpdateWithoutPaymentMethodInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2011,7 +2011,7 @@ export type RecurringExpenseUncheckedUpdateWithoutPaymentMethodInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2038,7 +2038,7 @@ export type RecurringExpenseUncheckedUpdateManyWithoutPaymentMethodInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2064,7 +2064,7 @@ export type RecurringExpenseCreateManySupplierInput = {
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
-  accrualType?: string
+  isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
@@ -2088,7 +2088,7 @@ export type RecurringExpenseUpdateWithoutSupplierInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2116,7 +2116,7 @@ export type RecurringExpenseUncheckedUpdateWithoutSupplierInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2143,7 +2143,7 @@ export type RecurringExpenseUncheckedUpdateManyWithoutSupplierInput = {
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2200,7 +2200,7 @@ export type RecurringExpenseSelect<ExtArgs extends runtime.Types.Extensions.Inte
   cadence?: boolean
   dueDay?: boolean
   dueMonth?: boolean
-  accrualType?: boolean
+  isAutomaticPayment?: boolean
   billingPeriodMode?: boolean
   billingMonth?: boolean
   merchant?: boolean
@@ -2234,7 +2234,7 @@ export type RecurringExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   cadence?: boolean
   dueDay?: boolean
   dueMonth?: boolean
-  accrualType?: boolean
+  isAutomaticPayment?: boolean
   billingPeriodMode?: boolean
   billingMonth?: boolean
   merchant?: boolean
@@ -2266,7 +2266,7 @@ export type RecurringExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   cadence?: boolean
   dueDay?: boolean
   dueMonth?: boolean
-  accrualType?: boolean
+  isAutomaticPayment?: boolean
   billingPeriodMode?: boolean
   billingMonth?: boolean
   merchant?: boolean
@@ -2298,7 +2298,7 @@ export type RecurringExpenseSelectScalar = {
   cadence?: boolean
   dueDay?: boolean
   dueMonth?: boolean
-  accrualType?: boolean
+  isAutomaticPayment?: boolean
   billingPeriodMode?: boolean
   billingMonth?: boolean
   merchant?: boolean
@@ -2318,7 +2318,7 @@ export type RecurringExpenseSelectScalar = {
   updatedAt?: boolean
 }
 
-export type RecurringExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "startDate" | "cadence" | "dueDay" | "dueMonth" | "accrualType" | "billingPeriodMode" | "billingMonth" | "merchant" | "supplierId" | "categoryId" | "description" | "amount" | "vatRate" | "isDeclared" | "hasElectronicInvoice" | "paymentChannel" | "paymentMethodId" | "bankId" | "notes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringExpense"]>
+export type RecurringExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "startDate" | "cadence" | "dueDay" | "dueMonth" | "isAutomaticPayment" | "billingPeriodMode" | "billingMonth" | "merchant" | "supplierId" | "categoryId" | "description" | "amount" | "vatRate" | "isDeclared" | "hasElectronicInvoice" | "paymentChannel" | "paymentMethodId" | "bankId" | "notes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringExpense"]>
 export type RecurringExpenseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.RecurringExpense$workspaceArgs<ExtArgs>
   supplier?: boolean | Prisma.RecurringExpense$supplierArgs<ExtArgs>
@@ -2360,7 +2360,7 @@ export type $RecurringExpensePayload<ExtArgs extends runtime.Types.Extensions.In
     cadence: string
     dueDay: number | null
     dueMonth: number | null
-    accrualType: string
+    isAutomaticPayment: boolean
     billingPeriodMode: string
     billingMonth: number | null
     merchant: string
@@ -2813,7 +2813,7 @@ export interface RecurringExpenseFieldRefs {
   readonly cadence: Prisma.FieldRef<"RecurringExpense", 'String'>
   readonly dueDay: Prisma.FieldRef<"RecurringExpense", 'Int'>
   readonly dueMonth: Prisma.FieldRef<"RecurringExpense", 'Int'>
-  readonly accrualType: Prisma.FieldRef<"RecurringExpense", 'String'>
+  readonly isAutomaticPayment: Prisma.FieldRef<"RecurringExpense", 'Boolean'>
   readonly billingPeriodMode: Prisma.FieldRef<"RecurringExpense", 'String'>
   readonly billingMonth: Prisma.FieldRef<"RecurringExpense", 'Int'>
   readonly merchant: Prisma.FieldRef<"RecurringExpense", 'String'>

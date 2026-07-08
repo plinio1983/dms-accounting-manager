@@ -14,6 +14,7 @@
     "db:push": "prisma db push && prisma generate",
     "db:reset-local": "prisma migrate reset --force && prisma generate",
     "db:sync": "prisma db push && prisma generate",
+    "db:migrate:recurring-automatic-payment": "tsx scripts/migrate-recurring-automatic-payment.ts",
     "import:expenses": "tsx scripts/import-expenses.ts"
   },
   "dependencies": {

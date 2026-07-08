@@ -60,6 +60,10 @@ function periodLink(path: '/expenses' | '/incomes', periods: Array<{ year: numbe
   return `${path}${qs ? `?${qs}` : ''}`;
 }
 
+function monthReportLink(year: number, month: number) {
+  return `/months/${year}/${month}`;
+}
+
 function dateRangeForMonth(year: number, month: number) {
   const from = new Date(year, month - 1, 1);
   const to = new Date(year, month, 0);
@@ -439,30 +443,58 @@ function MonthlyIncomeExpenseRatioChart({
 }) {
   const totalIncome = months.reduce((sum, month) => sum + month.totals.incassoTotale, 0);
   const totalExpenses = months.reduce((sum, month) => sum + month.totals.speseTotali, 0);
-  const yearPercentage = totalIncome ? (totalExpenses / totalIncome) * 100 : 0;
+  const grossMargin = totalIncome - totalExpenses;
+  const yearPercentage = totalIncome ? (grossMargin / totalIncome) * 100 : 0;
+  const marginBarTone = (margin: number, percentage: number) => {
+    if (margin < 0) return 'tone-critical';
+    if (margin === 0) return 'money-zero';
+    if (percentage < 25) return 'tone-warning';
+    return '';
+  };
+  const marginBarClass = (margin: number, percentage: number) => [
+    'monthly-non-fiscal-chart-bar',
+    'monthly-income-expense-ratio-chart-bar',
+    marginBarTone(margin, percentage),
+    percentage <= 0 ? 'is-empty' : ''
+  ].filter(Boolean).join(' ');
+  const marginBarWidth = (percentage: number) => Math.min(Math.max(percentage, 0), 100);
 
   return <section className="card monthly-income-expense-ratio-chart-card" aria-labelledby="monthly-income-expense-ratio-chart-title">
     <div className="card-heading-row">
       <div>
-        <h2 id="monthly-income-expense-ratio-chart-title">Rapporto entrate e uscite per mese</h2>
-        <p className="muted">Percentuale delle uscite totali rispetto alle entrate totali mensili da inizio anno {year}.</p>
+        <h2 id="monthly-income-expense-ratio-chart-title">Margine lordo per mese</h2>
+        <p className="muted">Percentuale del margine lordo rispetto alle entrate totali mensili da inizio anno {year}.</p>
       </div>
       <div className="text-right chart-total">
-        <span className="badge">Anno {yearPercentage.toFixed(1)}%</span>
+        <span className="badge">Anno {year}</span>
       </div>
     </div>
     {months.length ? <div className="monthly-non-fiscal-chart-list">
+      <div className="monthly-income-expense-ratio-year-row">
+        <div className="monthly-non-fiscal-chart-month-row">
+          <span className="monthly-non-fiscal-chart-month">{year}</span>
+          <small>Entrate {chartEuro(totalIncome)} · Uscite {chartEuro(totalExpenses)}</small>
+        </div>
+        <div className="monthly-income-expense-ratio-chart-values">
+          <span>Margine lordo annuale</span>
+          <small className={moneyTone(grossMargin)}>{chartEuro(grossMargin)}</small>
+          <strong>{yearPercentage.toFixed(1)}%</strong>
+        </div>
+        <span className="monthly-non-fiscal-chart-bar-wrap" aria-label={`${year} margine lordo su entrate: ${yearPercentage.toFixed(1)}%`}>
+          <span className={marginBarClass(grossMargin, yearPercentage)} style={{ width: `${marginBarWidth(yearPercentage)}%` }} />
+        </span>
+      </div>
       {months.map(month => {
         const incomeTotal = month.totals.incassoTotale;
         const expenseTotal = month.totals.speseTotali;
-        const percentage = incomeTotal ? (expenseTotal / incomeTotal) * 100 : 0;
-        const width = Math.min(percentage, 100);
+        const monthGrossMargin = incomeTotal - expenseTotal;
+        const percentage = incomeTotal ? (monthGrossMargin / incomeTotal) * 100 : 0;
+        const width = marginBarWidth(percentage);
         const monthLabel = capitalizedMonthName(month.month);
-        const tone = percentage > 100 ? 'tone-critical' : percentage > 75 ? 'tone-warning' : '';
 
         return <Link
           className="monthly-income-expense-ratio-chart-row"
-          href={periodLink('/expenses', [{ year: month.year, month: month.month }])}
+          href={monthReportLink(month.year, month.month)}
           key={`${month.year}-${month.month}`}
         >
           <div className="monthly-non-fiscal-chart-month-row">
@@ -470,12 +502,12 @@ function MonthlyIncomeExpenseRatioChart({
             <small>Entrate {chartEuro(incomeTotal)}</small>
           </div>
           <div className="monthly-income-expense-ratio-chart-values">
-            <span>Uscite totali</span>
-            <small className={moneyTone(expenseTotal)}>{chartEuro(expenseTotal)}</small>
+            <span>Margine lordo</span>
+            <small className={moneyTone(monthGrossMargin)}>{chartEuro(monthGrossMargin)}</small>
             <strong>{percentage.toFixed(1)}%</strong>
           </div>
-          <span className="monthly-non-fiscal-chart-bar-wrap" aria-label={`${monthLabel} rapporto uscite su entrate: ${percentage.toFixed(1)}%`}>
-            <span className={`monthly-non-fiscal-chart-bar monthly-income-expense-ratio-chart-bar ${tone}`} style={{ width: `${width}%` }} />
+          <span className="monthly-non-fiscal-chart-bar-wrap" aria-label={`${monthLabel} margine lordo su entrate: ${percentage.toFixed(1)}%`}>
+            <span className={marginBarClass(monthGrossMargin, percentage)} style={{ width: `${width}%` }} />
           </span>
         </Link>;
       })}
