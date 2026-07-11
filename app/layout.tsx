@@ -1,7 +1,9 @@
 import './globals.scss';
 import type { Metadata, Viewport } from 'next';
+import { Suspense } from 'react';
 import ShellChrome from '@/components/ShellChrome';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
+import NavigationProgress from '@/components/NavigationProgress';
 
 export const metadata: Metadata = {
   title: 'Tabularium',
@@ -22,6 +24,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return <html lang="it"><body><main className="shell">
+    <Suspense fallback={null}><NavigationProgress /></Suspense>
     <ShellChrome slot="header" />
     <ClickableDesktopRows />
 
