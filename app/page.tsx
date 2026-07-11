@@ -289,6 +289,7 @@ function DashboardPieChart({
         <div>
           <span>{centerLabel}</span>
           <strong className="main-label">{centerValue ?? chartEuro(total)}</strong>
+          <span>{chartEuro(total.toFixed(2))}</span>
         </div>
       </div>
       <div className="expense-impact-pie-legend">
@@ -473,12 +474,16 @@ function MonthlyIncomeExpenseRatioChart({
       <div className="monthly-income-expense-ratio-year-row">
         <div className="monthly-non-fiscal-chart-month-row">
           <span className="monthly-non-fiscal-chart-month">{year}</span>
-          <small>Entrate {chartEuro(totalIncome)} · Uscite {chartEuro(totalExpenses)}</small>
+          <div>
+            <small>Entrate &nbsp;</small> <strong>{chartEuro(totalIncome)}</strong>
+            &nbsp;·&nbsp;
+            <small>Uscite &nbsp;</small> <strong>{chartEuro(totalExpenses)}</strong>
+          </div>
         </div>
         <div className="monthly-income-expense-ratio-chart-values">
           <span>Margine lordo annuale</span>
           <small className={moneyTone(grossMargin)}>{chartEuro(grossMargin)}</small>
-          <strong>{yearPercentage.toFixed(1)}%</strong>
+          <strong className="text-accent">{yearPercentage.toFixed(1)}%</strong>
         </div>
         <span className="monthly-non-fiscal-chart-bar-wrap" aria-label={`${year} margine lordo su entrate: ${yearPercentage.toFixed(1)}%`}>
           <span className={marginBarClass(grossMargin, yearPercentage)} style={{ width: `${marginBarWidth(yearPercentage)}%` }} />
@@ -495,8 +500,7 @@ function MonthlyIncomeExpenseRatioChart({
         return <Link
           className="monthly-income-expense-ratio-chart-row"
           href={monthReportLink(month.year, month.month)}
-          key={`${month.year}-${month.month}`}
-        >
+          key={`${month.year}-${month.month}`}>
           <div className="monthly-non-fiscal-chart-month-row">
             <span className="monthly-non-fiscal-chart-month">{monthLabel}</span>
             <small>Entrate {chartEuro(incomeTotal)}</small>
@@ -743,8 +747,8 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
 
     <div className="dashboard-report-charts">
       <div className="charts-grid">
-        <ExpenseCategoryIncomeImpactChart data={report.expensesByCategory} incomeTotal={report.totals.incassoTotale} />
         <IncomeBreakdownChart title="Entrate per canale e categoria" description={`Distribuzione degli incassi per canale vendita e categoria nell’anno fiscale ${report.annualYear}.`} data={report.incomesBySalesChannel} />
+        <ExpenseCategoryIncomeImpactChart data={report.expensesByCategory} incomeTotal={report.totals.incassoTotale} />
         <MonthlyNonFiscalRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear} />
         <MonthlyIncomeExpenseRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear} />
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { categoryIcon } from "@/lib/expense-ui";
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
@@ -50,6 +50,8 @@ type Props = {
 };
 
 const today = new Date().toISOString().slice(0, 10);
+const cashChannel = "Cash";
+const cashBankName = "Altra Banca";
 const monthOptions = [
   [1, "Gennaio"],
   [2, "Febbraio"],
@@ -74,6 +76,10 @@ function toDateInput(value?: string | Date | null) {
 function normalizeMoney(value: unknown) {
   if (value === null || value === undefined) return "";
   return String(value).replace(",", ".");
+}
+
+function isCashChannel(channel: string) {
+  return channel.trim().toLowerCase() === cashChannel.toLowerCase();
 }
 
 function MoneyInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
@@ -379,11 +385,22 @@ export default function RecurringExpenseForm({
   const initialPaymentMethodId = initialExpense?.paymentMethodId && paymentMethods.some(method => method.id === initialExpense.paymentMethodId)
     ? String(initialExpense.paymentMethodId)
     : paymentMethods.find(method => method.name === initialExpense?.paymentChannel)?.id?.toString() ?? "";
+  const cashBankIdValue = banks.find(bank => bank.name.trim().toLowerCase() === cashBankName.toLowerCase())?.id.toString()
+    ?? banks.find(bank => bank.isFallback)?.id.toString()
+    ?? "";
+  const initialSelectedPaymentMethodName = paymentMethods.find(method => String(method.id) === initialPaymentMethodId)?.name ?? "";
+  const initialBankId = isCashChannel(initialSelectedPaymentMethodName) && cashBankIdValue
+    ? cashBankIdValue
+    : initialExpense?.bankId?.toString() ?? "";
   const [cadence, setCadence] = useState(initialExpense?.cadence ?? "MONTHLY");
   const [billingPeriodMode, setBillingPeriodMode] = useState(initialExpense?.billingPeriodMode ?? "SAME_MONTH");
   const [isDeclared, setIsDeclared] = useState(initialExpense?.isDeclared ?? true);
   const [hasElectronicInvoice, setHasElectronicInvoice] = useState(initialExpense?.hasElectronicInvoice ?? true);
   const [isAutomaticAccrual, setIsAutomaticAccrual] = useState(Boolean(initialExpense?.isAutomaticPayment));
+  const [paymentMethodId, setPaymentMethodId] = useState(initialPaymentMethodId);
+  const [bankId, setBankId] = useState(initialBankId);
+  const selectedPaymentMethodName = paymentMethods.find(method => String(method.id) === paymentMethodId)?.name ?? "";
+  const cashBankLocked = isAutomaticAccrual && isCashChannel(selectedPaymentMethodName) && Boolean(cashBankIdValue);
   const isYearly = cadence === "YEARLY" || cadence === "EVERY_2_YEARS";
 
   useEffect(() => {
@@ -517,8 +534,28 @@ export default function RecurringExpenseForm({
         </label>
       </div>
 
-      <label>Canale di pagamento<select name="paymentMethodId" defaultValue={initialPaymentMethodId} disabled={!isAutomaticAccrual} required={isAutomaticAccrual}><option value="">Seleziona canale</option>{paymentMethods.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
-      <label>Banca<select name="bankId" defaultValue={initialExpense?.bankId ?? ""} disabled={!isAutomaticAccrual} required={isAutomaticAccrual}><option value="">Seleziona banca</option>{banks.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}</select></label>
+      <label>Canale di pagamento<select
+        name="paymentMethodId"
+        value={paymentMethodId}
+        disabled={!isAutomaticAccrual}
+        required={isAutomaticAccrual}
+        onChange={(event) => {
+          const nextPaymentMethodId = event.currentTarget.value;
+          const nextPaymentMethodName = paymentMethods.find(method => String(method.id) === nextPaymentMethodId)?.name ?? "";
+          setPaymentMethodId(nextPaymentMethodId);
+          if (isCashChannel(nextPaymentMethodName) && cashBankIdValue) setBankId(cashBankIdValue);
+        }}
+      ><option value="">Seleziona canale</option>{paymentMethods.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+      <label>Banca
+        {cashBankLocked ? <input type="hidden" name="bankId" value={cashBankIdValue} /> : null}
+        <select
+          name={cashBankLocked ? undefined : "bankId"}
+          value={cashBankLocked ? cashBankIdValue : bankId}
+          disabled={!isAutomaticAccrual || cashBankLocked}
+          required={isAutomaticAccrual && !cashBankLocked}
+          onChange={(event) => setBankId(event.currentTarget.value)}
+        ><option value="">Seleziona banca</option>{banks.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}</select>
+      </label>
         </div>
       </details>
 

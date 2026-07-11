@@ -65,6 +65,7 @@ type Props = {
   banks?: Option[];
   paymentMethods?: Option[];
   suppliers?: SupplierOption[];
+  linkRecurringExpensesToDefinition?: boolean;
 };
 
 function dateLabel(value?: Date | null) {
@@ -143,8 +144,8 @@ function isExpensePastDueForBadge(expense: ExpenseListItem) {
   return due < today;
 }
 
-function expenseDetailHref(expense: ExpenseListItem, returnTo: string) {
-  return expense.recurringExpenseId
+function expenseDetailHref(expense: ExpenseListItem, returnTo: string, linkRecurringExpensesToDefinition: boolean) {
+  return linkRecurringExpensesToDefinition && expense.recurringExpenseId
     ? `/recurring-expenses/${expense.recurringExpenseId}?returnTo=${returnTo}`
     : `/expenses/${expense.id}?returnTo=${returnTo}`;
 }
@@ -165,7 +166,8 @@ export default function ExpensesList({
   categories = [],
   banks = [],
   paymentMethods = [],
-  suppliers = []
+  suppliers = [],
+  linkRecurringExpensesToDefinition = false
 }: Props) {
   const mobileItems = mobileExpenses ?? expenses;
   const hasBulkControls = selectable && categories.length > 0;
@@ -223,6 +225,7 @@ export default function ExpensesList({
         paymentMethods={paymentMethods}
         suppliers={suppliers}
         listHref={decodeURIComponent(returnTo)}
+        formId={formId}
       />
     </> : null}
 
@@ -246,7 +249,7 @@ export default function ExpensesList({
           recordAddClass = 'expense-mobile-item-invoice-waiting';
         }
         const recordClass = `expense-mobile-item ${recordAddClass}`;
-        const detailHref = expenseDetailHref(expense, returnTo);
+        const detailHref = expenseDetailHref(expense, returnTo, linkRecurringExpensesToDefinition);
 
         return <div className={recordClass} key={`mobile-${expense.id}`}>
           {selectable ? <div className="expense-mobile-select">
@@ -319,7 +322,7 @@ export default function ExpensesList({
             const paymentWaiting = expense.paymentStatus !== 'COMPLETATO' || residual > 0;
             const invoiceWaiting = expense.invoiceStatus === 'IN_ATTESA';
             const vatStyle = vatStyles[vatKey(expense.vatRate)] ?? vatStyles['22'];
-            const detailHref = expenseDetailHref(expense, returnTo);
+            const detailHref = expenseDetailHref(expense, returnTo, linkRecurringExpensesToDefinition);
 
             return <tr
               key={expense.id}

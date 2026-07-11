@@ -52,11 +52,14 @@ type Props = {
   paymentMethods: Option[];
   suppliers: SupplierOption[];
   listHref: string;
+  formId?: string;
 };
 
-function selectedExpenseIdFromBulk() {
+function selectedExpenseIdFromBulk(formId: string) {
   const selected = Array.from(
-    document.querySelectorAll<HTMLInputElement>('input[form="expenseBulkForm"][name="ids"]:checked')
+    document.querySelectorAll<HTMLInputElement>(
+      `input[form="${formId}"][name="ids"]:checked, form#${formId} input[name="ids"]:checked`
+    )
   );
 
   if (selected.length !== 1) return null;
@@ -65,7 +68,7 @@ function selectedExpenseIdFromBulk() {
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
-export default function ExpenseEditModalController({ categories, banks, paymentMethods, suppliers, listHref }: Props) {
+export default function ExpenseEditModalController({ categories, banks, paymentMethods, suppliers, listHref, formId = "expenseBulkForm" }: Props) {
   const [expense, setExpense] = useState<EditExpense | null>(null);
   const [mode, setMode] = useState<"edit" | "copy">("edit");
   const [loadingId, setLoadingId] = useState<number | null>(null);
@@ -114,7 +117,7 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
       const nextMode = copyTrigger ? "copy" : "edit";
       let id = Number((copyTrigger ? copyTrigger.dataset.expenseCopyId : editTrigger?.dataset.expenseEditId) || 0);
       if (!Number.isInteger(id) || id <= 0) {
-        id = selectedExpenseIdFromBulk() ?? 0;
+        id = selectedExpenseIdFromBulk(formId) ?? 0;
       }
       if (!Number.isInteger(id) || id <= 0) return;
 
@@ -126,7 +129,7 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
 
     document.addEventListener("click", handler, true);
     return () => document.removeEventListener("click", handler, true);
-  }, []);
+  }, [formId]);
 
   return <>
     {loadingId ? <div className="inline-modal-loading">Caricamento spesa #{loadingId}…</div> : null}

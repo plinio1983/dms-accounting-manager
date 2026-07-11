@@ -141,7 +141,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
             <Link className="btn btn-sm btn-default" href={returnTo}>↩ Indietro</Link>
           </div>
           <div className="right-side">
-            <Link className="btn btn-sm btn-primary" href="#" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</Link>
+            <button className="btn btn-sm btn-default" type="button" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</button>
             <DeleteActionButton
               action={`/api/recurring-expenses/${item.id}?returnTo=${encodeURIComponent(returnTo)}`}
               confirmMessage="Confermi la rimozione della spesa ricorrente? L’operazione non può essere annullata."
@@ -284,19 +284,21 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
             <span className="badge">{item.generatedExpenses.length} record · {euro(generatedTotal)}</span>
           </div>
 
-          <ExpensesList
-            expenses={item.generatedExpenses}
-            returnTo={encodedRecurringDetailHref}
-            showSupplierColumn={false}
-            selectable
-            formId="recurringGeneratedExpenseBulkForm"
-            categories={orderedCategories.map(category => ({ id: category.id, code: category.code, name: category.name, icon: category.icon }))}
-            banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
-            paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
-            suppliers={suppliers.map(supplier => ({ id: supplier.id, businessName: supplier.businessName, alias: supplier.alias, email: supplier.email, vatNumber: supplier.vatNumber, iban: supplier.iban, pec: supplier.pec, taxCodeSdi: supplier.taxCodeSdi, internalNotes: supplier.internalNotes }))}
-            mobileLabel="Spese generate mobile"
-            emptyMessage="Nessuna spesa generata da questa ricorrenza."
-          />
+          <div className="recurring-generated-expenses-list">
+            <ExpensesList
+              expenses={item.generatedExpenses}
+              returnTo={encodedRecurringDetailHref}
+              showSupplierColumn={false}
+              selectable
+              formId="recurringGeneratedExpenseBulkForm"
+              categories={orderedCategories.map(category => ({ id: category.id, code: category.code, name: category.name, icon: category.icon }))}
+              banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
+              paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+              suppliers={suppliers.map(supplier => ({ id: supplier.id, businessName: supplier.businessName, alias: supplier.alias, email: supplier.email, vatNumber: supplier.vatNumber, iban: supplier.iban, pec: supplier.pec, taxCodeSdi: supplier.taxCodeSdi, internalNotes: supplier.internalNotes }))}
+              mobileLabel="Spese generate mobile"
+              emptyMessage="Nessuna spesa generata da questa ricorrenza."
+            />
+          </div>
         </section>
       </article>
     </div>

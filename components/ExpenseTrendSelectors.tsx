@@ -193,7 +193,7 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, d
       </button>
     </div>
 
-    {mode === "date" ? <label>
+    {mode === "date" ? <label className="flex-grow">
       <div className="expense-trend-selectors-heading">
         <select value={andamentoComplessivoValue} onChange={(event) => {
           if (event.currentTarget.value === "custom") {
@@ -209,7 +209,7 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, d
           {years.map(year => <option key={year} value={year}>{year}</option>)}
         </select>
       </div>
-    </label> : <label>
+    </label> : <label className="flex-grow">
       <div className="expense-trend-selectors-heading">
         <select value={andamentoFiscaleValue} onChange={(event) => {
           if (event.currentTarget.value === "custom") {

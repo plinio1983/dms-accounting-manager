@@ -820,10 +820,16 @@ button {
         padding: 0 !important;
     }
 
-    .bulk-direct-link {
-        color: #f1f0ff;
-        background: #5746b8;
-        border-color: #ded9ff;
+    .recurring-bulk-actions-bar .bulk-direct-actions .bulk-direct-link {
+        color: var(--accent);
+        background: #fff;
+        border-color: #b7bccc;
+    }
+
+    .recurring-bulk-actions-bar .bulk-direct-actions .bulk-direct-danger {
+        color: #b42318;
+        background: #fff;
+        border-color: #fecdd3;
     }
 
     .floating-bulk-button {
@@ -1963,9 +1969,9 @@ body.drawer-open {
     color: #19733b;
 }
 
-
-
-
+.text-accent {
+    color: var(--accent);
+}
 
 .money-input {
     position: relative;
@@ -6337,7 +6343,13 @@ button.bulk-direct-link {
     text-decoration: none;
 }
 
+.recurring-generated-expenses-list .expense-mobile-list {
+    display: none;
+}
 
+.recurring-generated-expenses-list .table-scroll {
+    display: block;
+}
 
 
 

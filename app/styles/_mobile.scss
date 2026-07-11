@@ -816,6 +816,14 @@
         display: none;
     }
 
+    .recurring-generated-expenses-list .table-scroll {
+        display: none;
+    }
+
+    .recurring-generated-expenses-list .expense-mobile-list {
+        display: grid;
+    }
+
     .recurring-generated-mobile-card {
         border: 1px solid var(--line);
         border-radius: 16px;
