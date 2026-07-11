@@ -61,7 +61,7 @@ function periodLink(path: '/expenses' | '/incomes', periods: Array<{ year: numbe
 }
 
 function monthReportLink(year: number, month: number) {
-  return `/months/${year}/${month}`;
+  return `/months/${year}/${month}?returnTo=${encodeURIComponent('/')}`;
 }
 
 function dateRangeForMonth(year: number, month: number) {
@@ -426,6 +426,30 @@ function MonthlyNonFiscalRatioChart({
       </div>
     </div>
     {months.length ? <div className="monthly-non-fiscal-chart-list">
+      <div className="monthly-income-expense-ratio-year-row">
+        <div className="monthly-non-fiscal-chart-month-row">
+          <span className="monthly-non-fiscal-chart-month">{year}</span>
+          <div className="summary-text">
+            <small>Incasso tot &nbsp;</small> <strong>{chartEuro(totalIncome)}</strong>
+          </div>
+        </div>
+        <div className="monthly-non-fiscal-chart-top">
+          <span>Spese n.f. annuali</span>
+          <small className={moneyTone(totalNonFiscalExpenses)}>{chartEuro(totalNonFiscalExpenses)}</small>
+          <strong>{expenseYearPercentage.toFixed(1)}%</strong>
+        </div>
+        <span className="monthly-non-fiscal-chart-bar-wrap" aria-label={`${year} spese non fiscali: ${expenseYearPercentage.toFixed(1)}%`}>
+          <span className={`monthly-non-fiscal-chart-bar monthly-non-fiscal-chart-expense-bar ${nonFiscalExpensePercentTone(totalNonFiscalExpenses, totalIncome)}`} style={{ width: `${Math.min(expenseYearPercentage, 100)}%` }} />
+        </span>
+        <span className="monthly-non-fiscal-chart-bar-wrap" aria-label={`${year} incassi non fiscali: ${incomeYearPercentage.toFixed(1)}%`}>
+          <span className="monthly-non-fiscal-chart-bar monthly-non-fiscal-chart-income-bar" style={{ width: `${Math.min(incomeYearPercentage, 100)}%` }} />
+        </span>
+        <div className="monthly-non-fiscal-chart-bottom">
+          <span>Incassi n.f. annuali</span>
+          <small className={moneyTone(totalNonFiscalIncomes)}>{chartEuro(totalNonFiscalIncomes)}</small>
+          <strong>{incomeYearPercentage.toFixed(1)}%</strong>
+        </div>
+      </div>
       {months.map(month => {
         const incomeTotal = month.totals.incassoTotale;
         const nonFiscalExpense = month.totals.usciteNonFiscali;
@@ -595,10 +619,11 @@ function MonthlyNetFiscalProfitRatioChart({
     {months.length ? <div className="monthly-non-fiscal-chart-list">
       <div className="monthly-income-expense-ratio-year-row monthly-profit-ratio-year-row">
         <div className="monthly-non-fiscal-chart-month-row">
-          <span className="monthly-non-fiscal-chart-month">{year}</span>
+          <div className="summary-text flex align-end flex-grow">
+            <span className="monthly-non-fiscal-chart-month flex-grow">{year}</span>
+            <small className="">Margine lordo &nbsp;</small> <strong className={moneyTone(totalGrossMargin)}>{chartEuro(totalGrossMargin)}</strong>
+          </div>
           <div className="summary-text flex align-end">
-            <small>Margine lordo &nbsp;</small> <strong className={moneyTone(totalGrossMargin)}>{chartEuro(totalGrossMargin)}</strong>
-            &nbsp;&nbsp;&nbsp;&nbsp;
             <div>
               <small>Netto &nbsp;</small> <strong className={moneyTone(totalNetProfit)}>{chartEuro(totalNetProfit)}</strong>
               &nbsp;&nbsp;&nbsp;&nbsp;
@@ -608,8 +633,14 @@ function MonthlyNetFiscalProfitRatioChart({
         </div>
         <div className="monthly-income-expense-ratio-chart-values">
           <span>Rapporto annuale</span>
-          <small>Netto {marginRatioLabel(totalNetProfit, totalGrossMargin)}</small>
-          <strong className="text-accent">Fiscale {marginRatioLabel(totalFiscalProfit, totalGrossMargin)}</strong>
+          <div>
+            <small>Netto </small>
+            <strong className="text-accent">{marginRatioLabel(totalNetProfit, totalGrossMargin)}</strong>
+          </div>
+          <div>
+            <small className="text-accent">Fiscale </small>
+            <strong className="text-accent">{marginRatioLabel(totalFiscalProfit, totalGrossMargin)}</strong>
+        </div>
         </div>
         <span className="monthly-profit-ratio-bar-stack" aria-label={`${year} utile netto ${chartEuro(totalNetProfit)}, utile fiscale ${chartEuro(totalFiscalProfit)}, margine lordo ${chartEuro(totalGrossMargin)}`}>
           <span className="monthly-non-fiscal-chart-bar-wrap monthly-profit-ratio-bar-wrap">
@@ -642,14 +673,16 @@ function MonthlyNetFiscalProfitRatioChart({
           <span className="monthly-non-fiscal-chart-bar-wrap monthly-profit-ratio-bar-wrap" aria-label={`${monthLabel} utile netto: ${chartEuro(netProfit)} su margine lordo ${chartEuro(grossMargin)}`}>
             <span className={profitBarClass(netProfit, 'net')} style={profitBarStyle(netProfit, grossMargin)} />
           </span>
+
+          <span className="monthly-non-fiscal-chart-bar-wrap monthly-profit-ratio-bar-wrap" aria-label={`${monthLabel} utile fiscale: ${chartEuro(fiscalProfit)} su margine lordo ${chartEuro(grossMargin)}`}>
+            <span className={profitBarClass(fiscalProfit, 'fiscal')} style={profitBarStyle(fiscalProfit, grossMargin)} />
+          </span>
           <div className="monthly-income-expense-ratio-chart-values">
             <span>Utile fiscale</span>
             <small className={moneyTone(fiscalProfit)}>{chartEuro(fiscalProfit)}</small>
             <strong>{marginRatioLabel(fiscalProfit, grossMargin)}</strong>
           </div>
-          <span className="monthly-non-fiscal-chart-bar-wrap monthly-profit-ratio-bar-wrap" aria-label={`${monthLabel} utile fiscale: ${chartEuro(fiscalProfit)} su margine lordo ${chartEuro(grossMargin)}`}>
-            <span className={profitBarClass(fiscalProfit, 'fiscal')} style={profitBarStyle(fiscalProfit, grossMargin)} />
-          </span>
+
         </Link>;
       })}
     </div> : <p className="muted">Nessun mese disponibile per l’anno selezionato.</p>}
@@ -792,8 +825,8 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
         <p className="muted">Sintesi fiscale, incassi e spese.</p>
       </div>
       <div className="actions-row dashboard-top-actions">
-        <Link className="btn btn-lg btn-primary" href="/expenses?new=1"><span className="btn-icon">＋</span> Spesa</Link>
-        <Link className="btn btn-lg btn-primary" href="/incomes?new=1"><span className="btn-icon">＋</span> Incasso</Link>
+        <Link className="btn btn-md btn-primary" href="/expenses?new=1"><span className="btn-icon">＋</span> Spesa</Link>
+        <Link className="btn btn-md btn-primary" href="/incomes?new=1"><span className="btn-icon">＋</span> Incasso</Link>
         {/*<Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>*/}
       </div>
       <form className="period-selector dashboard-year-selector" method="get">
@@ -875,7 +908,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
             <th><span className="th-wrap">Debito<br />IVA</span></th>
           </tr></thead>
           <tbody>{report.months.map(m => <tr key={m.month}>
-            <td><Link className="badge" href={`/months/${m.year}/${m.month}`}>{monthName(m.month)}</Link></td>
+            <td><Link className="badge" href={monthReportLink(m.year, m.month)}>{monthName(m.month)}</Link></td>
             <td><Link href={periodLink('/incomes', [{ year: m.year, month: m.month }])}><MoneyCell value={m.totals.incassoTotale} highlight /></Link></td>
             <td><Link href={periodLink('/expenses', [{ year: m.year, month: m.month }])}><MoneyCell value={m.totals.speseTotali} /></Link></td>
             <td className="money-value-col"><MoneyCell value={m.totals.utileNetto} highlight /></td>

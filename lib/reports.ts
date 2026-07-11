@@ -270,29 +270,42 @@ export async function getAccountingDashboardReport(
   };
 }
 
-// Legacy monthly report kept for the old month detail pages.
 export async function getMonthlyReport(year: number, month: number, workspaceId?: number) {
-  const [expenses, revenues] = await Promise.all([
-    prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), year, month }, include: { category: true, bank: true, company: true }, orderBy: [{ receivedDate: 'asc' }, { id: 'asc' }] }),
-    prisma.monthlyRevenue.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), year, month }, include: { company: true } })
+  const [expenses, incomes] = await Promise.all([
+    prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), year, month }, include: { category: true, bank: true, company: true, supplier: true, payments: true }, orderBy: [{ receivedDate: 'asc' }, { id: 'asc' }] }),
+    prisma.income.findMany({ where: incomePeriodWhere([{ year, month }], workspaceId) })
   ]);
 
-  const totalExpenses = expenses.reduce((s, e) => s + Number(e.amount), 0);
-  const totalVatOnExpenses = expenses.reduce((s, e) => s + vatAmountFromGross(Number(e.amount), Number(e.vatRate)), 0);
-  const web = revenues.reduce((s, r) => s + Number(r.webAmount), 0);
-  const shop = revenues.reduce((s, r) => s + Number(r.shopAmount), 0);
-  const noInvoice = revenues.reduce((s, r) => s + Number(r.noInvoiceAmount), 0);
-  const vatToPay = vatAmountFromGross(web + shop, 22);
-  const paidVat = totalVatOnExpenses;
-  const remainingVat = vatToPay - paidVat;
-  const declaredProfit = web + shop - totalExpenses - remainingVat;
-  const taxRate = Number(revenues[0]?.taxRate ?? 28);
-  const estimatedTax = declaredProfit * taxRate / 100;
-  const fixed = revenues.reduce((s, r) => s + Number(r.inps) + Number(r.accountant) + Number(r.tari), 0);
-  const grossProfit = web + shop + noInvoice - totalExpenses - remainingVat;
-  const estimatedNetProfit = grossProfit - estimatedTax - fixed;
+  const summary = summarizeRecords(incomes, expenses, [{ year, month }]);
+  const web = incomes.reduce((sum, income) => income.isFiscal && income.salesChannel === 'Online Shop' ? sum + Number(income.amount) : sum, 0);
+  const shop = incomes.reduce((sum, income) => income.isFiscal && income.salesChannel === 'Shop' ? sum + Number(income.amount) : sum, 0);
+  const noInvoice = incomes.reduce((sum, income) => !income.isFiscal ? sum + Number(income.amount) : sum, 0);
+  const taxRate = 30;
+  const estimatedTax = Math.max(summary.utileFiscale, 0) * taxRate / 100;
 
-  return { year, month, expenses, revenues, totals: { totalExpenses, totalVatOnExpenses, web, shop, noInvoice, totalRevenue: web + shop + noInvoice, vatToPay, paidVat, remainingVat, declaredProfit, grossProfit, taxRate, estimatedTax, fixed, estimatedNetProfit } };
+  return {
+    year,
+    month,
+    expenses,
+    revenues: [],
+    totals: {
+      totalExpenses: summary.speseTotali,
+      totalVatOnExpenses: summary.ivaVersataSpese,
+      web,
+      shop,
+      noInvoice,
+      totalRevenue: summary.incassoTotale,
+      vatToPay: summary.ivaGenerataIncassi,
+      paidVat: summary.ivaVersataSpese,
+      remainingVat: summary.debitoIva,
+      declaredProfit: summary.utileFiscale,
+      grossProfit: summary.utileLordo,
+      taxRate,
+      estimatedTax,
+      fixed: 0,
+      estimatedNetProfit: summary.utileNetto
+    }
+  };
 }
 
 export async function getYearReport(year: number, workspaceId?: number) {

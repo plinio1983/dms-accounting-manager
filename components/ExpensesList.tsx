@@ -183,7 +183,7 @@ export default function ExpensesList({
         </label>
         <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
           <summary className="bulk-action-trigger">
-            <span className="btn-icon">⚙</span>
+            <span className="btn-icon hidden-mobile">⚙</span>
             <span className="bulk-label"><span className="floating-bulk-label">Bulk </span>Actions</span>
           </summary>
           <div className="bulk-action-menu-panel">
@@ -279,7 +279,7 @@ export default function ExpensesList({
               </div>
               <div className="expense-mobile-subtitle">
                 <div className="expense-mobile-subtitle-left">
-                  {showSupplierColumn ? <span>{expense.description || 'Spesa senza descrizione'} </span> : null}
+                  {showSupplierColumn ? <span className="expense-mobile-description">{expense.description || 'Spesa senza descrizione'} </span> : null}
                   <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate)}%</span>
                 </div>
                 <div>

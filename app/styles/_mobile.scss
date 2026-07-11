@@ -493,6 +493,10 @@
         text-align: center;
         padding: 9px 10px;
     }
+
+    .nav-links .nav-link-icon {
+        display: none;
+    }
 }
 
 @media (max-width: 420px) {
@@ -1253,6 +1257,10 @@
         display: none;
     }
 
+    .month-report-expenses .table-scroll {
+        display: none;
+    }
+
     .expenses-list-card .dashboard-statement-panel {
         padding: 14px 8px;
     }
@@ -1847,6 +1855,66 @@
             width: 100%;
             padding: 0 14px;
         }
+    }
+}
+
+@media (max-width: 760px) {
+    .month-report-month-nav {
+        display: none;
+    }
+
+    .month-report-month-select {
+        display: block;
+        width: 100%;
+        min-height: 42px;
+    }
+
+    .month-report-metrics {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .month-report-metrics .month-report-value {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        grid-template-rows: none;
+        padding-right: 0;
+        border-right: 0;
+    }
+
+    .month-report-metrics .month-report-value span {
+        min-height: 0;
+    }
+
+    .month-report-metrics .month-report-value strong {
+        font-size: 22px;
+        text-align: right;
+    }
+
+    .month-report-fiscal-metrics {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .month-report-fiscal-metrics .month-report-value {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        grid-template-rows: none;
+        padding-right: 0;
+        border-right: 0;
+    }
+
+    .month-report-fiscal-metrics .month-report-value span {
+        min-height: 0;
+    }
+
+    .month-report-fiscal-metrics .month-report-value strong {
+        font-size: 19px;
+        text-align: right;
     }
 }
 

@@ -98,7 +98,7 @@ function dateRangeLink(path: '/expenses' | '/incomes', year: number, month: numb
 }
 
 function monthReportLink(year: number, month: number) {
-  return `/months/${year}/${month}`;
+  return `/months/${year}/${month}?returnTo=${encodeURIComponent('/')}`;
 }
 
 function StatementMoneyRow({ label, value, highlight = false, warning = false, vat = false, href }: { label: string; value: number; highlight?: boolean; warning?: boolean; vat?: boolean; href?: string }) {

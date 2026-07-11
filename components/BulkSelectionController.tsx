@@ -253,7 +253,7 @@ function makeFloatingBar(sourceBar: HTMLElement) {
     caret.className = "floating-bulk-caret";
     caret.textContent = "▾";
     const icon = document.createElement("span");
-    icon.className = "btn-icon";
+    icon.className = "btn-icon hidden-mobile";
     icon.textContent = "⚙";
     const label = document.createElement("span");
     const hLabel = document.createElement("span");

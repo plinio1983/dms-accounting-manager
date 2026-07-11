@@ -98,7 +98,8 @@ function MainNavContent() {
               className={isActive ? 'nav-link-active' : undefined}
               aria-current={isActive ? 'page' : undefined}
             >
-              {link.label}
+              <span className="nav-link-icon" aria-hidden="true">{link.icon}</span>
+              <span>{link.label}</span>
             </Link>
           );
         })}
