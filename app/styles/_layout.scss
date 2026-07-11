@@ -3665,6 +3665,12 @@ table th, table td {
     font-size: 15px;
 }
 
+.dashboard-statement-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
 .dashboard-statement-result td {
     padding-top: 10px;
     padding-bottom: 10px;

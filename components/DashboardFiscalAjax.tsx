@@ -97,6 +97,10 @@ function dateRangeLink(path: '/expenses' | '/incomes', year: number, month: numb
   return `${path}?${query.toString()}`;
 }
 
+function monthReportLink(year: number, month: number) {
+  return `/months/${year}/${month}`;
+}
+
 function StatementMoneyRow({ label, value, highlight = false, warning = false, vat = false, href }: { label: string; value: number; highlight?: boolean; warning?: boolean; vat?: boolean; href?: string }) {
   const valueClass = [highlight ? 'money-highlight' : '', warning ? 'money-warning' : '', vat ? '' : ''].filter(Boolean).join(' ');
   const valueNode = <strong className={moneyTone(value, valueClass)}>{euro(value)}</strong>;
@@ -161,6 +165,9 @@ function MonthlyTrendCard({
           <StatementCountRow label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
         </tbody>
       </table>
+    </div>
+    <div className="dashboard-statement-actions">
+      <Link className="btn btn-sm btn-default" href={monthReportLink(state.year, state.month)}>Dettaglio</Link>
     </div>
   </section>;
 }
@@ -250,6 +257,7 @@ function FiscalSummaryCard({
   const invoicesNotSentHref = periodLink('/incomes', periods, { fiscal: 'yes', invoiceStatusMode: 'not_emitted' });
   const invoicesNotReceivedHref = periodLink('/expenses', periods, { declared: 'yes', invoiceStatusMode: 'not_received' });
   const overdueExpensesHref = periodLink('/expenses', periods, { paymentStatus: 'overdue', declared: 'yes' });
+  const detailPeriod = periods.length === 1 ? periods[0] : null;
 
   return <section className={`card dashboard-statement-panel ${loading ? 'is-loading' : ''}`}>
     <div className="dashboard-statement-heading">
@@ -274,6 +282,9 @@ function FiscalSummaryCard({
         </tbody>
       </table>
     </div>
+    {detailPeriod ? <div className="dashboard-statement-actions">
+      <Link className="btn btn-sm btn-default" href={monthReportLink(detailPeriod.year, detailPeriod.month)}>Dettaglio</Link>
+    </div> : null}
   </section>;
 }
 
