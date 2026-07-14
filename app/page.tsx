@@ -1,10 +1,13 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
+import { prisma } from '@/lib/prisma';
 import { AutoSubmitSelect } from '@/components/AutoSubmitSelect';
 import { euro, moneyTone, monthName } from '@/lib/money';
 import { fiscalQuarterMonthsByIndex, getAccountingDashboardReport, getOrderDateMonthSummary, getOrderDatePeriodSummary } from '@/lib/reports';
 import DashboardFiscalAjax from '@/components/DashboardFiscalAjax';
 import { requireWorkspace } from '@/lib/auth';
+import NewExpensePanel from '@/components/NewExpensePanel';
+import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 
 function fiscalQuarterLabel(periods: Array<{ year: number; month: number }>) {
   if (!periods.length) return '-';
@@ -788,11 +791,18 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
   const selectedQuarter = { ...rawSelectedQuarter, year: annualYear };
   const reportYear = annualYear;
   const trendQuarterPeriods = fiscalQuarterMonthsByIndex(selectedTrendQuarter.year, selectedTrendQuarter.quarterIndex);
-  const [report, monthlyTrendTotals, quarterlyTrendTotals] = await Promise.all([
+  const [report, monthlyTrendTotals, quarterlyTrendTotals, expenseCategories, banks, paymentMethods, suppliers] = await Promise.all([
     getAccountingDashboardReport(reportYear, now, selectedMonth, selectedQuarter, annualYear, current.workspace.id),
     getOrderDateMonthSummary(selectedTrendMonth.year, selectedTrendMonth.month, current.workspace.id),
-    getOrderDatePeriodSummary(trendQuarterPeriods, current.workspace.id)
+    getOrderDatePeriodSummary(trendQuarterPeriods, current.workspace.id),
+    prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
+    prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
   ]);
+  const orderedExpenseCategories = orderExpenseCategories(expenseCategories);
+  const orderedBanks = orderBanks(banks);
+  const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
   const fiscalMonth = report.currentFiscalMonth.periods[0];
   const trendExpensesHref = dateRangeLink('/expenses', selectedTrendMonth.year, selectedTrendMonth.month);
   const trendUnpaidExpensesHref = dateRangeLink('/expenses', selectedTrendMonth.year, selectedTrendMonth.month, { paymentStatus: 'not_complete' });
@@ -819,13 +829,20 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
   const nonFiscalExpenseChartMonths = report.months.filter(month => report.annualYear === currentYear ? month.month <= currentMonth : true);
 
   return <div className="grid dashboard-grid">
+    <NewExpensePanel
+      categories={orderedExpenseCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
+      banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
+      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
+      showToolbar={false}
+    />
     <div className="dashboard-actions toolbar-card dashboard-header-card">
       <div className="dashboard-title-block">
         <h2>Dashboard</h2>
         <p className="muted">Sintesi fiscale, incassi e spese.</p>
       </div>
       <div className="actions-row dashboard-top-actions">
-        <Link className="btn btn-md btn-primary" href="/expenses?new=1"><span className="btn-icon">＋</span> Spesa</Link>
+        <button className="btn btn-md btn-primary" type="button" data-expense-new><span className="btn-icon">＋</span> Spesa</button>
         <Link className="btn btn-md btn-primary" href="/incomes?new=1"><span className="btn-icon">＋</span> Incasso</Link>
         {/*<Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>*/}
       </div>
@@ -938,7 +955,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
         <p className="muted">Inserisci rapidamente una nuova operazione.</p>
       </div>
       <div className="actions-row">
-        <Link className="btn btn-lg btn-primary" href="/expenses?new=1"><span className="btn-icon">＋</span> Spesa</Link>
+        <button className="btn btn-lg btn-primary" type="button" data-expense-new><span className="btn-icon">＋</span> Spesa</button>
         <Link className="btn btn-lg btn-primary" href="/incomes?new=1"><span className="btn-icon">＋</span> Incasso</Link>
         <Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>
       </div>

@@ -185,7 +185,7 @@ export default function IncomeForm({
           <span>Pagamento</span>
           <small>Metodo, accredito e conto di destinazione</small>
         </summary>
-        <div className="form-section-grid income-form-section-grid flex-grid">
+        <div className="form-section-grid income-form-section-grid">
 
           <div className="income-form-section-credit">
             <label>Accreditato</label>
@@ -232,7 +232,7 @@ export default function IncomeForm({
           <span>Fiscale</span>
           <small>Fiscalità, fattura e aliquota IVA</small>
         </summary>
-        <div className="form-section-grid income-form-section-grid flex-grid">
+        <div className="form-section-grid income-form-section-grid income-form-section-fiscal">
           {/*<div className="toggle-field-wrap">*/}
             <div className="toggle-field switch-toggle-field fiscal-toggle">
               <label>Fiscale</label>

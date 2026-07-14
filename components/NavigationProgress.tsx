@@ -83,6 +83,7 @@ export default function NavigationProgress() {
     function onSubmit(event: SubmitEvent) {
       const form = event.target instanceof HTMLFormElement ? event.target : null;
       if (!form) return;
+      if (form.dataset.inPlaceSubmit === 'true') return;
       const action = form.getAttribute('action') || window.location.href;
       const url = new URL(action, window.location.href);
       if (url.origin !== window.location.origin) return;

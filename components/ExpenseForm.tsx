@@ -1,6 +1,7 @@
 "use client";
 
-import {useEffect, useMemo, useRef, useState} from "react";
+import {type FormEvent, useEffect, useMemo, useRef, useState} from "react";
+import {createPortal} from "react-dom";
 import {bankIcons, categoryIcon} from "@/lib/expense-ui";
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null };
@@ -68,6 +69,7 @@ type Props = {
     title?: string;
     submitLabel?: string;
     onCancel?: () => void;
+    onSaved?: () => void;
     cancelHref?: string;
     onSwitchToRecurring?: () => void;
 };
@@ -365,9 +367,18 @@ function SupplierAutocomplete({
                     )}
                 </div>
             )}
-            {showCreate && (
-                <div className="modal-backdrop">
-                    <div className="modal-card">
+            {showCreate && createPortal(
+                <div
+                    className="modal-backdrop nested-form-modal"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Nuovo esercente o fornitore"
+                    onMouseDown={(event) => {
+                        event.stopPropagation();
+                        if (event.target === event.currentTarget) setShowCreate(false);
+                    }}
+                >
+                    <div className="modal-card" onMouseDown={(event) => event.stopPropagation()}>
                         <div className="modal-title">
                             <h3>➕ Nuovo esercente/fornitore</h3>
                             <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setShowCreate(false)}>
@@ -474,7 +485,8 @@ function SupplierAutocomplete({
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body,
             )}
         </div>
     );
@@ -597,6 +609,7 @@ export default function ExpenseForm({
     title = "Nuova spesa",
     submitLabel = "Salva spesa",
     onCancel,
+    onSaved,
     cancelHref,
     onSwitchToRecurring,
 }: Props) {
@@ -608,6 +621,8 @@ export default function ExpenseForm({
     const normalizePaymentRow = (row: PaymentRow): PaymentRow =>
         isCashChannel(methodName(row.paymentMethodId) || row.channel) && cashBankIdValue ? {...row, bankId: cashBankIdValue} : row;
     const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount));
+    const [submitError, setSubmitError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [hasElectronicInvoice, setHasElectronicInvoice] = useState(
         initialExpense?.hasElectronicInvoice ?? true,
     );
@@ -771,12 +786,47 @@ export default function ExpenseForm({
         ].join(" · ");
     }
 
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+        if (!onSaved) return;
+        event.preventDefault();
+        setSubmitError("");
+        setIsSubmitting(true);
+
+        try {
+            const response = await fetch(action, {
+                method: "POST",
+                body: new FormData(event.currentTarget),
+                headers: {
+                    Accept: "application/json",
+                    "X-Requested-With": "fetch",
+                },
+            });
+            if (!response.ok) {
+                let message = "Impossibile salvare la spesa.";
+                try {
+                    const payload = await response.json();
+                    message = payload?.error || message;
+                } catch {
+                    // Non-JSON responses keep the generic message.
+                }
+                throw new Error(message);
+            }
+            onSaved();
+        } catch (error) {
+            setSubmitError(error instanceof Error ? error.message : "Impossibile salvare la spesa.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
     return (
         <form
             className="card form expense-form"
             action={action}
             method="post"
             encType="multipart/form-data"
+            onSubmit={handleSubmit}
+            data-in-place-submit={onSaved ? "true" : undefined}
         >
             {/*<h2 className="full">{title}</h2>*/}
 
@@ -1222,7 +1272,8 @@ export default function ExpenseForm({
             </details>
 
             <div className="actions-row full form-actions-row form-sticky-actions">
-                <button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">✓</span> {submitLabel}
+                {submitError ? <p className="inline-warning full">{submitError}</p> : null}
+                <button className="btn btn-md btn-primary" type="submit" disabled={isSubmitting}><span className="btn-icon">✓</span> {isSubmitting ? "Salvataggio..." : submitLabel}
                 </button>
                 {onCancel ? (
                     <button className="btn btn-md btn-default" type="button" onClick={onCancel}><span

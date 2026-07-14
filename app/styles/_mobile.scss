@@ -35,6 +35,14 @@
     }
 }
 
+@media (min-width: 576px) {
+    .income-form .income-form-section-grid {
+        &.income-form-section-fiscal {
+            display: flex;
+        }
+    }
+}
+
 @media (max-width: 576px) {
     .income-form-section-credit {
         justify-content: flex-start;

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { categoryIcon } from "@/lib/expense-ui";
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
@@ -45,6 +46,7 @@ type Props = {
   action?: string;
   initialExpense?: InitialRecurringExpense;
   onCancel?: () => void;
+  onSaved?: () => void;
   cancelHref?: string;
   onSwitchToSingle?: () => void;
 };
@@ -251,9 +253,18 @@ function SupplierAutocomplete({
         </div>
       )}
 
-      {showCreate && (
-        <div className="modal-backdrop">
-          <div className="modal-card">
+      {showCreate && createPortal(
+        <div
+          className="modal-backdrop nested-form-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Nuovo esercente o fornitore"
+          onMouseDown={(event) => {
+            event.stopPropagation();
+            if (event.target === event.currentTarget) setShowCreate(false);
+          }}
+        >
+          <div className="modal-card" onMouseDown={(event) => event.stopPropagation()}>
             <div className="modal-title">
               <h3>➕ Nuovo esercente/fornitore</h3>
               <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setShowCreate(false)}>✕</button>
@@ -273,7 +284,8 @@ function SupplierAutocomplete({
               <button className="btn btn-md btn-primary" type="button" disabled={isSaving} onClick={createSupplier}>✓ Salva e seleziona</button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
@@ -379,6 +391,7 @@ export default function RecurringExpenseForm({
   action = "/api/recurring-expenses",
   initialExpense,
   onCancel,
+  onSaved,
   cancelHref,
   onSwitchToSingle,
 }: Props) {
@@ -399,6 +412,8 @@ export default function RecurringExpenseForm({
   const [isAutomaticAccrual, setIsAutomaticAccrual] = useState(Boolean(initialExpense?.isAutomaticPayment));
   const [paymentMethodId, setPaymentMethodId] = useState(initialPaymentMethodId);
   const [bankId, setBankId] = useState(initialBankId);
+  const [submitError, setSubmitError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const selectedPaymentMethodName = paymentMethods.find(method => String(method.id) === paymentMethodId)?.name ?? "";
   const cashBankLocked = isAutomaticAccrual && isCashChannel(selectedPaymentMethodName) && Boolean(cashBankIdValue);
   const isYearly = cadence === "YEARLY" || cadence === "EVERY_2_YEARS";
@@ -410,8 +425,41 @@ export default function RecurringExpenseForm({
     }
   }, [isDeclared]);
 
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    if (!onSaved) return;
+    event.preventDefault();
+    setSubmitError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(action, {
+        method: "POST",
+        body: new FormData(event.currentTarget),
+        headers: {
+          Accept: "application/json",
+          "X-Requested-With": "fetch",
+        },
+      });
+      if (!response.ok) {
+        let message = "Impossibile salvare la spesa ricorrente.";
+        try {
+          const payload = await response.json();
+          message = payload?.error || message;
+        } catch {
+          // Non-JSON responses keep the generic message.
+        }
+        throw new Error(message);
+      }
+      onSaved();
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Impossibile salvare la spesa ricorrente.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
-    <form className="card form expense-form recurring-expense-form" action={action} method="post">
+    <form className="card form expense-form recurring-expense-form" action={action} method="post" onSubmit={handleSubmit} data-in-place-submit={onSaved ? "true" : undefined}>
       <details className="form-section full recurring-form-section" open>
         <summary>
           <span>Documento</span>
@@ -570,7 +618,8 @@ export default function RecurringExpenseForm({
       </details>
 
       <div className="actions-row full form-actions-row form-sticky-actions">
-        <button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">✓</span> Salva spesa</button>
+        {submitError ? <p className="inline-warning full">{submitError}</p> : null}
+        <button className="btn btn-md btn-primary" type="submit" disabled={isSubmitting}><span className="btn-icon">✓</span> {isSubmitting ? "Salvataggio..." : "Salva spesa"}</button>
         {onCancel ? (
           <button type="button" className="btn btn-md btn-default" onClick={onCancel}><span className="btn-icon">×</span> Annulla</button>
         ) : cancelHref ? (

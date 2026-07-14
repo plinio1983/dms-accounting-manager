@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import ExpenseCreationSwitcher from '@/components/ExpenseCreationSwitcher';
 import { flashParamNames } from '@/lib/flash';
 
@@ -14,9 +15,11 @@ type Props = {
   paymentMethods: Option[];
   suppliers: SupplierOption[];
   initialOpen?: boolean;
+  showToolbar?: boolean;
 };
 
-export default function NewExpensePanel({ categories, banks, paymentMethods, suppliers, initialOpen = false }: Props) {
+export default function NewExpensePanel({ categories, banks, paymentMethods, suppliers, initialOpen = false, showToolbar = true }: Props) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [returnAction, setReturnAction] = useState('/api/expenses');
   const [recurringAction, setRecurringAction] = useState('/api/recurring-expenses');
@@ -43,8 +46,15 @@ export default function NewExpensePanel({ categories, banks, paymentMethods, sup
     return () => document.removeEventListener('click', handler);
   }, []);
 
+  function handleSaved() {
+    setIsOpen(false);
+    router.refresh();
+  }
+
+  if (!showToolbar && !isOpen) return null;
+
   return <div className="grid">
-    <div className="toolbar-card expense-toolbar-card">
+    {showToolbar ? <div className="toolbar-card expense-toolbar-card">
       <div className="expense-toolbar-card-content">
         <div className="expense-toolbar-card-title">
           <h2>Spese</h2>
@@ -63,7 +73,7 @@ export default function NewExpensePanel({ categories, banks, paymentMethods, sup
         <Link className="btn btn-md btn-secondary" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>
         <button className="btn btn-md btn-primary" type="button" data-expense-new><span className="btn-icon">+</span><span className="hidden-mobile">Aggiungi </span>Spesa</button>
       </div>
-    </div>
+    </div> : null}
 
     {isOpen ? <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Aggiungi nuova spesa" onMouseDown={() => setIsOpen(false)}>
       <div className="modal-card modal-card-wide" onMouseDown={(event) => event.stopPropagation()}>
@@ -74,7 +84,7 @@ export default function NewExpensePanel({ categories, banks, paymentMethods, sup
           </div>
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
         </div>
-        <ExpenseCreationSwitcher categories={categories} banks={banks} paymentMethods={paymentMethods} suppliers={suppliers} expenseAction={returnAction} recurringAction={recurringAction} onCancel={() => setIsOpen(false)} />
+        <ExpenseCreationSwitcher categories={categories} banks={banks} paymentMethods={paymentMethods} suppliers={suppliers} expenseAction={returnAction} recurringAction={recurringAction} onCancel={() => setIsOpen(false)} onSaved={handleSaved} />
       </div>
     </div> : null}
   </div>;

@@ -25,12 +25,48 @@ function periodKey(year: number, month: number) {
   return year * 12 + month;
 }
 
+function periodFromKey(key: number) {
+  const year = Math.floor((key - 1) / 12);
+  return { year, month: key - year * 12 };
+}
+
 function periodWhere(periods: Array<{ year: number; month: number }>, workspaceId?: number) {
   return { ...(workspaceId ? { workspaceId } : {}), OR: periods.map(({ year, month }) => ({ year, month })) };
 }
 
 function incomePeriodWhere(periods: Array<{ year: number; month: number }>, workspaceId?: number) {
   return { ...(workspaceId ? { workspaceId } : {}), OR: periods.map(({ year, month }) => ({ billingYear: year, billingMonth: month })) };
+}
+
+function monthDateRange(year: number, month: number) {
+  return {
+    gte: new Date(year, month - 1, 1),
+    lt: new Date(year, month, 1)
+  };
+}
+
+function incomePeriodWhereIncludingUncredited(periods: Array<{ year: number; month: number }>, workspaceId?: number) {
+  return {
+    ...(workspaceId ? { workspaceId } : {}),
+    OR: [
+      ...periods.map(({ year, month }) => ({ billingYear: year, billingMonth: month })),
+      ...periods.map(({ year, month }) => ({ isCredited: false, creditDate: monthDateRange(year, month) }))
+    ]
+  };
+}
+
+function incomeMatchesPeriod(income: any, year: number, month: number) {
+  if (Number(income.billingYear) === year && Number(income.billingMonth) === month) return true;
+  if (income.isCredited) return false;
+  const creditDate = income.creditDate ? new Date(income.creditDate) : null;
+  return Boolean(creditDate && creditDate.getFullYear() === year && creditDate.getMonth() + 1 === month);
+}
+
+function incomeMatchesYear(income: any, year: number) {
+  if (Number(income.billingYear) === year) return true;
+  if (income.isCredited) return false;
+  const creditDate = income.creditDate ? new Date(income.creditDate) : null;
+  return Boolean(creditDate && creditDate.getFullYear() === year);
 }
 
 function periodRecordKey(record: any, kind: 'income' | 'expense') {
@@ -49,7 +85,10 @@ function computeVatBalance(incomes: any[], expenses: any[], periods?: Array<{ ye
 
   const incomeVatForKey = (key?: number) => incomes.reduce((sum, income) => {
     if (!income.isFiscal) return sum;
-    if (key !== undefined && periodRecordKey(income, 'income') !== key) return sum;
+    if (key !== undefined) {
+      const period = periodFromKey(key);
+      if (!incomeMatchesPeriod(income, period.year, period.month)) return sum;
+    }
     return sum + vatAmountFromGross(Number(income.amount), Number(income.vatRate));
   }, 0);
 
@@ -157,7 +196,7 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
 
 export async function getPeriodSummary(periods: Array<{ year: number; month: number }>, options: SummaryOptions = {}) {
   const [incomes, expenses] = await Promise.all([
-    prisma.income.findMany({ where: incomePeriodWhere(periods, options.workspaceId) }),
+    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(periods, options.workspaceId) }),
     prisma.expense.findMany({ where: periodWhere(periods, options.workspaceId), include: { payments: true } })
   ]);
 
@@ -202,22 +241,24 @@ export async function getAccountingDashboardReport(
 
   const reportYears = Array.from(new Set([reportYear, annualYear, fiscalMonthPeriods[0].year, fiscalQuarterPeriods[0]?.year ?? reportYear]));
 
+  const reportPeriods = reportYears.flatMap(year => Array.from({ length: 12 }, (_, index) => ({ year, month: index + 1 })));
+
   const [currentFiscalMonth, currentFiscalQuarter, yearIncomes, yearExpenses] = await Promise.all([
     getPeriodSummary(fiscalMonthPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId }),
     getPeriodSummary(fiscalQuarterPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId }),
-    prisma.income.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), billingYear: { in: reportYears } } }),
+    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(reportPeriods, workspaceId) }),
     prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), year: { in: reportYears } }, include: { payments: true, category: true } })
   ]);
 
   const months = Array.from({ length: 12 }, (_, index) => {
     const month = index + 1;
     const monthKey = periodKey(reportYear, month);
-    const incomes = yearIncomes.filter(income => periodKey(income.billingYear, income.billingMonth) === monthKey);
+    const incomes = yearIncomes.filter(income => incomeMatchesPeriod(income, reportYear, month));
     const expenses = yearExpenses.filter(expense => periodKey(expense.year, expense.month) === monthKey);
     return { year: reportYear, month, totals: summarizeRecords(incomes, expenses, [{ year: reportYear, month }]) };
   });
 
-  const yearlyIncomes = yearIncomes.filter(income => income.billingYear === annualYear);
+  const yearlyIncomes = yearIncomes.filter(income => incomeMatchesYear(income, annualYear));
   const yearlyExpenses = yearExpenses.filter(expense => expense.year === annualYear);
   const totals = summarizeRecords(yearlyIncomes, yearlyExpenses, Array.from({ length: 12 }, (_, index) => ({ year: annualYear, month: index + 1 })));
 

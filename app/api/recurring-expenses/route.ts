@@ -59,6 +59,7 @@ async function resolvePaymentMethod(paymentMethodId: number | null | undefined, 
 export async function POST(request: Request) {
   const current = await getWorkspaceContext();
   if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
+  const wantsJson = request.headers.get('accept')?.includes('application/json') || request.headers.get('x-requested-with') === 'fetch';
   const formData = await request.formData();
   const raw = Object.fromEntries(formData.entries());
   const data = RecurringExpenseSchema.parse(raw);
@@ -67,7 +68,9 @@ export async function POST(request: Request) {
     supplierRef = await resolveExistingSupplierReference(data, current.workspace.id);
   } catch (error) {
     if (error instanceof SupplierReferenceError) {
-      return redirectToPath(appendFlash(redirectTarget(request, '/recurring-expenses'), { error: error.code }));
+      return wantsJson
+        ? NextResponse.json({ error: error.message, code: error.code }, { status: 400 })
+        : redirectToPath(appendFlash(redirectTarget(request, '/recurring-expenses'), { error: error.code }));
     }
     throw error;
   }
@@ -99,5 +102,7 @@ export async function POST(request: Request) {
     }
   });
 
-  return redirectToPath(appendFlash(redirectTarget(request, '/recurring-expenses'), { saved: 'created' }));
+  return wantsJson
+    ? NextResponse.json({ ok: true })
+    : redirectToPath(appendFlash(redirectTarget(request, '/recurring-expenses'), { saved: 'created' }));
 }

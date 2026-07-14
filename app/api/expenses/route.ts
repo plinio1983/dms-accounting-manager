@@ -183,6 +183,7 @@ export async function POST(request: Request) {
   const current = await getWorkspaceContext();
   if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const isForm = request.headers.get('content-type')?.includes('application/x-www-form-urlencoded') || request.headers.get('content-type')?.includes('multipart/form-data');
+  const wantsJson = request.headers.get('accept')?.includes('application/json') || request.headers.get('x-requested-with') === 'fetch';
   const formData = isForm ? await request.formData() : null;
   const raw = formData ? Object.fromEntries(formData.entries()) : await request.json();
   const data = ExpenseSchema.parse(raw);
@@ -194,7 +195,7 @@ export async function POST(request: Request) {
     supplierRef = await resolveExistingSupplierReference(data, current.workspace.id);
   } catch (error) {
     if (error instanceof SupplierReferenceError) {
-      return isForm
+      return isForm && !wantsJson
         ? redirectToPath(appendFlash(redirectAfterFormSaveTarget(request, '/expenses'), { error: error.code }))
         : NextResponse.json({ error: error.message, code: error.code }, { status: 400 });
     }
@@ -249,7 +250,7 @@ export async function POST(request: Request) {
     }
   }});
 
-  return isForm
+  return isForm && !wantsJson
     ? redirectToPath(appendFlash(redirectAfterFormSaveTarget(request, '/expenses'), { saved: 'created' }))
     : NextResponse.json({ ok: true });
 }

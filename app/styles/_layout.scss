@@ -2949,6 +2949,11 @@ table th, table td {
     background: rgba(10, 18, 38, .42);
 }
 
+/* A form opened from another modal must escape the parent's stacking context. */
+.nested-form-modal {
+    z-index: 10100;
+}
+
 .modal-card {
     width: min(720px, 96vw);
     max-height: 92vh;
