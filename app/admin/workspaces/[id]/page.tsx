@@ -35,7 +35,7 @@ export default async function SystemWorkspaceDetailPage({ params }: { params: Pr
   return <div className="grid admin-page">
     <div className="toolbar-card">
       <div>
-        <Link className="btn btn-xs btn-default" href="/admin/workspaces">↩ Workspace</Link>
+        <Link className="btn btn-xs btn-default" href="/admin/workspaces"><span className="btn-icon">↩</span> Workspace</Link>
         <h2>{workspace.name}</h2>
         <p className="muted">Owner: {workspace.owner.email}</p>
       </div>
@@ -88,4 +88,3 @@ export default async function SystemWorkspaceDetailPage({ params }: { params: Pr
     </div>
   </div>;
 }
-

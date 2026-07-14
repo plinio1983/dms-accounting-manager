@@ -15,7 +15,7 @@ export default async function EditSupplierPage({ params }: { params: Promise<{ i
         <h2>Modifica fornitore</h2>
         <p className="muted">{supplier.businessName}</p>
       </div>
-      <Link className="btn btn-xs btn-default" href="/suppliers">✕ Annulla</Link>
+      <Link className="btn btn-xs btn-default" href="/suppliers"><span className="btn-icon">✕</span> Annulla</Link>
     </div>
     <form className="card form income-form expense-form supplier-form supplier-styled-form" action={`/api/suppliers/${supplier.id}`} method="post">
       <details className="form-section full income-form-section supplier-form-section" open>
@@ -45,7 +45,7 @@ export default async function EditSupplierPage({ params }: { params: Promise<{ i
       </details>
 
       <div className="full actions-row right-actions form-actions-row supplier-form-actions">
-        <Link className="btn btn-md btn-default" href="/suppliers">✕ Annulla</Link>
+        <Link className="btn btn-md btn-default" href="/suppliers"><span className="btn-icon">✕</span> Annulla</Link>
         <button className="btn btn-md btn-primary" type="submit">✓ Salva modifiche</button>
       </div>
     </form>

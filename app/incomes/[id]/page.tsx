@@ -135,7 +135,7 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
       <article className={['expense-detail-document', 'income-detail-document', detailToneClass].filter(Boolean).join(' ')}>
         <div className="expense-detail-action-row">
           <div className="left-side">
-            <Link className="btn btn-sm btn-default" href={returnTo}>↩ Indietro</Link>
+            <Link className="btn btn-sm btn-default" href={returnTo}><span className="btn-icon">↩</span> Indietro</Link>
           </div>
           <div className="right-side">
             <Link className="btn btn-sm btn-primary" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>

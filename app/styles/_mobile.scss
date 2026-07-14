@@ -766,6 +766,22 @@
         color: #fff;
     }
 
+    .mobile-bottom-nav a.navigation-pending-control .mobile-bottom-nav-icon {
+        font-size: 0;
+    }
+
+    .mobile-bottom-nav a.navigation-pending-control .mobile-bottom-nav-icon::after {
+        content: "";
+        box-sizing: border-box;
+        display: block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: navigation-pending-spin .7s linear infinite;
+    }
+
     .bulk-actions-bar {
         align-items: flex-start;
         flex-direction: column;

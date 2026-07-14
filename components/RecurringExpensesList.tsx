@@ -178,7 +178,7 @@ export default function RecurringExpensesList({
           {activeFilterItems.map(item => <span className="badge" key={item}>{item}</span>)}
         </div>
       </div>
-      <Link className="btn btn-xs btn-default recurring-active-filters-reset" href="/recurring-expenses">↺ Reset</Link>
+      <Link className="btn btn-xs btn-default recurring-active-filters-reset" href="/recurring-expenses"><span className="btn-icon">↺</span> Reset</Link>
     </div> : null}
 
     <BulkSelectionController />

@@ -168,7 +168,7 @@ function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: s
   return <div className="active-filter-summary">
     <span className="active-filter-summary-title">Filtri attivi:</span>
     {items.length ? items.map(item => <span className="active-filter-chip" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>) : <span className="active-filter-empty">nessun filtro impostato</span>}
-    <Link className="btn btn-md btn-default reset-btn" href="/expenses"><span className="">↺</span> Reset</Link>
+    <Link className="btn btn-md btn-default reset-btn" href="/expenses"><span className="btn-icon">↺</span> Reset</Link>
   </div>;
 }
 
@@ -892,7 +892,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         <div>
           <div className="flex justify-start align-start">
             <span className="flex-grow recurring-active-filters-title">Filtri attivi</span>
-            <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/expenses">× Reset</Link>
+            <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/expenses"><span className="btn-icon">×</span> Reset</Link>
           </div>
           <div className="flex justify-end align-start">
             <div className="recurring-active-filter-tags">

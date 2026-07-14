@@ -49,7 +49,7 @@ function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: s
   return <div className="active-filter-summary">
     <span className="active-filter-summary-title">Filtri attivi:</span>
     {items.length ? items.map(item => <span className="active-filter-chip" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>) : <span className="active-filter-empty">nessun filtro impostato</span>}
-    <Link className="btn btn-md btn-default reset-btn" href="/suppliers"><span className="">↺</span> Reset</Link>
+    <Link className="btn btn-md btn-default reset-btn" href="/suppliers"><span className="btn-icon">↺</span> Reset</Link>
   </div>;
 }
 
@@ -195,7 +195,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
             {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
           </div>
         </div>
-        <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/suppliers">× Reset</Link>
+        <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/suppliers"><span className="btn-icon">×</span> Reset</Link>
       </div> : null}
 
       <script dangerouslySetInnerHTML={{ __html: `

@@ -22,7 +22,7 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
     <div className="toolbar-card import-hero-card">
       <div className="import-hero-title">
         {/*<span className="badge">Importazione dati</span>*/}
-        <Link className="btn btn-xs btn-default" href="/expenses">↩ Torna alle spese</Link>
+        <Link className="btn btn-xs btn-default" href="/expenses"><span className="btn-icon">↩</span> Torna alle spese</Link>
         <h2>Importa spese da Excel / ODS</h2>
         <p className="muted">Carica un file compilato con le colonne supportate. Puoi partire dal modello di esempio, modificarlo e importarlo direttamente in Tabularium.</p>
       </div>
@@ -88,7 +88,7 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
         </label>
 
         <div className="actions-row right-actions">
-          <Link className="btn btn-xs btn-default" href="/expenses">✕ Annulla</Link>
+          <Link className="btn btn-xs btn-default" href="/expenses"><span className="btn-icon">✕</span> Annulla</Link>
           <button type="submit" className="btn btn-md btn-primary"><span className="btn-icon">⬆</span>Importa spese</button>
         </div>
       </form>

@@ -391,7 +391,7 @@ function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: s
   return <div className="active-filter-summary">
     <span className="active-filter-summary-title">Filtri attivi:</span>
     {items.length ? items.map(item => <span className="active-filter-chip" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>) : <span className="active-filter-empty">nessun filtro impostato</span>}
-    <Link className="btn btn-md btn-default reset-btn" href="/incomes"><span className="">↺</span> Reset</Link>
+    <Link className="btn btn-md btn-default reset-btn" href="/incomes"><span className="btn-icon">↺</span> Reset</Link>
   </div>;
 }
 
@@ -800,7 +800,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
           </div>
         </div>
-        <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes">× Reset</Link>
+        <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes"><span className="btn-icon">×</span> Reset</Link>
       </div> : null}
 
       <div className="list-heading recurring-list-heading">

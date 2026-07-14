@@ -73,7 +73,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             <div className="flex gap-6 justify-between">
                 <span>
                     <Link className="btn btn-xs btn-default" href={backHref}>
-                        ↩ <span className="hidden-mobile"> Indietro</span>
+                        <span className="btn-icon">↩</span><span className="hidden-mobile"> Indietro</span>
                     </Link>
                 </span>
                 <MonthReportMonthSelect options={monthNavOptions} value={currentMonthHref}/>

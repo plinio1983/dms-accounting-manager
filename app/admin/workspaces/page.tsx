@@ -17,7 +17,7 @@ export default async function SystemWorkspacesPage() {
   return <div className="grid admin-page">
     <div className="toolbar-card">
       <div>
-        <Link className="btn btn-xs btn-default" href="/admin">↩ Admin</Link>
+        <Link className="btn btn-xs btn-default" href="/admin"><span className="btn-icon">↩</span> Admin</Link>
         <h2>Workspace sistema</h2>
         <p className="muted">Workspace creati dagli utenti e relativi proprietari.</p>
       </div>
@@ -40,4 +40,3 @@ export default async function SystemWorkspacesPage() {
     </div>
   </div>;
 }
-

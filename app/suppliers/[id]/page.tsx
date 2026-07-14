@@ -70,10 +70,10 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       <article className="expense-detail-document supplier-detail-document">
         <div className="expense-detail-action-row">
           <div className="left-side">
-            <Link className="btn btn-sm btn-default" href={returnTo}>↩ Indietro</Link>
+            <Link className="btn btn-sm btn-default" href={returnTo}><span className="btn-icon">↩</span> Indietro</Link>
           </div>
           <div className="right-side">
-            <Link className="btn btn-sm btn-primary" href={`/suppliers/${supplier.id}/edit`}>✎ Modifica</Link>
+            <Link className="btn btn-sm btn-primary" href={`/suppliers/${supplier.id}/edit`}><span className="btn-icon">✎</span> Modifica</Link>
             <DeleteActionButton
               action={`/api/suppliers/${supplier.id}`}
               confirmMessage="Confermi la rimozione del fornitore? L’operazione non può essere annullata."

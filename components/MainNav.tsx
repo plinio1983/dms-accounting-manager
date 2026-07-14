@@ -114,7 +114,7 @@ function MainNavContent() {
               className={isActive ? 'mobile-bottom-nav-active' : undefined}
               aria-current={isActive ? 'page' : undefined}
             >
-              <span aria-hidden="true">{link.icon}</span>
+              <span className="mobile-bottom-nav-icon" aria-hidden="true">{link.icon}</span>
               <strong>{link.shortLabel}</strong>
             </Link>
           );

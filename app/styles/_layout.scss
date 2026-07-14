@@ -652,6 +652,53 @@ button {
     animation: navigation-pending-spin .7s linear infinite;
 }
 
+/* When a button already has an icon, reuse that slot for the loader. */
+.navigation-pending-control:has(.btn-icon, .nav-link-icon, .mobile-bottom-nav-icon)::after {
+    display: none;
+}
+
+.navigation-pending-control .btn-icon {
+    display: inline-flex !important;
+    flex: 0 0 .82rem !important;
+    width: .82rem;
+    min-width: .82rem;
+    height: .82rem;
+    overflow: visible;
+    font-size: 0 !important;
+}
+
+.navigation-pending-control .btn-icon > * {
+    display: none !important;
+}
+
+.navigation-pending-control .btn-icon::after {
+    content: "";
+    box-sizing: border-box;
+    display: block;
+    width: .82rem;
+    height: .82rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: navigation-pending-spin .7s linear infinite;
+}
+
+.navigation-pending-control .nav-link-icon {
+    font-size: 0 !important;
+}
+
+.navigation-pending-control .nav-link-icon::after {
+    content: "";
+    box-sizing: border-box;
+    display: block;
+    width: .82rem;
+    height: .82rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: navigation-pending-spin .7s linear infinite;
+}
+
 @keyframes navigation-pending-spin {
     to {
         transform: rotate(360deg);
