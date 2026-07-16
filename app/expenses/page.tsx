@@ -924,7 +924,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         {/*<ExpenseCategoryColumnChart data={expensesByCategory} total={totals.total} />*/}
         <ExpenseCategoryPieChart data={expensesByCategory} />
       </div>
-
+    </div>
+    <div className="card expenses-list-card">
       <div className="list-heading recurring-list-heading">
         <div>
           <h2>Lista spese</h2>

@@ -233,6 +233,36 @@ function MoneyCell({value, highlight = false, tone = ''}: { value: number; highl
         className={moneyTone(value, [highlight ? 'money-highlight' : '', tone].filter(Boolean).join(' '))}>{euro(value)}</strong>;
 }
 
+function MobileMoneyCell({value}: { value: number }) {
+    const formatted = new Intl.NumberFormat('it-IT', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(value);
+    return <strong className={moneyTone(value)}>{formatted}</strong>;
+}
+
+function MobileMoneyCellNoFormat({value}: { value: number }) {
+    const formatted = new Intl.NumberFormat('it-IT', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(value);
+    return <strong>{formatted}</strong>;
+}
+
+function MobilePercentCell({value, total, tone = ''}: { value: number; total: number; tone?: string }) {
+    const percentage = total ? value / total : 0;
+    const label = new Intl.NumberFormat('it-IT', {
+        style: 'percent',
+        maximumFractionDigits: 0
+    }).format(percentage);
+    const className = percentage <= 0 ? `badge muted ${tone}` : (tone ? `badge color-badge ${tone}` : 'badge');
+    return <strong className={className}>{label}</strong>;
+}
+
 function PercentCell({value, total, tone = ''}: { value: number; total: number; tone?: string }) {
     const percentage = total ? value / total : 0;
     const label = new Intl.NumberFormat('it-IT', {
@@ -1222,7 +1252,7 @@ export default async function Dashboard({searchParams}: {
             <section className="card dashboard-statement-panel dashboard-annual-card">
                 <div className="dashboard-statement-heading">
                     <div>
-                        <h2>Conteggi annuali</h2>
+                        <h2>Da inizio anno</h2>
                         <p className="muted">Totali fiscali anno {report.annualYear}</p>
                     </div>
                 </div>
@@ -1332,6 +1362,45 @@ export default async function Dashboard({searchParams}: {
                         <td><MoneyCell value={m.totals.debitoIva}/></td>
                     </tr>)}</tbody>
                 </table>
+            </div>
+            <div className="dashboard-monthly-mobile" aria-label={`Report mensile ${report.year}`}>
+                <div className="dashboard-monthly-mobile-labels" aria-hidden="true">
+                    <span>Mese</span><span>Entrate</span><span>Spese</span><span>Utile netto</span>
+                </div>
+                {report.months.map(m => <div className="dashboard-monthly-mobile-row" key={`mobile-${m.month}`}>
+                    <div className="dashboard-monthly-mobile-main">
+                        <Link className="dashboard-monthly-mobile-month" href={monthReportLink(m.year, m.month)}>
+                            {capitalizedMonthName(m.month).slice(0, 3)}
+                        </Link>
+                        <Link href={periodLink('/incomes', [{year: m.year, month: m.month}])}>
+                            <MobileMoneyCellNoFormat value={m.totals.incassoTotale}/>
+                        </Link>
+                        <Link href={periodLink('/expenses', [{year: m.year, month: m.month}])}>
+                            <MobileMoneyCellNoFormat value={m.totals.speseTotali}/>
+                        </Link>
+                        <div><MobileMoneyCell value={m.totals.utileNetto}/></div>
+                    </div>
+                    <div className="dashboard-monthly-mobile-secondary">
+                        <div><span>Utile fiscale</span><MobileMoneyCell value={m.totals.utileFiscale}/></div>
+                        <div>
+                            <span>Entrate N/F</span>
+                            <div className="dashboard-monthly-mobile-badge"><Link
+                                href={periodLink('/incomes', [{year: m.year, month: m.month}], {fiscal: 'no'})}>
+                                <MobilePercentCell value={m.totals.incassoNonFiscale} total={m.totals.incassoTotale}/>
+                            </Link></div>
+                        </div>
+                        <div>
+                            <span>Spese N/F</span>
+                            <div className="dashboard-monthly-mobile-badge"><Link
+                                href={periodLink('/expenses', [{year: m.year, month: m.month}], {declared: 'no'})}>
+                                <MobilePercentCell value={m.totals.usciteNonFiscali}
+                                                   total={m.totals.speseTotali}
+                                                   tone={nonFiscalExpensePercentTone(m.totals.usciteNonFiscali, m.totals.speseTotali)}/>
+                            </Link></div>
+                        </div>
+                        <div><span>Debito IVA</span><MobileMoneyCellNoFormat value={m.totals.debitoIva}/></div>
+                    </div>
+                </div>)}
             </div>
         </div>
 

@@ -802,7 +802,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         </div>
         <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes"><span className="btn-icon">×</span> Reset</Link>
       </div> : null}
-
+    </div>
+    <div className="card expenses-list-card">
       <div className="list-heading recurring-list-heading">
         <div>
           <h2>Lista incassi</h2>
