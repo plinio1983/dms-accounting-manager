@@ -4436,6 +4436,18 @@ html, body {
     font-size: 18px;
 }
 
+.monthly-vat-ratio-chart-card h2 {
+    font-size: 18px;
+}
+
+.monthly-vat-generated-bar {
+    background: #7c3aed;
+}
+
+.monthly-vat-paid-bar {
+    background: #0d9488;
+}
+
 .monthly-non-fiscal-chart-list {
     display: grid;
     gap: 10px;
@@ -4483,9 +4495,17 @@ html, body {
     gap: 6px;
 }
 
+.monthly-profit-ratio-gross-margin-values {
+    margin-top: 2px;
+}
+
+.monthly-profit-ratio-gross-margin-bar {
+    background: #2563eb;
+}
+
 .monthly-profit-ratio-bar-wrap {
     position: relative;
-    background: linear-gradient(90deg, #f8dfe3 0 50%, #e5edf8 50% 100%);
+    background: linear-gradient(90deg, #f8dfe3 0 25%, #e5edf8 25% 100%);
 }
 
 .monthly-profit-ratio-bar-wrap::before {
@@ -4493,7 +4513,7 @@ html, body {
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 50%;
+    left: 25%;
     width: 2px;
     background: rgba(15, 23, 42, .24);
     transform: translateX(-1px);
