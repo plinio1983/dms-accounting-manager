@@ -167,7 +167,7 @@ function MonthlyTrendCard({
       </table>
     </div>
     <div className="dashboard-statement-actions">
-      <Link className="btn btn-sm btn-default" href={monthReportLink(state.year, state.month)}>Dettaglio</Link>
+      <Link className="btn btn-sm btn-default" href={monthReportLink(state.year, state.month)}>Dettaglio Mese</Link>
     </div>
   </section>;
 }
@@ -283,7 +283,7 @@ function FiscalSummaryCard({
       </table>
     </div>
     {detailPeriod ? <div className="dashboard-statement-actions">
-      <Link className="btn btn-sm btn-default" href={monthReportLink(detailPeriod.year, detailPeriod.month)}>Dettaglio</Link>
+      <Link className="btn btn-sm btn-default" href={monthReportLink(detailPeriod.year, detailPeriod.month)}>Dettaglio Mese</Link>
     </div> : null}
   </section>;
 }

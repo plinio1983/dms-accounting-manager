@@ -509,10 +509,9 @@ function MonthlyNonFiscalRatioChart({
                 <h2 id="monthly-non-fiscal-chart-title">Rapporto spese e incassi non fiscali su incasso totale per mese</h2>
                 <p className="muted">Percentuali mensili calcolate sull’incasso totale da inizio anno {year}.</p>
             </div>
-            <div className="text-right chart-total">
-                <span
-                    className="badge">Spese {expenseYearPercentage.toFixed(1)}% · Incassi {incomeYearPercentage.toFixed(1)}%</span>
-            </div>
+            {/*<div className="text-right chart-total">*/}
+            {/*    <span className="badge">Spese {expenseYearPercentage.toFixed(1)}% · Incassi {incomeYearPercentage.toFixed(1)}%</span>*/}
+            {/*</div>*/}
         </div>
         {months.length ? <div className="monthly-non-fiscal-chart-list">
             <div className="monthly-income-expense-ratio-year-row">
@@ -622,9 +621,9 @@ function MonthlyIncomeExpenseRatioChart({
                 <h2 id="monthly-income-expense-ratio-chart-title">Margine lordo per mese</h2>
                 <p className="muted">Percentuale del margine lordo rispetto alle entrate totali mensili da inizio anno {year}.</p>
             </div>
-            <div className="text-right chart-total">
-                <span className="badge">Anno {year}</span>
-            </div>
+            {/*<div className="text-right chart-total">*/}
+            {/*    <span className="badge">Anno {year}</span>*/}
+            {/*</div>*/}
         </div>
         {months.length ? <div className="monthly-non-fiscal-chart-list">
             <div className="monthly-income-expense-ratio-year-row">
@@ -703,9 +702,9 @@ function MonthlyFiscalExpenseImpactChart({
                 <h2 id="monthly-fiscal-expense-impact-chart-title">Impatto spese fiscali su incasso fiscale per mese</h2>
                 <p className="muted">Percentuale delle uscite fiscali rispetto agli incassi fiscali da inizio anno {year}.</p>
             </div>
-            <div className="text-right chart-total">
-                <span className="badge">Anno {annualPercentage.toFixed(1)}%</span>
-            </div>
+            {/*<div className="text-right chart-total">*/}
+            {/*    <span className="badge">Anno {annualPercentage.toFixed(1)}%</span>*/}
+            {/*</div>*/}
         </div>
         {months.length ? <div className="monthly-non-fiscal-chart-list">
             <div className="monthly-income-expense-ratio-year-row">
@@ -774,7 +773,7 @@ function MonthlyVatRatioChart({months, year}: {
                 <h2 id="monthly-vat-ratio-chart-title">IVA generata e versata per mese</h2>
                 <p className="muted">IVA degli incassi e IVA pagata con le spese fiscali, in percentuale sull’incasso totale da inizio anno {year}.</p>
             </div>
-            <div className="text-right chart-total"><span className="badge">Anno {year}</span></div>
+            {/*<div className="text-right chart-total"><span className="badge">Anno {year}</span></div>*/}
         </div>
         {months.length ? <div className="monthly-non-fiscal-chart-list">
             <div className="monthly-income-expense-ratio-year-row">
@@ -889,9 +888,9 @@ function MonthlyNetFiscalProfitRatioChart({ months, year }: {
                 <h2 id="monthly-profit-ratio-chart-title">Rapporto utile netto / utile fiscale per mese</h2>
                 <p className="muted">Percentuale di margine lordo, utile netto e utile fiscale sull’incasso totale nell’anno {year}.</p>
             </div>
-            <div className="text-right chart-total">
-                <span className="badge">Anno {year}</span>
-            </div>
+            {/*<div className="text-right chart-total">*/}
+            {/*    <span className="badge">Anno {year}</span>*/}
+            {/*</div>*/}
         </div>
         {months.length ? <div className="monthly-non-fiscal-chart-list">
             <div className="monthly-income-expense-ratio-year-row monthly-profit-ratio-year-row">

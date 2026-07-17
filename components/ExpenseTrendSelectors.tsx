@@ -159,6 +159,7 @@ function goWithQuick(type: "date" | "fiscal", value: string, year: string) {
 
 export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, dateYear, billingPeriodYear, useFiscalPeriodFilter }: Props) {
   const [mode, setMode] = useState<"date" | "fiscal">(useFiscalPeriodFilter ? "fiscal" : "date");
+  const [pendingQuickButton, setPendingQuickButton] = useState<string | null>(null);
   const andamentoComplessivoValue = !useFiscalPeriodFilter ? (dateQuick || currentMonthQuickValue()) : currentMonthQuickValue();
   const andamentoFiscaleValue = useFiscalPeriodFilter ? (billingPeriodQuick || currentMonthQuickValue()) : currentMonthQuickValue();
   const andamentoComplessivoYear = !useFiscalPeriodFilter ? (dateYear || currentYearValue()) : currentYearValue();
@@ -237,9 +238,16 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, d
           type="button"
           className={isActive ? "btn-xs btn-action btn-active expense-trend-quick-btn" : "btn-xs btn-action expense-trend-quick-btn"}
           aria-pressed={isActive}
-          onClick={() => goWithQuick(mode, target.value, target.year)}
+          aria-label={pendingQuickButton === value ? `Caricamento ${label}` : label}
+          disabled={pendingQuickButton !== null}
+          onClick={() => {
+            setPendingQuickButton(value);
+            goWithQuick(mode, target.value, target.year);
+          }}
         >
-          {label}
+          {pendingQuickButton === value
+            ? <span className="expense-trend-quick-loader" aria-hidden="true" />
+            : label}
         </button>;
       })}
     </div>
