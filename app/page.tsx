@@ -218,12 +218,9 @@ function MonthlyTrendCard({
             <SummaryMetric label="Entrate totali" value={totals.incassoTotale} highlight href={incomesHref}/>
             <SummaryMetric label="Uscite totali" value={totals.speseTotali} highlight href={expensesHref}/>
             <SummaryMetric label="Utile netto" value={totals.utileNetto} highlight/>
-            <SummaryMetric label="Spese non fiscali" value={totals.usciteNonFiscali}
-                           warning={totals.usciteNonFiscali > 0} href={expensesHref}/>
-            <SummaryMetric label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0}
-                           href={unpaidExpensesHref}/>
-            <CountMetric label="Pagamenti scaduti" value={totals.fattureScaduteCount}
-                         warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref}/>
+            <SummaryMetric label="Spese non fiscali" value={totals.usciteNonFiscali} warning={totals.usciteNonFiscali > 0} href={expensesHref}/>
+            <SummaryMetric label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref}/>
+            <CountMetric label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref}/>
         </div>
     </div>;
 }
@@ -300,6 +297,7 @@ type DashboardPieItem = {
     name: string;
     code: string;
     total: number;
+    visualValue?: number;
     href?: string;
 };
 
@@ -313,6 +311,7 @@ function DashboardPieChart({
                                percentageTotal,
                                centerLabel = 'Totale',
                                centerValue,
+                               centerDetail,
                                emptyMessage,
                                remainderLabel,
                                remainderName
@@ -326,17 +325,19 @@ function DashboardPieChart({
     percentageTotal?: number;
     centerLabel?: string;
     centerValue?: string;
+    centerDetail?: string | null;
     emptyMessage: string;
     remainderLabel?: string;
     remainderName?: string;
 }) {
-    const chartTotal = data.reduce((sum, item) => sum + item.total, 0);
+    const chartValue = (item: DashboardPieItem) => item.visualValue ?? item.total;
+    const chartTotal = data.reduce((sum, item) => sum + chartValue(item), 0);
     const denominator = Math.max(visualTotal, chartTotal);
     const percentageDenominator = percentageTotal ?? denominator;
     let cursor = 0;
     const segments = data.map((item, index) => {
         const start = denominator ? (cursor / denominator) * 100 : 0;
-        cursor += item.total;
+        cursor += chartValue(item);
         const end = denominator ? (cursor / denominator) * 100 : 0;
         return `${dashboardChartColors[index % dashboardChartColors.length]} ${start.toFixed(3)}% ${end.toFixed(3)}%`;
     });
@@ -351,19 +352,19 @@ function DashboardPieChart({
                 <h2>{title}</h2>
                 <p className="muted">{description}</p>
             </div>
-            <div className="text-right chart-total"><span className="badge">{badge}</span></div>
+            {/*<div className="text-right chart-total"><span className="badge">{badge}</span></div>*/}
         </div>
         {data.length && denominator > 0 ? <div className="expense-impact-pie-layout">
             <div className="expense-impact-pie" style={{background}} aria-label={title}>
                 <div>
                     <span>{centerLabel}</span>
                     <strong className="main-label">{centerValue ?? chartEuro(total)}</strong>
-                    <span>{chartEuro(total.toFixed(2))}</span>
+                    {centerDetail === null ? null : <span>{centerDetail ?? chartEuro(total.toFixed(2))}</span>}
                 </div>
             </div>
             <div className="expense-impact-pie-legend">
                 {data.map((item, index) => {
-                    const percentage = percentageDenominator ? (item.total / percentageDenominator) * 100 : 0;
+                    const percentage = percentageDenominator ? (chartValue(item) / percentageDenominator) * 100 : 0;
                     const barWidth = Math.min(percentage, 100);
                     const rowContent = <>
                         <div className="expense-impact-pie-legend-row">
@@ -487,6 +488,46 @@ function NetProfitByIncomeChannelChart({
         total={positiveProfit}
         centerLabel={titleLabel}
         emptyMessage={`Nessun utile ${label} positivo disponibile per la ripartizione.`}
+    />;
+}
+
+function MonthlyProfitPieChart({months, totalProfit, year, kind}: {
+    months: Array<{
+        year: number;
+        month: number;
+        totals: { utileLordo: number; utileNetto: number; utileFiscale: number }
+    }>;
+    totalProfit: number;
+    year: number;
+    kind: 'lordo' | 'netto' | 'fiscale';
+}) {
+    const titleLabel = kind === 'lordo' ? 'Margine lordo' : `Utile ${kind}`;
+    const data = months.map(month => {
+        const profit = kind === 'lordo'
+            ? month.totals.utileLordo
+            : kind === 'netto' ? month.totals.utileNetto : month.totals.utileFiscale;
+        return {
+            name: capitalizedMonthName(month.month),
+            code: capitalizedMonthName(month.month).slice(0, 3).toUpperCase(),
+            total: profit,
+            visualValue: Math.abs(profit),
+            href: monthReportLink(month.year, month.month)
+        };
+    });
+    const absoluteProfitTotal = data.reduce((sum, item) => sum + item.visualValue, 0);
+
+    return <DashboardPieChart
+        title={`Report ${titleLabel} per mese`}
+        description={`Distribuzione del ${titleLabel.toLocaleLowerCase('it-IT')} per mese nel ${year}. Le fette negative usano l’ampiezza assoluta e mantengono il segno in legenda.`}
+        badge={<>{titleLabel} {chartEuro(totalProfit)}</>}
+        data={data}
+        total={totalProfit}
+        visualTotal={absoluteProfitTotal}
+        percentageTotal={absoluteProfitTotal}
+        centerLabel={titleLabel}
+        centerValue={chartEuro(totalProfit)}
+        centerDetail={null}
+        emptyMessage={`Nessun ${titleLabel.toLocaleLowerCase('it-IT')} disponibile per l’anno selezionato.`}
     />;
 }
 
@@ -829,7 +870,7 @@ function MonthlyVatRatioChart({months, year}: {
     </section>;
 }
 
-function MonthlyNetFiscalProfitRatioChart({ months, year }: {
+function MonthlyNetFiscalProfitRatioChart({months, year}: {
     months: Array<{ year: number; month: number; totals: any }>;
     year: number;
 }) {
@@ -921,16 +962,16 @@ function MonthlyNetFiscalProfitRatioChart({ months, year }: {
                     <span className={grossMarginBarClass(totalGrossMargin, totalIncome)} style={grossMarginBarStyle(totalGrossMargin, totalIncome)}/>
                   </span>
                     <br/>
-                  <div className="monthly-income-expense-ratio-chart-values">
-                      <span>Margine Netto</span>
-                      <div>
-                          <strong className={moneyTone(totalNetProfit)}>{chartEuro(totalNetProfit)}</strong>
-                      </div>
-                      <div>
-                          <strong className="text-accent">{incomeRatioLabel(totalNetProfit, totalIncome)}</strong>
-                      </div>
-                  </div>
-                  <span className="monthly-non-fiscal-chart-bar-wrap monthly-profit-ratio-bar-wrap">
+                    <div className="monthly-income-expense-ratio-chart-values">
+                        <span>Margine Netto</span>
+                        <div>
+                            <strong className={moneyTone(totalNetProfit)}>{chartEuro(totalNetProfit)}</strong>
+                        </div>
+                        <div>
+                            <strong className="text-accent">{incomeRatioLabel(totalNetProfit, totalIncome)}</strong>
+                        </div>
+                    </div>
+                    <span className="monthly-non-fiscal-chart-bar-wrap monthly-profit-ratio-bar-wrap">
                     <span className={profitBarClass(totalNetProfit, 'net')} style={profitBarStyle(totalNetProfit, totalIncome)}/>
                   </span>
                     <span className="monthly-non-fiscal-chart-bar-wrap monthly-profit-ratio-bar-wrap">
@@ -1203,13 +1244,28 @@ export default async function Dashboard({searchParams}: {
                     className="btn-icon">＋</span> Incasso</Link>
                 {/*<Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>*/}
             </div>
-            <form className="period-selector dashboard-year-selector" method="get">
-                <span className="selector-label">Anno fiscale</span>
-                <AutoSubmitSelect name="annualYear" defaultValue={String(report.annualYear)}
-                                  aria-label="Anno fiscale dashboard">
-                    {yearOptions.map(year => <option key={`top-annual-${year}`} value={year}>{year}</option>)}
-                </AutoSubmitSelect>
-            </form>
+            <div>
+                <form className="period-selector dashboard-year-selector" method="get">
+                    <span className="selector-label">Anno fiscale</span>
+                    <AutoSubmitSelect name="annualYear" defaultValue={String(report.annualYear)} aria-label="Anno fiscale dashboard">
+                        {yearOptions.map(year => <option key={`top-annual-${year}`} value={year}>{year}</option>)}
+                    </AutoSubmitSelect>
+                </form>
+            </div>
+            <div className="flex align-center justify-end">
+                {fiscalMonth ?
+                    <Link className="btn btn-sm btn-ghost dashboard-month-report-link" href={monthReportLink(fiscalMonth.year, fiscalMonth.month)}>
+                    <span className="btn-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                             strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="5" width="18" height="16" rx="2"/>
+                            <path d="M16 3v4M8 3v4M3 10h18"/>
+                            <path d="M8 14h2M14 14h2M8 17h2M14 17h2"/>
+                        </svg>
+                    </span>
+                        Vai al Report mensile
+                    </Link> : null}
+            </div>
         </div>
 
         <div className="dashboard-report-charts">
@@ -1217,6 +1273,12 @@ export default async function Dashboard({searchParams}: {
                 <IncomeBreakdownChart title="Entrate per canale e categoria"
                                       description={`Distribuzione degli incassi per canale vendita e categoria nell’anno fiscale ${report.annualYear}.`}
                                       data={report.incomesBySalesChannel}/>
+                <MonthlyProfitPieChart months={report.months} totalProfit={report.totals.utileNetto}
+                                       year={report.annualYear} kind="netto"/>
+                <MonthlyProfitPieChart months={report.months} totalProfit={report.totals.utileFiscale}
+                                       year={report.annualYear} kind="fiscale"/>
+                <MonthlyProfitPieChart months={report.months} totalProfit={report.totals.utileLordo}
+                                       year={report.annualYear} kind="lordo"/>
                 <ExpenseCategoryIncomeImpactChart data={report.expensesByCategory}
                                                   incomeTotal={report.totals.incassoTotale}/>
                 <NetProfitByIncomeChannelChart data={report.incomesBySalesChannel} profit={report.totals.utileNetto}
@@ -1377,16 +1439,17 @@ export default async function Dashboard({searchParams}: {
                         <Link href={periodLink('/expenses', [{year: m.year, month: m.month}])}>
                             <MobileMoneyCellNoFormat value={m.totals.speseTotali}/>
                         </Link>
-                        <div><MobileMoneyCell value={m.totals.utileNetto}/></div>
+                        <div><span className="badge"><MobileMoneyCell value={m.totals.utileNetto}/></span></div>
                     </div>
                     <div className="dashboard-monthly-mobile-secondary">
                         <div><span>Utile fiscale</span><MobileMoneyCell value={m.totals.utileFiscale}/></div>
                         <div>
                             <span>Entrate N/F</span>
-                            <div className="dashboard-monthly-mobile-badge"><Link
-                                href={periodLink('/incomes', [{year: m.year, month: m.month}], {fiscal: 'no'})}>
-                                <MobilePercentCell value={m.totals.incassoNonFiscale} total={m.totals.incassoTotale}/>
-                            </Link></div>
+                            <div className="dashboard-monthly-mobile-badge">
+                                <Link href={periodLink('/incomes', [{year: m.year, month: m.month}], {fiscal: 'no'})}>
+                                    <MobilePercentCell value={m.totals.incassoNonFiscale} total={m.totals.incassoTotale}/>
+                                </Link>
+                            </div>
                         </div>
                         <div>
                             <span>Spese N/F</span>
@@ -1408,7 +1471,7 @@ export default async function Dashboard({searchParams}: {
                 <MonthlyNetFiscalProfitRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
                 <MonthlyNonFiscalRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
                 <MonthlyFiscalExpenseImpactChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
-                <MonthlyIncomeExpenseRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
+                {/*<MonthlyIncomeExpenseRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>*/}
                 <MonthlyVatRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
             </div>
         </div>
@@ -1419,13 +1482,11 @@ export default async function Dashboard({searchParams}: {
                 <p className="muted">Inserisci rapidamente una nuova operazione.</p>
             </div>
             <div className="actions-row">
-                <button className="btn btn-lg btn-primary" type="button" data-expense-new><span
-                    className="btn-icon">＋</span> Spesa
+                <button className="btn btn-lg btn-primary" type="button" data-expense-new>
+                    <span className="btn-icon">＋</span> Spesa
                 </button>
-                <Link className="btn btn-lg btn-primary" href="/incomes?new=1"><span
-                    className="btn-icon">＋</span> Incasso</Link>
-                <Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span
-                    className="btn-icon">＋</span> Fornitore</Link>
+                <Link className="btn btn-lg btn-primary" href="/incomes?new=1"><span className="btn-icon">＋</span> Incasso</Link>
+                <Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>
             </div>
         </div>
     </div>;

@@ -259,7 +259,7 @@ function ExpenseCategoryPieChart({ data }: { data: ExpenseCategoryDatum[] }) {
         <h2>Spese per categoria</h2>
         {/*<p className="muted">Distribuzione delle spese in base ai risultati filtrati.</p>*/}
       </div>
-      <div className="text-right chart-total"><span className="badge">Totale {chartEuro(total)}</span></div>
+      {/*<div className="text-right chart-total"><span className="badge">Totale {chartEuro(total)}</span></div>*/}
     </div>
     {groupedData.length && total > 0 ? <div className="expense-impact-pie-layout">
       <div className="expense-impact-pie" style={{ background }} aria-label="Grafico spese per categoria">

@@ -167,7 +167,17 @@ function MonthlyTrendCard({
       </table>
     </div>
     <div className="dashboard-statement-actions">
-      <Link className="btn btn-sm btn-default" href={monthReportLink(state.year, state.month)}>Dettaglio Mese</Link>
+      <Link className="btn btn-sm btn-ghost" href={monthReportLink(state.year, state.month)}>
+        <span className="btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+               strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="5" width="18" height="16" rx="2"/>
+              <path d="M16 3v4M8 3v4M3 10h18"/>
+              <path d="M8 14h2M14 14h2M8 17h2M14 17h2"/>
+          </svg>
+        </span>
+        <span>Report mensile</span>
+      </Link>
     </div>
   </section>;
 }
@@ -257,7 +267,6 @@ function FiscalSummaryCard({
   const invoicesNotSentHref = periodLink('/incomes', periods, { fiscal: 'yes', invoiceStatusMode: 'not_emitted' });
   const invoicesNotReceivedHref = periodLink('/expenses', periods, { declared: 'yes', invoiceStatusMode: 'not_received' });
   const overdueExpensesHref = periodLink('/expenses', periods, { paymentStatus: 'overdue', declared: 'yes' });
-  const detailPeriod = periods.length === 1 ? periods[0] : null;
 
   return <section className={`card dashboard-statement-panel ${loading ? 'is-loading' : ''}`}>
     <div className="dashboard-statement-heading">
@@ -282,9 +291,6 @@ function FiscalSummaryCard({
         </tbody>
       </table>
     </div>
-    {detailPeriod ? <div className="dashboard-statement-actions">
-      <Link className="btn btn-sm btn-default" href={monthReportLink(detailPeriod.year, detailPeriod.month)}>Dettaglio Mese</Link>
-    </div> : null}
   </section>;
 }
 

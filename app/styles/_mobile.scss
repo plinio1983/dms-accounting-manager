@@ -46,7 +46,10 @@
   }
 
   .dashboard-monthly-mobile-main {
-    margin-bottom: 9px;
+    //margin-bottom: 9px;
+    background: #f6f8ff;
+    padding-top: 4px;
+    padding-bottom: 4px;
   }
 
   .dashboard-monthly-mobile-labels {
@@ -69,8 +72,8 @@
   }
 
   .dashboard-monthly-mobile-row {
-    padding: 9px 8px;
-    border-bottom: 1px solid var(--line);
+    padding: 0 8px 9px 8px;
+    border-bottom: 1px solid #b8b8b8;
 
     .money-positive {
       color: #16a34a;
@@ -105,7 +108,7 @@
     gap: 6px;
     margin-left: -9px;
     margin-right: -9px;
-    background: #f6f8ff;
+    //background: #f6f8ff;
     padding-right: 12px;
     padding-bottom: 7px;
     margin-bottom: -9px;

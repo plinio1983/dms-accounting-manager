@@ -453,7 +453,7 @@ function IncomePieBreakdownChart({ title, data }: { title: string; data: Array<{
       <div>
         <h2>{title}</h2>
       </div>
-      <div className="text-right chart-total"><span className="badge">Totale {euro(total)}</span></div>
+      {/*<div className="text-right chart-total"><span className="badge">Totale {euro(total)}</span></div>*/}
     </div>
     {data.length && total > 0 ? <div className="expense-impact-pie-layout">
       <div className="expense-impact-pie" style={{ background }} aria-label={title}>
