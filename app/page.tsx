@@ -531,6 +531,42 @@ function MonthlyProfitPieChart({months, totalProfit, year, kind}: {
     />;
 }
 
+function MonthlyVatBalancePieChart({months, year}: {
+    months: Array<{
+        year: number;
+        month: number;
+        totals: { ivaGenerataIncassi: number; ivaVersataSpese: number }
+    }>;
+    year: number;
+}) {
+    const data = months.map(month => {
+        const vatBalance = month.totals.ivaGenerataIncassi - month.totals.ivaVersataSpese;
+        return {
+            name: capitalizedMonthName(month.month),
+            code: capitalizedMonthName(month.month).slice(0, 3).toUpperCase(),
+            total: vatBalance,
+            visualValue: Math.abs(vatBalance),
+            href: monthReportLink(month.year, month.month)
+        };
+    });
+    const totalVatBalance = data.reduce((sum, item) => sum + item.total, 0);
+    const absoluteVatBalanceTotal = data.reduce((sum, item) => sum + item.visualValue, 0);
+
+    return <DashboardPieChart
+        title="Saldo IVA per mese"
+        description={`IVA generata con gli incassi meno IVA versata con le spese fiscali nel ${year}. Le fette negative mantengono il segno in legenda.`}
+        badge={<>Saldo IVA {chartEuro(totalVatBalance)}</>}
+        data={data}
+        total={totalVatBalance}
+        visualTotal={absoluteVatBalanceTotal}
+        percentageTotal={absoluteVatBalanceTotal}
+        centerLabel="Saldo IVA"
+        centerValue={chartEuro(totalVatBalance)}
+        centerDetail={null}
+        emptyMessage="Nessun saldo IVA disponibile per l’anno selezionato."
+    />;
+}
+
 function MonthlyNonFiscalRatioChart({
                                         months,
                                         year
@@ -1273,20 +1309,17 @@ export default async function Dashboard({searchParams}: {
                 <IncomeBreakdownChart title="Entrate per canale e categoria"
                                       description={`Distribuzione degli incassi per canale vendita e categoria nell’anno fiscale ${report.annualYear}.`}
                                       data={report.incomesBySalesChannel}/>
-                <MonthlyProfitPieChart months={report.months} totalProfit={report.totals.utileNetto}
-                                       year={report.annualYear} kind="netto"/>
-                <MonthlyProfitPieChart months={report.months} totalProfit={report.totals.utileFiscale}
-                                       year={report.annualYear} kind="fiscale"/>
-                <MonthlyProfitPieChart months={report.months} totalProfit={report.totals.utileLordo}
-                                       year={report.annualYear} kind="lordo"/>
-                <ExpenseCategoryIncomeImpactChart data={report.expensesByCategory}
-                                                  incomeTotal={report.totals.incassoTotale}/>
+                <ExpenseCategoryIncomeImpactChart data={report.expensesByCategory} incomeTotal={report.totals.incassoTotale}/>
+                <MonthlyProfitPieChart months={report.months} totalProfit={report.totals.utileNetto} year={report.annualYear} kind="netto"/>
+                <MonthlyProfitPieChart months={report.months} totalProfit={report.totals.utileFiscale} year={report.annualYear} kind="fiscale"/>
                 <NetProfitByIncomeChannelChart data={report.incomesBySalesChannel} profit={report.totals.utileNetto}
                                                incomeTotal={report.totals.incassoTotale} year={report.annualYear}
                                                label="netto"/>
                 <NetProfitByIncomeChannelChart data={report.incomesBySalesChannel} profit={report.totals.utileFiscale}
                                                incomeTotal={report.totals.incassoTotale} year={report.annualYear}
                                                label="fiscale"/>
+                <MonthlyProfitPieChart months={report.months} totalProfit={report.totals.utileLordo} year={report.annualYear} kind="lordo"/>
+                <MonthlyVatBalancePieChart months={report.months} year={report.annualYear}/>
             </div>
         </div>
 
