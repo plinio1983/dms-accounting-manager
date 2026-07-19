@@ -7,6 +7,7 @@ import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import SupplierFiltersDrawer from '@/components/SupplierFiltersDrawer';
 import SortableTableController from '@/components/SortableTableController';
 import MobileSortControl from '@/components/MobileSortControl';
+import SupplierEditModalController from '@/components/SupplierEditModalController';
 import { requireWorkspace } from '@/lib/auth';
 import { stripFlashRecord, stripFlashSearchParams } from '@/lib/flash';
 import { compareDate, compareNumber, compareText } from '@/lib/mobile-sort';
@@ -158,6 +159,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
   };
 
   return <div className="grid">
+    <SupplierEditModalController/>
     <div className="toolbar-card toolbar-card-wrap">
       <div>
         <h2>Fornitori</h2>
@@ -258,7 +260,9 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
               if (edit) {
                 edit.classList.toggle('is-disabled', !singleEnabled);
                 edit.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
-                edit.href = singleEnabled ? (group.getAttribute('data-edit-base') + firstId + '/edit?returnTo=' + returnTo) : '#';
+                edit.href = '#';
+                if (singleEnabled) edit.setAttribute('data-supplier-edit-id', firstId);
+                else edit.removeAttribute('data-supplier-edit-id');
               }
               if (copy) {
                 copy.classList.toggle('is-disabled', !singleEnabled);

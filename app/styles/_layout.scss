@@ -874,11 +874,47 @@ button {
 
 .supplier-form-page-card {
     gap: 16px;
+    width: min(1280px, 100%);
+    max-width: 1280px;
+}
+
+.modal-card.modal-card-wide.supplier-form-modal-card {
+    width: min(1280px, calc(100vw - 36px));
+    max-width: calc(100vw - 36px);
 }
 
 .supplier-form-page-card > .modal-title {
     padding-bottom: 14px;
     border-bottom: 1px solid var(--line);
+}
+
+.supplier-detail-collapsible > summary {
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+}
+
+.supplier-detail-collapsible > summary::-webkit-details-marker {
+    display: none;
+}
+
+.supplier-detail-collapsible-toggle {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: var(--accent);
+    font-size: 18px;
+    font-weight: 900;
+    transition: transform .18s ease;
+}
+
+.supplier-detail-collapsible[open] .supplier-detail-collapsible-toggle {
+    transform: rotate(180deg);
 }
 
 .supplier-styled-form .supplier-form-section {

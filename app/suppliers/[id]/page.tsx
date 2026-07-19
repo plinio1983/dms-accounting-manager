@@ -7,6 +7,7 @@ import { stripFlashParams } from '@/lib/flash';
 import ExpensesList from '@/components/ExpensesList';
 import NewExpensePanel from '@/components/NewExpensePanel';
 import SupplierBackButton from '@/components/SupplierBackButton';
+import SupplierEditModalController from '@/components/SupplierEditModalController';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import { badgeClass, paymentStatusStyles, yesNoStyles } from '@/lib/expense-ui';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
@@ -58,6 +59,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const annualPurchasedAmount = annualExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
 
   return <div className="grid expense-detail-page supplier-detail-page">
+    <SupplierEditModalController/>
     <NewExpensePanel
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
@@ -98,7 +100,9 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
             <SupplierBackButton fallbackHref={returnTo}/>
           </div>
           <div className="right-side">
-            <Link className="btn btn-sm btn-primary" href={`/suppliers/${supplier.id}/edit`}><span className="btn-icon">✎</span> Modifica</Link>
+            <button className="btn btn-sm btn-primary" type="button" data-supplier-edit-id={supplier.id}>
+              <span className="btn-icon">✎</span> Modifica
+            </button>
             <DeleteActionButton
               action={`/api/suppliers/${supplier.id}`}
               confirmMessage="Confermi la rimozione del fornitore? L’operazione non può essere annullata."
@@ -158,13 +162,14 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
           </div>
         </section>
 
-        <section className="expense-detail-section">
-          <div className="expense-detail-section-heading">
+        <details className="expense-detail-section supplier-detail-collapsible" closed>
+          <summary className="expense-detail-section-heading">
             <div>
               <h2>Anagrafica</h2>
               <p>Dati principali del fornitore.</p>
             </div>
-          </div>
+            <span className="supplier-detail-collapsible-toggle" aria-hidden="true">⌄</span>
+          </summary>
           <div className="expense-detail-status-strip supplier-detail-info-strip">
             <CopyableField label="R. Sociale" value={supplier.businessName} />
             <CopyableField label="Alias" value={supplier.alias} />
@@ -175,7 +180,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
             <CopyableField label="Cod. SDI" value={supplier.taxCodeSdi} />
             <CopyableField label="Note interne" value={supplier.internalNotes} className="span-2"/>
           </div>
-        </section>
+        </details>
       </article>
     </div>
 

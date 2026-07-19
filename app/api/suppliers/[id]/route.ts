@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
-import { redirectToPath } from '@/lib/redirect';
+import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 
 const SupplierSchema = z.object({
   businessName: z.string().trim().min(1),
@@ -21,6 +21,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const current = await getWorkspaceContext();
   if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const { id } = await params;
+  const returnTo = pathFromUrl(new URL(request.url).searchParams.get('returnTo'), '/suppliers');
   const supplierId = Number(id);
   const formData = await request.formData();
   const raw = Object.fromEntries(formData.entries());
@@ -38,7 +39,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const data = SupplierSchema.parse(raw);
   const existing = await prisma.supplier.findFirst({ where: { id: supplierId, workspaceId: current.workspace.id }, select: { id: true } });
-  if (!existing) return redirectToPath(appendFlash('/suppliers', { error: 'not_found' }));
+  if (!existing) return redirectToPath(appendFlash(returnTo, { error: 'not_found' }));
   await prisma.supplier.update({
     where: { id: supplierId },
     data: {
@@ -52,5 +53,5 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       internalNotes: data.internalNotes
     }
   });
-  return redirectToPath(appendFlash('/suppliers', { saved: 'updated' }));
+  return redirectToPath(appendFlash(returnTo, { saved: 'updated' }));
 }
