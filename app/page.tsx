@@ -1288,7 +1288,7 @@ export default async function Dashboard({searchParams}: {
                     </AutoSubmitSelect>
                 </form>
             </div>
-            <div className="flex align-center justify-end">
+            <div className="flex align-center justify-end dashboard-link-selector">
                 {fiscalMonth ?
                     <Link className="btn btn-sm btn-ghost dashboard-month-report-link" href={monthReportLink(fiscalMonth.year, fiscalMonth.month)}>
                     <span className="btn-icon" aria-hidden="true">

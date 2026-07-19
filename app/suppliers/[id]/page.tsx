@@ -5,6 +5,8 @@ import { euro, moneyTone } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
 import { stripFlashParams } from '@/lib/flash';
 import ExpensesList from '@/components/ExpensesList';
+import NewExpensePanel from '@/components/NewExpensePanel';
+import SupplierBackButton from '@/components/SupplierBackButton';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import { badgeClass, paymentStatusStyles, yesNoStyles } from '@/lib/expense-ui';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
@@ -56,6 +58,29 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const annualPurchasedAmount = annualExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
 
   return <div className="grid expense-detail-page supplier-detail-page">
+    <NewExpensePanel
+      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
+      banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
+      paymentMethods={expensePaymentMethods.map(method => ({
+        id: method.id,
+        name: method.name,
+        kind: method.kind,
+        isFallback: method.isFallback
+      }))}
+      suppliers={suppliers.map(s => ({
+        id: s.id,
+        businessName: s.businessName,
+        alias: s.alias,
+        email: s.email,
+        vatNumber: s.vatNumber,
+        iban: s.iban,
+        pec: s.pec,
+        taxCodeSdi: s.taxCodeSdi,
+        internalNotes: s.internalNotes
+      }))}
+      initialExpense={{ supplierId: supplier.id, merchant: supplier.businessName }}
+      showToolbar={false}
+    />
     <script dangerouslySetInnerHTML={{ __html: `
       document.addEventListener('click', async function(event) {
         const button = event.target.closest('[data-copy]');
@@ -70,7 +95,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       <article className="expense-detail-document supplier-detail-document">
         <div className="expense-detail-action-row">
           <div className="left-side">
-            <Link className="btn btn-sm btn-default" href={returnTo}><span className="btn-icon">↩</span> Indietro</Link>
+            <SupplierBackButton fallbackHref={returnTo}/>
           </div>
           <div className="right-side">
             <Link className="btn btn-sm btn-primary" href={`/suppliers/${supplier.id}/edit`}><span className="btn-icon">✎</span> Modifica</Link>

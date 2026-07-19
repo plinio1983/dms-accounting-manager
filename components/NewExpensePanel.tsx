@@ -8,17 +8,19 @@ import { flashParamNames } from '@/lib/flash';
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
 type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; vatNumber?: string | null; iban?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
+type InitialExpense = Parameters<typeof ExpenseCreationSwitcher>[0]['initialExpense'];
 
 type Props = {
   categories: Option[];
   banks: Option[];
   paymentMethods: Option[];
   suppliers: SupplierOption[];
+  initialExpense?: InitialExpense;
   initialOpen?: boolean;
   showToolbar?: boolean;
 };
 
-export default function NewExpensePanel({ categories, banks, paymentMethods, suppliers, initialOpen = false, showToolbar = true }: Props) {
+export default function NewExpensePanel({ categories, banks, paymentMethods, suppliers, initialExpense, initialOpen = false, showToolbar = true }: Props) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [returnAction, setReturnAction] = useState('/api/expenses');
@@ -84,7 +86,9 @@ export default function NewExpensePanel({ categories, banks, paymentMethods, sup
           </div>
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
         </div>
-        <ExpenseCreationSwitcher categories={categories} banks={banks} paymentMethods={paymentMethods} suppliers={suppliers} expenseAction={returnAction} recurringAction={recurringAction} onCancel={() => setIsOpen(false)} onSaved={handleSaved} />
+        <ExpenseCreationSwitcher categories={categories} banks={banks} paymentMethods={paymentMethods}
+          suppliers={suppliers} initialExpense={initialExpense} expenseAction={returnAction}
+          recurringAction={recurringAction} onCancel={() => setIsOpen(false)} onSaved={handleSaved} />
       </div>
     </div> : null}
   </div>;

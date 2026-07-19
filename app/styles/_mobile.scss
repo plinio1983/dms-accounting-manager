@@ -689,6 +689,16 @@
     justify-content: flex-end;
   }
 
+  .dashboard-header-card .dashboard-link-selector {
+    height: 100%;
+
+    @media (min-width: 576px) {
+      a {
+        margin-top: 20px;
+      }
+    }
+  }
+
   .dashboard-header-card .dashboard-year-selector {
     display: grid;
     grid-template-columns:1fr auto;
