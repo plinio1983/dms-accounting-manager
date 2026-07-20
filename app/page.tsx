@@ -1472,8 +1472,8 @@ export default async function Dashboard({searchParams}: {
                     </div>
                     <div className="dashboard-monthly-mobile-main">
                         <Link className="dashboard-monthly-mobile-month" href={monthReportLink(m.year, m.month)}>
-                            <span class="dashboard-label-short">{capitalizedMonthName(m.month).slice(0, 3)}</span>
-                            <span class="dashboard-label">{capitalizedMonthName(m.month)}</span>
+                            <span className="dashboard-label-short">{capitalizedMonthName(m.month).slice(0, 3)}</span>
+                            <span className="dashboard-label">{capitalizedMonthName(m.month)}</span>
                         </Link>
                         <div className="dashboard-monthly-mobile-badge">
                             <MobilePercentCell value={m.totals.utileLordo} total={m.totals.incassoTotale}/>
