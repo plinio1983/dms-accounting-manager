@@ -77,10 +77,12 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? stripFlashParams(rawReturnTo) : '/incomes';
   const encodedReturnTo = encodeURIComponent(returnTo);
   const currentDetailReturnTo = `/incomes/${id}?returnTo=${encodedReturnTo}`;
-  const [income, banks, paymentMethods] = await Promise.all([
-    prisma.income.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id }, include: { paymentMethodRef: true, creditBank: true } }),
+  const [income, banks, paymentMethods, incomeCategories, salesChannels] = await Promise.all([
+    prisma.income.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id }, include: { paymentMethodRef: true, creditBank: true, incomeCategory: true, salesChannelRef: true } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
-    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } })
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.incomeCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { name: 'asc' } }),
+    prisma.incomeSalesChannel.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { name: 'asc' } })
   ]);
   if (!income) notFound();
   const orderedBanks = orderBanks(banks);
@@ -91,11 +93,11 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
   const vatAmount = income.isFiscal ? vatAmountFromGross(amount, vatRate) : 0;
   const netAmount = amount - vatAmount;
   const supplierName = income.description?.trim() || 'Non indicato';
-  const title = supplierName !== 'Non indicato' ? supplierName : `Incasso ${income.salesChannel}`;
+  const title = supplierName !== 'Non indicato' ? supplierName : `Incasso ${income.salesChannelRef.name}`;
   const incomePaymentMethodName = income.paymentMethodRef?.name ?? income.paymentMethod;
   const incomeCreditChannelName = income.creditBank?.name ?? income.creditChannel;
-  const salesStyle = salesChannelStyles[income.salesChannel];
-  const categoryStyle = saleCategoryStyles[income.saleCategory];
+  const salesStyle = salesChannelStyles[income.salesChannelRef.name];
+  const categoryStyle = saleCategoryStyles[income.incomeCategory.name];
   const paymentStyle = paymentMethodStyles[incomePaymentMethodName];
   const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
   const creditStatus = incomeCreditStatus(income);
@@ -122,6 +124,8 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
       returnTo={currentDetailReturnTo}
       banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
       paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+      incomeCategories={incomeCategories}
+      salesChannels={salesChannels}
     />
     <ActionFeedbackBanner
       searchParams={query}
@@ -156,8 +160,7 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
               <h1>{title}</h1>
               <div className="expense-detail-meta-line">
                 {fiscalBadge(income.isFiscal)}
-                <span>{salesStyle?.icon ?? '•'} {salesStyle?.label ?? income.salesChannel}</span>
-                {/*<span>{categoryStyle?.icon ?? '•'} {categoryStyle?.label ?? income.saleCategory}</span>*/}
+                <span>{income.salesChannelRef.icon ?? salesStyle?.icon ?? '•'} {income.salesChannelRef.name}</span>
               </div>
             </div>
           </div>
@@ -215,8 +218,8 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
               <span>Incasso</span>
               <strong>{euro(amount)}</strong>
             </div>
-            <div><span>Canale</span><strong>{salesStyle?.icon ?? '•'} {salesStyle?.label ?? income.salesChannel}</strong></div>
-            <div><span>Categoria</span><strong>{categoryStyle?.icon ?? '•'} {categoryStyle?.label ?? income.saleCategory}</strong></div>
+            <div><span>Canale</span><strong>{income.salesChannelRef.icon ?? salesStyle?.icon ?? '•'} {income.salesChannelRef.name}</strong></div>
+            <div><span>Categoria</span><strong>{income.incomeCategory.icon ?? categoryStyle?.icon ?? '•'} {income.incomeCategory.name}</strong></div>
             <div><span>Data accr.</span><strong>{dateLabel(income.creditDate)}</strong></div>
             <div><span>Pagamento</span><strong>{paymentStyle?.icon ?? '•'} {incomePaymentMethodName}</strong></div>
             <div><span>Canale</span><strong>{incomeCreditChannelName}</strong></div>

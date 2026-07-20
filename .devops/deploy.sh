@@ -239,11 +239,12 @@ ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" \
      exit 1; \
    fi; \
    docker load -i '${ARCHIVE_NAME}'; \
-   \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml up -d; \
+   \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml up -d tabularium-db; \
    if [ '${IMPORT_DB}' = '1' ] && [ -n '${REMOTE_DB_DUMP}' ]; then \
      \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml exec -T tabularium-db sh -c 'pg_restore --clean --if-exists --no-owner --no-acl -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\"' < '${REMOTE_DB_DUMP}'; \
    fi; \
-   \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml exec -T tabularium npx prisma db push; \
+   \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml run --rm tabularium npx prisma db push --accept-data-loss; \
+   \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml up -d; \
    if [ -n '${REMOTE_UPLOADS_ARCHIVE}' ]; then \
      \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml cp '${REMOTE_UPLOADS_ARCHIVE}' tabularium:/tmp/tabularium-uploads.tar.gz; \
      \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml exec -T tabularium sh -c 'rm -rf /app/public/uploads/* && tar -xzf /tmp/tabularium-uploads.tar.gz -C /app/public/uploads --strip-components=1'; \

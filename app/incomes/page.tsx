@@ -27,8 +27,6 @@ import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
 import { stripFlashRecord, stripFlashSearchParams } from '@/lib/flash';
 import { compareDate, compareNumber, compareText } from '@/lib/mobile-sort';
 
-const salesChannelOptions = ['Shop', 'Online Shop', 'Altro Canale'];
-const saleCategoryOptions = ['B2C', 'B2B', 'Altro'];
 const invoiceStatusOptions = [
   ['NON_INVIATA', 'Non inviata'],
   ['EMESSA', 'Emessa'],
@@ -556,11 +554,13 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
   const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || '') : '';
   const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter) : null;
 
-  const [incomes, expensesForVat, banks, paymentMethods] = await Promise.all([
-    prisma.income.findMany({ where: { workspaceId: current.workspace.id }, include: { paymentMethodRef: true, creditBank: true }, orderBy: [{ creditDate: 'desc' }, { id: 'desc' }], take: 500 }),
+  const [incomes, expensesForVat, banks, paymentMethods, incomeCategories, salesChannels] = await Promise.all([
+    prisma.income.findMany({ where: { workspaceId: current.workspace.id }, include: { paymentMethodRef: true, creditBank: true, incomeCategory: true, salesChannelRef: true }, orderBy: [{ creditDate: 'desc' }, { id: 'desc' }], take: 500 }),
     prisma.expense.findMany({ where: { workspaceId: current.workspace.id }, include: { payments: true }, take: 5000 }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
-    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } })
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.incomeCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { name: 'asc' } }),
+    prisma.incomeSalesChannel.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { name: 'asc' } })
   ]);
   const orderedBanks = orderBanks(banks);
   const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
@@ -620,8 +620,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
   const filteredIncomes = periodIncomes.filter(income => {
     if (!matchesIsoDate(income.creditDate, creditDateFromFilter, creditDateToFilter)) return false;
     if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
-    if (salesChannelFilter && income.salesChannel !== salesChannelFilter) return false;
-    if (saleCategoryFilter && income.saleCategory !== saleCategoryFilter) return false;
+    if (salesChannelFilter && income.salesChannelRef.name !== salesChannelFilter) return false;
+    if (saleCategoryFilter && income.incomeCategory.name !== saleCategoryFilter) return false;
     if (!amountMatchesFilter(Number(income.amount.toString()), amountFilterValue)) return false;
     if (paymentMethodFilter && (income.paymentMethodRef?.name ?? income.paymentMethod) !== paymentMethodFilter) return false;
     if (creditChannelFilter && (income.creditBank?.name ?? income.creditChannel) !== creditChannelFilter) return false;
@@ -672,8 +672,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
   };
 
   const incomesBySaleCategoryAndChannel = Array.from(filteredIncomes.reduce((map, income) => {
-    const saleCategory = income.saleCategory ?? 'Senza categoria';
-    const salesChannel = income.salesChannel ?? 'Senza canale';
+    const saleCategory = income.incomeCategory.name;
+    const salesChannel = income.salesChannelRef.name;
     const name = `${saleCategory} / ${salesChannel}`;
     const code = `${String(saleCategory).split(/\s+/).map(part => part[0]).join('')}${String(salesChannel).split(/\s+/).map(part => part[0]).join('')}`.slice(0, 6).toUpperCase() || 'CATCAN';
     const key = `${saleCategory}-${salesChannel}`;
@@ -733,10 +733,10 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
       case 'creditDate_asc': return compareDate(a.creditDate, b.creditDate, 'asc');
       case 'billingPeriod_desc': return compareNumber(billingA, billingB, 'desc');
       case 'billingPeriod_asc': return compareNumber(billingA, billingB, 'asc');
-      case 'salesChannel_asc': return compareText(a.salesChannel, b.salesChannel, 'asc');
-      case 'salesChannel_desc': return compareText(a.salesChannel, b.salesChannel, 'desc');
-      case 'saleCategory_asc': return compareText(a.saleCategory, b.saleCategory, 'asc');
-      case 'saleCategory_desc': return compareText(a.saleCategory, b.saleCategory, 'desc');
+      case 'salesChannel_asc': return compareText(a.salesChannelRef.name, b.salesChannelRef.name, 'asc');
+      case 'salesChannel_desc': return compareText(a.salesChannelRef.name, b.salesChannelRef.name, 'desc');
+      case 'saleCategory_asc': return compareText(a.incomeCategory.name, b.incomeCategory.name, 'asc');
+      case 'saleCategory_desc': return compareText(a.incomeCategory.name, b.incomeCategory.name, 'desc');
       case 'description_asc': return compareText(a.description, b.description, 'asc');
       case 'description_desc': return compareText(a.description, b.description, 'desc');
       case 'notes_asc': return compareText(a.notes, b.notes, 'asc');
@@ -761,11 +761,15 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
       initialOpen={inputDefault(filters, 'new') === '1'}
       banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
       paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+      incomeCategories={incomeCategories}
+      salesChannels={salesChannels}
     />
     <IncomeEditModalController
       returnTo={listHref}
       banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
       paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+      incomeCategories={incomeCategories}
+      salesChannels={salesChannels}
     />
     <ActionFeedbackBanner
       searchParams={rawFilters}
@@ -787,6 +791,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             billingPeriodToFilter={billingPeriodToFilter}
             banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name }))}
             paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name }))}
+            incomeCategories={incomeCategories}
+            salesChannels={salesChannels}
         />
       </div>
       <IncomeTrendSelectors
@@ -854,6 +860,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             billingPeriodToFilter={billingPeriodToFilter}
             banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name }))}
             paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name }))}
+            incomeCategories={incomeCategories}
+            salesChannels={salesChannels}
           />
         </div>
       </div>
@@ -1071,8 +1079,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             <BulkChangeCategoryModal
               formId="incomeBulkForm"
               action={`/api/incomes/bulk?returnTo=${returnTo}`}
-              fieldName="saleCategory"
-              categories={saleCategoryOptions.map(category => ({ value: category, label: category, icon: saleCategoryStyles[category]?.icon }))}
+              fieldName="incomeCategoryId"
+              categories={incomeCategories.map(category => ({ value: String(category.id), label: category.name, icon: category.icon }))}
               selectLabel="Categoria vendita"
             />
           </div>
@@ -1093,8 +1101,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
 
       <div className="income-mobile-list expense-mobile-list" aria-label="Lista incassi mobile">
         {mobileSortedIncomes.map(income => {
-          const salesStyle = salesChannelStyles[income.salesChannel];
-          const catStyle = saleCategoryStyles[income.saleCategory];
+          const salesStyle = salesChannelStyles[income.salesChannelRef.name];
+          const catStyle = saleCategoryStyles[income.incomeCategory.name];
           const incomePaymentMethodName = income.paymentMethodRef?.name ?? income.paymentMethod;
           const incomeCreditChannelName = income.creditBank?.name ?? income.creditChannel;
           const paymentStyle = paymentMethodStyles[incomePaymentMethodName];
@@ -1119,7 +1127,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
               <div className="expense-mobile-main">
                 <div className="expense-mobile-header">
                   <div className="left-side">
-                    <span title={income.saleCategory} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{catStyle?.icon ?? '•'} {income.saleCategory}</span>
+                    <span title={income.incomeCategory.name} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{income.incomeCategory.icon ?? catStyle?.icon ?? '•'} {income.incomeCategory.name}</span>
                     {fiscalBadge(income.isFiscal)}
                     <span className="text-pre">{formatPeriod(income.billingMonth, income.billingYear)}</span>
                     {!income.isFiscal ? '' :
@@ -1132,7 +1140,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
                 </div>
                 <div className="expense-mobile-title-row">
                   <div className="left-side">
-                    <strong>{income.salesChannel}</strong>
+                    <strong>{income.salesChannelRef.name}</strong>
                     <span className={badgeClass(vatStyle.className)}>IVA {Number(income.vatRate.toString())}%</span>
                   </div>
                   <div className="right-side">
@@ -1151,7 +1159,6 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
                 {/*  <span>{income.creditChannel}</span>*/}
                 {/*</div>*/}
                 {/*<div className="expense-mobile-badges">*/}
-                  {/*<span title={income.salesChannel} className={`${badgeClass(salesStyle?.className)} income-badge-compact`}>{salesStyle?.icon ?? '•'} {income.salesChannel}</span>*/}
                 {/*</div>*/}
                 {/*<div className="expense-mobile-footer">*/}
                 {/*  <span className={badgeClass(paymentStyle?.className)}>{paymentStyle?.icon ?? '•'} {income.paymentMethod}</span>*/}
@@ -1196,8 +1203,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         {/*<th className="cell-center"><span className="sr-only">Elimina</span></th>*/}
       </tr></thead><tbody>
         {filteredIncomes.map(income => {
-          const salesStyle = salesChannelStyles[income.salesChannel];
-          const catStyle = saleCategoryStyles[income.saleCategory];
+          const salesStyle = salesChannelStyles[income.salesChannelRef.name];
+          const catStyle = saleCategoryStyles[income.incomeCategory.name];
           const incomePaymentMethodName = income.paymentMethodRef?.name ?? income.paymentMethod;
           const incomeCreditChannelName = income.creditBank?.name ?? income.creditChannel;
           const paymentStyle = paymentMethodStyles[incomePaymentMethodName];
@@ -1212,9 +1219,9 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             data-sort-row
             data-sort-billing-period={String(Number(income.billingYear) * 12 + Number(income.billingMonth))}
             data-sort-credit-date={dateSortValue(income.creditDate)}
-            data-sort-sales-channel={income.salesChannel}
+            data-sort-sales-channel={income.salesChannelRef.name}
             data-sort-fiscal={income.isFiscal ? '1' : '0'}
-            data-sort-category={income.saleCategory}
+            data-sort-category={income.incomeCategory.name}
             data-sort-description={income.description ?? ''}
             data-sort-amount={String(Number(income.amount.toString()))}
             data-sort-vat={String(Number(income.vatRate.toString()))}
@@ -1228,9 +1235,9 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             <td className="cell-option"><input form="incomeBulkForm" type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`} /></td>
             <td className="cell-billing-period">{formatPeriod(income.billingMonth, income.billingYear)}</td>
             <td className="cell-order-date">{dateLabel(income.creditDate)}</td>
-            <td className="cell-selling"><span title={income.salesChannel} className={`${badgeClass(salesStyle?.className)} income-badge-compact`}>{salesStyle?.icon ?? '•'} {income.salesChannel}</span></td>
+            <td className="cell-selling"><span title={income.salesChannelRef.name} className={`${badgeClass(salesStyle?.className)} income-badge-compact`}>{income.salesChannelRef.icon ?? salesStyle?.icon ?? '•'} {income.salesChannelRef.name}</span></td>
             <td className="cell-fiscal">{fiscalBadge(income.isFiscal)}</td>
-            <td className="cell-category"><span title={income.saleCategory} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{catStyle?.icon ?? '•'} {income.saleCategory}</span></td>
+            <td className="cell-category"><span title={income.incomeCategory.name} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{income.incomeCategory.icon ?? catStyle?.icon ?? '•'} {income.incomeCategory.name}</span></td>
             <td className="cell-description" title={income.description ?? ''}>{income.description ?? '-'}</td>
             <td className="cell-amount"><strong className={moneyTone(Number(income.amount.toString()))}>{euro(income.amount.toString())}</strong></td>
             <td className="cell-amount"><span className={`${badgeClass(vatStyle.className)} income-badge-compact`}>{Number(income.vatRate.toString())}%</span></td>

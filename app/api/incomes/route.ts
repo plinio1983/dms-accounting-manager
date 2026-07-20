@@ -8,8 +8,8 @@ import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
 const IncomeSchema = z.object({
-  salesChannel: z.enum(['Shop', 'Online Shop', 'Altro Canale']),
-  saleCategory: z.enum(['B2C', 'B2B', 'Altro']).default('B2C'),
+  salesChannelId: z.coerce.number().int().positive(),
+  incomeCategoryId: z.coerce.number().int().positive(),
   description: z.string().optional().nullable(),
   amount: z.coerce.number().nonnegative(),
   paymentMethod: z.string().optional(),
@@ -54,17 +54,19 @@ export async function POST(request: Request) {
   const isForm = request.headers.get('content-type')?.includes('application/x-www-form-urlencoded') || request.headers.get('content-type')?.includes('multipart/form-data');
   const raw = isForm ? Object.fromEntries((await request.formData()).entries()) : await request.json();
   const parsed = IncomeSchema.parse(raw);
-  const [paymentMethod, creditBank] = await Promise.all([
+  const [paymentMethod, creditBank, salesChannel, incomeCategory] = await Promise.all([
     prisma.paymentMethod.findFirst({ where: { id: parsed.paymentMethodId, workspaceId: current.workspace.id } }),
-    prisma.bank.findFirst({ where: { id: parsed.creditBankId, workspaceId: current.workspace.id } })
+    prisma.bank.findFirst({ where: { id: parsed.creditBankId, workspaceId: current.workspace.id } }),
+    prisma.incomeSalesChannel.findFirst({ where: { id: parsed.salesChannelId, workspaceId: current.workspace.id } }),
+    prisma.incomeCategory.findFirst({ where: { id: parsed.incomeCategoryId, workspaceId: current.workspace.id } })
   ]);
-  if (!paymentMethod || !creditBank) return NextResponse.json({ error: 'Metodo o banca non validi' }, { status: 400 });
+  if (!paymentMethod || !creditBank || !salesChannel || !incomeCategory) return NextResponse.json({ error: 'Configurazione incasso non valida' }, { status: 400 });
   const [billingYear, billingMonth] = parsed.billingPeriod.split('-').map(Number);
   const income = await prisma.income.create({
     data: {
       workspaceId: current.workspace.id,
-      salesChannel: parsed.salesChannel,
-      saleCategory: parsed.saleCategory,
+      salesChannelId: salesChannel.id,
+      incomeCategoryId: incomeCategory.id,
       description: parsed.description || null,
       amount: parsed.amount,
       paymentMethod: paymentMethod.name,

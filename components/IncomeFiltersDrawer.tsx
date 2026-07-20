@@ -15,10 +15,9 @@ type Props = {
   billingPeriodToFilter: string;
   banks: { id: number; name: string }[];
   paymentMethods: { id: number; name: string }[];
+  salesChannels: { id: number; name: string; icon?: string | null }[];
+  incomeCategories: { id: number; name: string; icon?: string | null }[];
 };
-
-const salesChannelOptions = ["Shop", "Online Shop", "Altro Canale"];
-const saleCategoryOptions = ["B2C", "B2B", "Altro"];
 
 const invoiceStatusOptions = [
   ["NON_INVIATA", "Non inviata"],
@@ -130,7 +129,7 @@ export default function IncomeFiltersDrawer({
   billingPeriodFromFilter,
   billingPeriodToFilter,
   banks,
-  paymentMethods,
+  paymentMethods, salesChannels, incomeCategories,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -274,12 +273,12 @@ export default function IncomeFiltersDrawer({
 
           <label>Canale vendita<select name="salesChannel" defaultValue={inputDefault(filters, "salesChannel")}>
             <option value="">Tutti</option>
-            {salesChannelOptions.map(value => <option key={value} value={value}>{value}</option>)}
+            {salesChannels.map(value => <option key={value.id} value={value.name}>{value.icon ? `${value.icon} ` : ''}{value.name}</option>)}
           </select></label>
 
           <label>Categoria vendita<select name="saleCategory" defaultValue={inputDefault(filters, "saleCategory")}>
             <option value="">Tutte</option>
-            {saleCategoryOptions.map(value => <option key={value} value={value}>{value}</option>)}
+            {incomeCategories.map(value => <option key={value.id} value={value.name}>{value.icon ? `${value.icon} ` : ''}{value.name}</option>)}
           </select></label>
 
           <label>Importo<input name="amount" inputMode="decimal" defaultValue={inputDefault(filters, "amount")} /></label>

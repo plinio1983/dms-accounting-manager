@@ -4,8 +4,6 @@ import { getWorkspaceContext } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 
-const saleCategoryOptions = new Set(['B2C', 'B2B', 'Altro']);
-
 function selectedIds(formData: FormData) {
   return formData.getAll('ids').map(value => Number(value)).filter(value => Number.isInteger(value) && value > 0);
 }
@@ -27,11 +25,14 @@ export async function POST(request: Request) {
   }
 
   if (action === 'change_category') {
-    const saleCategory = String(formData.get('saleCategory') || '').trim();
-    if (saleCategoryOptions.has(saleCategory)) {
+    const incomeCategoryId = Number(formData.get('incomeCategoryId'));
+    const category = Number.isInteger(incomeCategoryId) ? await prisma.incomeCategory.findFirst({
+      where: { id: incomeCategoryId, workspaceId: current.workspace.id }
+    }) : null;
+    if (category) {
       await prisma.income.updateMany({
         where: { id: { in: ids }, workspaceId: current.workspace.id },
-        data: { saleCategory }
+        data: { incomeCategoryId: category.id }
       });
     }
     return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_updated' }));

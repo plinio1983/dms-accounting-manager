@@ -21,8 +21,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   return NextResponse.json({
     income: {
       id: income.id,
-      salesChannel: income.salesChannel,
-      saleCategory: income.saleCategory,
+      salesChannelId: income.salesChannelId,
+      incomeCategoryId: income.incomeCategoryId,
       description: income.description,
       amount: income.amount.toString(),
       paymentMethod: income.paymentMethod,

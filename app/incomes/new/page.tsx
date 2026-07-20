@@ -13,10 +13,12 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : '/incomes';
   const encodedReturnTo = encodeURIComponent(returnTo);
   const copyId = copyIdValue ? Number(copyIdValue) : null;
-  const [copyIncome, banks, paymentMethods] = await Promise.all([
+  const [copyIncome, banks, paymentMethods, incomeCategories, salesChannels] = await Promise.all([
     copyId ? prisma.income.findFirst({ where: { id: copyId, workspaceId: current.workspace.id } }) : null,
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
-    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } })
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.incomeCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { name: 'asc' } }),
+    prisma.incomeSalesChannel.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { name: 'asc' } })
   ]);
   const orderedBanks = orderBanks(banks);
   const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
@@ -33,8 +35,8 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
     </div>
     <IncomeForm
       initialIncome={copyIncome ? {
-        salesChannel: copyIncome.salesChannel,
-        saleCategory: copyIncome.saleCategory,
+        salesChannelId: copyIncome.salesChannelId,
+        incomeCategoryId: copyIncome.incomeCategoryId,
         amount: copyIncome.amount.toString(),
         paymentMethod: copyIncome.paymentMethod,
         paymentMethodId: copyIncome.paymentMethodId,
@@ -54,6 +56,8 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
       submitLabel={copyIncome ? 'Crea incasso copiato' : 'Salva incasso'}
       banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
       paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+      incomeCategories={incomeCategories}
+      salesChannels={salesChannels}
     />
     </div>
   </div>;

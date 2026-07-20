@@ -5,7 +5,7 @@ import { requireWorkspace } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { categoryIconOptions } from '@/lib/workspace-defaults';
 
-const categoriesPath = '/settings/categories';
+const categoriesPath = '/settings/categories/expenses';
 
 function formValue(formData: FormData, key: string) {
   return String(formData.get(key) ?? '').trim();

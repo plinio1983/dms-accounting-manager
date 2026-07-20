@@ -11,10 +11,12 @@ export default async function EditIncomePage({ params, searchParams }: { params:
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : `/incomes/${id}`;
   const encodedReturnTo = encodeURIComponent(returnTo);
-  const [income, banks, paymentMethods] = await Promise.all([
+  const [income, banks, paymentMethods, incomeCategories, salesChannels] = await Promise.all([
     prisma.income.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
-    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } })
+    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.incomeCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { name: 'asc' } }),
+    prisma.incomeSalesChannel.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { name: 'asc' } })
   ]);
   if (!income) notFound();
   const orderedBanks = orderBanks(banks);
@@ -30,6 +32,8 @@ export default async function EditIncomePage({ params, searchParams }: { params:
       submitLabel="Salva modifiche"
       banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
       paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+      incomeCategories={incomeCategories}
+      salesChannels={salesChannels}
     />
     </div>
   </div>;

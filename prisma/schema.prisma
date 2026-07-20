@@ -73,6 +73,8 @@ model Workspace {
   sessions           AuthSession[]
   companies          Company[]
   expenseCategories  ExpenseCategory[]
+  incomeCategories   IncomeCategory[]
+  incomeSalesChannels IncomeSalesChannel[]
   banks              Bank[]
   paymentMethods     PaymentMethod[]
   suppliers          Supplier[]
@@ -137,6 +139,32 @@ model ExpenseCategory {
   workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   expenses  Expense[]
   recurringExpenses RecurringExpense[]
+
+  @@unique([workspaceId, code])
+  @@index([workspaceId])
+}
+
+model IncomeCategory {
+  id          Int       @id @default(autoincrement())
+  code        String
+  name        String
+  icon        String?
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  incomes     Income[]
+
+  @@unique([workspaceId, code])
+  @@index([workspaceId])
+}
+
+model IncomeSalesChannel {
+  id          Int       @id @default(autoincrement())
+  code        String
+  name        String
+  icon        String?
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  incomes     Income[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -348,8 +376,10 @@ model Income {
   id              Int       @id @default(autoincrement())
   workspaceId     Int?
   workspace       Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
-  salesChannel    String
-  saleCategory    String    @default("B2C")
+  salesChannelId  Int
+  salesChannelRef IncomeSalesChannel @relation(fields: [salesChannelId], references: [id], onDelete: Restrict)
+  incomeCategoryId Int
+  incomeCategory  IncomeCategory @relation(fields: [incomeCategoryId], references: [id], onDelete: Restrict)
   description     String?
   amount          Decimal   @db.Decimal(12, 2)
   paymentMethod   String
@@ -372,8 +402,8 @@ model Income {
   @@index([workspaceId])
   @@index([creditDate])
   @@index([billingYear, billingMonth])
-  @@index([salesChannel])
-  @@index([saleCategory])
+  @@index([salesChannelId])
+  @@index([incomeCategoryId])
   @@index([isFiscal])
   @@index([paymentMethodId])
   @@index([creditBankId])

@@ -37,6 +37,31 @@ export const categoryIconOptions = [
   '⭐'
 ] as const;
 
+export const defaultIncomeCategories = [
+  ['B2C', 'B2C', '👤'],
+  ['B2B', 'B2B', '🏢'],
+  ['OTHER', 'Altro', '•']
+] as const;
+
+export const defaultIncomeSalesChannels = [
+  ['SHOP', 'Shop', '🏬'],
+  ['ONLINE_SHOP', 'Online Shop', '🛒'],
+  ['OTHER', 'Altro Canale', '🔀']
+] as const;
+
+export const incomeEntityIconOptions = [
+  ...categoryIconOptions,
+  '👤',
+  '🏢',
+  '•',
+  '🏬',
+  '🔀',
+  '💶',
+  '🛍️',
+  '🤝',
+  '📱'
+] as const;
+
 export const fallbackBankName = 'Altra Banca';
 export const fallbackPaymentMethodName = 'Altro metodo';
 
@@ -105,6 +130,22 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
     for (const [code, name, icon] of defaultCategories) {
       await prisma.expenseCategory.create({ data: { workspaceId, code, name, icon } });
     }
+  }
+
+  for (const [code, name, icon] of defaultIncomeCategories) {
+    await prisma.incomeCategory.upsert({
+      where: { workspaceId_code: { workspaceId, code } },
+      update: {},
+      create: { workspaceId, code, name, icon }
+    });
+  }
+
+  for (const [code, name, icon] of defaultIncomeSalesChannels) {
+    await prisma.incomeSalesChannel.upsert({
+      where: { workspaceId_code: { workspaceId, code } },
+      update: {},
+      create: { workspaceId, code, name, icon }
+    });
   }
 
   for (const name of defaultBanks) {

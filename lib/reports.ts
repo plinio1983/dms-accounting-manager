@@ -246,7 +246,7 @@ export async function getAccountingDashboardReport(
   const [currentFiscalMonth, currentFiscalQuarter, yearIncomes, yearExpenses] = await Promise.all([
     getPeriodSummary(fiscalMonthPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId }),
     getPeriodSummary(fiscalQuarterPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId }),
-    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(reportPeriods, workspaceId) }),
+    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(reportPeriods, workspaceId), include: { incomeCategory: true, salesChannelRef: true } }),
     prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), year: { in: reportYears } }, include: { payments: true, category: true } })
   ]);
 
@@ -276,8 +276,8 @@ export async function getAccountingDashboardReport(
 
   const incomesBySalesChannelMap = new Map<string, { name: string; code: string; total: number }>();
   for (const income of yearlyIncomes) {
-    const salesChannel = income.salesChannel ?? 'Senza canale';
-    const saleCategory = income.saleCategory ?? 'Senza categoria';
+    const salesChannel = income.salesChannelRef.name;
+    const saleCategory = income.incomeCategory.name;
     const name = `${salesChannel} / ${saleCategory}`;
     const code = `${String(salesChannel).split(/\s+/).map(part => part[0]).join('')}${String(saleCategory).split(/\s+/).map(part => part[0]).join('')}`.slice(0, 6).toUpperCase() || 'CAN';
     const key = `${code}-${name}`;
@@ -314,12 +314,12 @@ export async function getAccountingDashboardReport(
 export async function getMonthlyReport(year: number, month: number, workspaceId?: number) {
   const [expenses, incomes] = await Promise.all([
     prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), year, month }, include: { category: true, bank: true, company: true, supplier: true, payments: true }, orderBy: [{ receivedDate: 'asc' }, { id: 'asc' }] }),
-    prisma.income.findMany({ where: incomePeriodWhere([{ year, month }], workspaceId) })
+    prisma.income.findMany({ where: incomePeriodWhere([{ year, month }], workspaceId), include: { salesChannelRef: true } })
   ]);
 
   const summary = summarizeRecords(incomes, expenses, [{ year, month }]);
-  const web = incomes.reduce((sum, income) => income.isFiscal && income.salesChannel === 'Online Shop' ? sum + Number(income.amount) : sum, 0);
-  const shop = incomes.reduce((sum, income) => income.isFiscal && income.salesChannel === 'Shop' ? sum + Number(income.amount) : sum, 0);
+  const web = incomes.reduce((sum, income) => income.isFiscal && income.salesChannelRef.code === 'ONLINE_SHOP' ? sum + Number(income.amount) : sum, 0);
+  const shop = incomes.reduce((sum, income) => income.isFiscal && income.salesChannelRef.code === 'SHOP' ? sum + Number(income.amount) : sum, 0);
   const noInvoice = incomes.reduce((sum, income) => !income.isFiscal ? sum + Number(income.amount) : sum, 0);
   const taxRate = 30;
   const estimatedTax = Math.max(summary.utileFiscale, 0) * taxRate / 100;

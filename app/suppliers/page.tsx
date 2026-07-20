@@ -188,6 +188,20 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
           <SupplierFiltersDrawer filters={filters} />
         </div>
       </div>
+      <form className="supplier-quick-search" action="/suppliers" method="get" role="search">
+        <label htmlFor="supplierQuickSearch">Ricerca rapida</label>
+        <div className="supplier-quick-search-field">
+          <input
+            id="supplierQuickSearch"
+            name="businessName"
+            type="text"
+            defaultValue={inputDefault(filters, 'businessName')}
+            placeholder="Nome o ragione sociale"
+            autoComplete="off"
+          />
+          <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca fornitore">🔎</button>
+        </div>
+      </form>
       <MobileSortControl action="/suppliers" currentValue={mobileSort} options={supplierMobileSortOptions} searchParams={filters} />
 
       {activeFilterItems.length ? <div className="recurring-active-filters">
@@ -216,6 +230,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
           if (resetLink) resetLink.addEventListener('click', () => localStorage.removeItem(storageKey));
           const query = sanitizedSearch(window.location.search);
           const form = document.querySelector('form.supplier-filters');
+          const quickSearchForm = document.querySelector('form.supplier-quick-search');
           if (query && query !== '?') localStorage.setItem(storageKey, query);
           else {
             const saved = sanitizedSearch(localStorage.getItem(storageKey) || '');
@@ -235,6 +250,12 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
               if (clean) localStorage.setItem(storageKey, clean);
               else localStorage.removeItem(storageKey);
             }, 0);
+          });
+          if (quickSearchForm) quickSearchForm.addEventListener('submit', () => {
+            const params = new URLSearchParams(new FormData(quickSearchForm));
+            const clean = sanitizedSearch('?' + params.toString());
+            if (clean) localStorage.setItem(storageKey, clean);
+            else localStorage.removeItem(storageKey);
           });
         })();
         document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-bulk-form')) { const selected = form.querySelectorAll('input[name="ids"]:checked').length || document.querySelectorAll('input[form="' + form.id + '"][name="ids"]:checked').length; if (!selected) { alert('Seleziona almeno una riga.'); event.preventDefault(); return; } const submitter = event.submitter; const action = submitter && submitter.getAttribute ? submitter.getAttribute('value') : ''; if (!action) { alert('Seleziona un’azione bulk.'); event.preventDefault(); return; } const label = submitter && submitter.textContent ? submitter.textContent.trim() : 'questa azione'; const message = 'Confermi di eseguire "' + label + '" sui fornitori selezionati?'; if (!confirm(message)) event.preventDefault(); } });

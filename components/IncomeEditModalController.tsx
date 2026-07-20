@@ -6,8 +6,8 @@ import { clampDateToToday, clampPeriodToCurrentMonth } from "@/lib/copy-dates";
 
 type EditIncome = {
   id: number;
-  salesChannel?: string | null;
-  saleCategory?: string | null;
+  salesChannelId: number;
+  incomeCategoryId: number;
   description?: string | null;
   amount?: string | number | null;
   paymentMethod?: string | null;
@@ -26,14 +26,17 @@ type EditIncome = {
 
 type Option = { id: number; name: string; isFallback?: boolean | null };
 type PaymentMethodOption = Option & { kind?: string };
+type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null };
 
 type Props = {
   returnTo: string;
   banks: Option[];
   paymentMethods: PaymentMethodOption[];
+  incomeCategories: IncomeEntityOption[];
+  salesChannels: IncomeEntityOption[];
 };
 
-export default function IncomeEditModalController({ returnTo, banks, paymentMethods }: Props) {
+export default function IncomeEditModalController({ returnTo, banks, paymentMethods, incomeCategories, salesChannels }: Props) {
   const [income, setIncome] = useState<EditIncome | null>(null);
   const [mode, setMode] = useState<"edit" | "copy">("edit");
   const [loadingId, setLoadingId] = useState<number | null>(null);
@@ -111,6 +114,8 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
           onCancel={() => setIncome(null)}
           banks={banks}
           paymentMethods={paymentMethods}
+          incomeCategories={incomeCategories}
+          salesChannels={salesChannels}
         />
       </div>
     </div> : null}

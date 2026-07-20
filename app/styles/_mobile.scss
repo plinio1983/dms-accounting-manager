@@ -92,7 +92,7 @@
   }
 
   .dashboard-monthly-mobile-main strong {
-    font-size: 14px;
+    font-size: 14px !important;
     white-space: nowrap;
   }
 
@@ -118,6 +118,16 @@
     align-items: flex-end;
     gap: 3px;
     text-align: right;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 0 6px;
+
+    @media (min-width: 576px) and (max-width: 760px) {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+    }
   }
 
   .dashboard-monthly-mobile-secondary span {
@@ -141,7 +151,7 @@
     align-items: center;
     justify-content: flex-end;
     height: 22px;
-    width: 100%;
+    //width: 100%;
   }
 
   .dashboard-monthly-mobile-badge .badge {
@@ -845,8 +855,8 @@
 
   .mobile-bottom-nav {
     position: fixed;
-    left: 10px;
-    right: 10px;
+    left: 6px;
+    right: 6px;
     bottom: 1px;
     z-index: 200;
     display: grid;
@@ -1725,6 +1735,7 @@
   .categories-settings-table-head,
   .category-settings-row,
   .category-settings-edit-form {
+    display: grid;
     grid-template-columns: 1fr;
   }
 
@@ -1785,7 +1796,7 @@
 
 @media (max-width: 760px) {
   .categories-settings-card {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 
   .shell .nav-links {
@@ -2086,5 +2097,10 @@
 
   .expenses-list-card {
     padding: 14px 6px;
+  }
+}
+@media (max-width: 760px) {
+  .supplier-quick-search {
+    width: 100%;
   }
 }

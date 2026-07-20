@@ -3646,6 +3646,17 @@ table th, table td {
     z-index: 1;
 }
 
+.dashboard-label {
+  @media (max-width: 360px) {
+    display: none;
+  }
+}
+
+.dashboard-label-short {
+  @media (min-width: 361px) {
+    display: none;
+  }
+}
 
 
 .money-negative {
@@ -7125,6 +7136,33 @@ button.bulk-direct-link {
     grid-template-columns: repeat(3, minmax(160px, 1fr));
 }
 
+.supplier-quick-search {
+    display: grid;
+    gap: 5px;
+    width: min(100%, 480px);
+}
+
+.supplier-quick-search > label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--muted);
+}
+
+.supplier-quick-search-field {
+    display: flex;
+    align-items: stretch;
+    gap: 6px;
+}
+
+.supplier-quick-search-field input {
+    min-width: 0;
+    width: 100%;
+}
+
+.supplier-quick-search-field button {
+    flex: 0 0 auto;
+}
+
 /*.supplier-linked-expenses-table {*/
 /*    min-width: 1180px;*/
 /*}*/
@@ -9591,13 +9629,23 @@ table .cell-description {
     gap: 10px;
 }
 
-.categories-settings-table-head,
-.category-settings-edit-form {
+.categories-settings-table-head {
     display: grid;
     /*grid-template-columns: minmax(220px, 1fr) 140px 120px 120px 92px;*/
     grid-template-columns: minmax(220px, 1fr) 140px 120px 120px;
     gap: 12px;
     align-items: center;
+}
+
+.category-settings-usage-wrap {
+  display: flex;
+  grid-gap: 12px;
+}
+
+.category-settings-edit-form {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .categories-settings-table-head {
@@ -9646,7 +9694,16 @@ table .cell-description {
     justify-content: flex-end;
 }
 
-
+.payment-credit-settings-card {
+  .payment-credit-edit-form {
+    .category-settings-usage {
+      flex-grow: 1;
+    }
+    .category-settings-actions {
+      flex-grow: 1;
+    }
+  }
+}
 
 .inline-form-error {
     padding: 10px 12px;
@@ -10243,6 +10300,10 @@ table .cell-description {
 @media (min-width: 576px) {
     .attachment-row-wrap {
         grid-column: 1 / -1;
+    }
+
+    .hidden-mp {
+      display: none;
     }
 }
 

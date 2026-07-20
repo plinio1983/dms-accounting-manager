@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 
 type InitialIncome = {
   id?: number;
-  salesChannel?: string | null;
-  saleCategory?: string | null;
+  salesChannelId?: number;
+  incomeCategoryId?: number;
   description?: string | null;
   amount?: string | number | { toString(): string } | null;
   paymentMethod?: string | null;
@@ -24,6 +24,7 @@ type InitialIncome = {
 
 type Option = { id: number; name: string; isFallback?: boolean | null };
 type PaymentMethodOption = Option & { kind?: string };
+type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null };
 
 type Props = {
   initialIncome?: InitialIncome;
@@ -34,12 +35,12 @@ type Props = {
   cancelHref?: string;
   banks: Option[];
   paymentMethods: PaymentMethodOption[];
+  incomeCategories: IncomeEntityOption[];
+  salesChannels: IncomeEntityOption[];
 };
 
 const today = new Date().toISOString().slice(0, 10);
 const currentMonth = new Date().toISOString().slice(0, 7);
-const salesChannels = ["Shop", "Online Shop", "Altro Canale"];
-const saleCategories = ["B2C", "B2B", "Altro"];
 const vatRates = ["0", "4", "10", "22"];
 
 function toDateInput(value?: string | Date | null) {
@@ -96,11 +97,15 @@ export default function IncomeForm({
   cancelHref,
   banks,
   paymentMethods,
+  incomeCategories,
+  salesChannels,
 }: Props) {
   const fallbackBank = banks.find(bank => bank.isFallback) ?? banks.find(bank => bank.name.toLowerCase().includes("altra")) ?? banks[0];
   const defaultPaymentMethod = paymentMethods.find(method => method.name === "Bonifico") ?? paymentMethods[0];
   const initialPaymentMethodId = findOptionId(paymentMethods, initialIncome?.paymentMethodId, initialIncome?.paymentMethod) || (defaultPaymentMethod ? String(defaultPaymentMethod.id) : "");
   const initialCreditBankId = findOptionId(banks, initialIncome?.creditBankId, initialIncome?.creditChannel) || (fallbackBank ? String(fallbackBank.id) : "");
+  const initialSalesChannelId = initialIncome?.salesChannelId ? String(initialIncome.salesChannelId) : String(salesChannels[0]?.id ?? "");
+  const initialIncomeCategoryId = initialIncome?.incomeCategoryId ? String(initialIncome.incomeCategoryId) : String(incomeCategories[0]?.id ?? "");
   const [amount, setAmount] = useState(normalizeMoney(initialIncome?.amount));
   const [paymentMethodId, setPaymentMethodId] = useState(initialPaymentMethodId);
   const [creditBankId, setCreditBankId] = useState(initialCreditBankId);
@@ -138,15 +143,15 @@ export default function IncomeForm({
         <div className="form-section-grid income-form-section-grid">
           <label>
             Canale di vendita
-            <select name="salesChannel" defaultValue={initialIncome?.salesChannel ?? "Shop"} required>
-              {salesChannels.map(value => <option key={value} value={value}>{value}</option>)}
+            <select name="salesChannelId" defaultValue={initialSalesChannelId} required>
+              {salesChannels.map(option => <option key={option.id} value={option.id}>{option.icon ? `${option.icon} ` : ''}{option.name}</option>)}
             </select>
           </label>
 
           <label>
             Categoria vendita
-            <select name="saleCategory" defaultValue={initialIncome?.saleCategory ?? "B2C"} required>
-              {saleCategories.map(value => <option key={value} value={value}>{value}</option>)}
+            <select name="incomeCategoryId" defaultValue={initialIncomeCategoryId} required>
+              {incomeCategories.map(option => <option key={option.id} value={option.id}>{option.icon ? `${option.icon} ` : ''}{option.name}</option>)}
             </select>
           </label>
 
