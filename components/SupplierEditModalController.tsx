@@ -82,7 +82,7 @@ export default function SupplierEditModalController() {
             <label>P.IVA<input name="vatNumber" defaultValue={supplier.vatNumber ?? ''}/></label>
             <label>IBAN<input name="iban" defaultValue={supplier.iban ?? ''}/></label>
             <label>PEC<input name="pec" type="email" defaultValue={supplier.pec ?? ''}/></label>
-            <label>Codice SDI/Codice Fiscale<input name="taxCodeSdi"
+            <label>Codice SDI/Fiscale<input name="taxCodeSdi"
                                                    defaultValue={supplier.taxCodeSdi ?? ''}/></label>
           </div>
         </details>

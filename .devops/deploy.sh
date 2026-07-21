@@ -245,6 +245,7 @@ ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" \
    fi; \
    \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml run --rm tabularium npx prisma db push --accept-data-loss; \
    \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml run --rm tabularium npm run db:backfill-vat-settlement; \
+   \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml run --rm tabularium npm run db:backfill-customers; \
    \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml up -d; \
    if [ -n '${REMOTE_UPLOADS_ARCHIVE}' ]; then \
      \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml cp '${REMOTE_UPLOADS_ARCHIVE}' tabularium:/tmp/tabularium-uploads.tar.gz; \

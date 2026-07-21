@@ -83,6 +83,7 @@ export const defaultPaymentMethods = [
 
 export const vatSettlementSupplierName = 'Erario – Saldo IVA';
 export const vatSettlementCategoryCode = 'TAX';
+export const defaultCustomerName = 'New customer';
 
 export function orderExpenseCategories<T extends { id: number; code: string; name: string }>(categories: T[]) {
   const defaultCodes = defaultCategories.map(([code]) => code);
@@ -128,6 +129,12 @@ export function orderPaymentMethods<T extends { id: number; name: string; kind: 
 }
 
 export async function ensureWorkspaceDefaults(workspaceId: number) {
+  await prisma.customer.upsert({
+    where: { workspaceId_systemRole: { workspaceId, systemRole: 'DEFAULT' } },
+    update: {},
+    create: { workspaceId, businessName: defaultCustomerName, systemRole: 'DEFAULT' }
+  });
+
   const existingCategories = await prisma.expenseCategory.count({ where: { workspaceId } });
   if (existingCategories === 0) {
     for (const [code, name, icon] of defaultCategories) {

@@ -1,877 +1,973 @@
 import Link from 'next/link';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
-import DeleteActionButton from '@/components/DeleteActionButton';
-import { prisma } from '@/lib/prisma';
-import { euro, moneyTone } from '@/lib/money';
-import NewIncomePanel from '@/components/NewIncomePanel';
-import IncomeEditModalController from '@/components/IncomeEditModalController';
+import {prisma} from '@/lib/prisma';
+import {euro, moneyTone} from '@/lib/money';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import IncomeFiltersDrawer from '@/components/IncomeFiltersDrawer';
 import IncomeTrendSelectors from '@/components/IncomeTrendSelectors';
 import MobileSortControl from '@/components/MobileSortControl';
 import SortableTableController from '@/components/SortableTableController';
+import IncomesList from '@/components/IncomesList';
 import {
-  badgeClass,
-  creditChannelStyles,
-  fiscalStyles,
-  incomeCreditStatusStyles,
-  incomeInvoiceStatusStyles,
-  paymentMethodStyles,
-  saleCategoryStyles,
-  salesChannelStyles
+    badgeClass,
+    creditChannelStyles,
+    fiscalStyles,
+    incomeCreditStatusStyles,
+    incomeInvoiceStatusStyles,
+    paymentMethodStyles,
+    saleCategoryStyles,
+    salesChannelStyles
 } from '@/lib/income-ui';
-import { vatStyles } from '@/lib/expense-ui';
-import { requireWorkspace } from '@/lib/auth';
-import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
-import { stripFlashRecord, stripFlashSearchParams } from '@/lib/flash';
-import { compareDate, compareNumber, compareText } from '@/lib/mobile-sort';
+import {vatStyles} from '@/lib/expense-ui';
+import {requireWorkspace} from '@/lib/auth';
+import {orderBanks, orderPaymentMethods} from '@/lib/workspace-defaults';
+import {stripFlashRecord, stripFlashSearchParams} from '@/lib/flash';
+import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
 
 const invoiceStatusOptions = [
-  ['NON_INVIATA', 'Non inviata'],
-  ['EMESSA', 'Emessa'],
-  ['not_emitted', 'Non emesse']
+    ['NON_INVIATA', 'Non inviata'],
+    ['EMESSA', 'Emessa'],
+    ['not_emitted', 'Non emesse']
 ];
 
 const incomeMobileSortOptions = [
-  { value: 'creditDate_desc', label: 'Data accredito recente' },
-  { value: 'creditDate_asc', label: 'Data accredito meno recente' },
-  { value: 'billingPeriod_desc', label: 'Periodo fatt. recente' },
-  { value: 'billingPeriod_asc', label: 'Periodo fatt. meno recente' },
-  { value: 'salesChannel_asc', label: 'Canale vendita (A-Z)' },
-  { value: 'salesChannel_desc', label: 'Canale vendita (Z-A)' },
-  { value: 'saleCategory_asc', label: 'Categoria vendita (A-Z)' },
-  { value: 'saleCategory_desc', label: 'Categoria vendita (Z-A)' },
-  { value: 'description_asc', label: 'Descrizione (A-Z)' },
-  { value: 'description_desc', label: 'Descrizione (Z-A)' },
-  { value: 'notes_asc', label: 'Note (A-Z)' },
-  { value: 'amount_desc', label: 'Importo alto' },
-  { value: 'amount_asc', label: 'Importo basso' },
-  { value: 'paymentMethod_asc', label: 'Metodo pagamento (A-Z)' },
-  { value: 'creditChannel_asc', label: 'Canale accredito (A-Z)' },
-  { value: 'fiscal_desc', label: 'Fiscali prima' },
-  { value: 'invoiceStatus_asc', label: 'Stato fattura (A-Z)' },
-  { value: 'credited_desc', label: 'Accreditati prima' },
-  { value: 'vatRate_desc', label: 'IVA alta' },
-  // { value: 'createdAt_desc', label: 'Creazione recente' },
-  // { value: 'updatedAt_desc', label: 'Aggiornamento recente' },
-  // { value: 'id_desc', label: 'ID decrescente' },
-  // { value: 'id_asc', label: 'ID crescente' }
+    {value: 'creditDate_desc', label: 'Data accredito recente'},
+    {value: 'creditDate_asc', label: 'Data accredito meno recente'},
+    {value: 'billingPeriod_desc', label: 'Periodo fatt. recente'},
+    {value: 'billingPeriod_asc', label: 'Periodo fatt. meno recente'},
+    {value: 'salesChannel_asc', label: 'Canale vendita (A-Z)'},
+    {value: 'salesChannel_desc', label: 'Canale vendita (Z-A)'},
+    {value: 'saleCategory_asc', label: 'Categoria vendita (A-Z)'},
+    {value: 'saleCategory_desc', label: 'Categoria vendita (Z-A)'},
+    {value: 'description_asc', label: 'Descrizione (A-Z)'},
+    {value: 'description_desc', label: 'Descrizione (Z-A)'},
+    {value: 'notes_asc', label: 'Note (A-Z)'},
+    {value: 'amount_desc', label: 'Importo alto'},
+    {value: 'amount_asc', label: 'Importo basso'},
+    {value: 'paymentMethod_asc', label: 'Metodo pagamento (A-Z)'},
+    {value: 'creditChannel_asc', label: 'Canale accredito (A-Z)'},
+    {value: 'fiscal_desc', label: 'Fiscali prima'},
+    {value: 'invoiceStatus_asc', label: 'Stato fattura (A-Z)'},
+    {value: 'credited_desc', label: 'Accreditati prima'},
+    {value: 'vatRate_desc', label: 'IVA alta'},
+    // { value: 'createdAt_desc', label: 'Creazione recente' },
+    // { value: 'updatedAt_desc', label: 'Aggiornamento recente' },
+    // { value: 'id_desc', label: 'ID decrescente' },
+    // { value: 'id_asc', label: 'ID crescente' }
 ];
 
 function dateLabel(value?: Date | null) {
-  return value
-    ? new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' }).format(value)
-    : '-';
+    return value
+        ? new Intl.DateTimeFormat('it-IT', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            timeZone: 'UTC'
+        }).format(value)
+        : '-';
 }
 
 function mobileDateLabel(value?: Date | null) {
-  return value
-    ? new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(value).replace('.', '')
-    : '-';
+    return value
+        ? new Intl.DateTimeFormat('it-IT', {
+            day: 'numeric',
+            month: 'short',
+            timeZone: 'UTC'
+        }).format(value).replace('.', '')
+        : '-';
 }
 
 function dateSortValue(value?: Date | null) {
-  return value ? String(new Date(value).getTime()) : '';
+    return value ? String(new Date(value).getTime()) : '';
 }
 
 function formatDateInputLabel(value: string) {
-  if (!value) return '';
-  const [year, month, day] = value.split('-');
-  return year && month && day ? `${day}/${month}/${year}` : value;
+    if (!value) return '';
+    const [year, month, day] = value.split('-');
+    return year && month && day ? `${day}/${month}/${year}` : value;
 }
 
 function reportMonthFromRange(monthFrom: string, monthTo: string, dateFrom: string, dateTo: string) {
-  if (monthFrom && monthFrom === monthTo) {
-    const [year, month] = monthFrom.split('-').map(Number);
-    if (year && month >= 1 && month <= 12) return { year, month };
-  }
-  if (dateFrom && dateTo) {
-    const [fromYear, fromMonth] = dateFrom.split('-').map(Number);
-    const [toYear, toMonth] = dateTo.split('-').map(Number);
-    if (fromYear === toYear && fromMonth === toMonth && fromYear && fromMonth >= 1 && fromMonth <= 12) {
-      return { year: fromYear, month: fromMonth };
+    if (monthFrom && monthFrom === monthTo) {
+        const [year, month] = monthFrom.split('-').map(Number);
+        if (year && month >= 1 && month <= 12) return {year, month};
     }
-  }
-  return null;
+    if (dateFrom && dateTo) {
+        const [fromYear, fromMonth] = dateFrom.split('-').map(Number);
+        const [toYear, toMonth] = dateTo.split('-').map(Number);
+        if (fromYear === toYear && fromMonth === toMonth && fromYear && fromMonth >= 1 && fromMonth <= 12) {
+            return {year: fromYear, month: fromMonth};
+        }
+    }
+    return null;
 }
 
 function formatDateTextInputLabel(value: string) {
-  if (!value) return '';
-  const [year, month, day] = value.split('-');
-  if (!year || !month || !day) return value;
-  const date = new Date(Number(year), Number(month) - 1, Number(day));
-  const label = new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
-  return label.charAt(0).toUpperCase() + label.slice(1);
+    if (!value) return '';
+    const [year, month, day] = value.split('-');
+    if (!year || !month || !day) return value;
+    const date = new Date(Number(year), Number(month) - 1, Number(day));
+    const label = new Intl.DateTimeFormat('it-IT', {day: 'numeric', month: 'long', year: 'numeric'}).format(date);
+    return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
 function formatMonthInputLabel(value: string) {
-  if (!value) return '';
-  const [year, month] = value.split('-');
-  if (!year || !month) return value;
-  const date = new Date(Number(year), Number(month) - 1, 1);
-  const monthName = new Intl.DateTimeFormat('it-IT', { month: 'long' }).format(date);
-  return `${monthName.charAt(0).toUpperCase()}${monthName.slice(1)} ${year}`;
+    if (!value) return '';
+    const [year, month] = value.split('-');
+    if (!year || !month) return value;
+    const date = new Date(Number(year), Number(month) - 1, 1);
+    const monthName = new Intl.DateTimeFormat('it-IT', {month: 'long'}).format(date);
+    return `${monthName.charAt(0).toUpperCase()}${monthName.slice(1)} ${year}`;
 }
 
 function periodTotalsLabel({
-  useFiscalPeriodFilter,
-  billingPeriodFromFilter,
-  billingPeriodToFilter,
-  creditDateFromDefault,
-  creditDateToDefault,
-}: {
-  useFiscalPeriodFilter: boolean;
-  billingPeriodFromFilter: string;
-  billingPeriodToFilter: string;
-  creditDateFromDefault: string;
-  creditDateToDefault: string;
+                               useFiscalPeriodFilter,
+                               billingPeriodFromFilter,
+                               billingPeriodToFilter,
+                               creditDateFromDefault,
+                               creditDateToDefault,
+                           }: {
+    useFiscalPeriodFilter: boolean;
+    billingPeriodFromFilter: string;
+    billingPeriodToFilter: string;
+    creditDateFromDefault: string;
+    creditDateToDefault: string;
 }) {
-  if (useFiscalPeriodFilter) {
-    if (billingPeriodFromFilter && billingPeriodToFilter && billingPeriodFromFilter !== billingPeriodToFilter) {
-      return `Totali periodo fiscale dal ${formatMonthInputLabel(billingPeriodFromFilter)} al ${formatMonthInputLabel(billingPeriodToFilter)}`;
+    if (useFiscalPeriodFilter) {
+        if (billingPeriodFromFilter && billingPeriodToFilter && billingPeriodFromFilter !== billingPeriodToFilter) {
+            return `Totali periodo fiscale dal ${formatMonthInputLabel(billingPeriodFromFilter)} al ${formatMonthInputLabel(billingPeriodToFilter)}`;
+        }
+        const value = billingPeriodFromFilter || billingPeriodToFilter;
+        return value ? `Totali periodo fiscale ${formatMonthInputLabel(value)}` : 'Totali periodo fiscale selezionato';
     }
-    const value = billingPeriodFromFilter || billingPeriodToFilter;
-    return value ? `Totali periodo fiscale ${formatMonthInputLabel(value)}` : 'Totali periodo fiscale selezionato';
-  }
 
-  if (creditDateFromDefault && creditDateToDefault && creditDateFromDefault !== creditDateToDefault) {
-    return `Andamento complessivo\n dal ${formatDateTextInputLabel(creditDateFromDefault)} al ${formatDateTextInputLabel(creditDateToDefault)}`;
-  }
-  const value = creditDateFromDefault || creditDateToDefault;
-  return value ? `Andamento complessivo ${formatDateTextInputLabel(value)}` : 'Totali andamento date selezionate';
+    if (creditDateFromDefault && creditDateToDefault && creditDateFromDefault !== creditDateToDefault) {
+        return `Andamento complessivo\n dal ${formatDateTextInputLabel(creditDateFromDefault)} al ${formatDateTextInputLabel(creditDateToDefault)}`;
+    }
+    const value = creditDateFromDefault || creditDateToDefault;
+    return value ? `Andamento complessivo ${formatDateTextInputLabel(value)}` : 'Totali andamento date selezionate';
 }
 
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
-  const value = searchParams[key];
-  return Array.isArray(value) ? value[0] ?? '' : value ?? '';
+    const value = searchParams[key];
+    return Array.isArray(value) ? value[0] ?? '' : value ?? '';
 }
 
 function normalize(value: unknown) {
-  return String(value ?? '').trim().toLowerCase();
+    return String(value ?? '').trim().toLowerCase();
 }
 
 type AmountFilter =
-  | { mode: 'exact'; value: number }
-  | { mode: 'gte'; value: number }
-  | { mode: 'lte'; value: number }
-  | { mode: 'gt'; value: number }
-  | { mode: 'lt'; value: number }
-  | { mode: 'range'; min: number; max: number };
+    | { mode: 'exact'; value: number }
+    | { mode: 'gte'; value: number }
+    | { mode: 'lte'; value: number }
+    | { mode: 'gt'; value: number }
+    | { mode: 'lt'; value: number }
+    | { mode: 'range'; min: number; max: number };
 
 function parseLocaleNumber(value: string) {
-  const raw = String(value ?? '').trim().replace(/€/g, '').replace(/\s/g, '');
-  if (!raw) return null;
-  let normalized = raw;
-  if (raw.includes(',') && raw.includes('.')) {
-    normalized = raw.lastIndexOf(',') > raw.lastIndexOf('.')
-      ? raw.replace(/\./g, '').replace(',', '.')
-      : raw.replace(/,/g, '');
-  } else if (raw.includes(',')) {
-    normalized = raw.replace(/\./g, '').replace(',', '.');
-  }
-  const parsed = Number(normalized);
-  return Number.isFinite(parsed) ? parsed : null;
+    const raw = String(value ?? '').trim().replace(/€/g, '').replace(/\s/g, '');
+    if (!raw) return null;
+    let normalized = raw;
+    if (raw.includes(',') && raw.includes('.')) {
+        normalized = raw.lastIndexOf(',') > raw.lastIndexOf('.')
+            ? raw.replace(/\./g, '').replace(',', '.')
+            : raw.replace(/,/g, '');
+    } else if (raw.includes(',')) {
+        normalized = raw.replace(/\./g, '').replace(',', '.');
+    }
+    const parsed = Number(normalized);
+    return Number.isFinite(parsed) ? parsed : null;
 }
 
 function parseAmountFilter(value: string): AmountFilter | null {
-  const raw = String(value ?? '').trim();
-  if (!raw) return null;
+    const raw = String(value ?? '').trim();
+    if (!raw) return null;
 
-  const rangeMatch = raw.match(/^(.+?)\s*[-–—]\s*(.+)$/);
-  if (rangeMatch) {
-    const min = parseLocaleNumber(rangeMatch[1]);
-    const max = parseLocaleNumber(rangeMatch[2]);
-    if (min !== null && max !== null) return { mode: 'range', min: Math.min(min, max), max: Math.max(min, max) };
-  }
-
-  const operatorMatch = raw.match(/^(>=|<=|>|<)\s*(.+)$/);
-  if (operatorMatch) {
-    const value = parseLocaleNumber(operatorMatch[2]);
-    if (value !== null) {
-      const operator = operatorMatch[1];
-      if (operator === '>=') return { mode: 'gte', value };
-      if (operator === '<=') return { mode: 'lte', value };
-      if (operator === '>') return { mode: 'gt', value };
-      if (operator === '<') return { mode: 'lt', value };
+    const rangeMatch = raw.match(/^(.+?)\s*[-–—]\s*(.+)$/);
+    if (rangeMatch) {
+        const min = parseLocaleNumber(rangeMatch[1]);
+        const max = parseLocaleNumber(rangeMatch[2]);
+        if (min !== null && max !== null) return {mode: 'range', min: Math.min(min, max), max: Math.max(min, max)};
     }
-  }
 
-  const parsed = parseLocaleNumber(raw);
-  return parsed === null ? null : { mode: 'exact', value: parsed };
+    const operatorMatch = raw.match(/^(>=|<=|>|<)\s*(.+)$/);
+    if (operatorMatch) {
+        const value = parseLocaleNumber(operatorMatch[2]);
+        if (value !== null) {
+            const operator = operatorMatch[1];
+            if (operator === '>=') return {mode: 'gte', value};
+            if (operator === '<=') return {mode: 'lte', value};
+            if (operator === '>') return {mode: 'gt', value};
+            if (operator === '<') return {mode: 'lt', value};
+        }
+    }
+
+    const parsed = parseLocaleNumber(raw);
+    return parsed === null ? null : {mode: 'exact', value: parsed};
 }
 
 function amountMatchesFilter(amount: number, filterValue: AmountFilter | null) {
-  if (filterValue === null) return true;
-  const cents = Math.round(amount * 100);
-  if (filterValue.mode === 'exact') return cents === Math.round(filterValue.value * 100);
-  if (filterValue.mode === 'gte') return amount >= filterValue.value;
-  if (filterValue.mode === 'lte') return amount <= filterValue.value;
-  if (filterValue.mode === 'gt') return amount > filterValue.value;
-  if (filterValue.mode === 'lt') return amount < filterValue.value;
-  return amount >= filterValue.min && amount <= filterValue.max;
+    if (filterValue === null) return true;
+    const cents = Math.round(amount * 100);
+    if (filterValue.mode === 'exact') return cents === Math.round(filterValue.value * 100);
+    if (filterValue.mode === 'gte') return amount >= filterValue.value;
+    if (filterValue.mode === 'lte') return amount <= filterValue.value;
+    if (filterValue.mode === 'gt') return amount > filterValue.value;
+    if (filterValue.mode === 'lt') return amount < filterValue.value;
+    return amount >= filterValue.min && amount <= filterValue.max;
 }
 
 function toDateInputValue(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
 function currentMonthQuickValue() {
-  const now = new Date();
-  return `month_${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const now = new Date();
+    return `month_${String(now.getMonth() + 1).padStart(2, '0')}`;
 }
 
 function fiscalQuarterRange(year: number, quarterIndex: number) {
-  const startMonth = quarterIndex * 3;
-  return {
-    from: toDateInputValue(new Date(year, startMonth, 1)),
-    to: toDateInputValue(new Date(year, startMonth + 3, 0))
-  };
+    const startMonth = quarterIndex * 3;
+    return {
+        from: toDateInputValue(new Date(year, startMonth, 1)),
+        to: toDateInputValue(new Date(year, startMonth + 3, 0))
+    };
 }
 
 function getQuickDateRange(value: string, selectedYear?: string) {
-  const now = new Date();
-  const parsedYear = Number(selectedYear);
-  const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
-  const month = now.getMonth();
-  const currentQuarter = Math.floor(month / 3);
-  const monthMatch = String(value).match(/^month_(\d{2})$/);
-  const quarterMatch = String(value).match(/^quarter_(\d)$/);
+    const now = new Date();
+    const parsedYear = Number(selectedYear);
+    const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
+    const month = now.getMonth();
+    const currentQuarter = Math.floor(month / 3);
+    const monthMatch = String(value).match(/^month_(\d{2})$/);
+    const quarterMatch = String(value).match(/^quarter_(\d)$/);
 
-  if (monthMatch) {
-    const selectedMonth = Number(monthMatch[1]) - 1;
-    return { from: toDateInputValue(new Date(year, selectedMonth, 1)), to: toDateInputValue(new Date(year, selectedMonth + 1, 0)) };
-  }
-  if (quarterMatch) return fiscalQuarterRange(year, Number(quarterMatch[1]) - 1);
-  if (value === 'previous_month') return { from: toDateInputValue(new Date(year, month - 1, 1)), to: toDateInputValue(new Date(year, month, 0)) };
-  if (value === 'two_months_ago') return { from: toDateInputValue(new Date(year, month - 2, 1)), to: toDateInputValue(new Date(year, month - 1, 0)) };
-  if (value === 'current_quarter') return fiscalQuarterRange(year, currentQuarter);
-  if (value === 'last_quarter') return currentQuarter > 0 ? fiscalQuarterRange(year, currentQuarter - 1) : fiscalQuarterRange(year - 1, 3);
-  if (value === 'previous_quarter') return currentQuarter > 0 ? fiscalQuarterRange(year, currentQuarter - 1) : fiscalQuarterRange(year - 1, 3);
-  if (value === 'year_to_date') {
-    return {
-      from: toDateInputValue(new Date(year, 0, 1)),
-      to: toDateInputValue(new Date(year, 11, 31))
+    if (monthMatch) {
+        const selectedMonth = Number(monthMatch[1]) - 1;
+        return {
+            from: toDateInputValue(new Date(year, selectedMonth, 1)),
+            to: toDateInputValue(new Date(year, selectedMonth + 1, 0))
+        };
+    }
+    if (quarterMatch) return fiscalQuarterRange(year, Number(quarterMatch[1]) - 1);
+    if (value === 'previous_month') return {
+        from: toDateInputValue(new Date(year, month - 1, 1)),
+        to: toDateInputValue(new Date(year, month, 0))
     };
-  }
-  return { from: toDateInputValue(new Date(year, month, 1)), to: toDateInputValue(new Date(year, month + 1, 0)) };
+    if (value === 'two_months_ago') return {
+        from: toDateInputValue(new Date(year, month - 2, 1)),
+        to: toDateInputValue(new Date(year, month - 1, 0))
+    };
+    if (value === 'current_quarter') return fiscalQuarterRange(year, currentQuarter);
+    if (value === 'last_quarter') return currentQuarter > 0 ? fiscalQuarterRange(year, currentQuarter - 1) : fiscalQuarterRange(year - 1, 3);
+    if (value === 'previous_quarter') return currentQuarter > 0 ? fiscalQuarterRange(year, currentQuarter - 1) : fiscalQuarterRange(year - 1, 3);
+    if (value === 'year_to_date') {
+        return {
+            from: toDateInputValue(new Date(year, 0, 1)),
+            to: toDateInputValue(new Date(year, 11, 31))
+        };
+    }
+    return {from: toDateInputValue(new Date(year, month, 1)), to: toDateInputValue(new Date(year, month + 1, 0))};
 }
 
 const monthQuickOptions = [
-  ['month_01', 'Gennaio'],
-  ['month_02', 'Febbraio'],
-  ['month_03', 'Marzo'],
-  ['month_04', 'Aprile'],
-  ['month_05', 'Maggio'],
-  ['month_06', 'Giugno'],
-  ['month_07', 'Luglio'],
-  ['month_08', 'Agosto'],
-  ['month_09', 'Settembre'],
-  ['month_10', 'Ottobre'],
-  ['month_11', 'Novembre'],
-  ['month_12', 'Dicembre']
+    ['month_01', 'Gennaio'],
+    ['month_02', 'Febbraio'],
+    ['month_03', 'Marzo'],
+    ['month_04', 'Aprile'],
+    ['month_05', 'Maggio'],
+    ['month_06', 'Giugno'],
+    ['month_07', 'Luglio'],
+    ['month_08', 'Agosto'],
+    ['month_09', 'Settembre'],
+    ['month_10', 'Ottobre'],
+    ['month_11', 'Novembre'],
+    ['month_12', 'Dicembre']
 ];
 
 const quarterQuickOptions = [
-  ['quarter_1', 'T.1 [ Gen - Mar ]'],
-  ['quarter_2', 'T.2 [ Apr - Giu ]'],
-  ['quarter_3', 'T.3 [ Lug - Set ]'],
-  ['quarter_4', 'T.4 [ Ott - Dic ]']
+    ['quarter_1', 'T.1 [ Gen - Mar ]'],
+    ['quarter_2', 'T.2 [ Apr - Giu ]'],
+    ['quarter_3', 'T.3 [ Lug - Set ]'],
+    ['quarter_4', 'T.4 [ Ott - Dic ]']
 ];
 
 const quickDateOptions = [
-  ['year_to_date', 'Anno intero'],
-  ...monthQuickOptions,
-  ...quarterQuickOptions
+    ['year_to_date', 'Anno intero'],
+    ...monthQuickOptions,
+    ...quarterQuickOptions
 ];
 
 function toMonthInputValue(year: number, monthIndexZeroBased: number) {
-  const date = new Date(year, monthIndexZeroBased, 1);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    const date = new Date(year, monthIndexZeroBased, 1);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 }
 
 function getQuickBillingPeriodRange(value: string, selectedYear?: string) {
-  const now = new Date();
-  const parsedYear = Number(selectedYear);
-  const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
-  const month = now.getMonth();
-  const currentQuarter = Math.floor(month / 3);
-  const monthMatch = String(value).match(/^month_(\d{2})$/);
-  const quarterMatch = String(value).match(/^quarter_(\d)$/);
+    const now = new Date();
+    const parsedYear = Number(selectedYear);
+    const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
+    const month = now.getMonth();
+    const currentQuarter = Math.floor(month / 3);
+    const monthMatch = String(value).match(/^month_(\d{2})$/);
+    const quarterMatch = String(value).match(/^quarter_(\d)$/);
 
-  if (monthMatch) {
-    const selectedMonth = Number(monthMatch[1]) - 1;
-    return { from: toMonthInputValue(year, selectedMonth), to: toMonthInputValue(year, selectedMonth) };
-  }
-  if (quarterMatch) {
-    const quarter = Number(quarterMatch[1]) - 1;
-    return { from: toMonthInputValue(year, quarter * 3), to: toMonthInputValue(year, quarter * 3 + 2) };
-  }
-  if (value === 'previous_month') return { from: toMonthInputValue(year, month - 1), to: toMonthInputValue(year, month - 1) };
-  if (value === 'current_quarter') return { from: toMonthInputValue(year, currentQuarter * 3), to: toMonthInputValue(year, currentQuarter * 3 + 2) };
-  if (value === 'previous_quarter') {
-    const quarter = currentQuarter - 1;
-    return quarter >= 0
-      ? { from: toMonthInputValue(year, quarter * 3), to: toMonthInputValue(year, quarter * 3 + 2) }
-      : { from: toMonthInputValue(year - 1, 9), to: toMonthInputValue(year - 1, 11) };
-  }
-  if (value === 'year_to_date') {
-    return {
-      from: toMonthInputValue(year, 0),
-      to: toMonthInputValue(year, 11)
+    if (monthMatch) {
+        const selectedMonth = Number(monthMatch[1]) - 1;
+        return {from: toMonthInputValue(year, selectedMonth), to: toMonthInputValue(year, selectedMonth)};
+    }
+    if (quarterMatch) {
+        const quarter = Number(quarterMatch[1]) - 1;
+        return {from: toMonthInputValue(year, quarter * 3), to: toMonthInputValue(year, quarter * 3 + 2)};
+    }
+    if (value === 'previous_month') return {
+        from: toMonthInputValue(year, month - 1),
+        to: toMonthInputValue(year, month - 1)
     };
-  }
-  return { from: toMonthInputValue(year, month), to: toMonthInputValue(year, month) };
+    if (value === 'current_quarter') return {
+        from: toMonthInputValue(year, currentQuarter * 3),
+        to: toMonthInputValue(year, currentQuarter * 3 + 2)
+    };
+    if (value === 'previous_quarter') {
+        const quarter = currentQuarter - 1;
+        return quarter >= 0
+            ? {from: toMonthInputValue(year, quarter * 3), to: toMonthInputValue(year, quarter * 3 + 2)}
+            : {from: toMonthInputValue(year - 1, 9), to: toMonthInputValue(year - 1, 11)};
+    }
+    if (value === 'year_to_date') {
+        return {
+            from: toMonthInputValue(year, 0),
+            to: toMonthInputValue(year, 11)
+        };
+    }
+    return {from: toMonthInputValue(year, month), to: toMonthInputValue(year, month)};
 }
 
 const quickBillingPeriodOptions = [
-  ['year_to_date', 'Anno intero'],
-  ...monthQuickOptions,
-  ...quarterQuickOptions
+    ['year_to_date', 'Anno intero'],
+    ...monthQuickOptions,
+    ...quarterQuickOptions
 ];
 
 
 function vatAmountFromGross(amount: number, vatRate: number) {
-  if (!vatRate) return 0;
-  return amount * (vatRate / (100 + vatRate));
+    if (!vatRate) return 0;
+    return amount * (vatRate / (100 + vatRate));
 }
 
 function formatPeriod(month: number, year: number) {
-  const monthName = new Intl.DateTimeFormat('it-IT', { month: 'short' }).format(new Date(year, month - 1, 1));
-  const normalized = monthName.charAt(0).toUpperCase() + monthName.slice(1).replace('.', '');
-  return `${normalized} ${year}`;
+    const monthName = new Intl.DateTimeFormat('it-IT', {month: 'short'}).format(new Date(year, month - 1, 1));
+    const normalized = monthName.charAt(0).toUpperCase() + monthName.slice(1).replace('.', '');
+    return `${normalized} ${year}`;
 }
 
 function periodInputValue(month: number, year: number) {
-  return `${year}-${String(month).padStart(2, '0')}`;
+    return `${year}-${String(month).padStart(2, '0')}`;
 }
 
 function monthInputToKey(value: string) {
-  const match = String(value ?? '').trim().match(/^(\d{4})-(\d{2})$/);
-  if (!match) return null;
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  if (!year || month < 1 || month > 12) return null;
-  return year * 12 + month;
+    const match = String(value ?? '').trim().match(/^(\d{4})-(\d{2})$/);
+    if (!match) return null;
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    if (!year || month < 1 || month > 12) return null;
+    return year * 12 + month;
 }
 
 function normalizePeriodRange(fromKey: number | null, toKey: number | null) {
-  if (fromKey !== null && toKey !== null && fromKey > toKey) {
-    return { fromKey: toKey, toKey: fromKey };
-  }
-  return { fromKey, toKey };
+    if (fromKey !== null && toKey !== null && fromKey > toKey) {
+        return {fromKey: toKey, toKey: fromKey};
+    }
+    return {fromKey, toKey};
 }
 
 function recordPeriodKey(month: number, year: number) {
-  return Number(year) * 12 + Number(month);
+    return Number(year) * 12 + Number(month);
 }
 
 function matchesBillingPeriod(month: number, year: number, fromKey: number | null, toKey: number | null) {
-  const key = recordPeriodKey(month, year);
-  if (fromKey !== null && key < fromKey) return false;
-  if (toKey !== null && key > toKey) return false;
-  return true;
+    const key = recordPeriodKey(month, year);
+    if (fromKey !== null && key < fromKey) return false;
+    if (toKey !== null && key > toKey) return false;
+    return true;
 }
 
 function matchesIsoDate(value: Date | null | undefined, from: string, to: string) {
-  const formatted = value ? localDateKey(value) : '';
-  if (from && (!formatted || formatted < from)) return false;
-  if (to && (!formatted || formatted > to)) return false;
-  return true;
+    const formatted = value ? localDateKey(value) : '';
+    if (from && (!formatted || formatted < from)) return false;
+    if (to && (!formatted || formatted > to)) return false;
+    return true;
 }
 
 function localDateKey(value: Date) {
-  return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
+    return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
 }
 
 function isIncomeCreditOverdue(income: { isCredited: boolean; creditDate: Date | null }) {
-  return !income.isCredited && Boolean(income.creditDate) && localDateKey(income.creditDate!) < localDateKey(new Date());
+    return !income.isCredited && Boolean(income.creditDate) && localDateKey(income.creditDate!) < localDateKey(new Date());
 }
 
 function incomeCreditStatus(income: { isCredited: boolean; creditDate: Date | null }) {
-  if (income.isCredited) return incomeCreditStatusStyles.ACCREDITATO;
-  return isIncomeCreditOverdue(income) ? incomeCreditStatusStyles.SCADUTO : incomeCreditStatusStyles.DA_ACCREDITARE;
+    if (income.isCredited) return incomeCreditStatusStyles.ACCREDITATO;
+    return isIncomeCreditOverdue(income) ? incomeCreditStatusStyles.SCADUTO : incomeCreditStatusStyles.DA_ACCREDITARE;
 }
 
 function fiscalBadge(value: boolean) {
-  const item = value ? fiscalStyles.yes : fiscalStyles.no;
-  const label = value ? '✓ DF' : '✕ NF';
-  return <span className={`${badgeClass(item.className)} income-badge-compact`}>{label}</span>;
+    const item = value ? fiscalStyles.yes : fiscalStyles.no;
+    const label = value ? '✓ DF' : '✕ NF';
+    return <span className={`${badgeClass(item.className)} income-badge-compact`}>{label}</span>;
 }
-function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: string }> }) {
-  return <div className="active-filter-summary">
-    <span className="active-filter-summary-title">Filtri attivi:</span>
-    {items.length ? items.map(item => <span className="active-filter-chip" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>) : <span className="active-filter-empty">nessun filtro impostato</span>}
-    <Link className="btn btn-md btn-default reset-btn" href="/incomes"><span className="btn-icon">↺</span> Reset</Link>
-  </div>;
+
+function ActiveFilterSummary({items}: { items: Array<{ label: string; value: string }> }) {
+    return <div className="active-filter-summary">
+        <span className="active-filter-summary-title">Filtri attivi:</span>
+        {items.length ? items.map(item =>
+                <span className="active-filter-chip" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>) :
+            <span className="active-filter-empty">nessun filtro impostato</span>}
+        <Link className="btn btn-md btn-default reset-btn" href="/incomes"><span className="btn-icon">↺</span> Reset</Link>
+    </div>;
 }
 
 function optionLabel(options: Array<string[]>, value: string) {
-  return options.find(option => option[0] === value)?.[1] ?? value;
+    return options.find(option => option[0] === value)?.[1] ?? value;
 }
 
 
-function IncomeBreakdownChart({ title, description, data }: { title: string; description: string; data: Array<{ name: string; code: string; total: number }> }) {
-  const max = Math.max(...data.map(item => item.total), 0);
-  const total = data.reduce((sum, item) => sum + item.total, 0);
+function IncomeBreakdownChart({title, description, data}: {
+    title: string;
+    description: string;
+    data: Array<{ name: string; code: string; total: number }>
+}) {
+    const max = Math.max(...data.map(item => item.total), 0);
+    const total = data.reduce((sum, item) => sum + item.total, 0);
 
-  return <div className="card expense-category-chart-card embedded-chart-card income-chart">
-    <div className="card-heading-row">
-      <div>
-        <h2>{title}</h2>
-        <p className="muted">{description}</p>
-      </div>
-      <span className="badge">Totale {euro(total)}</span>
-    </div>
-    {data.length ? <div className="category-chart-list">
-      {data.map(item => {
-        const percentage = total ? (item.total / total) * 100 : 0;
-        const width = max ? Math.max((item.total / max) * 100, 4) : 0;
-        return <div className="category-chart-row" key={`${item.code}-${item.name}`}>
-          <div className="category-chart-label">
-            <strong>{item.code}</strong>
-            <span>{item.name}</span>
-            {/*<div className="category-chart-value">*/}
-            {/*  <span className={moneyTone(item.total)}>{euro(item.total)}</span>*/}
-            {/*  <small>{percentage.toFixed(1)}%</small>*/}
-            {/*</div>*/}
-          </div>
-          <div className="category-chart-bar-wrap" aria-label={`${item.name}: ${euro(item.total)}`}>
-            <div className="category-chart-bar" style={{ width: `${width}%` }} />
-          </div>
-          <div className="category-chart-value"><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
-        </div>;
-      })}
-    </div> : <p className="muted">Nessun incasso presente nei risultati filtrati.</p>}
-  </div>;
+    return <div className="card expense-category-chart-card embedded-chart-card income-chart">
+        <div className="card-heading-row">
+            <div>
+                <h2>{title}</h2>
+                <p className="muted">{description}</p>
+            </div>
+            <span className="badge">Totale {euro(total)}</span>
+        </div>
+        {data.length ? <div className="category-chart-list">
+            {data.map(item => {
+                const percentage = total ? (item.total / total) * 100 : 0;
+                const width = max ? Math.max((item.total / max) * 100, 4) : 0;
+                return <div className="category-chart-row" key={`${item.code}-${item.name}`}>
+                    <div className="category-chart-label">
+                        <strong>{item.code}</strong>
+                        <span>{item.name}</span>
+                        {/*<div className="category-chart-value">*/}
+                        {/*  <span className={moneyTone(item.total)}>{euro(item.total)}</span>*/}
+                        {/*  <small>{percentage.toFixed(1)}%</small>*/}
+                        {/*</div>*/}
+                    </div>
+                    <div className="category-chart-bar-wrap" aria-label={`${item.name}: ${euro(item.total)}`}>
+                        <div className="category-chart-bar" style={{width: `${width}%`}}/>
+                    </div>
+                    <div className="category-chart-value">
+                        <strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small>
+                    </div>
+                </div>;
+            })}
+        </div> : <p className="muted">Nessun incasso presente nei risultati filtrati.</p>}
+    </div>;
 }
 
 const incomePieChartColors = ['#2563eb', '#16a34a', '#f59e0b', '#dc2626', '#7c3aed', '#0f766e', '#db2777', '#64748b'];
 
-function IncomePieBreakdownChart({ title, data }: { title: string; data: Array<{ name: string; code: string; total: number }> }) {
-  const total = data.reduce((sum, item) => sum + item.total, 0);
-  let cursor = 0;
-  const segments = data.map((item, index) => {
-    const start = total ? (cursor / total) * 100 : 0;
-    cursor += item.total;
-    const end = total ? (cursor / total) * 100 : 0;
-    return `${incomePieChartColors[index % incomePieChartColors.length]} ${start.toFixed(3)}% ${end.toFixed(3)}%`;
-  });
-  const background = segments.length ? `conic-gradient(${segments.join(', ')})` : undefined;
-
-  return <section className="expense-category-chart-card expense-impact-pie-card expense-page-category-pie-chart income-chart">
-    <div className="card-heading-row">
-      <div>
-        <h2>{title}</h2>
-      </div>
-      {/*<div className="text-right chart-total"><span className="badge">Totale {euro(total)}</span></div>*/}
-    </div>
-    {data.length && total > 0 ? <div className="expense-impact-pie-layout">
-      <div className="expense-impact-pie" style={{ background }} aria-label={title}>
-        <div>
-          <span>Incassi</span>
-          <strong className="main-label">{euro(total)}</strong>
-        </div>
-      </div>
-      <div className="expense-impact-pie-legend">
-        {data.map((item, index) => {
-          const percentage = total ? (item.total / total) * 100 : 0;
-          return <div className="expense-impact-pie-row-wrap" key={`${item.code}-${item.name}`}>
-            <div className="expense-impact-pie-legend-row">
-              <span className="expense-impact-pie-dot" style={{ background: incomePieChartColors[index % incomePieChartColors.length] }} />
-              <div><strong>{item.code}</strong><span>{item.name}</span></div>
-              <div><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
-            </div>
-            <div className="expense-impact-pie-bar" style={{ width: `${percentage.toFixed(1)}%`, background: incomePieChartColors[index % incomePieChartColors.length] }} />
-          </div>;
-        })}
-      </div>
-    </div> : <p className="muted">Nessun incasso presente nei risultati filtrati.</p>}
-  </section>;
-}
-
-function IncomeVerticalBarChart({ title, description, data }: { title: string; description: string; data: Array<{ name: string; code: string; total: number }> }) {
-  const max = Math.max(...data.map(item => item.total), 0);
-  const total = data.reduce((sum, item) => sum + item.total, 0);
-
-  return <div className="income-sales-channel-chart" aria-label={title}>
-    <div className="card-heading-row">
-      <div>
-        <h2>{title}</h2>
-        <p className="muted">{description}</p>
-      </div>
-      <span className="badge">Totale {euro(total)}</span>
-    </div>
-    {data.length ? <div className="income-vertical-chart" role="list">
-      {data.map(item => {
-        const percentage = total ? (item.total / total) * 100 : 0;
-        const height = max ? Math.max((item.total / max) * 100, 6) : 0;
-        return <div className="income-vertical-chart-item" key={`${item.code}-${item.name}`} role="listitem">
-          <div className="income-vertical-chart-value">
-            <strong className={moneyTone(item.total)}>{euro(item.total)}</strong>
-            <small>{percentage.toFixed(1)}%</small>
-          </div>
-          <div className="income-vertical-chart-bar-wrap" aria-label={`${item.name}: ${euro(item.total)}`}>
-            <div className="income-vertical-chart-bar" style={{ height: `${height}%` }} />
-          </div>
-          <div className="income-vertical-chart-label" title={item.name}>
-            <strong>{item.code}</strong>
-            <span>{item.name}</span>
-          </div>
-        </div>;
-      })}
-    </div> : <p className="muted">Nessun incasso presente nei risultati filtrati.</p>}
-  </div>;
-}
-
-export default async function IncomesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
-  const current = await requireWorkspace('/incomes');
-  const rawFilters = (await searchParams) ?? {};
-  const filters = stripFlashRecord(rawFilters);
-  const currentQuery = new URLSearchParams();
-  Object.entries(filters).forEach(([key, value]) => {
-    if (Array.isArray(value)) value.forEach(item => item && currentQuery.append(key, item));
-    else if (value) currentQuery.set(key, value);
-  });
-  stripFlashSearchParams(currentQuery);
-  const currentQueryString = currentQuery.toString();
-  const listHref = `/incomes${currentQueryString ? `?${currentQueryString}` : ''}`;
-  const returnTo = encodeURIComponent(listHref);
-  const hasAnyFilter = Object.keys(filters).length > 0;
-  const hasFiscalPeriodFilter = Boolean(inputDefault(filters, 'billingPeriodFrom') || inputDefault(filters, 'billingPeriodTo') || inputDefault(filters, 'billingPeriod') || inputDefault(filters, 'billingPeriodQuick'));
-  const hasCreditDateFilter = Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo') || inputDefault(filters, 'dateQuick'));
-  const dateYearFilter = inputDefault(filters, 'dateYear');
-  const billingPeriodYearFilter = inputDefault(filters, 'billingPeriodYear');
-  const useFiscalPeriodFilter = hasFiscalPeriodFilter;
-  const useCreditDateFilter = !useFiscalPeriodFilter;
-  const rawDateQuickFilter = useCreditDateFilter ? inputDefault(filters, 'dateQuick') : '';
-  const hasCustomCreditDateFilter = useCreditDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo'));
-  const quickDateFilter = useCreditDateFilter ? (rawDateQuickFilter || (!hasAnyFilter && !hasCreditDateFilter ? currentMonthQuickValue() : '')) : '';
-  const dateQuickSelectorValue = hasCustomCreditDateFilter ? 'custom' : quickDateFilter;
-  const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter, dateYearFilter) : null;
-  const creditDateFromDefault = useCreditDateFilter ? (quickDateRange?.from || inputDefault(filters, 'creditDateFrom')) : '';
-  const creditDateToDefault = useCreditDateFilter ? (quickDateRange?.to || inputDefault(filters, 'creditDateTo')) : '';
-  const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || '') : '';
-  const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter) : null;
-
-  const [incomes, expensesForVat, banks, paymentMethods, incomeCategories, salesChannels] = await Promise.all([
-    prisma.income.findMany({ where: { workspaceId: current.workspace.id }, include: { paymentMethodRef: true, creditBank: true, incomeCategory: true, salesChannelRef: true }, orderBy: [{ creditDate: 'desc' }, { id: 'desc' }], take: 500 }),
-    prisma.expense.findMany({ where: { workspaceId: current.workspace.id }, include: { payments: true }, take: 5000 }),
-    prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
-    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
-    prisma.incomeCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { name: 'asc' } }),
-    prisma.incomeSalesChannel.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { name: 'asc' } })
-  ]);
-  const orderedBanks = orderBanks(banks);
-  const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
-
-  const creditDateFromFilter = useCreditDateFilter ? creditDateFromDefault : '';
-  const creditDateToFilter = useCreditDateFilter ? creditDateToDefault : '';
-  const billingPeriodFromFilter = useFiscalPeriodFilter ? (quickBillingPeriodRange?.from || inputDefault(filters, 'billingPeriodFrom') || inputDefault(filters, 'billingPeriod')) : '';
-  const billingPeriodToFilter = useFiscalPeriodFilter ? (quickBillingPeriodRange?.to || inputDefault(filters, 'billingPeriodTo') || inputDefault(filters, 'billingPeriod')) : '';
-  const rawBillingPeriodFromKey = monthInputToKey(billingPeriodFromFilter);
-  const rawBillingPeriodToKey = monthInputToKey(billingPeriodToFilter);
-  const { fromKey: billingPeriodFromKey, toKey: billingPeriodToKey } = normalizePeriodRange(rawBillingPeriodFromKey, rawBillingPeriodToKey);
-  const hasBillingPeriodRange = billingPeriodFromKey !== null || billingPeriodToKey !== null;
-  const salesChannelFilter = inputDefault(filters, 'salesChannel');
-  const saleCategoryFilter = inputDefault(filters, 'saleCategory');
-  const amountFilterRaw = inputDefault(filters, 'amount');
-  const amountFilterValue = parseAmountFilter(amountFilterRaw);
-  const paymentMethodFilter = inputDefault(filters, 'paymentMethod');
-  const creditChannelFilter = inputDefault(filters, 'creditChannel');
-  const fiscalFilter = inputDefault(filters, 'fiscal');
-  const invoiceStatusFilter = inputDefault(filters, 'invoiceStatus');
-  const invoiceStatusModeFilter = inputDefault(filters, 'invoiceStatusMode');
-  const vatRateFilter = inputDefault(filters, 'vatRate');
-  const totalsFilterHref = (extraFilters: Record<string, string>) => {
-    const query = new URLSearchParams();
-    if (useFiscalPeriodFilter) {
-      if (billingPeriodFromFilter) query.set('billingPeriodFrom', billingPeriodFromFilter);
-      if (billingPeriodToFilter) query.set('billingPeriodTo', billingPeriodToFilter);
-    } else {
-      if (creditDateFromDefault) query.set('creditDateFrom', creditDateFromDefault);
-      if (creditDateToDefault) query.set('creditDateTo', creditDateToDefault);
-    }
-    Object.entries(extraFilters).forEach(([key, value]) => {
-      if (value) query.set(key, value);
+function IncomePieBreakdownChart({title, data}: {
+    title: string;
+    data: Array<{ name: string; code: string; total: number }>
+}) {
+    const total = data.reduce((sum, item) => sum + item.total, 0);
+    let cursor = 0;
+    const segments = data.map((item, index) => {
+        const start = total ? (cursor / total) * 100 : 0;
+        cursor += item.total;
+        const end = total ? (cursor / total) * 100 : 0;
+        return `${incomePieChartColors[index % incomePieChartColors.length]} ${start.toFixed(3)}% ${end.toFixed(3)}%`;
     });
-    const queryString = query.toString();
-    return `/incomes${queryString ? `?${queryString}` : ''}`;
-  };
-  const fiscalTotalsHref = totalsFilterHref({ fiscal: 'yes' });
-  const nonFiscalTotalsHref = totalsFilterHref({ fiscal: 'no' });
-  const invoicesNotSentHref = totalsFilterHref({ invoiceStatus: 'NON_INVIATA' });
-  const reportMonth = reportMonthFromRange(
-    billingPeriodFromFilter,
-    billingPeriodToFilter,
-    creditDateFromDefault,
-    creditDateToDefault
-  );
-  const monthlyReportHref = reportMonth
-    ? `/months/${reportMonth.year}/${reportMonth.month}?returnTo=${encodeURIComponent(listHref)}`
-    : null;
+    const background = segments.length ? `conic-gradient(${segments.join(', ')})` : undefined;
 
-  const periodIncomes = incomes.filter(income => {
-    if (!matchesIsoDate(income.creditDate, creditDateFromFilter, creditDateToFilter)) return false;
-    if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
-    return true;
-  });
+    return <section className="expense-category-chart-card expense-impact-pie-card expense-page-category-pie-chart income-chart">
+        <div className="card-heading-row">
+            <div>
+                <h2>{title}</h2>
+            </div>
+            {/*<div className="text-right chart-total"><span className="badge">Totale {euro(total)}</span></div>*/}
+        </div>
+        {data.length && total > 0 ? <div className="expense-impact-pie-layout">
+            <div className="expense-impact-pie" style={{background}} aria-label={title}>
+                <div>
+                    <span>Incassi</span>
+                    <strong className="main-label">{euro(total)}</strong>
+                </div>
+            </div>
+            <div className="expense-impact-pie-legend">
+                {data.map((item, index) => {
+                    const percentage = total ? (item.total / total) * 100 : 0;
+                    return <div className="expense-impact-pie-row-wrap" key={`${item.code}-${item.name}`}>
+                        <div className="expense-impact-pie-legend-row">
+                            <span className="expense-impact-pie-dot" style={{background: incomePieChartColors[index % incomePieChartColors.length]}}/>
+                            <div><strong>{item.code}</strong><span>{item.name}</span></div>
+                            <div>
+                                <strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small>
+                            </div>
+                        </div>
+                        <div className="expense-impact-pie-bar" style={{
+                            width: `${percentage.toFixed(1)}%`,
+                            background: incomePieChartColors[index % incomePieChartColors.length]
+                        }}/>
+                    </div>;
+                })}
+            </div>
+        </div> : <p className="muted">Nessun incasso presente nei risultati filtrati.</p>}
+    </section>;
+}
 
-  const filteredIncomes = periodIncomes.filter(income => {
-    if (!matchesIsoDate(income.creditDate, creditDateFromFilter, creditDateToFilter)) return false;
-    if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
-    if (salesChannelFilter && income.salesChannelRef.name !== salesChannelFilter) return false;
-    if (saleCategoryFilter && income.incomeCategory.name !== saleCategoryFilter) return false;
-    if (!amountMatchesFilter(Number(income.amount.toString()), amountFilterValue)) return false;
-    if (paymentMethodFilter && (income.paymentMethodRef?.name ?? income.paymentMethod) !== paymentMethodFilter) return false;
-    if (creditChannelFilter && (income.creditBank?.name ?? income.creditChannel) !== creditChannelFilter) return false;
-    if (fiscalFilter === 'yes' && !income.isFiscal) return false;
-    if (fiscalFilter === 'no' && income.isFiscal) return false;
-    if (invoiceStatusModeFilter === 'not_emitted' && income.invoiceStatus === 'EMESSA') return false;
-    if (invoiceStatusFilter === 'not_emitted' && income.invoiceStatus === 'EMESSA') return false;
-    if (invoiceStatusFilter && invoiceStatusFilter !== 'not_emitted' && income.invoiceStatus !== invoiceStatusFilter) return false;
-    if (vatRateFilter && Number(income.vatRate.toString()) !== Number(vatRateFilter)) return false;
-    return true;
-  });
+function IncomeVerticalBarChart({title, description, data}: {
+    title: string;
+    description: string;
+    data: Array<{ name: string; code: string; total: number }>
+}) {
+    const max = Math.max(...data.map(item => item.total), 0);
+    const total = data.reduce((sum, item) => sum + item.total, 0);
 
-  const summarizeIncomes = (list: typeof incomes) => list.reduce((acc, income) => {
-    const amount = Number(income.amount.toString());
-    const vatRate = Number(income.vatRate.toString());
-    const vatDebt = income.isFiscal ? vatAmountFromGross(amount, vatRate) : 0;
-    acc.total += amount;
-    acc.vatDebt += vatDebt;
-    if (income.isFiscal) {
-      acc.fiscal += amount;
-      acc.taxable += amount - vatDebt;
-      if (income.invoiceStatus !== 'EMESSA') acc.invoicesNotSent += 1;
-    } else acc.nonFiscal += amount;
-    return acc;
-  }, { total: 0, fiscal: 0, nonFiscal: 0, taxable: 0, vatDebt: 0, invoicesNotSent: 0 });
+    return <div className="income-sales-channel-chart" aria-label={title}>
+        <div className="card-heading-row">
+            <div>
+                <h2>{title}</h2>
+                <p className="muted">{description}</p>
+            </div>
+            <span className="badge">Totale {euro(total)}</span>
+        </div>
+        {data.length ? <div className="income-vertical-chart" role="list">
+            {data.map(item => {
+                const percentage = total ? (item.total / total) * 100 : 0;
+                const height = max ? Math.max((item.total / max) * 100, 6) : 0;
+                return <div className="income-vertical-chart-item" key={`${item.code}-${item.name}`} role="listitem">
+                    <div className="income-vertical-chart-value">
+                        <strong className={moneyTone(item.total)}>{euro(item.total)}</strong>
+                        <small>{percentage.toFixed(1)}%</small>
+                    </div>
+                    <div className="income-vertical-chart-bar-wrap" aria-label={`${item.name}: ${euro(item.total)}`}>
+                        <div className="income-vertical-chart-bar" style={{height: `${height}%`}}/>
+                    </div>
+                    <div className="income-vertical-chart-label" title={item.name}>
+                        <strong>{item.code}</strong>
+                        <span>{item.name}</span>
+                    </div>
+                </div>;
+            })}
+        </div> : <p className="muted">Nessun incasso presente nei risultati filtrati.</p>}
+    </div>;
+}
 
-  const totals = summarizeIncomes(filteredIncomes);
-  const totalsPeriodLabel = periodTotalsLabel({
-    useFiscalPeriodFilter,
-    billingPeriodFromFilter,
-    billingPeriodToFilter,
-    creditDateFromDefault,
-    creditDateToDefault
-  });
-  const flashMessages = {
-    savedMessages: {
-      created: 'Incasso creato.',
-      updated: 'Incasso aggiornato.',
-      deleted: 'Incasso rimosso.',
-      bulk_updated: 'Incassi aggiornati.',
-      bulk_deleted: 'Incassi rimossi.'
-    },
-    errorMessages: {
-      invalid: 'Controlla i campi dell’incasso.',
-      not_found: 'Incasso non trovato.',
-      in_use: 'L’incasso è collegato ad altri movimenti.'
+export default async function IncomesPage({searchParams}: {
+    searchParams?: Promise<Record<string, string | string[] | undefined>>
+}) {
+    const current = await requireWorkspace('/incomes');
+    const rawFilters = (await searchParams) ?? {};
+    const filters = stripFlashRecord(rawFilters);
+    const currentQuery = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+        if (Array.isArray(value)) value.forEach(item => item && currentQuery.append(key, item));
+        else if (value) currentQuery.set(key, value);
+    });
+    stripFlashSearchParams(currentQuery);
+    const currentQueryString = currentQuery.toString();
+    const listHref = `/incomes${currentQueryString ? `?${currentQueryString}` : ''}`;
+    const returnTo = encodeURIComponent(listHref);
+    const hasAnyFilter = Object.keys(filters).length > 0;
+    const hasFiscalPeriodFilter = Boolean(inputDefault(filters, 'billingPeriodFrom') || inputDefault(filters, 'billingPeriodTo') || inputDefault(filters, 'billingPeriod') || inputDefault(filters, 'billingPeriodQuick'));
+    const hasCreditDateFilter = Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo') || inputDefault(filters, 'dateQuick'));
+    const dateYearFilter = inputDefault(filters, 'dateYear');
+    const billingPeriodYearFilter = inputDefault(filters, 'billingPeriodYear');
+    const useFiscalPeriodFilter = hasFiscalPeriodFilter;
+    const useCreditDateFilter = !useFiscalPeriodFilter;
+    const rawDateQuickFilter = useCreditDateFilter ? inputDefault(filters, 'dateQuick') : '';
+    const hasCustomCreditDateFilter = useCreditDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo'));
+    const quickDateFilter = useCreditDateFilter ? (rawDateQuickFilter || (!hasAnyFilter && !hasCreditDateFilter ? currentMonthQuickValue() : '')) : '';
+    const dateQuickSelectorValue = hasCustomCreditDateFilter ? 'custom' : quickDateFilter;
+    const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter, dateYearFilter) : null;
+    const creditDateFromDefault = useCreditDateFilter ? (quickDateRange?.from || inputDefault(filters, 'creditDateFrom')) : '';
+    const creditDateToDefault = useCreditDateFilter ? (quickDateRange?.to || inputDefault(filters, 'creditDateTo')) : '';
+    const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || '') : '';
+    const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter) : null;
+
+    const [incomes, expensesForVat, banks, paymentMethods, incomeCategories, salesChannels, customers] = await Promise.all([
+        prisma.income.findMany({
+            where: {workspaceId: current.workspace.id},
+            include: {
+                paymentMethodRef: true,
+                creditBank: true,
+                incomeCategory: true,
+                salesChannelRef: true,
+                customer: true
+            },
+            orderBy: [{creditDate: 'desc'}, {id: 'desc'}],
+            take: 500
+        }),
+        prisma.expense.findMany({where: {workspaceId: current.workspace.id}, include: {payments: true}, take: 5000}),
+        prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
+        prisma.paymentMethod.findMany({where: {workspaceId: current.workspace.id}}),
+        prisma.incomeCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}}),
+        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}}),
+        prisma.customer.findMany({where: {workspaceId: current.workspace.id}, orderBy: {businessName: 'asc'}})
+    ]);
+    const orderedBanks = orderBanks(banks);
+    const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
+
+    const creditDateFromFilter = useCreditDateFilter ? creditDateFromDefault : '';
+    const creditDateToFilter = useCreditDateFilter ? creditDateToDefault : '';
+    const billingPeriodFromFilter = useFiscalPeriodFilter ? (quickBillingPeriodRange?.from || inputDefault(filters, 'billingPeriodFrom') || inputDefault(filters, 'billingPeriod')) : '';
+    const billingPeriodToFilter = useFiscalPeriodFilter ? (quickBillingPeriodRange?.to || inputDefault(filters, 'billingPeriodTo') || inputDefault(filters, 'billingPeriod')) : '';
+    const rawBillingPeriodFromKey = monthInputToKey(billingPeriodFromFilter);
+    const rawBillingPeriodToKey = monthInputToKey(billingPeriodToFilter);
+    const {
+        fromKey: billingPeriodFromKey,
+        toKey: billingPeriodToKey
+    } = normalizePeriodRange(rawBillingPeriodFromKey, rawBillingPeriodToKey);
+    const hasBillingPeriodRange = billingPeriodFromKey !== null || billingPeriodToKey !== null;
+    const salesChannelFilter = inputDefault(filters, 'salesChannel');
+    const saleCategoryFilter = inputDefault(filters, 'saleCategory');
+    const amountFilterRaw = inputDefault(filters, 'amount');
+    const amountFilterValue = parseAmountFilter(amountFilterRaw);
+    const paymentMethodFilter = inputDefault(filters, 'paymentMethod');
+    const creditChannelFilter = inputDefault(filters, 'creditChannel');
+    const fiscalFilter = inputDefault(filters, 'fiscal');
+    const invoiceStatusFilter = inputDefault(filters, 'invoiceStatus');
+    const invoiceStatusModeFilter = inputDefault(filters, 'invoiceStatusMode');
+    const vatRateFilter = inputDefault(filters, 'vatRate');
+    const totalsFilterHref = (extraFilters: Record<string, string>) => {
+        const query = new URLSearchParams();
+        if (useFiscalPeriodFilter) {
+            if (billingPeriodFromFilter) query.set('billingPeriodFrom', billingPeriodFromFilter);
+            if (billingPeriodToFilter) query.set('billingPeriodTo', billingPeriodToFilter);
+        } else {
+            if (creditDateFromDefault) query.set('creditDateFrom', creditDateFromDefault);
+            if (creditDateToDefault) query.set('creditDateTo', creditDateToDefault);
+        }
+        Object.entries(extraFilters).forEach(([key, value]) => {
+            if (value) query.set(key, value);
+        });
+        const queryString = query.toString();
+        return `/incomes${queryString ? `?${queryString}` : ''}`;
+    };
+    const fiscalTotalsHref = totalsFilterHref({fiscal: 'yes'});
+    const nonFiscalTotalsHref = totalsFilterHref({fiscal: 'no'});
+    const invoicesNotSentHref = totalsFilterHref({invoiceStatus: 'NON_INVIATA'});
+    const reportMonth = reportMonthFromRange(
+        billingPeriodFromFilter,
+        billingPeriodToFilter,
+        creditDateFromDefault,
+        creditDateToDefault
+    );
+    const monthlyReportHref = reportMonth
+        ? `/months/${reportMonth.year}/${reportMonth.month}?returnTo=${encodeURIComponent(listHref)}`
+        : null;
+
+    const periodIncomes = incomes.filter(income => {
+        if (!matchesIsoDate(income.creditDate, creditDateFromFilter, creditDateToFilter)) return false;
+        if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
+        return true;
+    });
+
+    const filteredIncomes = periodIncomes.filter(income => {
+        if (!matchesIsoDate(income.creditDate, creditDateFromFilter, creditDateToFilter)) return false;
+        if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
+        if (salesChannelFilter && income.salesChannelRef.name !== salesChannelFilter) return false;
+        if (saleCategoryFilter && income.incomeCategory.name !== saleCategoryFilter) return false;
+        if (!amountMatchesFilter(Number(income.amount.toString()), amountFilterValue)) return false;
+        if (paymentMethodFilter && (income.paymentMethodRef?.name ?? income.paymentMethod) !== paymentMethodFilter) return false;
+        if (creditChannelFilter && (income.creditBank?.name ?? income.creditChannel) !== creditChannelFilter) return false;
+        if (fiscalFilter === 'yes' && !income.isFiscal) return false;
+        if (fiscalFilter === 'no' && income.isFiscal) return false;
+        if (invoiceStatusModeFilter === 'not_emitted' && income.invoiceStatus === 'EMESSA') return false;
+        if (invoiceStatusFilter === 'not_emitted' && income.invoiceStatus === 'EMESSA') return false;
+        if (invoiceStatusFilter && invoiceStatusFilter !== 'not_emitted' && income.invoiceStatus !== invoiceStatusFilter) return false;
+        if (vatRateFilter && Number(income.vatRate.toString()) !== Number(vatRateFilter)) return false;
+        return true;
+    });
+
+    const summarizeIncomes = (list: typeof incomes) => list.reduce((acc, income) => {
+        const amount = Number(income.amount.toString());
+        const vatRate = Number(income.vatRate.toString());
+        const vatDebt = income.isFiscal ? vatAmountFromGross(amount, vatRate) : 0;
+        acc.total += amount;
+        acc.vatDebt += vatDebt;
+        if (income.isFiscal) {
+            acc.fiscal += amount;
+            acc.taxable += amount - vatDebt;
+            if (income.invoiceStatus !== 'EMESSA') acc.invoicesNotSent += 1;
+        } else acc.nonFiscal += amount;
+        return acc;
+    }, {total: 0, fiscal: 0, nonFiscal: 0, taxable: 0, vatDebt: 0, invoicesNotSent: 0});
+
+    const totals = summarizeIncomes(filteredIncomes);
+    const totalsPeriodLabel = periodTotalsLabel({
+        useFiscalPeriodFilter,
+        billingPeriodFromFilter,
+        billingPeriodToFilter,
+        creditDateFromDefault,
+        creditDateToDefault
+    });
+    const flashMessages = {
+        savedMessages: {
+            created: 'Incasso creato.',
+            updated: 'Incasso aggiornato.',
+            deleted: 'Incasso rimosso.',
+            bulk_updated: 'Incassi aggiornati.',
+            bulk_deleted: 'Incassi rimossi.'
+        },
+        errorMessages: {
+            invalid: 'Controlla i campi dell’incasso.',
+            not_found: 'Incasso non trovato.',
+            in_use: 'L’incasso è collegato ad altri movimenti.'
+        }
+    };
+
+    const incomesBySaleCategoryAndChannel = Array.from(filteredIncomes.reduce((map, income) => {
+        const saleCategory = income.incomeCategory.name;
+        const salesChannel = income.salesChannelRef.name;
+        const name = `${saleCategory} / ${salesChannel}`;
+        const code = `${String(saleCategory).split(/\s+/).map(part => part[0]).join('')}${String(salesChannel).split(/\s+/).map(part => part[0]).join('')}`.slice(0, 6).toUpperCase() || 'CATCAN';
+        const key = `${saleCategory}-${salesChannel}`;
+        const current = map.get(key) ?? {name, code, total: 0};
+        current.total += Number(income.amount.toString());
+        map.set(key, current);
+        return map;
+    }, new Map<string, { name: string; code: string; total: number }>()).values()).sort((a, b) => b.total - a.total);
+
+    const incomesByFiscalStatus = Array.from(filteredIncomes.reduce((map, income) => {
+        const name = income.isFiscal ? 'Dichiarato' : 'Non dichiarato';
+        const code = income.isFiscal ? 'FISC' : 'NFISC';
+        const key = `${code}-${name}`;
+        const current = map.get(key) ?? {name, code, total: 0};
+        current.total += Number(income.amount.toString());
+        map.set(key, current);
+        return map;
+    }, new Map<string, { name: string; code: string; total: number }>()).values()).sort((a, b) => b.total - a.total);
+
+    let recoverableExpenseVat: number | null = null;
+    if (hasBillingPeriodRange) {
+        recoverableExpenseVat = expensesForVat.reduce((sum, expense) => {
+            if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey)) return sum;
+            const amount = Number(expense.amount.toString());
+            const paid = Math.min(amount, expense.payments.reduce((partial, payment) => partial + Number(payment.amount.toString()), 0));
+            if (expense.expenseType === 'VAT_SETTLEMENT') return sum + paid;
+            if (!expense.isDeclared) return sum;
+            const vatRate = Number(expense.vatRate.toString());
+            return sum + vatAmountFromGross(paid, vatRate);
+        }, 0);
     }
-  };
+    const residualVatDebt = recoverableExpenseVat === null ? null : totals.vatDebt - recoverableExpenseVat;
 
-  const incomesBySaleCategoryAndChannel = Array.from(filteredIncomes.reduce((map, income) => {
-    const saleCategory = income.incomeCategory.name;
-    const salesChannel = income.salesChannelRef.name;
-    const name = `${saleCategory} / ${salesChannel}`;
-    const code = `${String(saleCategory).split(/\s+/).map(part => part[0]).join('')}${String(salesChannel).split(/\s+/).map(part => part[0]).join('')}`.slice(0, 6).toUpperCase() || 'CATCAN';
-    const key = `${saleCategory}-${salesChannel}`;
-    const current = map.get(key) ?? { name, code, total: 0 };
-    current.total += Number(income.amount.toString());
-    map.set(key, current);
-    return map;
-  }, new Map<string, { name: string; code: string; total: number }>()).values()).sort((a, b) => b.total - a.total);
+    const activeFilterItems = [
+        creditDateFromDefault && {label: 'Data accredito da', value: formatDateInputLabel(creditDateFromDefault)},
+        creditDateToDefault && {label: 'Data accredito a', value: formatDateInputLabel(creditDateToDefault)},
+        billingPeriodFromFilter && {label: 'Periodo fatt. da', value: billingPeriodFromFilter},
+        billingPeriodToFilter && {label: 'Periodo fatt. a', value: billingPeriodToFilter},
+        salesChannelFilter && {label: 'Canale vendita', value: salesChannelFilter},
+        saleCategoryFilter && {label: 'Categoria vendita', value: saleCategoryFilter},
+        amountFilterRaw && {label: 'Importo', value: amountFilterRaw},
+        paymentMethodFilter && {label: 'Metodo pagamento', value: paymentMethodFilter},
+        creditChannelFilter && {label: 'Canale accredito', value: creditChannelFilter},
+        fiscalFilter && {label: 'Fiscale', value: fiscalFilter === 'yes' ? 'Si' : 'No'},
+        (invoiceStatusFilter || invoiceStatusModeFilter) && {
+            label: 'Stato fattura',
+            value: optionLabel(invoiceStatusOptions, invoiceStatusFilter || invoiceStatusModeFilter)
+        },
+        vatRateFilter && {label: 'IVA', value: `${vatRateFilter}%`}
+    ].filter(Boolean) as Array<{ label: string; value: string }>;
 
-  const incomesByFiscalStatus = Array.from(filteredIncomes.reduce((map, income) => {
-    const name = income.isFiscal ? 'Dichiarato' : 'Non dichiarato';
-    const code = income.isFiscal ? 'FISC' : 'NFISC';
-    const key = `${code}-${name}`;
-    const current = map.get(key) ?? { name, code, total: 0 };
-    current.total += Number(income.amount.toString());
-    map.set(key, current);
-    return map;
-  }, new Map<string, { name: string; code: string; total: number }>()).values()).sort((a, b) => b.total - a.total);
+    const mobileSort = inputDefault(filters, 'mobileSort') || incomeMobileSortOptions[0].value;
+    const mobileSortedIncomes = [...filteredIncomes].sort((a, b) => {
+        const billingA = ((a.billingYear ?? 0) * 100) + (a.billingMonth ?? 0);
+        const billingB = ((b.billingYear ?? 0) * 100) + (b.billingMonth ?? 0);
+        const paymentA = a.paymentMethodRef?.name ?? a.paymentMethod;
+        const paymentB = b.paymentMethodRef?.name ?? b.paymentMethod;
+        const creditA = a.creditBank?.name ?? a.creditChannel;
+        const creditB = b.creditBank?.name ?? b.creditChannel;
 
-  let recoverableExpenseVat: number | null = null;
-  if (hasBillingPeriodRange) {
-    recoverableExpenseVat = expensesForVat.reduce((sum, expense) => {
-      if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey)) return sum;
-      const amount = Number(expense.amount.toString());
-      const paid = Math.min(amount, expense.payments.reduce((partial, payment) => partial + Number(payment.amount.toString()), 0));
-      if (expense.expenseType === 'VAT_SETTLEMENT') return sum + paid;
-      if (!expense.isDeclared) return sum;
-      const vatRate = Number(expense.vatRate.toString());
-      return sum + vatAmountFromGross(paid, vatRate);
-    }, 0);
-  }
-  const residualVatDebt = recoverableExpenseVat === null ? null : totals.vatDebt - recoverableExpenseVat;
+        switch (mobileSort) {
+            case 'creditDate_asc':
+                return compareDate(a.creditDate, b.creditDate, 'asc');
+            case 'billingPeriod_desc':
+                return compareNumber(billingA, billingB, 'desc');
+            case 'billingPeriod_asc':
+                return compareNumber(billingA, billingB, 'asc');
+            case 'salesChannel_asc':
+                return compareText(a.salesChannelRef.name, b.salesChannelRef.name, 'asc');
+            case 'salesChannel_desc':
+                return compareText(a.salesChannelRef.name, b.salesChannelRef.name, 'desc');
+            case 'saleCategory_asc':
+                return compareText(a.incomeCategory.name, b.incomeCategory.name, 'asc');
+            case 'saleCategory_desc':
+                return compareText(a.incomeCategory.name, b.incomeCategory.name, 'desc');
+            case 'description_asc':
+                return compareText(a.description, b.description, 'asc');
+            case 'description_desc':
+                return compareText(a.description, b.description, 'desc');
+            case 'notes_asc':
+                return compareText(a.notes, b.notes, 'asc');
+            case 'amount_desc':
+                return compareNumber(a.amount, b.amount, 'desc');
+            case 'amount_asc':
+                return compareNumber(a.amount, b.amount, 'asc');
+            case 'paymentMethod_asc':
+                return compareText(paymentA, paymentB, 'asc');
+            case 'creditChannel_asc':
+                return compareText(creditA, creditB, 'asc');
+            case 'fiscal_desc':
+                return compareNumber(Number(a.isFiscal), Number(b.isFiscal), 'desc');
+            case 'invoiceStatus_asc':
+                return compareText(a.invoiceStatus, b.invoiceStatus, 'asc');
+            case 'credited_desc':
+                return compareNumber(Number(a.isCredited), Number(b.isCredited), 'desc');
+            case 'vatRate_desc':
+                return compareNumber(a.vatRate, b.vatRate, 'desc');
+            case 'createdAt_desc':
+                return compareDate(a.createdAt, b.createdAt, 'desc');
+            case 'updatedAt_desc':
+                return compareDate(a.updatedAt, b.updatedAt, 'desc');
+            case 'id_desc':
+                return compareNumber(a.id, b.id, 'desc');
+            case 'id_asc':
+                return compareNumber(a.id, b.id, 'asc');
+            default:
+                return compareDate(a.creditDate, b.creditDate, 'desc');
+        }
+    });
 
-  const activeFilterItems = [
-    creditDateFromDefault && { label: 'Data accredito da', value: formatDateInputLabel(creditDateFromDefault) },
-    creditDateToDefault && { label: 'Data accredito a', value: formatDateInputLabel(creditDateToDefault) },
-    billingPeriodFromFilter && { label: 'Periodo fatt. da', value: billingPeriodFromFilter },
-    billingPeriodToFilter && { label: 'Periodo fatt. a', value: billingPeriodToFilter },
-    salesChannelFilter && { label: 'Canale vendita', value: salesChannelFilter },
-    saleCategoryFilter && { label: 'Categoria vendita', value: saleCategoryFilter },
-    amountFilterRaw && { label: 'Importo', value: amountFilterRaw },
-    paymentMethodFilter && { label: 'Metodo pagamento', value: paymentMethodFilter },
-    creditChannelFilter && { label: 'Canale accredito', value: creditChannelFilter },
-    fiscalFilter && { label: 'Fiscale', value: fiscalFilter === 'yes' ? 'Si' : 'No' },
-    (invoiceStatusFilter || invoiceStatusModeFilter) && { label: 'Stato fattura', value: optionLabel(invoiceStatusOptions, invoiceStatusFilter || invoiceStatusModeFilter) },
-    vatRateFilter && { label: 'IVA', value: `${vatRateFilter}%` }
-  ].filter(Boolean) as Array<{ label: string; value: string }>;
-
-  const mobileSort = inputDefault(filters, 'mobileSort') || incomeMobileSortOptions[0].value;
-  const mobileSortedIncomes = [...filteredIncomes].sort((a, b) => {
-    const billingA = ((a.billingYear ?? 0) * 100) + (a.billingMonth ?? 0);
-    const billingB = ((b.billingYear ?? 0) * 100) + (b.billingMonth ?? 0);
-    const paymentA = a.paymentMethodRef?.name ?? a.paymentMethod;
-    const paymentB = b.paymentMethodRef?.name ?? b.paymentMethod;
-    const creditA = a.creditBank?.name ?? a.creditChannel;
-    const creditB = b.creditBank?.name ?? b.creditChannel;
-
-    switch (mobileSort) {
-      case 'creditDate_asc': return compareDate(a.creditDate, b.creditDate, 'asc');
-      case 'billingPeriod_desc': return compareNumber(billingA, billingB, 'desc');
-      case 'billingPeriod_asc': return compareNumber(billingA, billingB, 'asc');
-      case 'salesChannel_asc': return compareText(a.salesChannelRef.name, b.salesChannelRef.name, 'asc');
-      case 'salesChannel_desc': return compareText(a.salesChannelRef.name, b.salesChannelRef.name, 'desc');
-      case 'saleCategory_asc': return compareText(a.incomeCategory.name, b.incomeCategory.name, 'asc');
-      case 'saleCategory_desc': return compareText(a.incomeCategory.name, b.incomeCategory.name, 'desc');
-      case 'description_asc': return compareText(a.description, b.description, 'asc');
-      case 'description_desc': return compareText(a.description, b.description, 'desc');
-      case 'notes_asc': return compareText(a.notes, b.notes, 'asc');
-      case 'amount_desc': return compareNumber(a.amount, b.amount, 'desc');
-      case 'amount_asc': return compareNumber(a.amount, b.amount, 'asc');
-      case 'paymentMethod_asc': return compareText(paymentA, paymentB, 'asc');
-      case 'creditChannel_asc': return compareText(creditA, creditB, 'asc');
-      case 'fiscal_desc': return compareNumber(Number(a.isFiscal), Number(b.isFiscal), 'desc');
-      case 'invoiceStatus_asc': return compareText(a.invoiceStatus, b.invoiceStatus, 'asc');
-      case 'credited_desc': return compareNumber(Number(a.isCredited), Number(b.isCredited), 'desc');
-      case 'vatRate_desc': return compareNumber(a.vatRate, b.vatRate, 'desc');
-      case 'createdAt_desc': return compareDate(a.createdAt, b.createdAt, 'desc');
-      case 'updatedAt_desc': return compareDate(a.updatedAt, b.updatedAt, 'desc');
-      case 'id_desc': return compareNumber(a.id, b.id, 'desc');
-      case 'id_asc': return compareNumber(a.id, b.id, 'asc');
-      default: return compareDate(a.creditDate, b.creditDate, 'desc');
-    }
-  });
-
-  return <div className="grid">
-    <NewIncomePanel
-      initialOpen={inputDefault(filters, 'new') === '1'}
-      banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
-      paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
-      incomeCategories={incomeCategories}
-      salesChannels={salesChannels}
-    />
-    <IncomeEditModalController
-      returnTo={listHref}
-      banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
-      paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
-      incomeCategories={incomeCategories}
-      salesChannels={salesChannels}
-    />
-    <ActionFeedbackBanner
-      searchParams={rawFilters}
-      savedMessages={flashMessages.savedMessages}
-      errorMessages={flashMessages.errorMessages}
-      defaultSavedMessage="Operazione completata."
-      defaultErrorMessage="Impossibile completare l’operazione."
-    />
-
-    <div className="card expenses-list-card">
-      <div className="filter-drawer-wrapper">
-        <IncomeFiltersDrawer
-            filters={filters}
-            quickDateFilter={quickDateFilter}
-            creditDateFromDefault={creditDateFromDefault}
-            creditDateToDefault={creditDateToDefault}
-            quickBillingPeriodFilter={quickBillingPeriodFilter}
-            billingPeriodFromFilter={billingPeriodFromFilter}
-            billingPeriodToFilter={billingPeriodToFilter}
-            banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name }))}
-            paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name }))}
-            incomeCategories={incomeCategories}
-            salesChannels={salesChannels}
+    return <div className="grid">
+        <ActionFeedbackBanner
+            searchParams={rawFilters}
+            savedMessages={flashMessages.savedMessages}
+            errorMessages={flashMessages.errorMessages}
+            defaultSavedMessage="Operazione completata."
+            defaultErrorMessage="Impossibile completare l’operazione."
         />
-      </div>
-      <IncomeTrendSelectors
-        dateQuick={dateQuickSelectorValue}
-        billingPeriodQuick={quickBillingPeriodFilter}
-        dateYear={dateYearFilter}
-        billingPeriodYear={billingPeriodYearFilter}
-        useFiscalPeriodFilter={useFiscalPeriodFilter}
-      />
-      {/*<p className="totals-period-note">{totalsPeriodLabel}</p>*/}
-      <div className="income-summary-row">
-        <div className="dashboard-statement-panel list-totals-statement">
-          <h2>{totalsPeriodLabel}</h2>
-          <table className="dashboard-statement-table list-totals-table" aria-label="Totali incassi filtrati">
-            <tbody>
-              <tr><td>Entrate totali</td><td><strong className={badgeClass()}>{euro(totals.total)}</strong></td></tr>
-              <tr><td>Incasso fiscale</td><td><Link href={fiscalTotalsHref}><strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong></Link></td></tr>
-              <tr><td>Imponibile</td><td><strong className={moneyTone(totals.taxable)}>{euro(totals.taxable)}</strong></td></tr>
-              <tr><td>Incasso non fiscale</td><td><Link href={nonFiscalTotalsHref}><strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong></Link></td></tr>
-              <tr><td>Debito IVA prodotto</td><td><strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong></td></tr>
-              {/*<tr><td>Debito IVA residuo</td><td><strong>{residualVatDebt === null ? <span className="total-placeholder">Seleziona periodo fiscale</span> : <span className={moneyTone(residualVatDebt)}>{euro(residualVatDebt)}</span>}</strong></td></tr>*/}
-              <tr><td>Fatture non inviate</td><td><Link href={invoicesNotSentHref}><strong>{totals.invoicesNotSent}</strong></Link></td></tr>
-            </tbody>
-          </table>
-          {monthlyReportHref ? <div className="dashboard-statement-actions">
-            <Link className="btn btn-sm btn-ghost" href={monthlyReportHref}>
+
+        <div className="card expenses-list-card">
+            <div className="filter-drawer-wrapper">
+                <IncomeFiltersDrawer
+                    filters={filters}
+                    quickDateFilter={quickDateFilter}
+                    creditDateFromDefault={creditDateFromDefault}
+                    creditDateToDefault={creditDateToDefault}
+                    quickBillingPeriodFilter={quickBillingPeriodFilter}
+                    billingPeriodFromFilter={billingPeriodFromFilter}
+                    billingPeriodToFilter={billingPeriodToFilter}
+                    banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name}))}
+                    paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name}))}
+                    incomeCategories={incomeCategories}
+                    salesChannels={salesChannels}
+                />
+            </div>
+            <IncomeTrendSelectors
+                dateQuick={dateQuickSelectorValue}
+                billingPeriodQuick={quickBillingPeriodFilter}
+                dateYear={dateYearFilter}
+                billingPeriodYear={billingPeriodYearFilter}
+                useFiscalPeriodFilter={useFiscalPeriodFilter}
+            />
+            {/*<p className="totals-period-note">{totalsPeriodLabel}</p>*/}
+            <div className="income-summary-row">
+                <div className="dashboard-statement-panel list-totals-statement">
+                    <h2>{totalsPeriodLabel}</h2>
+                    <table className="dashboard-statement-table list-totals-table" aria-label="Totali incassi filtrati">
+                        <tbody>
+                        <tr>
+                            <td>Entrate totali</td>
+                            <td><strong className={badgeClass()}>{euro(totals.total)}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Incasso fiscale</td>
+                            <td>
+                                <Link href={fiscalTotalsHref}><strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong></Link>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Imponibile</td>
+                            <td><strong className={moneyTone(totals.taxable)}>{euro(totals.taxable)}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Incasso non fiscale</td>
+                            <td>
+                                <Link href={nonFiscalTotalsHref}><strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong></Link>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Debito IVA prodotto</td>
+                            <td><strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong></td>
+                        </tr>
+                        {/*<tr><td>Debito IVA residuo</td><td><strong>{residualVatDebt === null ? <span className="total-placeholder">Seleziona periodo fiscale</span> : <span className={moneyTone(residualVatDebt)}>{euro(residualVatDebt)}</span>}</strong></td></tr>*/}
+                        <tr>
+                            <td>Fatture non inviate</td>
+                            <td><Link href={invoicesNotSentHref}><strong>{totals.invoicesNotSent}</strong></Link></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    {monthlyReportHref ? <div className="dashboard-statement-actions">
+                        <Link className="btn btn-sm btn-ghost" href={monthlyReportHref}>
               <span className="btn-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="5" width="18" height="16" rx="2" />
-                  <path d="M16 3v4M8 3v4M3 10h18" />
-                  <path d="M8 14h2M14 14h2M8 17h2M14 17h2" />
+                  <rect x="3" y="5" width="18" height="16" rx="2"/>
+                  <path d="M16 3v4M8 3v4M3 10h18"/>
+                  <path d="M8 14h2M14 14h2M8 17h2M14 17h2"/>
                 </svg>
               </span>
-              <span>Report mensile</span>
-            </Link>
-          </div> : null}
-        </div>
-        <IncomePieBreakdownChart title="Entrate per categoria / canale di vendita" data={incomesBySaleCategoryAndChannel} />
-      </div>
+                            <span>Report mensile</span>
+                        </Link>
+                    </div> : null}
+                </div>
+                <IncomePieBreakdownChart title="Entrate per categoria / canale di vendita" data={incomesBySaleCategoryAndChannel}/>
+            </div>
 
-      {activeFilterItems.length ? <div className="recurring-active-filters">
-        <div>
-          <span className="recurring-active-filters-title">Filtri attivi</span>
-          <div className="recurring-active-filter-tags">
-            {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
-          </div>
+            {activeFilterItems.length ? <div className="recurring-active-filters">
+                <div>
+                    <span className="recurring-active-filters-title">Filtri attivi</span>
+                    <div className="recurring-active-filter-tags">
+                        {activeFilterItems.map(item =>
+                            <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
+                    </div>
+                </div>
+                <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes"><span className="btn-icon">×</span> Reset</Link>
+            </div> : null}
         </div>
-        <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes"><span className="btn-icon">×</span> Reset</Link>
-      </div> : null}
-    </div>
-    <div className="card expenses-list-card">
-      <div className="list-heading recurring-list-heading">
-        <div>
-          <h2>Lista incassi</h2>
-          <p className="muted">Risultati mostrati: {filteredIncomes.length}</p>
-        </div>
-        <div>
-          <IncomeFiltersDrawer
-            filters={filters}
-            quickDateFilter={quickDateFilter}
-            creditDateFromDefault={creditDateFromDefault}
-            creditDateToDefault={creditDateToDefault}
-            quickBillingPeriodFilter={quickBillingPeriodFilter}
-            billingPeriodFromFilter={billingPeriodFromFilter}
-            billingPeriodToFilter={billingPeriodToFilter}
-            banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name }))}
-            paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name }))}
-            incomeCategories={incomeCategories}
-            salesChannels={salesChannels}
-          />
-        </div>
-      </div>
-      <MobileSortControl action="/incomes" currentValue={mobileSort} options={incomeMobileSortOptions} searchParams={filters} />
+        <div className="card expenses-list-card">
+            <div className="list-heading recurring-list-heading">
+                <div>
+                    <h2>Lista incassi</h2>
+                    <p className="muted">Risultati mostrati: {filteredIncomes.length}</p>
+                </div>
+                <div>
+                    <IncomeFiltersDrawer
+                        filters={filters}
+                        quickDateFilter={quickDateFilter}
+                        creditDateFromDefault={creditDateFromDefault}
+                        creditDateToDefault={creditDateToDefault}
+                        quickBillingPeriodFilter={quickBillingPeriodFilter}
+                        billingPeriodFromFilter={billingPeriodFromFilter}
+                        billingPeriodToFilter={billingPeriodToFilter}
+                        banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name}))}
+                        paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name}))}
+                        incomeCategories={incomeCategories}
+                        salesChannels={salesChannels}
+                    />
+                </div>
+            </div>
+            <MobileSortControl action="/incomes" currentValue={mobileSort} options={incomeMobileSortOptions} searchParams={filters}/>
 
-      <BulkSelectionController />
+            <BulkSelectionController/>
 
-      <script dangerouslySetInnerHTML={{ __html: `
+            <script dangerouslySetInnerHTML={{
+                __html: `
         document.addEventListener('click', function(event) {
           const row = event.target.closest && event.target.closest('[data-row-href]');
           if (!row) return;
@@ -1062,202 +1158,28 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           [from, to].forEach((field) => field.addEventListener('change', () => { quick.value = ''; ['incomeBillingPeriodFrom','incomeBillingPeriodTo','incomeBillingPeriodQuick'].forEach(id => { const f = document.getElementById(id); if (f) f.value = ''; }); }));
           ['incomeBillingPeriodFrom','incomeBillingPeriodTo','incomeBillingPeriodQuick'].forEach((id) => { const field = document.getElementById(id); if (field) field.addEventListener('change', () => { ['creditDateFrom','creditDateTo','incomeDateQuick'].forEach(otherId => { const other = document.getElementById(otherId); if (other) other.value = ''; }); }); });
         })();
-      ` }} />
+      `
+            }}/>
 
 
-      <form id="incomeBulkForm" action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
-        <label className="bulk-select-all-inline">
-          <input type="checkbox" className="bulk-select-all" data-bulk-target="incomeBulkForm" aria-label="Seleziona tutti gli incassi visibili" />
-          {/*<span>Seleziona tutti</span>*/}
-        </label>
-        <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="incomeBulkForm">
-          <summary className="bulk-action-trigger">
-            <span className="btn-icon">⚙</span>
-            <span className="bulk-label">
-              <span className="floating-bulk-label">Bulk </span>Actions</span>
-          </summary>
-          <div className="bulk-action-menu-panel">
-            <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
-            <BulkChangeCategoryModal
-              formId="incomeBulkForm"
-              action={`/api/incomes/bulk?returnTo=${returnTo}`}
-              fieldName="incomeCategoryId"
-              categories={incomeCategories.map(category => ({ value: String(category.id), label: category.name, icon: category.icon }))}
-              selectLabel="Categoria vendita"
+            <IncomesList
+                incomes={filteredIncomes}
+                mobileIncomes={mobileSortedIncomes}
+                returnTo={returnTo}
+                banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
+                paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+                incomeCategories={incomeCategories}
+                salesChannels={salesChannels}
+                customers={customers}
+                initialOpen={inputDefault(filters, 'new') === '1'}
+                emptyMessage="Nessun incasso trovato con i filtri selezionati."
             />
-          </div>
-        </details>
-        <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="incomeBulkForm" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id" data-return-to={returnTo}>
-          <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
-          <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="bulk-label">Copia</span></a>
-          <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
         </div>
-        <div className="bulk-inner-container">
-          <button className="bulk-direct-link btn btn-md btn-primary" type="button" data-bulk-new data-income-new data-floating-label="Incasso">
-            <span className="btn-icon">+</span>
-            <span className="bulk-label">Incasso</span>
-          </button>
-        </div>
-      </form>
-      <SortableTableController />
-
-      <div className="income-mobile-list expense-mobile-list" aria-label="Lista incassi mobile">
-        {mobileSortedIncomes.map(income => {
-          const salesStyle = salesChannelStyles[income.salesChannelRef.name];
-          const catStyle = saleCategoryStyles[income.incomeCategory.name];
-          const incomePaymentMethodName = income.paymentMethodRef?.name ?? income.paymentMethod;
-          const incomeCreditChannelName = income.creditBank?.name ?? income.creditChannel;
-          const paymentStyle = paymentMethodStyles[incomePaymentMethodName];
-          const creditStyle = creditChannelStyles[incomeCreditChannelName];
-          const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
-          const creditStatus = incomeCreditStatus(income);
-          const creditOverdue = isIncomeCreditOverdue(income);
-          const vatStyle = vatStyles[String(Number(income.vatRate.toString()))] ?? vatStyles['0'];
-          const amount = Number(income.amount.toString());
-          const detailHref = `/incomes/${income.id}?returnTo=${returnTo}`;
-          const recordClass = [
-            'income-mobile-item',
-            'expense-mobile-item',
-            creditOverdue ? 'expense-mobile-item-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : ''
-          ].filter(Boolean).join(' ');
-
-          return <div className={recordClass} key={`mobile-income-${income.id}`}>
-            <div className="expense-mobile-select">
-              <input form="incomeBulkForm" type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`} />
-            </div>
-            <Link className="expense-mobile-link income-mobile-link" href={detailHref}>
-              <div className="expense-mobile-main">
-                <div className="expense-mobile-header">
-                  <div className="left-side">
-                    <span title={income.incomeCategory.name} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{income.incomeCategory.icon ?? catStyle?.icon ?? '•'} {income.incomeCategory.name}</span>
-                    {fiscalBadge(income.isFiscal)}
-                    <span className="text-pre">{formatPeriod(income.billingMonth, income.billingYear)}</span>
-                    {!income.isFiscal ? '' :
-                      <span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span>
-                    }
-                  </div>
-                  <div className="right-side">
-                    <span className="text-pre">{mobileDateLabel(income.creditDate)}</span>
-                  </div>
-                </div>
-                <div className="expense-mobile-title-row">
-                  <div className="left-side">
-                    <strong>{income.salesChannelRef.name}</strong>
-                    <span className={badgeClass(vatStyle.className)}>IVA {Number(income.vatRate.toString())}%</span>
-                  </div>
-                  <div className="right-side">
-                    <span>{paymentStyle?.icon ?? '•'}</span>
-                    <span className={moneyTone(amount)}>{euro(income.amount.toString())}</span>
-                  </div>
-                </div>
-                <div className="expense-mobile-title-row">
-                  <div className="expense-mobile-subtitle">{income.description ? `${income.description}` : ''}</div>
-                  <span title={creditStatus.label} className={`${badgeClass(creditStatus.className)} income-badge-compact`}>{creditStatus.icon} {creditStatus.label}</span>
-                </div>
-
-                {/*<div className="expense-mobile-meta">*/}
-                {/*  <span>{income.paymentMethod}</span>*/}
-                {/*  <span>{formatPeriod(income.billingMonth, income.billingYear)}</span>*/}
-                {/*  <span>{income.creditChannel}</span>*/}
-                {/*</div>*/}
-                {/*<div className="expense-mobile-badges">*/}
-                {/*</div>*/}
-                {/*<div className="expense-mobile-footer">*/}
-                {/*  <span className={badgeClass(paymentStyle?.className)}>{paymentStyle?.icon ?? '•'} {income.paymentMethod}</span>*/}
-                {/*  <span className={badgeClass(creditStyle?.className)}>{creditStyle?.icon ?? '•'} {income.creditChannel}</span>*/}
-                  {/*<span className={badgeClass(vatStyle.className)}>IVA {Number(income.vatRate.toString())}%</span>*/}
-                {/*</div>*/}
-              </div>
-            </Link>
-          </div>;
-        })}
-        {!filteredIncomes.length && <div className="expense-empty-panel">Nessun incasso trovato con i filtri selezionati.</div>}
-      </div>
-
-      <div className="table-scroll incomes-table-scroll"><table className="expenses-table incomes-table compact-incomes-table" data-sortable-table data-default-sort="credit-date" data-default-sort-dir="desc"><colgroup>
-        <col className="cell-option" />
-        <col className="cell-billing-period" />
-        <col className="cell-order-date" />
-        <col className="cell-selling" />
-        <col className="cell-fiscal" />
-        <col className="cell-category" />
-        <col className="cell-description" />
-        <col className="cell-amount" />
-        <col className="cell-amount" />
-        <col className="cell-supplier" />
-        <col className="cell-cchannel" />
-        <col className="cell-invoice-state" />
-        <col className="cell-invoice-state" />
-      </colgroup><thead><tr>
-        <th className="cell-option"><input type="checkbox" className="bulk-select-all" data-bulk-target="incomeBulkForm" aria-label="Seleziona tutti gli incassi" /></th>
-        <th className="cell-billing-period" data-sort-key="billing-period" data-sort-type="number"><span className="th-wrap">Periodo<br />Fatt.</span></th>
-        <th className="cell-order-date" data-sort-key="credit-date" data-sort-type="date"><span className="th-wrap">Data<br />accr.</span></th>
-        <th className="cell-selling" data-sort-key="sales-channel"><span className="th-wrap">Canale<br />vendita</span></th>
-        <th className="cell-fiscal" data-sort-key="fiscal" data-sort-type="number">Fisc.</th>
-        <th className="cell-category" data-sort-key="category">Cat.</th>
-        <th className="cell-description" data-sort-key="description">Descrizione</th>
-        <th className="cell-amount" data-sort-key="amount" data-sort-type="number">Importo</th>
-        <th className="cell-amount" data-sort-key="vat" data-sort-type="number">IVA</th>
-        <th className="cell-supplier" data-sort-key="payment-method"><span className="th-wrap">Metodo<br />pag.</span></th>
-        <th className="cell-cchannel" data-sort-key="credit-channel"><span className="th-wrap">Canale<br />accr.</span></th>
-        <th className="cell-invoice-state" data-sort-key="credit-status">Accr.</th>
-        <th className="cell-invoice-state" data-sort-key="invoice-state"><span className="th-wrap">Stato<br />fatt.</span></th>
-        {/*<th className="cell-center"><span className="sr-only">Elimina</span></th>*/}
-      </tr></thead><tbody>
-        {filteredIncomes.map(income => {
-          const salesStyle = salesChannelStyles[income.salesChannelRef.name];
-          const catStyle = saleCategoryStyles[income.incomeCategory.name];
-          const incomePaymentMethodName = income.paymentMethodRef?.name ?? income.paymentMethod;
-          const incomeCreditChannelName = income.creditBank?.name ?? income.creditChannel;
-          const paymentStyle = paymentMethodStyles[incomePaymentMethodName];
-          const creditStyle = creditChannelStyles[incomeCreditChannelName];
-          const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
-          const creditStatus = incomeCreditStatus(income);
-          const creditOverdue = isIncomeCreditOverdue(income);
-          const vatStyle = vatStyles[String(Number(income.vatRate.toString()))] ?? vatStyles['0'];
-          return <tr
-            className={['clickable-desktop-row', creditOverdue ? 'income-row-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : ''].filter(Boolean).join(' ')}
-            data-row-href={`/incomes/${income.id}?returnTo=${returnTo}`}
-            data-sort-row
-            data-sort-billing-period={String(Number(income.billingYear) * 12 + Number(income.billingMonth))}
-            data-sort-credit-date={dateSortValue(income.creditDate)}
-            data-sort-sales-channel={income.salesChannelRef.name}
-            data-sort-fiscal={income.isFiscal ? '1' : '0'}
-            data-sort-category={income.incomeCategory.name}
-            data-sort-description={income.description ?? ''}
-            data-sort-amount={String(Number(income.amount.toString()))}
-            data-sort-vat={String(Number(income.vatRate.toString()))}
-            data-sort-payment-method={incomePaymentMethodName}
-            data-sort-credit-channel={incomeCreditChannelName}
-            data-sort-credit-status={creditStatus.label}
-            data-sort-invoice-state={invoiceStyle.label}
-            tabIndex={0}
-            key={income.id}
-          >
-            <td className="cell-option"><input form="incomeBulkForm" type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`} /></td>
-            <td className="cell-billing-period">{formatPeriod(income.billingMonth, income.billingYear)}</td>
-            <td className="cell-order-date">{dateLabel(income.creditDate)}</td>
-            <td className="cell-selling"><span title={income.salesChannelRef.name} className={`${badgeClass(salesStyle?.className)} income-badge-compact`}>{income.salesChannelRef.icon ?? salesStyle?.icon ?? '•'} {income.salesChannelRef.name}</span></td>
-            <td className="cell-fiscal">{fiscalBadge(income.isFiscal)}</td>
-            <td className="cell-category"><span title={income.incomeCategory.name} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{income.incomeCategory.icon ?? catStyle?.icon ?? '•'} {income.incomeCategory.name}</span></td>
-            <td className="cell-description" title={income.description ?? ''}>{income.description ?? '-'}</td>
-            <td className="cell-amount"><strong className={moneyTone(Number(income.amount.toString()))}>{euro(income.amount.toString())}</strong></td>
-            <td className="cell-amount"><span className={`${badgeClass(vatStyle.className)} income-badge-compact`}>{Number(income.vatRate.toString())}%</span></td>
-            <td className="cell-supplier"><span title={incomePaymentMethodName} className={`${badgeClass(paymentStyle?.className)} income-badge-compact`}>{paymentStyle?.icon ?? '•'} {incomePaymentMethodName}</span></td>
-            <td className="cell-cchannel"><span title={incomeCreditChannelName} className={`${badgeClass(creditStyle?.className)} income-badge-compact`}>{creditStyle?.icon ?? '•'} {incomeCreditChannelName}</span></td>
-            <td className="cell-invoice-state"><span title={creditStatus.label} className={`${badgeClass(creditStatus.className)} income-badge-compact`}>{creditStatus.icon} {creditStatus.label}</span></td>
-            <td className="cell-invoice-state"><span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
-            {/*<td className="cell-center"><DeleteActionButton action={`/api/incomes/${income.id}?returnTo=${returnTo}`} confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata." /></td>*/}
-          </tr>;
-        })}
-        {!filteredIncomes.length && <tr><td colSpan={13}>Nessun incasso trovato con i filtri selezionati.</td></tr>}
-      </tbody></table></div>
-    </div>
-    {/*<div className="card expenses-list-card">*/}
-    {/*  <div className="charts-grid">*/}
-    {/*    <IncomePieBreakdownChart title="Entrate per categoria / canale di vendita" data={incomesBySaleCategoryAndChannel} />*/}
-    {/*    <IncomeBreakdownChart title="Grafico entrate dichiarate" description="Distribuzione degli incassi fiscali e non fiscali sui risultati filtrati." data={incomesByFiscalStatus} />*/}
-    {/*  </div>*/}
-    {/*</div>*/}
-  </div>;
+        {/*<div className="card expenses-list-card">*/}
+        {/*  <div className="charts-grid">*/}
+        {/*    <IncomePieBreakdownChart title="Entrate per categoria / canale di vendita" data={incomesBySaleCategoryAndChannel} />*/}
+        {/*    <IncomeBreakdownChart title="Grafico entrate dichiarate" description="Distribuzione degli incassi fiscali e non fiscali sui risultati filtrati." data={incomesByFiscalStatus} />*/}
+        {/*  </div>*/}
+        {/*</div>*/}
+    </div>;
 }

@@ -152,6 +152,10 @@ a {
   height: 100%;
 }
 
+.pl-6 {
+  padding-left: 6px;
+}
+
 .site-header-actions {
   display: flex;
   align-items: center;
@@ -933,6 +937,16 @@ button {
 .modal-card.modal-card-wide.supplier-form-modal-card {
   width: min(1280px, calc(100vw - 36px));
   max-width: calc(100vw - 36px);
+
+  @media (max-width: 760px) {
+    .app-form-modal .expense-form .form-actions-row {
+      width: calc(100%);
+    }
+  }
+
+  .supplier-form.income-form {
+    margin-bottom: 0;
+  }
 }
 
 .supplier-form-page-card > .modal-title {
@@ -1472,6 +1486,7 @@ body.drawer-open {
   min-width: 0;
   flex: 1 1 auto;
   width: 100%;
+  color: #686868;
 }
 
 .recurring-expenses-desktop-table-scroll {
@@ -2265,6 +2280,10 @@ body.drawer-open {
 
 .text-accent {
   color: var(--accent);
+}
+
+.text-muted {
+  color: var(--muted);
 }
 
 .money-input {
@@ -3855,7 +3874,6 @@ table th, table td {
 }
 
 
-
 .month-report-page {
   .month-report-mode-toggle {
     justify-content: flex-start;
@@ -3873,6 +3891,7 @@ table th, table td {
       }
     }
   }
+
   .expense-trend-mode-toggle {
 
   }
@@ -3972,26 +3991,26 @@ table th, table td {
 }
 
 .month-report-collapsible > summary {
-    cursor: pointer;
-    list-style: none;
+  cursor: pointer;
+  list-style: none;
 }
 
 .month-report-collapsible > summary::-webkit-details-marker {
-    display: none;
+  display: none;
 }
 
 .month-report-collapsible > summary::before {
-    content: '▸';
-    margin-right: 8px;
-    color: var(--muted);
+  content: '▸';
+  margin-right: 8px;
+  color: var(--muted);
 }
 
 .month-report-collapsible[open] > summary::before {
-    content: '▾';
+  content: '▾';
 }
 
 .month-report-collapsible[open] > summary {
-    margin-bottom: 14px;
+  margin-bottom: 14px;
 }
 
 .dashboard-chart-collapsible {
@@ -7229,6 +7248,7 @@ button.bulk-direct-link {
   display: grid;
   gap: 5px;
   width: min(100%, 480px);
+  margin-bottom: 12px;
 }
 
 .supplier-quick-search > label {
@@ -7850,6 +7870,14 @@ button.bulk-direct-danger {
   letter-spacing: .06em;
 }
 
+.income-detail-page .expense-detail-title-block {
+  .income-detail-description {
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 800;
+  }
+}
+
 .expense-detail-title-block h1 {
   max-width: 920px;
   margin: 0;
@@ -8033,10 +8061,10 @@ button.bulk-direct-danger {
 }
 
 .expense-detail-section {
-  padding: 26px 28px;
-  /*border-bottom: 1px solid rgba(226, 232, 240, .8);*/
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
+  padding: 26px 28px;
 }
 
 .expense-detail-section:last-child {
@@ -8749,11 +8777,16 @@ button.bulk-direct-danger {
   padding: 4px 0;
 }
 
-.expense-mobile-select input {
-  width: 22px;
-  height: 22px;
-  min-height: 22px;
-  margin: 0;
+.customer-mobile-select,
+.supplier-mobile-select,
+.income-mobile-select,
+.expense-mobile-select {
+  input {
+    width: 22px;
+    height: 22px;
+    min-height: 22px;
+    margin: 0;
+  }
 }
 
 .expense-mobile-link {
@@ -8810,6 +8843,10 @@ button.bulk-direct-danger {
   white-space: nowrap;
   align-items: center;
   padding-left: 4px;
+}
+
+.income-mobile-item .expense-mobile-subtitle {
+  padding-left: 0;
 }
 
 .expense-mobile-subtitle-left {
@@ -8905,7 +8942,7 @@ button.bulk-direct-danger {
 }
 
 .income-mobile-item .expense-mobile-title-row .left-side {
-  display: flex;
+  //display: flex;
   gap: 4px;
 }
 

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import ExpensesList from '@/components/ExpensesList';
 import MonthReportMonthSelect from '@/components/MonthReportMonthSelect';
-import MonthIncomesList from '@/components/MonthIncomesList';
+import IncomesList from '@/components/IncomesList';
 import MonthReportAccordionController from '@/components/MonthReportAccordionController';
 import {prisma} from '@/lib/prisma';
 import {getMonthlyReport, getOrderDateMonthSummary, getPeriodSummary} from '@/lib/reports';
@@ -38,7 +38,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1;
-    const [report, fiscalTotals, categories, banks, paymentMethods, suppliers, incomeCategories, salesChannels] = await Promise.all([
+    const [report, fiscalTotals, categories, banks, paymentMethods, suppliers, incomeCategories, salesChannels, customers] = await Promise.all([
         getMonthlyReport(year, month, current.workspace.id, mode),
         mode === 'fiscal'
             ? getPeriodSummary([{year, month}], {workspaceId: current.workspace.id})
@@ -52,7 +52,8 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             take: 100
         }),
         prisma.incomeCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}}),
-        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}})
+        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}}),
+        prisma.customer.findMany({where: {workspaceId: current.workspace.id}, orderBy: {businessName: 'asc'}})
     ]);
     const orderedCategories = orderExpenseCategories(categories);
     const orderedBanks = orderBanks(banks);
@@ -228,14 +229,15 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 <div className="month-report-value month-report-inline-total"><span>Totale incassi</span><strong
                     className="month-report-positive">{euroInt(report.totals.totalRevenue)}</strong></div>
             </summary>
-            <MonthIncomesList
+            <div className="card expenses-list-card"><IncomesList
                 incomes={report.incomes}
                 returnTo={returnTo}
                 banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, isFallback: bank.isFallback}))}
                 paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback}))}
                 incomeCategories={incomeCategories}
                 salesChannels={salesChannels}
-            />
+                customers={customers}
+            /></div>
         </details>
         </div>
     </div>;

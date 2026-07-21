@@ -53,6 +53,10 @@ enum SupplierSystemRole {
   VAT_SETTLEMENT
 }
 
+enum CustomerSystemRole {
+  DEFAULT
+}
+
 enum PaymentMethodSystemRole {
   CASH
 }
@@ -91,6 +95,7 @@ model Workspace {
   banks              Bank[]
   paymentMethods     PaymentMethod[]
   suppliers          Supplier[]
+  customers          Customer[]
   recurringExpenses  RecurringExpense[]
   expenses           Expense[]
   monthlyRevenues    MonthlyRevenue[]
@@ -237,6 +242,30 @@ model Supplier {
   recurringExpenses RecurringExpense[]
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+
+  @@index([businessName])
+  @@index([alias])
+  @@index([workspaceId])
+  @@unique([workspaceId, systemRole])
+}
+
+model Customer {
+  id            Int       @id @default(autoincrement())
+  businessName  String
+  alias         String?
+  email         String?
+  vatNumber     String?
+  taxCodeSdi    String?
+  pec           String?
+  iban          String?
+  swift         String?
+  internalNotes String?
+  systemRole    CustomerSystemRole?
+  workspaceId   Int
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  incomes       Income[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([businessName])
   @@index([alias])
@@ -399,6 +428,8 @@ model Income {
   id              Int       @id @default(autoincrement())
   workspaceId     Int?
   workspace       Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  customerId      Int?
+  customer        Customer? @relation(fields: [customerId], references: [id], onDelete: Restrict)
   salesChannelId  Int
   salesChannelRef IncomeSalesChannel @relation(fields: [salesChannelId], references: [id], onDelete: Restrict)
   incomeCategoryId Int
@@ -423,6 +454,7 @@ model Income {
   updatedAt       DateTime  @updatedAt
 
   @@index([workspaceId])
+  @@index([customerId])
   @@index([creditDate])
   @@index([billingYear, billingMonth])
   @@index([salesChannelId])

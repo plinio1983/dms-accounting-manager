@@ -275,7 +275,7 @@ function SupplierAutocomplete({
               <label>P.IVA<input value={createData.vatNumber} onChange={(e) => setCreateData((d) => ({ ...d, vatNumber: e.target.value }))} /></label>
               <label>IBAN<input value={createData.iban} onChange={(e) => setCreateData((d) => ({ ...d, iban: e.target.value }))} /></label>
               <label>PEC<input value={createData.pec} onChange={(e) => setCreateData((d) => ({ ...d, pec: e.target.value }))} /></label>
-              <label>Codice SDI/Codice Fiscale<input value={createData.taxCodeSdi} onChange={(e) => setCreateData((d) => ({ ...d, taxCodeSdi: e.target.value }))} /></label>
+              <label>Codice SDI/Fiscale<input value={createData.taxCodeSdi} onChange={(e) => setCreateData((d) => ({ ...d, taxCodeSdi: e.target.value }))} /></label>
               <label>Alias<input value={createData.alias} onChange={(e) => setCreateData((d) => ({ ...d, alias: e.target.value }))} /></label>
               <label className="full">Note interne<textarea rows={3} value={createData.internalNotes} onChange={(e) => setCreateData((d) => ({ ...d, internalNotes: e.target.value }))} /></label>
             </div>

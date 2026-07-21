@@ -250,7 +250,7 @@ export async function getAccountingDashboardReport(
   const [currentFiscalMonth, currentFiscalQuarter, yearIncomes, yearExpenses] = await Promise.all([
     getPeriodSummary(fiscalMonthPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId }),
     getPeriodSummary(fiscalQuarterPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId }),
-    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(reportPeriods, workspaceId), include: { incomeCategory: true, salesChannelRef: true } }),
+    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(reportPeriods, workspaceId), include: { incomeCategory: true, salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true } }),
     prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), year: { in: reportYears } }, include: { payments: true, category: true } })
   ]);
 
@@ -329,7 +329,7 @@ export async function getMonthlyReport(year: number, month: number, workspaceId?
       where: mode === 'fiscal'
         ? incomePeriodWhereIncludingUncredited([{ year, month }], workspaceId)
         : { ...(workspaceId ? { workspaceId } : {}), creditDate: dateRange },
-      include: { salesChannelRef: true, incomeCategory: true, paymentMethodRef: true, creditBank: true }
+      include: { salesChannelRef: true, incomeCategory: true, paymentMethodRef: true, creditBank: true, customer: true }
     })
   ]);
 

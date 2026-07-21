@@ -1,0 +1,53 @@
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { requireWorkspace } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { euro } from '@/lib/money';
+import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
+import IncomesList from '@/components/IncomesList';
+import ClientEditModalController from '@/components/ClientEditModalController';
+import DeleteActionButton from '@/components/DeleteActionButton';
+import { badgeClass, incomeCreditStatusStyles } from '@/lib/income-ui';
+
+function valueOrDash(value?: string | null) { return value?.trim() || '-'; }
+function CopyableField({ label, value, className = '' }: { label: string; value?: string | null; className?: string }) {
+  const display = valueOrDash(value);
+  return <div className={`${className} copyable-detail-field`}><span>{label}</span><strong>{display}</strong><button type="button" className="copy-value-button" data-copy={display === '-' ? '' : display} title="Copia valore">⧉</button></div>;
+}
+
+export default async function ClientDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const current = await requireWorkspace('/clients');
+  const id = Number((await params).id);
+  const query = (await searchParams) ?? {};
+  const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
+  const backHref = rawReturnTo?.startsWith('/') ? rawReturnTo : '/clients';
+  const [customer, banks, paymentMethods, incomeCategories, salesChannels, customers] = await Promise.all([
+    prisma.customer.findFirst({ where: { id, workspaceId: current.workspace.id }, include: { incomes: { include: { incomeCategory: true, salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true }, orderBy: { creditDate: 'desc' } } } }),
+    prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }), prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.incomeCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { name: 'asc' } }), prisma.incomeSalesChannel.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { name: 'asc' } }),
+    prisma.customer.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' } })
+  ]);
+  if (!customer) notFound();
+  const uncredited = customer.incomes.filter(income => !income.isCredited);
+  const uncreditedTotal = uncredited.reduce((sum, income) => sum + Number(income.amount), 0);
+  const currentYear = new Date().getFullYear();
+  const annualIncomes = customer.incomes.filter(income => income.billingYear === currentYear);
+  const annualTotal = annualIncomes.reduce((sum, income) => sum + Number(income.amount), 0);
+  const returnTo = encodeURIComponent(`/clients/${customer.id}`);
+
+  return <div className="grid expense-detail-page supplier-detail-page">
+    <ClientEditModalController />
+    <script dangerouslySetInnerHTML={{ __html: `document.addEventListener('click',async function(event){const button=event.target.closest('[data-copy]');if(!button)return;const value=button.getAttribute('data-copy')||'';if(!value)return;try{await navigator.clipboard.writeText(value);button.textContent='✓';setTimeout(()=>button.textContent='⧉',900)}catch(e){alert('Impossibile copiare il valore.')}});` }} />
+    <div className="expense-detail-shell"><article className="expense-detail-document supplier-detail-document">
+      <div className="expense-detail-action-row"><div className="left-side"><Link className="btn btn-sm btn-default" href={backHref}>↩ Indietro</Link></div>{!customer.systemRole ? <div className="right-side"><button className="btn btn-sm btn-primary" type="button" data-client-edit-id={customer.id}>✎ Modifica</button><DeleteActionButton action={`/api/clients/${customer.id}`} confirmMessage="Confermi la rimozione del cliente?" className="btn btn-sm btn-danger">🗑 Elimina</DeleteActionButton></div> : <span className="badge">Cliente di sistema</span>}</div>
+      <section className="expense-detail-hero"><div><div className="expense-detail-title-block"><p className="expense-detail-kicker">Cliente #{customer.id}</p><h1>{customer.businessName}</h1><div className="expense-detail-meta-line"><span>{valueOrDash(customer.alias)}</span><span className="badge">{customer.incomes.length} incassi collegati</span></div></div></div>
+        <aside className="expense-detail-amount-panel"><div className="expense-detail-amount-panel-header-row"><span className="expense-detail-amount-panel-header">Da accreditare</span></div><strong className={uncreditedTotal > 0 ? 'text-warning' : 'text-ok'}>{euro(uncreditedTotal)}</strong><div className="expense-detail-badge-row"><span className={badgeClass(uncreditedTotal > 0 ? incomeCreditStatusStyles.DA_ACCREDITARE.className : incomeCreditStatusStyles.ACCREDITATO.className)}>{uncredited.length} incassi aperti</span></div></aside>
+      </section>
+      <section className="expense-detail-status-strip"><div><span>Incassi collegati</span><strong>{customer.incomes.length}</strong></div><div><span>Da accreditare</span><strong>{uncredited.length}</strong></div><div><span>Importo da accreditare</span><strong className={uncreditedTotal > 0 ? 'text-warning' : 'text-ok'}>{euro(uncreditedTotal)}</strong></div><div><span>Incassati {currentYear}</span><strong>{euro(annualTotal)}</strong></div></section>
+      <details className="expense-detail-section supplier-detail-collapsible"><summary className="expense-detail-section-heading"><div><h2>Anagrafica</h2><p>Dati principali del cliente.</p></div><span className="supplier-detail-collapsible-toggle" aria-hidden="true">⌄</span></summary><div className="expense-detail-status-strip supplier-detail-info-strip">
+        <CopyableField label="R. Sociale" value={customer.businessName} /><CopyableField label="Alias" value={customer.alias} /><CopyableField label="Email" value={customer.email} /><CopyableField label="P.IVA" value={customer.vatNumber} /><CopyableField label="SDI / C.F." value={customer.taxCodeSdi} /><CopyableField label="PEC" value={customer.pec} /><CopyableField label="IBAN" value={customer.iban} /><CopyableField label="Swift" value={customer.swift} /><CopyableField label="Note interne" value={customer.internalNotes} className="span-2" />
+      </div></details>
+    </article></div>
+    <div className="card expenses-list-card"><div className="list-heading"><div><h2>Incassi collegati</h2><p className="muted">Risultati mostrati: {customer.incomes.length}</p></div></div><IncomesList incomes={customer.incomes} returnTo={returnTo} banks={orderBanks(banks)} paymentMethods={orderPaymentMethods(paymentMethods, 'INCOME')} incomeCategories={incomeCategories} salesChannels={salesChannels} customers={customers} initialCustomerId={customer.id} emptyMessage="Nessun incasso collegato a questo cliente." /></div>
+  </div>;
+}

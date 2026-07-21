@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import CustomerAutocomplete from '@/components/CustomerAutocomplete';
 
 type InitialIncome = {
   id?: number;
+  customerId?: number | null;
   salesChannelId?: number;
   incomeCategoryId?: number;
   description?: string | null;
@@ -25,6 +27,7 @@ type InitialIncome = {
 type Option = { id: number; name: string; isFallback?: boolean | null };
 type PaymentMethodOption = Option & { kind?: string };
 type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null };
+type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };
 
 type Props = {
   initialIncome?: InitialIncome;
@@ -37,6 +40,7 @@ type Props = {
   paymentMethods: PaymentMethodOption[];
   incomeCategories: IncomeEntityOption[];
   salesChannels: IncomeEntityOption[];
+  customers: CustomerOption[];
 };
 
 const today = new Date().toISOString().slice(0, 10);
@@ -99,6 +103,7 @@ export default function IncomeForm({
   paymentMethods,
   incomeCategories,
   salesChannels,
+  customers,
 }: Props) {
   const fallbackBank = banks.find(bank => bank.isFallback) ?? banks.find(bank => bank.name.toLowerCase().includes("altra")) ?? banks[0];
   const defaultPaymentMethod = paymentMethods.find(method => method.name === "Bonifico") ?? paymentMethods[0];
@@ -141,6 +146,10 @@ export default function IncomeForm({
           <small>Dati principali dell'incasso</small>
         </summary>
         <div className="form-section-grid income-form-section-grid">
+          <label className="full">
+            Cliente
+            <CustomerAutocomplete customers={customers} initialCustomerId={initialIncome?.customerId} />
+          </label>
           <label>
             Canale di vendita
             <select name="salesChannelId" defaultValue={initialSalesChannelId} required>

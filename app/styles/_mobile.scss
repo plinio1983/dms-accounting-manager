@@ -535,11 +535,7 @@
   }
 }
 
-@media (max-width: 700px) {
-  .annual-totals-grid {
-    grid-template-columns:1fr 1fr;
-  }
-
+@media (max-width: 576px) {
   .toolbar-card .btn,
   .toolbar-card .btn,
   .toolbar-card > button,
@@ -547,6 +543,12 @@
   .actions-row .btn {
     max-width: none;
     /*width: 100%;*/
+  }
+}
+
+@media (max-width: 700px) {
+  .annual-totals-grid {
+    grid-template-columns:1fr 1fr;
   }
 
   .form-actions-row {
@@ -1518,6 +1520,25 @@
   .income-mobile-list {
     display: grid;
     margin-top: 12px;
+
+    .income-mobile-item.expense-mobile-item {
+      margin-left: -9px;
+    }
+  }
+
+  .income-mobile-item {
+    .expense-mobile-title-row {
+      justify-content: flex-start;
+      align-items: center;
+
+      .expense-mobile-subtitle {
+        display: block;
+      }
+    }
+
+    //.expense-mobile-title-row, {
+    //  align-items: flex-end;
+    //}
   }
 
   .income-mobile-item .expense-mobile-footer {

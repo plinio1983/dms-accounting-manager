@@ -438,7 +438,7 @@ function SupplierAutocomplete({
                                 />
                             </label>
                             <label>
-                                Codice SDI/Codice Fiscale
+                                Codice SDI/Fiscale
                                 <input
                                     value={createData.taxCodeSdi}
                                     onChange={(e) =>

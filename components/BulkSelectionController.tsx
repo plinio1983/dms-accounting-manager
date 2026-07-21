@@ -130,6 +130,7 @@ function submitterLabel(submitter: HTMLElement | null) {
 
 function formSubject(form: HTMLFormElement) {
   if (form.id === "supplierBulkForm") return "fornitori";
+  if (form.id === "clientBulkForm") return "clienti";
   if (form.id === "incomeBulkForm") return "incassi";
   if (form.id === "expenseBulkForm") return "spese";
   if (form.id === "recurringExpenseBulkForm") return "spese ricorrenti";

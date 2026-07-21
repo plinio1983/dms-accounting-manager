@@ -7,14 +7,17 @@ import { flashParamNames } from '@/lib/flash';
 type Option = { id: number; name: string; isFallback?: boolean | null };
 type PaymentMethodOption = Option & { kind?: string };
 type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null };
+type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };
 
-export default function NewIncomePanel({ initialOpen = false, showToolbar = true, banks, paymentMethods, incomeCategories, salesChannels }: {
+export default function NewIncomePanel({ initialOpen = false, showToolbar = true, banks, paymentMethods, incomeCategories, salesChannels, customers, initialCustomerId }: {
   initialOpen?: boolean;
   showToolbar?: boolean;
   banks: Option[];
   paymentMethods: PaymentMethodOption[];
   incomeCategories: IncomeEntityOption[];
   salesChannels: IncomeEntityOption[];
+  customers: CustomerOption[];
+  initialCustomerId?: number;
 }) {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [returnAction, setReturnAction] = useState('/api/incomes');
@@ -61,7 +64,7 @@ export default function NewIncomePanel({ initialOpen = false, showToolbar = true
             </div>
             <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
           </div>
-          <IncomeForm action={returnAction} onCancel={() => setIsOpen(false)} banks={banks} paymentMethods={paymentMethods} incomeCategories={incomeCategories} salesChannels={salesChannels} />
+          <IncomeForm initialIncome={initialCustomerId ? { customerId: initialCustomerId } : undefined} action={returnAction} onCancel={() => setIsOpen(false)} banks={banks} paymentMethods={paymentMethods} incomeCategories={incomeCategories} salesChannels={salesChannels} customers={customers} />
         </div>
       </div> : null}
     </div>

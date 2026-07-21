@@ -371,7 +371,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
                 </div>
                 <div className="expense-mobile-subtitle">
                   <span className="supplier-mobile-row-grow">{supplier.alias || 'Nessun alias'}</span>
-                  <span className="supplier-mobile-row-grow text-rright"><strong>{openExpensesCount}</strong> ordini da saldare</span>
+                  <span className="supplier-mobile-row-grow text-right"><strong>{openExpensesCount}</strong> ordini da saldare</span>
                 </div>
                 <div className="expense-mobile-meta">
                   <span className="supplier-mobile-row"><strong className="badge color-badge tone-insurance">{euro(annualPurchasedAmount)}</strong> acquistati {currentYear}</span>

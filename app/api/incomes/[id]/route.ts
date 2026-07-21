@@ -8,6 +8,7 @@ import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
 const IncomeSchema = z.object({
+  customerId: z.coerce.number().int().positive(),
   salesChannelId: z.coerce.number().int().positive(),
   incomeCategoryId: z.coerce.number().int().positive(),
   description: z.string().optional().nullable(),
@@ -42,13 +43,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
 
   const parsed = IncomeSchema.parse(raw);
-  const [paymentMethod, creditBank, salesChannel, incomeCategory] = await Promise.all([
+  const [paymentMethod, creditBank, salesChannel, incomeCategory, customer] = await Promise.all([
     prisma.paymentMethod.findFirst({ where: { id: parsed.paymentMethodId, workspaceId: current.workspace.id } }),
     prisma.bank.findFirst({ where: { id: parsed.creditBankId, workspaceId: current.workspace.id } }),
     prisma.incomeSalesChannel.findFirst({ where: { id: parsed.salesChannelId, workspaceId: current.workspace.id } }),
-    prisma.incomeCategory.findFirst({ where: { id: parsed.incomeCategoryId, workspaceId: current.workspace.id } })
+    prisma.incomeCategory.findFirst({ where: { id: parsed.incomeCategoryId, workspaceId: current.workspace.id } }),
+    prisma.customer.findFirst({ where: { id: parsed.customerId, workspaceId: current.workspace.id } })
   ]);
-  if (!paymentMethod || !creditBank || !salesChannel || !incomeCategory) return NextResponse.json({ error: 'Configurazione incasso non valida' }, { status: 400 });
+  if (!paymentMethod || !creditBank || !salesChannel || !incomeCategory || !customer) return NextResponse.json({ error: 'Configurazione incasso non valida' }, { status: 400 });
   const existing = await prisma.income.findFirst({ where: { id: incomeId, workspaceId: current.workspace.id }, select: { id: true } });
   if (!existing) {
     return redirectToPath(appendFlash(returnTo || '/incomes', { error: 'not_found' }));
@@ -57,6 +59,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   await prisma.income.update({
     where: { id: incomeId },
     data: {
+      customerId: customer.id,
       salesChannelId: salesChannel.id,
       incomeCategoryId: incomeCategory.id,
       description: parsed.description || null,

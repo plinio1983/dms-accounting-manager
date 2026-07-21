@@ -22,7 +22,7 @@ const mainMenuLinks = [
   { href: currentMonthReportHref, label: 'Report mese', icon: '▤' },
   { href: () => '/recurring-expenses', label: 'Spese ricorrenti', icon: '↻' },
   { href: () => '/suppliers', label: 'Fornitori', icon: '◇' },
-  { href: null, label: 'Clienti', icon: '♙' },
+  { href: () => '/clients', label: 'Clienti', icon: '♙' },
   { href: () => '/settings/company', label: 'Azienda', icon: '🏢' },
   { href: () => '/expenses/import', label: 'Importa spese', icon: '⬆' },
 ] as const;
