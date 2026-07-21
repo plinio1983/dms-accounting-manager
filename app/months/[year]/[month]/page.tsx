@@ -2,6 +2,7 @@ import Link from 'next/link';
 import ExpensesList from '@/components/ExpensesList';
 import MonthReportMonthSelect from '@/components/MonthReportMonthSelect';
 import MonthIncomesList from '@/components/MonthIncomesList';
+import MonthReportAccordionController from '@/components/MonthReportAccordionController';
 import {prisma} from '@/lib/prisma';
 import {getMonthlyReport, getOrderDateMonthSummary, getPeriodSummary} from '@/lib/reports';
 import {monthName} from '@/lib/money';
@@ -37,7 +38,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1;
-    const [report, fiscalTotals, categories, banks, paymentMethods, suppliers] = await Promise.all([
+    const [report, fiscalTotals, categories, banks, paymentMethods, suppliers, incomeCategories, salesChannels] = await Promise.all([
         getMonthlyReport(year, month, current.workspace.id, mode),
         mode === 'fiscal'
             ? getPeriodSummary([{year, month}], {workspaceId: current.workspace.id})
@@ -49,11 +50,14 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             where: {workspaceId: current.workspace.id},
             orderBy: {businessName: 'asc'},
             take: 100
-        })
+        }),
+        prisma.incomeCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}}),
+        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}})
     ]);
     const orderedCategories = orderExpenseCategories(categories);
     const orderedBanks = orderBanks(banks);
     const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
+    const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
     const currentMonthHref = `/months/${year}/${month}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`;
     const returnTo = encodeURIComponent(currentMonthHref);
     const mobileExpenses = [...report.expenses].sort((a, b) => {
@@ -172,9 +176,11 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 </table>
             </section>
         </div>
+        <div className="month-report-accordion" data-month-report-accordion>
+        <MonthReportAccordionController />
         <details className="month-report-section month-report-expenses month-report-collapsible" open>
             <summary className="month-report-section-heading">
-                <h3>{mode === 'fiscal' ? 'Spese del periodo contabile' : 'Spese registrate nel mese'}</h3>
+                <h3>{mode === 'fiscal' ? 'Spese registrate' : 'Spese registrate'}</h3>
                 <div className="month-report-value month-report-inline-total"><span>Spese non saldate</span><strong
                     className="money-warning">{euroInt(fiscalTotals.nonSaldato)}</strong></div>
             </summary>
@@ -218,11 +224,19 @@ export default async function MonthPage({params, searchParams}: { params: Promis
         </details>
         <details className="month-report-section month-report-incomes month-report-collapsible">
             <summary className="month-report-section-heading">
-                <h3>{mode === 'fiscal' ? 'Incassi del periodo di fatturazione' : 'Incassi accreditati nel mese'}</h3>
+                <h3>{mode === 'fiscal' ? 'Incassi registrati' : 'Incassi registrati'}</h3>
                 <div className="month-report-value month-report-inline-total"><span>Totale incassi</span><strong
                     className="month-report-positive">{euroInt(report.totals.totalRevenue)}</strong></div>
             </summary>
-            <MonthIncomesList incomes={report.incomes} returnTo={returnTo} />
+            <MonthIncomesList
+                incomes={report.incomes}
+                returnTo={returnTo}
+                banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, isFallback: bank.isFallback}))}
+                paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback}))}
+                incomeCategories={incomeCategories}
+                salesChannels={salesChannels}
+            />
         </details>
+        </div>
     </div>;
 }

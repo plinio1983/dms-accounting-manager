@@ -183,6 +183,20 @@ a {
   background: #f8fafc;
 }
 
+.burger-menu-icon {
+  width: 20px;
+  display: grid;
+  gap: 4px;
+}
+
+.burger-menu-icon > span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
 .settings-drawer-backdrop {
   position: fixed;
   inset: 0;
@@ -227,6 +241,23 @@ a {
   font-size: 22px;
 }
 
+.settings-drawer-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-drawer-back {
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font-size: 20px;
+  cursor: pointer;
+}
+
 .settings-drawer-close {
   width: 38px;
   height: 38px;
@@ -269,6 +300,17 @@ a {
   justify-content: center;
   font-size: 17px;
   line-height: 1;
+}
+
+.settings-drawer-item-arrow {
+  margin-left: auto;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.settings-drawer-nav .settings-drawer-item-disabled {
+  opacity: .5;
+  cursor: not-allowed;
 }
 
 .settings-drawer-nav a:hover,
@@ -475,15 +517,31 @@ body:has(.register-page) .shell {
 }
 
 
-.nav-links a {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  border: 1px solid var(--line);
-  background: #fff;
-  padding: 10px 13px;
-  border-radius: 12px;
-  font-weight: 650;
+.nav-links {
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid var(--line);
+    background: #fff;
+    padding: 10px 13px;
+    border-radius: 12px;
+    font-weight: 650;
+  }
+
+  @media (max-width: 860px) {
+    gap: 6px;
+
+    a {
+      gap: 3px;
+      padding: 10px 7px;
+
+      .nav-link-icon {
+        width: 14px;
+        height: 14px;
+      }
+    }
+  }
 }
 
 .nav-link-icon {
@@ -3936,6 +3994,70 @@ table th, table td {
     margin-bottom: 14px;
 }
 
+.dashboard-chart-collapsible {
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.dashboard-chart-collapsible > summary {
+  display: flex;
+  align-items: center;
+  min-height: 58px;
+  padding: 14px 18px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  list-style: none;
+}
+
+.dashboard-chart-collapsible > summary::-webkit-details-marker {
+  display: none;
+}
+
+.dashboard-chart-collapsible > summary::before {
+  content: '▸';
+  margin-right: 10px;
+  color: var(--muted);
+}
+
+.dashboard-chart-collapsible > summary > span {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.dashboard-chart-collapsible > summary strong {
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.dashboard-chart-collapsible > summary small {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.dashboard-chart-collapsible[open] > summary::before {
+  content: '▾';
+}
+
+.dashboard-chart-collapsible[open] > summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.dashboard-chart-collapsible > section {
+  height: auto;
+  padding: 18px;
+}
+
 .month-report-metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4090,7 +4212,7 @@ table th, table td {
 
 .month-report-section-heading {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 14px;
@@ -8794,10 +8916,6 @@ button.bulk-direct-danger {
 
 .income-mobile-link:active {
   background: #ecfdf5;
-}
-
-.month-income-mobile-item {
-  grid-template-columns: minmax(0, 1fr);
 }
 
 .month-income-mobile-item .expense-mobile-header {

@@ -585,16 +585,7 @@ function MonthlyNonFiscalRatioChart({
     const expenseYearPercentage = totalIncome ? (totalNonFiscalExpenses / totalIncome) * 100 : 0;
     const incomeYearPercentage = totalIncome ? (totalNonFiscalIncomes / totalIncome) * 100 : 0;
 
-    return <section className="card monthly-non-fiscal-chart-card" aria-labelledby="monthly-non-fiscal-chart-title">
-        <div className="card-heading-row">
-            <div>
-                <h2 id="monthly-non-fiscal-chart-title">Rapporto spese e incassi non fiscali su incasso totale per mese</h2>
-                <p className="muted">Percentuali mensili calcolate sull’incasso totale da inizio anno {year}.</p>
-            </div>
-            {/*<div className="text-right chart-total">*/}
-            {/*    <span className="badge">Spese {expenseYearPercentage.toFixed(1)}% · Incassi {incomeYearPercentage.toFixed(1)}%</span>*/}
-            {/*</div>*/}
-        </div>
+    return <section className="monthly-non-fiscal-chart-card">
         {months.length ? <div className="monthly-non-fiscal-chart-list">
             <div className="monthly-income-expense-ratio-year-row">
                 <div className="monthly-non-fiscal-chart-month-row">
@@ -777,17 +768,7 @@ function MonthlyFiscalExpenseImpactChart({
     ].filter(Boolean).join(' ');
     const barWidth = (percentage: number) => Math.min(Math.max(percentage, 0), 100);
 
-    return <section className="card monthly-income-expense-ratio-chart-card monthly-fiscal-expense-impact-chart-card"
-                    aria-labelledby="monthly-fiscal-expense-impact-chart-title">
-        <div className="card-heading-row">
-            <div>
-                <h2 id="monthly-fiscal-expense-impact-chart-title">Impatto spese fiscali su incasso fiscale per mese</h2>
-                <p className="muted">Percentuale delle uscite fiscali rispetto agli incassi fiscali da inizio anno {year}.</p>
-            </div>
-            {/*<div className="text-right chart-total">*/}
-            {/*    <span className="badge">Anno {annualPercentage.toFixed(1)}%</span>*/}
-            {/*</div>*/}
-        </div>
+    return <section className="monthly-income-expense-ratio-chart-card monthly-fiscal-expense-impact-chart-card">
         {months.length ? <div className="monthly-non-fiscal-chart-list">
             <div className="monthly-income-expense-ratio-year-row">
                 <div className="monthly-non-fiscal-chart-month-row">
@@ -849,14 +830,7 @@ function MonthlyVatRatioChart({months, year}: {
     const totalGeneratedPercentage = percentage(totalGeneratedVat, totalIncome);
     const totalPaidPercentage = percentage(totalPaidVat, totalIncome);
 
-    return <section className="card monthly-vat-ratio-chart-card" aria-labelledby="monthly-vat-ratio-chart-title">
-        <div className="card-heading-row">
-            <div>
-                <h2 id="monthly-vat-ratio-chart-title">IVA generata e versata per mese</h2>
-                <p className="muted">IVA degli incassi e IVA pagata con le spese fiscali, in percentuale sull’incasso totale da inizio anno {year}.</p>
-            </div>
-            {/*<div className="text-right chart-total"><span className="badge">Anno {year}</span></div>*/}
-        </div>
+    return <section className="monthly-vat-ratio-chart-card">
         {months.length ? <div className="monthly-non-fiscal-chart-list">
             <div className="monthly-income-expense-ratio-year-row">
                 <div className="monthly-non-fiscal-chart-month-row">
@@ -964,16 +938,7 @@ function MonthlyNetFiscalProfitRatioChart({months, year}: {
     };
     const totalGrossMarginPercentage = grossMarginPercentage(totalGrossMargin, totalIncome);
 
-    return <section className="card monthly-profit-ratio-chart-card" aria-labelledby="monthly-profit-ratio-chart-title">
-        <div className="card-heading-row">
-            <div>
-                <h2 id="monthly-profit-ratio-chart-title">Rapporto utile netto / utile fiscale per mese</h2>
-                <p className="muted">Percentuale di margine lordo, utile netto e utile fiscale sull’incasso totale nell’anno {year}.</p>
-            </div>
-            {/*<div className="text-right chart-total">*/}
-            {/*    <span className="badge">Anno {year}</span>*/}
-            {/*</div>*/}
-        </div>
+    return <section className="monthly-profit-ratio-chart-card">
         {months.length ? <div className="monthly-non-fiscal-chart-list">
             <div className="monthly-income-expense-ratio-year-row monthly-profit-ratio-year-row">
                 <div className="monthly-non-fiscal-chart-month-row">
@@ -1520,11 +1485,23 @@ export default async function Dashboard({searchParams}: {
 
         <div className="dashboard-report-charts">
             <div className="charts-grid">
-                <MonthlyNetFiscalProfitRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
-                <MonthlyNonFiscalRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
-                <MonthlyFiscalExpenseImpactChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
+                <details className="card dashboard-chart-collapsible">
+                    <summary><span><strong>Rapporto utile netto / utile fiscale per mese</strong><small>Percentuale di margine lordo, utile netto e utile fiscale sull’incasso totale nell’anno {report.annualYear}.</small></span></summary>
+                    <MonthlyNetFiscalProfitRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
+                </details>
+                <details className="card dashboard-chart-collapsible">
+                    <summary><span><strong>Spese e incassi non fiscali per mese</strong><small>Percentuali mensili calcolate sull’incasso totale da inizio anno {report.annualYear}.</small></span></summary>
+                    <MonthlyNonFiscalRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
+                </details>
+                <details className="card dashboard-chart-collapsible">
+                    <summary><span><strong>Impatto spese fiscali per mese</strong><small>Percentuale delle uscite fiscali rispetto agli incassi fiscali da inizio anno {report.annualYear}.</small></span></summary>
+                    <MonthlyFiscalExpenseImpactChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
+                </details>
                 {/*<MonthlyIncomeExpenseRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>*/}
-                <MonthlyVatRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
+                <details className="card dashboard-chart-collapsible">
+                    <summary><span><strong>IVA generata e versata per mese</strong><small>IVA degli incassi e IVA pagata con le spese fiscali, in percentuale sull’incasso totale da inizio anno {report.annualYear}.</small></span></summary>
+                    <MonthlyVatRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
+                </details>
             </div>
         </div>
 

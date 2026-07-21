@@ -8,8 +8,9 @@ type Option = { id: number; name: string; isFallback?: boolean | null };
 type PaymentMethodOption = Option & { kind?: string };
 type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null };
 
-export default function NewIncomePanel({ initialOpen = false, banks, paymentMethods, incomeCategories, salesChannels }: {
+export default function NewIncomePanel({ initialOpen = false, showToolbar = true, banks, paymentMethods, incomeCategories, salesChannels }: {
   initialOpen?: boolean;
+  showToolbar?: boolean;
   banks: Option[];
   paymentMethods: PaymentMethodOption[];
   incomeCategories: IncomeEntityOption[];
@@ -41,7 +42,7 @@ export default function NewIncomePanel({ initialOpen = false, banks, paymentMeth
 
   return (
     <div className="grid">
-      <div className="toolbar-card">
+      {showToolbar ? <div className="toolbar-card">
         <div>
           <h2>Incassi</h2>
           <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
@@ -49,7 +50,7 @@ export default function NewIncomePanel({ initialOpen = false, banks, paymentMeth
         <button className="btn btn-md btn-primary income-add-btn" type="button" data-income-new>
           <span className="btn-icon">+</span>Inserisci incasso
         </button>
-      </div>
+      </div> : null}
 
       {isOpen ? <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Inserisci incasso" onMouseDown={() => setIsOpen(false)}>
         <div className="modal-card modal-card-wide" onMouseDown={(event) => event.stopPropagation()}>
