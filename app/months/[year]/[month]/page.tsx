@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import ExpensesList from '@/components/ExpensesList';
 import MonthReportMonthSelect from '@/components/MonthReportMonthSelect';
+import MonthIncomesList from '@/components/MonthIncomesList';
 import {prisma} from '@/lib/prisma';
-import {getMonthlyReport, getPeriodSummary} from '@/lib/reports';
+import {getMonthlyReport, getOrderDateMonthSummary, getPeriodSummary} from '@/lib/reports';
 import {monthName} from '@/lib/money';
 import {requireWorkspace} from '@/lib/auth';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
@@ -30,13 +31,17 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const query = (await searchParams) ?? {};
     const year = Number(resolvedParams.year);
     const month = Number(resolvedParams.month);
+    const rawMode = Array.isArray(query.mode) ? query.mode[0] : query.mode;
+    const mode: 'overall' | 'fiscal' = rawMode === 'fiscal' ? 'fiscal' : 'overall';
     const backHref = safeReturnTo(query.returnTo);
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1;
     const [report, fiscalTotals, categories, banks, paymentMethods, suppliers] = await Promise.all([
-        getMonthlyReport(year, month, current.workspace.id),
-        getPeriodSummary([{year, month}], {workspaceId: current.workspace.id}),
+        getMonthlyReport(year, month, current.workspace.id, mode),
+        mode === 'fiscal'
+            ? getPeriodSummary([{year, month}], {workspaceId: current.workspace.id})
+            : getOrderDateMonthSummary(year, month, current.workspace.id),
         prisma.expenseCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {id: 'asc'}}),
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
         prisma.paymentMethod.findMany({where: {workspaceId: current.workspace.id}}),
@@ -49,7 +54,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const orderedCategories = orderExpenseCategories(categories);
     const orderedBanks = orderBanks(banks);
     const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
-    const currentMonthHref = `/months/${year}/${month}?returnTo=${encodeURIComponent(backHref)}`;
+    const currentMonthHref = `/months/${year}/${month}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`;
     const returnTo = encodeURIComponent(currentMonthHref);
     const mobileExpenses = [...report.expenses].sort((a, b) => {
         const dateA = a.receivedDate ? new Date(a.receivedDate).getTime() : 0;
@@ -58,7 +63,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     });
     const monthNavOptions = monthNavLabels.map((label, index) => {
         const navMonth = index + 1;
-        const href = `/months/${year}/${navMonth}?returnTo=${encodeURIComponent(backHref)}`;
+        const href = `/months/${year}/${navMonth}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`;
         return {
             label,
             selectLabel: monthSelectLabels[index],
@@ -88,8 +93,20 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             </div>
 
             <div className="month-report-title">
-                <p>Dettaglio mensile</p>
-                <h2>{capitalize(monthName(month))} {year}</h2>
+                <div>
+                    <p>Dettaglio mensile</p>
+                    <h2>{capitalize(monthName(month))} {year}</h2>
+                </div>
+                <div className="expense-trend-mode-toggle month-report-mode-toggle" role="group" aria-label="Tipo andamento mensile">
+                    <Link
+                        className={mode === 'overall' ? 'expense-trend-mode-button is-active' : 'expense-trend-mode-button'}
+                        href={`/months/${year}/${month}?mode=overall&returnTo=${encodeURIComponent(backHref)}`}
+                    >Complessivo</Link>
+                    <Link
+                        className={mode === 'fiscal' ? 'expense-trend-mode-button is-active' : 'expense-trend-mode-button'}
+                        href={`/months/${year}/${month}?mode=fiscal&returnTo=${encodeURIComponent(backHref)}`}
+                    >Fiscale</Link>
+                </div>
             </div>
             <div className="grid grid-4 month-report-metrics">
                 <div className="month-report-value"><span>Entrate</span><strong
@@ -155,12 +172,12 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 </table>
             </section>
         </div>
-        <section className="month-report-section month-report-expenses">
-            <div className="month-report-section-heading">
-                <h3>Spese del mese</h3>
+        <details className="month-report-section month-report-expenses month-report-collapsible" open>
+            <summary className="month-report-section-heading">
+                <h3>{mode === 'fiscal' ? 'Spese del periodo contabile' : 'Spese registrate nel mese'}</h3>
                 <div className="month-report-value month-report-inline-total"><span>Spese non saldate</span><strong
                     className="money-warning">{euroInt(fiscalTotals.nonSaldato)}</strong></div>
-            </div>
+            </summary>
             <ExpensesList
                 expenses={report.expenses}
                 mobileExpenses={mobileExpenses}
@@ -172,14 +189,16 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     id: category.id,
                     code: category.code,
                     name: category.name,
-                    icon: category.icon
+                    icon: category.icon,
+                    isVatSettlementDefault: category.id === current.workspace.vatSettlementCategoryId
                 }))}
                 banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, isFallback: bank.isFallback}))}
                 paymentMethods={expensePaymentMethods.map(method => ({
                     id: method.id,
                     name: method.name,
                     kind: method.kind,
-                    isFallback: method.isFallback
+                    isFallback: method.isFallback,
+                    systemRole: method.systemRole
                 }))}
                 suppliers={suppliers.map(supplier => ({
                     id: supplier.id,
@@ -190,11 +209,20 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     iban: supplier.iban,
                     pec: supplier.pec,
                     taxCodeSdi: supplier.taxCodeSdi,
+                    systemRole: supplier.systemRole,
                     internalNotes: supplier.internalNotes
                 }))}
-                mobileLabel="Lista spese del mese mobile"
-                emptyMessage="Nessuna spesa trovata per questo mese."
+                mobileLabel={mode === 'fiscal' ? 'Lista spese del periodo contabile mobile' : 'Lista spese registrate nel mese mobile'}
+                emptyMessage={mode === 'fiscal' ? 'Nessuna spesa trovata per questo periodo contabile.' : 'Nessuna spesa registrata in questo mese.'}
             />
-        </section>
+        </details>
+        <details className="month-report-section month-report-incomes month-report-collapsible">
+            <summary className="month-report-section-heading">
+                <h3>{mode === 'fiscal' ? 'Incassi del periodo di fatturazione' : 'Incassi accreditati nel mese'}</h3>
+                <div className="month-report-value month-report-inline-total"><span>Totale incassi</span><strong
+                    className="month-report-positive">{euroInt(report.totals.totalRevenue)}</strong></div>
+            </summary>
+            <MonthIncomesList incomes={report.incomes} returnTo={returnTo} />
+        </details>
     </div>;
 }

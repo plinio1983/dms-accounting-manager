@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { getCurrentSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { categoryIconOptions, orderExpenseCategories } from '@/lib/workspace-defaults';
-import { createCategoryAction, deleteCategoryAction, updateCategoryAction } from '../actions';
+import { createCategoryAction, deleteCategoryAction, setVatSettlementCategoryAction, updateCategoryAction } from '../actions';
 import CategoryCreatePanel from '../CategoryCreatePanel';
 import CategoryDeleteForm from '../CategoryDeleteForm';
 
@@ -13,13 +13,15 @@ const errorMessages: Record<string, string> = {
   icon_invalid: 'Seleziona un’icona valida.',
   code_exists: 'Esiste già una categoria con questo acronimo.',
   not_found: 'Categoria non trovata.',
-  in_use: 'Categoria usata da movimenti esistenti: riassegnali prima di rimuoverla.'
+  in_use: 'Categoria usata da movimenti esistenti: riassegnali prima di rimuoverla.',
+  vat_settlement_category: 'Questa categoria è configurata per le spese Saldo IVA. Selezionane prima un’altra.'
 };
 
 const savedMessages: Record<string, string> = {
   created: 'Categoria aggiunta.',
   updated: 'Categoria aggiornata.',
-  deleted: 'Categoria rimossa.'
+  deleted: 'Categoria rimossa.',
+  vat_settlement_category: 'Categoria Saldo IVA aggiornata.'
 };
 
 export const dynamic = 'force-dynamic';
@@ -31,11 +33,15 @@ export default async function ExpenseCategoriesSettingsPage({ searchParams }: { 
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
   const saved = Array.isArray(params.saved) ? params.saved[0] : params.saved;
   const usage = Array.isArray(params.usage) ? params.usage[0] : params.usage;
-  const categories = orderExpenseCategories(await prisma.expenseCategory.findMany({
-    where: { workspaceId: current.workspace.id },
-    include: { _count: { select: { expenses: true, recurringExpenses: true } } },
-    orderBy: { id: 'asc' }
-  }));
+  const [categoryRecords, workspace] = await Promise.all([
+    prisma.expenseCategory.findMany({
+      where: { workspaceId: current.workspace.id },
+      include: { _count: { select: { expenses: true, recurringExpenses: true } } },
+      orderBy: { id: 'asc' }
+    }),
+    prisma.workspace.findUnique({ where: { id: current.workspace.id }, select: { vatSettlementCategoryId: true } })
+  ]);
+  const categories = orderExpenseCategories(categoryRecords);
 
   return <div className="grid admin-page categories-settings-page">
     <div className="toolbar-card"><div><h2>Categorie di spesa</h2><p className="muted">Gestisci categorie, acronimi e icone usati da spese, filtri e report.</p></div></div>
@@ -61,5 +67,18 @@ export default async function ExpenseCategoriesSettingsPage({ searchParams }: { 
         </div>;
       }) : <p className="muted">Nessuna categoria configurata.</p>}
     </div>
+    <form action={setVatSettlementCategoryAction} className="card form vat-settlement-category-setting">
+      <div>
+        <h3>Categoria Saldo IVA</h3>
+        <p className="muted">Categoria assegnata automaticamente alle spese che registrano un versamento IVA.</p>
+      </div>
+      <label>Categoria predefinita
+        <select name="categoryId" defaultValue={workspace?.vatSettlementCategoryId ?? ''} required>
+          <option value="" disabled>Seleziona una categoria</option>
+          {categories.map(category => <option key={category.id} value={category.id}>{category.icon ? `${category.icon} ` : ''}{category.name}</option>)}
+        </select>
+      </label>
+      <div className="actions-row"><button className="btn btn-md btn-primary" type="submit">Salva configurazione</button></div>
+    </form>
   </div>;
 }

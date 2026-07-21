@@ -25,6 +25,8 @@ export async function POST(request: Request) {
   }
 
   if (action === 'delete') {
+    const protectedCount = await prisma.supplier.count({ where: { id: { in: ids }, workspaceId: current.workspace.id, systemRole: { not: null } } });
+    if (protectedCount > 0) return redirectToPath(appendFlash(redirectTo, { error: 'system_protected' }));
     const linkedUsage = await prisma.expense.count({ where: { supplierId: { in: ids }, workspaceId: current.workspace.id } })
       + await prisma.recurringExpense.count({ where: { supplierId: { in: ids }, workspaceId: current.workspace.id } });
     if (linkedUsage > 0) {

@@ -21,6 +21,7 @@ const errorMessages: Record<string, string> = {
   method_exists: 'Esiste già un metodo con questa label.',
   method_not_found: 'Metodo non trovato.',
   fallback_delete: 'Il valore generico non può essere eliminato, ma puoi modificarne la label.',
+  system_delete: 'Il metodo di pagamento di sistema non può essere eliminato, ma puoi modificarne la label.',
   in_use: 'Valore usato da movimenti esistenti: riassegnali prima di rimuoverlo.'
 };
 

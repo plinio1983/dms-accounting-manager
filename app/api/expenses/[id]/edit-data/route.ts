@@ -31,6 +31,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       categoryId: expense.categoryId,
       description: expense.description,
       amount: expense.amount.toString(),
+      expenseType: expense.expenseType,
       vatRate: expense.vatRate.toString(),
       paymentStatus: expense.paymentStatus,
       month: expense.month,

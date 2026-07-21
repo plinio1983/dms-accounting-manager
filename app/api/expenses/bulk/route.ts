@@ -71,7 +71,7 @@ export async function POST(request: Request) {
     if (!category) return redirectToPath(redirectTo);
 
     await prisma.expense.updateMany({
-      where: { id: { in: ids }, workspaceId: current.workspace.id },
+      where: { id: { in: ids }, workspaceId: current.workspace.id, expenseType: 'STANDARD' },
       data: { categoryId }
     });
     return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_updated' }));
@@ -97,6 +97,7 @@ export async function POST(request: Request) {
       return prisma.expense.create({
         data: {
           workspaceId: expense.workspaceId,
+          expenseType: expense.expenseType,
           receivedDate,
           merchant: expense.merchant,
           supplierId: expense.supplierId,
@@ -133,7 +134,7 @@ export async function POST(request: Request) {
   }
 
   if (action === 'invoice_emitted') {
-    const expenses = await prisma.expense.findMany({ where: { id: { in: ids }, workspaceId: current.workspace.id }, select: { id: true, hasElectronicInvoice: true } });
+    const expenses = await prisma.expense.findMany({ where: { id: { in: ids }, workspaceId: current.workspace.id, expenseType: 'STANDARD' }, select: { id: true, hasElectronicInvoice: true } });
     await prisma.$transaction(expenses.map(expense => prisma.expense.update({
       where: { id: expense.id },
       data: { invoiceStatus: 'RICEVUTA' }

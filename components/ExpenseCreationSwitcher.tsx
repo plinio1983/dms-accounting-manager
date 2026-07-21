@@ -4,8 +4,8 @@ import { useState } from "react";
 import ExpenseForm from "@/components/ExpenseForm";
 import RecurringExpenseForm from "@/components/RecurringExpenseForm";
 
-type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
-type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; vatNumber?: string | null; iban?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
+type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string; systemRole?: string | null; isVatSettlementDefault?: boolean };
+type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; vatNumber?: string | null; iban?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null; systemRole?: string | null };
 type InitialExpense = Parameters<typeof ExpenseForm>[0]["initialExpense"];
 
 type Props = { categories: Option[]; banks: Option[]; paymentMethods: Option[]; suppliers: SupplierOption[]; expenseAction: string; recurringAction: string; initialExpense?: InitialExpense; title?: string; submitLabel?: string; onCancel?: () => void; onSaved?: () => void; cancelHref?: string };

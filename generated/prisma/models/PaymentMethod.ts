@@ -41,6 +41,7 @@ export type PaymentMethodMinAggregateOutputType = {
   name: string | null
   kind: string | null
   isFallback: boolean | null
+  systemRole: $Enums.PaymentMethodSystemRole | null
   workspaceId: number | null
 }
 
@@ -49,6 +50,7 @@ export type PaymentMethodMaxAggregateOutputType = {
   name: string | null
   kind: string | null
   isFallback: boolean | null
+  systemRole: $Enums.PaymentMethodSystemRole | null
   workspaceId: number | null
 }
 
@@ -57,6 +59,7 @@ export type PaymentMethodCountAggregateOutputType = {
   name: number
   kind: number
   isFallback: number
+  systemRole: number
   workspaceId: number
   _all: number
 }
@@ -77,6 +80,7 @@ export type PaymentMethodMinAggregateInputType = {
   name?: true
   kind?: true
   isFallback?: true
+  systemRole?: true
   workspaceId?: true
 }
 
@@ -85,6 +89,7 @@ export type PaymentMethodMaxAggregateInputType = {
   name?: true
   kind?: true
   isFallback?: true
+  systemRole?: true
   workspaceId?: true
 }
 
@@ -93,6 +98,7 @@ export type PaymentMethodCountAggregateInputType = {
   name?: true
   kind?: true
   isFallback?: true
+  systemRole?: true
   workspaceId?: true
   _all?: true
 }
@@ -188,6 +194,7 @@ export type PaymentMethodGroupByOutputType = {
   name: string
   kind: string
   isFallback: boolean
+  systemRole: $Enums.PaymentMethodSystemRole | null
   workspaceId: number | null
   _count: PaymentMethodCountAggregateOutputType | null
   _avg: PaymentMethodAvgAggregateOutputType | null
@@ -219,6 +226,7 @@ export type PaymentMethodWhereInput = {
   name?: Prisma.StringFilter<"PaymentMethod"> | string
   kind?: Prisma.StringFilter<"PaymentMethod"> | string
   isFallback?: Prisma.BoolFilter<"PaymentMethod"> | boolean
+  systemRole?: Prisma.EnumPaymentMethodSystemRoleNullableFilter<"PaymentMethod"> | $Enums.PaymentMethodSystemRole | null
   workspaceId?: Prisma.IntNullableFilter<"PaymentMethod"> | number | null
   workspace?: Prisma.XOR<Prisma.WorkspaceNullableScalarRelationFilter, Prisma.WorkspaceWhereInput> | null
   incomePayments?: Prisma.IncomeListRelationFilter
@@ -231,6 +239,7 @@ export type PaymentMethodOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   isFallback?: Prisma.SortOrder
+  systemRole?: Prisma.SortOrderInput | Prisma.SortOrder
   workspaceId?: Prisma.SortOrderInput | Prisma.SortOrder
   workspace?: Prisma.WorkspaceOrderByWithRelationInput
   incomePayments?: Prisma.IncomeOrderByRelationAggregateInput
@@ -241,24 +250,27 @@ export type PaymentMethodOrderByWithRelationInput = {
 export type PaymentMethodWhereUniqueInput = Prisma.AtLeast<{
   id?: number
   workspaceId_name?: Prisma.PaymentMethodWorkspaceIdNameCompoundUniqueInput
+  workspaceId_systemRole?: Prisma.PaymentMethodWorkspaceIdSystemRoleCompoundUniqueInput
   AND?: Prisma.PaymentMethodWhereInput | Prisma.PaymentMethodWhereInput[]
   OR?: Prisma.PaymentMethodWhereInput[]
   NOT?: Prisma.PaymentMethodWhereInput | Prisma.PaymentMethodWhereInput[]
   name?: Prisma.StringFilter<"PaymentMethod"> | string
   kind?: Prisma.StringFilter<"PaymentMethod"> | string
   isFallback?: Prisma.BoolFilter<"PaymentMethod"> | boolean
+  systemRole?: Prisma.EnumPaymentMethodSystemRoleNullableFilter<"PaymentMethod"> | $Enums.PaymentMethodSystemRole | null
   workspaceId?: Prisma.IntNullableFilter<"PaymentMethod"> | number | null
   workspace?: Prisma.XOR<Prisma.WorkspaceNullableScalarRelationFilter, Prisma.WorkspaceWhereInput> | null
   incomePayments?: Prisma.IncomeListRelationFilter
   expensePayments?: Prisma.ExpensePaymentListRelationFilter
   recurringExpenses?: Prisma.RecurringExpenseListRelationFilter
-}, "id" | "workspaceId_name">
+}, "id" | "workspaceId_name" | "workspaceId_systemRole">
 
 export type PaymentMethodOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   isFallback?: Prisma.SortOrder
+  systemRole?: Prisma.SortOrderInput | Prisma.SortOrder
   workspaceId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.PaymentMethodCountOrderByAggregateInput
   _avg?: Prisma.PaymentMethodAvgOrderByAggregateInput
@@ -275,6 +287,7 @@ export type PaymentMethodScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"PaymentMethod"> | string
   kind?: Prisma.StringWithAggregatesFilter<"PaymentMethod"> | string
   isFallback?: Prisma.BoolWithAggregatesFilter<"PaymentMethod"> | boolean
+  systemRole?: Prisma.EnumPaymentMethodSystemRoleNullableWithAggregatesFilter<"PaymentMethod"> | $Enums.PaymentMethodSystemRole | null
   workspaceId?: Prisma.IntNullableWithAggregatesFilter<"PaymentMethod"> | number | null
 }
 
@@ -282,6 +295,7 @@ export type PaymentMethodCreateInput = {
   name: string
   kind?: string
   isFallback?: boolean
+  systemRole?: $Enums.PaymentMethodSystemRole | null
   workspace?: Prisma.WorkspaceCreateNestedOneWithoutPaymentMethodsInput
   incomePayments?: Prisma.IncomeCreateNestedManyWithoutPaymentMethodRefInput
   expensePayments?: Prisma.ExpensePaymentCreateNestedManyWithoutPaymentMethodInput
@@ -293,6 +307,7 @@ export type PaymentMethodUncheckedCreateInput = {
   name: string
   kind?: string
   isFallback?: boolean
+  systemRole?: $Enums.PaymentMethodSystemRole | null
   workspaceId?: number | null
   incomePayments?: Prisma.IncomeUncheckedCreateNestedManyWithoutPaymentMethodRefInput
   expensePayments?: Prisma.ExpensePaymentUncheckedCreateNestedManyWithoutPaymentMethodInput
@@ -303,6 +318,7 @@ export type PaymentMethodUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   isFallback?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  systemRole?: Prisma.NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput | $Enums.PaymentMethodSystemRole | null
   workspace?: Prisma.WorkspaceUpdateOneWithoutPaymentMethodsNestedInput
   incomePayments?: Prisma.IncomeUpdateManyWithoutPaymentMethodRefNestedInput
   expensePayments?: Prisma.ExpensePaymentUpdateManyWithoutPaymentMethodNestedInput
@@ -314,6 +330,7 @@ export type PaymentMethodUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   isFallback?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  systemRole?: Prisma.NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput | $Enums.PaymentMethodSystemRole | null
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   incomePayments?: Prisma.IncomeUncheckedUpdateManyWithoutPaymentMethodRefNestedInput
   expensePayments?: Prisma.ExpensePaymentUncheckedUpdateManyWithoutPaymentMethodNestedInput
@@ -325,6 +342,7 @@ export type PaymentMethodCreateManyInput = {
   name: string
   kind?: string
   isFallback?: boolean
+  systemRole?: $Enums.PaymentMethodSystemRole | null
   workspaceId?: number | null
 }
 
@@ -332,6 +350,7 @@ export type PaymentMethodUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   isFallback?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  systemRole?: Prisma.NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput | $Enums.PaymentMethodSystemRole | null
 }
 
 export type PaymentMethodUncheckedUpdateManyInput = {
@@ -339,6 +358,7 @@ export type PaymentMethodUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   isFallback?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  systemRole?: Prisma.NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput | $Enums.PaymentMethodSystemRole | null
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
@@ -357,11 +377,17 @@ export type PaymentMethodWorkspaceIdNameCompoundUniqueInput = {
   name: string
 }
 
+export type PaymentMethodWorkspaceIdSystemRoleCompoundUniqueInput = {
+  workspaceId: number
+  systemRole: $Enums.PaymentMethodSystemRole
+}
+
 export type PaymentMethodCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   isFallback?: Prisma.SortOrder
+  systemRole?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
 }
 
@@ -375,6 +401,7 @@ export type PaymentMethodMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   isFallback?: Prisma.SortOrder
+  systemRole?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
 }
 
@@ -383,6 +410,7 @@ export type PaymentMethodMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   isFallback?: Prisma.SortOrder
+  systemRole?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
 }
 
@@ -438,6 +466,10 @@ export type PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput = {
   deleteMany?: Prisma.PaymentMethodScalarWhereInput | Prisma.PaymentMethodScalarWhereInput[]
 }
 
+export type NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput = {
+  set?: $Enums.PaymentMethodSystemRole | null
+}
+
 export type PaymentMethodCreateNestedOneWithoutRecurringExpensesInput = {
   create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutRecurringExpensesInput, Prisma.PaymentMethodUncheckedCreateWithoutRecurringExpensesInput>
   connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutRecurringExpensesInput
@@ -490,6 +522,7 @@ export type PaymentMethodCreateWithoutWorkspaceInput = {
   name: string
   kind?: string
   isFallback?: boolean
+  systemRole?: $Enums.PaymentMethodSystemRole | null
   incomePayments?: Prisma.IncomeCreateNestedManyWithoutPaymentMethodRefInput
   expensePayments?: Prisma.ExpensePaymentCreateNestedManyWithoutPaymentMethodInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutPaymentMethodInput
@@ -500,6 +533,7 @@ export type PaymentMethodUncheckedCreateWithoutWorkspaceInput = {
   name: string
   kind?: string
   isFallback?: boolean
+  systemRole?: $Enums.PaymentMethodSystemRole | null
   incomePayments?: Prisma.IncomeUncheckedCreateNestedManyWithoutPaymentMethodRefInput
   expensePayments?: Prisma.ExpensePaymentUncheckedCreateNestedManyWithoutPaymentMethodInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutPaymentMethodInput
@@ -539,6 +573,7 @@ export type PaymentMethodScalarWhereInput = {
   name?: Prisma.StringFilter<"PaymentMethod"> | string
   kind?: Prisma.StringFilter<"PaymentMethod"> | string
   isFallback?: Prisma.BoolFilter<"PaymentMethod"> | boolean
+  systemRole?: Prisma.EnumPaymentMethodSystemRoleNullableFilter<"PaymentMethod"> | $Enums.PaymentMethodSystemRole | null
   workspaceId?: Prisma.IntNullableFilter<"PaymentMethod"> | number | null
 }
 
@@ -546,6 +581,7 @@ export type PaymentMethodCreateWithoutRecurringExpensesInput = {
   name: string
   kind?: string
   isFallback?: boolean
+  systemRole?: $Enums.PaymentMethodSystemRole | null
   workspace?: Prisma.WorkspaceCreateNestedOneWithoutPaymentMethodsInput
   incomePayments?: Prisma.IncomeCreateNestedManyWithoutPaymentMethodRefInput
   expensePayments?: Prisma.ExpensePaymentCreateNestedManyWithoutPaymentMethodInput
@@ -556,6 +592,7 @@ export type PaymentMethodUncheckedCreateWithoutRecurringExpensesInput = {
   name: string
   kind?: string
   isFallback?: boolean
+  systemRole?: $Enums.PaymentMethodSystemRole | null
   workspaceId?: number | null
   incomePayments?: Prisma.IncomeUncheckedCreateNestedManyWithoutPaymentMethodRefInput
   expensePayments?: Prisma.ExpensePaymentUncheckedCreateNestedManyWithoutPaymentMethodInput
@@ -581,6 +618,7 @@ export type PaymentMethodUpdateWithoutRecurringExpensesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   isFallback?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  systemRole?: Prisma.NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput | $Enums.PaymentMethodSystemRole | null
   workspace?: Prisma.WorkspaceUpdateOneWithoutPaymentMethodsNestedInput
   incomePayments?: Prisma.IncomeUpdateManyWithoutPaymentMethodRefNestedInput
   expensePayments?: Prisma.ExpensePaymentUpdateManyWithoutPaymentMethodNestedInput
@@ -591,6 +629,7 @@ export type PaymentMethodUncheckedUpdateWithoutRecurringExpensesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   isFallback?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  systemRole?: Prisma.NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput | $Enums.PaymentMethodSystemRole | null
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   incomePayments?: Prisma.IncomeUncheckedUpdateManyWithoutPaymentMethodRefNestedInput
   expensePayments?: Prisma.ExpensePaymentUncheckedUpdateManyWithoutPaymentMethodNestedInput
@@ -600,6 +639,7 @@ export type PaymentMethodCreateWithoutExpensePaymentsInput = {
   name: string
   kind?: string
   isFallback?: boolean
+  systemRole?: $Enums.PaymentMethodSystemRole | null
   workspace?: Prisma.WorkspaceCreateNestedOneWithoutPaymentMethodsInput
   incomePayments?: Prisma.IncomeCreateNestedManyWithoutPaymentMethodRefInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutPaymentMethodInput
@@ -610,6 +650,7 @@ export type PaymentMethodUncheckedCreateWithoutExpensePaymentsInput = {
   name: string
   kind?: string
   isFallback?: boolean
+  systemRole?: $Enums.PaymentMethodSystemRole | null
   workspaceId?: number | null
   incomePayments?: Prisma.IncomeUncheckedCreateNestedManyWithoutPaymentMethodRefInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutPaymentMethodInput
@@ -635,6 +676,7 @@ export type PaymentMethodUpdateWithoutExpensePaymentsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   isFallback?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  systemRole?: Prisma.NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput | $Enums.PaymentMethodSystemRole | null
   workspace?: Prisma.WorkspaceUpdateOneWithoutPaymentMethodsNestedInput
   incomePayments?: Prisma.IncomeUpdateManyWithoutPaymentMethodRefNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutPaymentMethodNestedInput
@@ -645,6 +687,7 @@ export type PaymentMethodUncheckedUpdateWithoutExpensePaymentsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   isFallback?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  systemRole?: Prisma.NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput | $Enums.PaymentMethodSystemRole | null
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   incomePayments?: Prisma.IncomeUncheckedUpdateManyWithoutPaymentMethodRefNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutPaymentMethodNestedInput
@@ -654,6 +697,7 @@ export type PaymentMethodCreateWithoutIncomePaymentsInput = {
   name: string
   kind?: string
   isFallback?: boolean
+  systemRole?: $Enums.PaymentMethodSystemRole | null
   workspace?: Prisma.WorkspaceCreateNestedOneWithoutPaymentMethodsInput
   expensePayments?: Prisma.ExpensePaymentCreateNestedManyWithoutPaymentMethodInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutPaymentMethodInput
@@ -664,6 +708,7 @@ export type PaymentMethodUncheckedCreateWithoutIncomePaymentsInput = {
   name: string
   kind?: string
   isFallback?: boolean
+  systemRole?: $Enums.PaymentMethodSystemRole | null
   workspaceId?: number | null
   expensePayments?: Prisma.ExpensePaymentUncheckedCreateNestedManyWithoutPaymentMethodInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutPaymentMethodInput
@@ -689,6 +734,7 @@ export type PaymentMethodUpdateWithoutIncomePaymentsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   isFallback?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  systemRole?: Prisma.NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput | $Enums.PaymentMethodSystemRole | null
   workspace?: Prisma.WorkspaceUpdateOneWithoutPaymentMethodsNestedInput
   expensePayments?: Prisma.ExpensePaymentUpdateManyWithoutPaymentMethodNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutPaymentMethodNestedInput
@@ -699,6 +745,7 @@ export type PaymentMethodUncheckedUpdateWithoutIncomePaymentsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   isFallback?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  systemRole?: Prisma.NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput | $Enums.PaymentMethodSystemRole | null
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   expensePayments?: Prisma.ExpensePaymentUncheckedUpdateManyWithoutPaymentMethodNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutPaymentMethodNestedInput
@@ -709,12 +756,14 @@ export type PaymentMethodCreateManyWorkspaceInput = {
   name: string
   kind?: string
   isFallback?: boolean
+  systemRole?: $Enums.PaymentMethodSystemRole | null
 }
 
 export type PaymentMethodUpdateWithoutWorkspaceInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   isFallback?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  systemRole?: Prisma.NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput | $Enums.PaymentMethodSystemRole | null
   incomePayments?: Prisma.IncomeUpdateManyWithoutPaymentMethodRefNestedInput
   expensePayments?: Prisma.ExpensePaymentUpdateManyWithoutPaymentMethodNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutPaymentMethodNestedInput
@@ -725,6 +774,7 @@ export type PaymentMethodUncheckedUpdateWithoutWorkspaceInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   isFallback?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  systemRole?: Prisma.NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput | $Enums.PaymentMethodSystemRole | null
   incomePayments?: Prisma.IncomeUncheckedUpdateManyWithoutPaymentMethodRefNestedInput
   expensePayments?: Prisma.ExpensePaymentUncheckedUpdateManyWithoutPaymentMethodNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutPaymentMethodNestedInput
@@ -735,6 +785,7 @@ export type PaymentMethodUncheckedUpdateManyWithoutWorkspaceInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   isFallback?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  systemRole?: Prisma.NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput | $Enums.PaymentMethodSystemRole | null
 }
 
 
@@ -791,6 +842,7 @@ export type PaymentMethodSelect<ExtArgs extends runtime.Types.Extensions.Interna
   name?: boolean
   kind?: boolean
   isFallback?: boolean
+  systemRole?: boolean
   workspaceId?: boolean
   workspace?: boolean | Prisma.PaymentMethod$workspaceArgs<ExtArgs>
   incomePayments?: boolean | Prisma.PaymentMethod$incomePaymentsArgs<ExtArgs>
@@ -804,6 +856,7 @@ export type PaymentMethodSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   name?: boolean
   kind?: boolean
   isFallback?: boolean
+  systemRole?: boolean
   workspaceId?: boolean
   workspace?: boolean | Prisma.PaymentMethod$workspaceArgs<ExtArgs>
 }, ExtArgs["result"]["paymentMethod"]>
@@ -813,6 +866,7 @@ export type PaymentMethodSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   name?: boolean
   kind?: boolean
   isFallback?: boolean
+  systemRole?: boolean
   workspaceId?: boolean
   workspace?: boolean | Prisma.PaymentMethod$workspaceArgs<ExtArgs>
 }, ExtArgs["result"]["paymentMethod"]>
@@ -822,10 +876,11 @@ export type PaymentMethodSelectScalar = {
   name?: boolean
   kind?: boolean
   isFallback?: boolean
+  systemRole?: boolean
   workspaceId?: boolean
 }
 
-export type PaymentMethodOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "kind" | "isFallback" | "workspaceId", ExtArgs["result"]["paymentMethod"]>
+export type PaymentMethodOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "kind" | "isFallback" | "systemRole" | "workspaceId", ExtArgs["result"]["paymentMethod"]>
 export type PaymentMethodInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.PaymentMethod$workspaceArgs<ExtArgs>
   incomePayments?: boolean | Prisma.PaymentMethod$incomePaymentsArgs<ExtArgs>
@@ -853,6 +908,7 @@ export type $PaymentMethodPayload<ExtArgs extends runtime.Types.Extensions.Inter
     name: string
     kind: string
     isFallback: boolean
+    systemRole: $Enums.PaymentMethodSystemRole | null
     workspaceId: number | null
   }, ExtArgs["result"]["paymentMethod"]>
   composites: {}
@@ -1285,6 +1341,7 @@ export interface PaymentMethodFieldRefs {
   readonly name: Prisma.FieldRef<"PaymentMethod", 'String'>
   readonly kind: Prisma.FieldRef<"PaymentMethod", 'String'>
   readonly isFallback: Prisma.FieldRef<"PaymentMethod", 'Boolean'>
+  readonly systemRole: Prisma.FieldRef<"PaymentMethod", 'PaymentMethodSystemRole'>
   readonly workspaceId: Prisma.FieldRef<"PaymentMethod", 'Int'>
 }
     

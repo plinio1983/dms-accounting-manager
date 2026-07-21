@@ -19,6 +19,7 @@ const ExpenseSchema = z.object({
   categoryId: z.coerce.number().optional().nullable(),
   description: z.string().min(1),
   amount: z.coerce.number().nonnegative(),
+  expenseType: z.enum(['STANDARD', 'VAT_SETTLEMENT']).default('STANDARD'),
   vatRate: z.coerce.number().default(22),
   isDeclared: BooleanFromForm.default(false),
   isRecurring: BooleanFromForm.default(false),
@@ -122,7 +123,7 @@ async function resolveCategoryId(categoryId: number | null | undefined, workspac
   return category.id;
 }
 
-async function resolvePaymentInputs(payments: PaymentInput[], workspaceId: number) {
+async function resolvePaymentInputs(payments: PaymentInput[], workspaceId: number, forbidCash = false) {
   if (!payments.length) return payments;
   const methods = await prisma.paymentMethod.findMany({ where: { workspaceId } });
   return payments.map(payment => {
@@ -132,6 +133,7 @@ async function resolvePaymentInputs(payments: PaymentInput[], workspaceId: numbe
         ? methods.find(item => item.name.toLowerCase() === payment.channel!.toLowerCase())
         : null;
     if (payment.paymentMethodId && !method) throw new Error('Metodo pagamento non valido');
+    if (forbidCash && method && (method.systemRole === 'CASH' || method.name.trim().toLowerCase() === 'cash')) throw new Error('Cash non è disponibile per i saldi IVA');
     return { ...payment, paymentMethodId: method?.id ?? null, channel: method?.name ?? payment.channel };
   });
 }
@@ -187,12 +189,24 @@ export async function POST(request: Request) {
   const formData = isForm ? await request.formData() : null;
   const raw = formData ? Object.fromEntries(formData.entries()) : await request.json();
   const data = ExpenseSchema.parse(raw);
-  const invoiceFields = normalizeInvoiceFields(data);
+  const isVatSettlement = data.expenseType === 'VAT_SETTLEMENT';
+  const invoiceFields = isVatSettlement
+    ? { isDeclared: false, hasElectronicInvoice: false, invoiceStatus: 'NON_PREVISTA' as const }
+    : normalizeInvoiceFields(data);
   const { year, month } = resolveBillingPeriod(data);
-  const payments = await resolvePaymentInputs(parsePayments(formData, (raw as any).payments), current.workspace.id);
+  const payments = await resolvePaymentInputs(parsePayments(formData, (raw as any).payments), current.workspace.id, isVatSettlement);
   let supplierRef;
+  let configuredCategoryId: number | null = null;
   try {
-    supplierRef = await resolveExistingSupplierReference(data, current.workspace.id);
+    if (isVatSettlement) {
+      const [workspace, systemSupplier] = await Promise.all([
+        prisma.workspace.findUnique({ where: { id: current.workspace.id }, select: { vatSettlementCategoryId: true } }),
+        prisma.supplier.findFirst({ where: { workspaceId: current.workspace.id, systemRole: 'VAT_SETTLEMENT' } })
+      ]);
+      if (!workspace?.vatSettlementCategoryId || !systemSupplier) throw new Error('Configura categoria e fornitore di sistema per il Saldo IVA');
+      configuredCategoryId = await resolveCategoryId(workspace.vatSettlementCategoryId, current.workspace.id);
+      supplierRef = { id: systemSupplier.id, businessName: systemSupplier.businessName };
+    } else supplierRef = await resolveExistingSupplierReference(data, current.workspace.id);
   } catch (error) {
     if (error instanceof SupplierReferenceError) {
       return isForm && !wantsJson
@@ -201,7 +215,7 @@ export async function POST(request: Request) {
     }
     throw error;
   }
-  const categoryId = await resolveCategoryId(data.categoryId, current.workspace.id);
+  const categoryId = isVatSettlement ? configuredCategoryId : await resolveCategoryId(data.categoryId, current.workspace.id);
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
   const attachments = formData ? await saveAttachments(formData.getAll('attachments')) : [];
   const firstPayment = payments[0];
@@ -217,8 +231,9 @@ export async function POST(request: Request) {
     categoryId,
     description: data.description || null,
     amount: data.amount,
+    expenseType: data.expenseType,
     paymentDate: data.paymentStatus === 'DA_PAGARE' ? null : (firstPayment?.paymentDate ? new Date(firstPayment.paymentDate) : null),
-    vatRate: data.vatRate,
+    vatRate: isVatSettlement ? 0 : data.vatRate,
     channel: firstPayment?.channel || null,
     bankId: firstPayment?.bankId || null,
     companyId: null,

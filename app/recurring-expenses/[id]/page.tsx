@@ -292,10 +292,10 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
               showSupplierColumn={false}
               selectable
               formId="recurringGeneratedExpenseBulkForm"
-              categories={orderedCategories.map(category => ({ id: category.id, code: category.code, name: category.name, icon: category.icon }))}
+              categories={orderedCategories.map(category => ({ id: category.id, code: category.code, name: category.name, icon: category.icon, isVatSettlementDefault: category.id === current.workspace.vatSettlementCategoryId }))}
               banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
-              paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
-              suppliers={suppliers.map(supplier => ({ id: supplier.id, businessName: supplier.businessName, alias: supplier.alias, email: supplier.email, vatNumber: supplier.vatNumber, iban: supplier.iban, pec: supplier.pec, taxCodeSdi: supplier.taxCodeSdi, internalNotes: supplier.internalNotes }))}
+              paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
+              suppliers={suppliers.map(supplier => ({ id: supplier.id, businessName: supplier.businessName, alias: supplier.alias, email: supplier.email, vatNumber: supplier.vatNumber, iban: supplier.iban, pec: supplier.pec, taxCodeSdi: supplier.taxCodeSdi, internalNotes: supplier.internalNotes, systemRole: supplier.systemRole }))}
               mobileLabel="Spese generate mobile"
               emptyMessage="Nessuna spesa generata da questa ricorrenza."
             />

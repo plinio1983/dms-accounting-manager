@@ -84,6 +84,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
   const orderedCategories = orderExpenseCategories(categories);
 
   const amount = Number(expense.amount.toString());
+  const isVatSettlement = expense.expenseType === 'VAT_SETTLEMENT';
   const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
   const residual = Math.max(0, amount - paid);
   const categoryClassName = categoryTone(expense.category);
@@ -91,7 +92,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
   const invoiceStyle = invoiceStatusStyles[expense.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
   const vatStyle = vatStylesNoText[vatKey(expense.vatRate)] ?? vatStyles['22'];
   const vatRate = Number(expense.vatRate.toString());
-  const paidVat = vatRate ? Math.min(amount, paid) * (vatRate / (100 + vatRate)) : 0;
+  const paidVat = isVatSettlement ? Math.min(amount, paid) : (vatRate ? Math.min(amount, paid) * (vatRate / (100 + vatRate)) : 0);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const dueDate = expense.dueDate ? new Date(expense.dueDate) : null;
@@ -117,10 +118,10 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
 
   return <div className="grid expense-detail-page">
     <ExpenseDetailEditModalController
-      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
+      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
-      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
-      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
+      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
+      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, systemRole: s.systemRole }))}
       returnTo={currentDetailReturnTo}
     />
     <ActionFeedbackBanner
@@ -151,7 +152,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <div className="expense-detail-title-block">
               <p className="expense-detail-kicker">
                 <span>Spesa #{expense.id}</span>
-                <span className={expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{expense.isRecurring ? 'R' : 'S'}</span>
+                <span className={isVatSettlement ? 'badge vat-settlement-expense-badge' : expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{isVatSettlement ? 'Saldo IVA' : expense.isRecurring ? 'R' : 'S'}</span>
               </p>
               <div className="flex align-center">
                 <h1>{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{supplierName}</Link> : supplierName}</h1>
@@ -166,15 +167,15 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
 
           <aside className="expense-detail-amount-panel">
             <div className="expense-detail-amount-panel-header-row">
-              <span className="expense-detail-amount-panel-header">IVA inclusa </span>
-              <span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span>
+              <span className="expense-detail-amount-panel-header">{isVatSettlement ? 'Importo interamente IVA' : 'IVA inclusa'} </span>
+              {!isVatSettlement ? <span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span> : null}
             </div>
             <strong>{euro(expense.amount.toString())}</strong>
             <div className="expense-detail-badge-row">
               <span className={badgeClass(isOverdue ? paymentStatusStyles.SCADUTO.className : paymentStyle.className)}>
                 {paymentHeroLabel}
               </span>
-              <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} Fatt. {invoiceStyle.label}</span>
+              {!isVatSettlement ? <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} Fatt. {invoiceStyle.label}</span> : null}
             </div>
           </aside>
         </section>
@@ -207,21 +208,21 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <span>Scadenza</span>
             <strong>{dateLabel(expense.dueDate)}</strong>
           </div>
-          <div>
+          {!isVatSettlement ? <div>
             <span>Stato fattura</span>
             <strong>{invoiceStyle.label}</strong>
-          </div>
+          </div> : null}
           <div>
             <span>Periodo contabile</span>
             <strong>{formatPeriod(expense.month, expense.year)}</strong>
           </div>
-          <div>
+          {!isVatSettlement ? <div>
             <span>Detrazione</span>
             <strong>{fiscalLabel(expense.isDeclared)}</strong>
-          </div>
+          </div> : null}
           <div>
             <span>IVA</span>
-            <strong>{vatStyle.label}</strong>
+            <strong>{isVatSettlement ? euro(paidVat) : vatStyle.label}</strong>
           </div>
           <div>
             <span>Fornitore</span>

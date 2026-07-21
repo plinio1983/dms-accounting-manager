@@ -110,6 +110,7 @@ export async function deletePaymentMethodAction(formData: FormData) {
   });
   if (!method) settingsError('method_not_found');
   if (method.isFallback) settingsError('fallback_delete');
+  if (method.systemRole) settingsError('system_delete');
 
   const usageCount = method._count.incomePayments + method._count.expensePayments + method._count.recurringExpenses;
   if (usageCount > 0) redirect(`${settingsPath}?error=in_use&usage=${usageCount}`);

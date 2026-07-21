@@ -286,6 +286,7 @@ export default function ExpenseFiltersDrawer({
             <option value="">Tutte</option>
             <option value="single">Singola</option>
             <option value="recurring">Ricorrente</option>
+            <option value="vat_settlement">Saldo IVA</option>
           </select></label>
 
           <SupplierFilterInput initialValue={inputDefault(filters, "merchant")} />

@@ -155,6 +155,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
       invalid: 'Controlla i dati del fornitore.',
       not_found: 'Fornitore non trovato.',
       in_use: 'Il fornitore è collegato ad altri movimenti.'
+      ,system_protected: 'Il fornitore di sistema non può essere modificato o eliminato.'
     }
   };
 
@@ -356,13 +357,13 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
           const detailHref = `/suppliers/${supplier.id}?returnTo=${encodeURIComponent(supplierListHref)}`;
           return <div className={amountToPay > 0 ? "supplier-mobile-item expense-mobile-item expense-mobile-item-overdue" : "supplier-mobile-item expense-mobile-item"} key={`mobile-supplier-${supplier.id}`}>
             <div className="expense-mobile-select">
-              <input form="supplierBulkForm" type="checkbox" name="ids" value={supplier.id} aria-label={`Seleziona fornitore ${supplier.businessName}`} />
+              <input form="supplierBulkForm" type="checkbox" name="ids" value={supplier.id} aria-label={`Seleziona fornitore ${supplier.businessName}`} disabled={Boolean(supplier.systemRole)} />
             </div>
             <Link className="expense-mobile-link supplier-mobile-link" href={detailHref}>
               <div className="expense-mobile-main">
                 <div className="expense-mobile-title-row">
                   <div className="expense-mobile-title-left">
-                    <strong>{supplier.businessName}</strong>
+                    <strong>{supplier.businessName}</strong>{supplier.systemRole ? <span className="badge">Sistema</span> : null}
                   </div>
                   <div className="expense-mobile-title-right">
                     <span className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</span>
@@ -413,8 +414,8 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
             tabIndex={0}
             key={supplier.id}
           >
-            <td className="cell-center"><input form="supplierBulkForm" className="bulk-select-all" type="checkbox" name="ids" value={supplier.id} aria-label={`Seleziona fornitore ${supplier.businessName}`} /></td>
-            <td><strong>{supplier.businessName}</strong></td>
+            <td className="cell-center"><input form="supplierBulkForm" className="bulk-select-all" type="checkbox" name="ids" value={supplier.id} aria-label={`Seleziona fornitore ${supplier.businessName}`} disabled={Boolean(supplier.systemRole)} /></td>
+            <td><strong>{supplier.businessName}</strong>{supplier.systemRole ? <span className="badge">Sistema</span> : null}</td>
             <td>{supplier.alias ?? '-'}</td>
             <td className="text-center"><strong className={openExpensesCount > 0 ? 'text-warning' : ''}>{openExpensesCount}</strong></td>
             <td className="text-right supplier-amount-cell"><strong className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong></td>

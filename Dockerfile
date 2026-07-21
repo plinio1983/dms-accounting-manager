@@ -41,6 +41,7 @@ COPY --from=builder --chown=nextjs:nextjs /app/middleware.ts ./middleware.ts
 COPY --from=builder --chown=nextjs:nextjs /app/next.config.mjs ./next.config.mjs
 COPY --from=builder --chown=nextjs:nextjs /app/prisma.config.ts ./prisma.config.ts
 COPY --from=builder --chown=nextjs:nextjs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nextjs /app/scripts ./scripts
 COPY --from=builder --chown=nextjs:nextjs /app/public ./public
 
 RUN mkdir -p /app/public/uploads/invoices && chown -R nextjs:nextjs /app/public/uploads

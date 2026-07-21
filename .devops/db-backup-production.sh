@@ -11,7 +11,7 @@ DB_CONTAINER="tabularium-db"
 usage() {
   cat <<'USAGE'
 Uso:
-  .devops/backup-production-db.sh [opzioni]
+  .devops/db-backup-production.sh [opzioni]
 
 Opzioni:
   -o, --output-dir PATH   Directory locale in cui salvare il dump.
@@ -26,9 +26,9 @@ Opzioni:
 Lo script richiede sempre una conferma esplicita prima di avviare il backup.
 
 Esempi:
-  .devops/backup-production-db.sh
-  .devops/backup-production-db.sh --output-dir ./resources/backups
-  .devops/backup-production-db.sh -o /mnt/backups/tabularium
+  .devops/db-backup-production.sh
+  .devops/db-backup-production.sh --output-dir ./resources/backups
+  .devops/db-backup-production.sh -o /mnt/backups/tabularium
 USAGE
 }
 

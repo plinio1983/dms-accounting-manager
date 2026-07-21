@@ -1251,13 +1251,14 @@ export default async function Dashboard({searchParams}: {
 
     return <div className="grid dashboard-grid">
         <NewExpensePanel
-            categories={orderedExpenseCategories.map(c => ({id: c.id, code: c.code, name: c.name, icon: c.icon}))}
+            categories={orderedExpenseCategories.map(c => ({id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId}))}
             banks={orderedBanks.map(b => ({id: b.id, name: b.name, isFallback: b.isFallback}))}
             paymentMethods={expensePaymentMethods.map(method => ({
                 id: method.id,
                 name: method.name,
                 kind: method.kind,
-                isFallback: method.isFallback
+                isFallback: method.isFallback,
+                systemRole: method.systemRole
             }))}
             suppliers={suppliers.map(s => ({
                 id: s.id,
@@ -1268,7 +1269,8 @@ export default async function Dashboard({searchParams}: {
                 iban: s.iban,
                 pec: s.pec,
                 taxCodeSdi: s.taxCodeSdi,
-                internalNotes: s.internalNotes
+                internalNotes: s.internalNotes,
+                systemRole: s.systemRole
             }))}
             showToolbar={false}
         />

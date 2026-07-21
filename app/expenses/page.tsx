@@ -734,8 +734,9 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey)) return false;
     if (!matchesIsoDate(expense.receivedDate, orderDateFromFilter, orderDateToFilter)) return false;
     if (categoryFilter && expense.category?.name !== categoryFilter) return false;
-    if (expenseTypeFilter === 'single' && expense.isRecurring) return false;
-    if (expenseTypeFilter === 'recurring' && !expense.isRecurring) return false;
+    if (expenseTypeFilter === 'single' && (expense.expenseType === 'VAT_SETTLEMENT' || expense.isRecurring)) return false;
+    if (expenseTypeFilter === 'recurring' && (expense.expenseType === 'VAT_SETTLEMENT' || !expense.isRecurring)) return false;
+    if (expenseTypeFilter === 'vat_settlement' && expense.expenseType !== 'VAT_SETTLEMENT') return false;
     if (merchantFilter && !normalize(expenseSupplierName(expense)).includes(merchantFilter)) return false;
     if (productFilter && !normalize(expense.description).includes(productFilter)) return false;
     if (!amountMatchesFilter(amount, amountFilterValue)) return false;
@@ -765,7 +766,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     const overdueResidualAmount = isExpensePastDueForBadge(expense) ? residualAmount : 0;
 
     acc.total += amount;
-    acc.paidVat += vatAmountFromGross(paid, vatRate);
+    acc.paidVat += expense.expenseType === 'VAT_SETTLEMENT' ? paid : (expense.isDeclared ? vatAmountFromGross(paid, vatRate) : 0);
     acc.toPay += residualAmount;
     acc.overdue += overdueResidualAmount;
     if (isExpensePastDueForBadge(expense)) acc.overdueCount += 1;
@@ -859,7 +860,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     billingPeriodFromFilter && { label: 'Periodo fatt. da', value: billingPeriodFromFilter },
     billingPeriodToFilter && { label: 'Periodo fatt. a', value: billingPeriodToFilter },
     categoryFilter && { label: 'Categoria', value: categoryFilter },
-    expenseTypeFilter && { label: 'Tipo spesa', value: expenseTypeFilter === 'recurring' ? 'Ricorrente' : 'Singola' },
+    expenseTypeFilter && { label: 'Tipo spesa', value: expenseTypeFilter === 'recurring' ? 'Ricorrente' : expenseTypeFilter === 'vat_settlement' ? 'Saldo IVA' : 'Singola' },
     inputDefault(filters, 'merchant') && { label: 'Esercente', value: inputDefault(filters, 'merchant') },
     inputDefault(filters, 'product') && { label: 'Descrizione', value: inputDefault(filters, 'product') },
     amountFilterRaw && { label: 'Importo', value: amountFilterRaw },
@@ -874,10 +875,10 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   return <div className="grid">
     {/*<Link className="btn btn-md btn-default" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>*/}
     <NewExpensePanel
-      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
+      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
-      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
-      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
+      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
+      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, systemRole: s.systemRole }))}
       initialOpen={inputDefault(filters, 'new') === '1'}
     />
     <ActionFeedbackBanner
@@ -1213,10 +1214,10 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         showSupplierColumn
         selectable
         formId="expenseBulkForm"
-        categories={orderedCategories.map(c => ({id: c.id, code: c.code, name: c.name, icon: c.icon }))}
+        categories={orderedCategories.map(c => ({id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
         banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
-        paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
-        suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
+        paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
+        suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, systemRole: s.systemRole }))}
         emptyMessage="Nessuna spesa trovata con i filtri selezionati."
       />
     </div>

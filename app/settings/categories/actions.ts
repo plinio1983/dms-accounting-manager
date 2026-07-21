@@ -94,10 +94,26 @@ export async function deleteCategoryAction(formData: FormData) {
   });
   if (!category) categoriesError('not_found');
 
+  const configuredWorkspace = await prisma.workspace.findFirst({
+    where: { id: current.workspace.id, vatSettlementCategoryId: id },
+    select: { id: true }
+  });
+  if (configuredWorkspace) categoriesError('vat_settlement_category');
+
   const usageCount = category._count.expenses + category._count.recurringExpenses;
   if (usageCount > 0) redirect(`${categoriesPath}?error=in_use&usage=${usageCount}`);
 
   await prisma.expenseCategory.delete({ where: { id } });
 
   redirect(`${categoriesPath}?saved=deleted`);
+}
+
+export async function setVatSettlementCategoryAction(formData: FormData) {
+  const current = await requireWorkspace(categoriesPath);
+  const categoryId = Number(formValue(formData, 'categoryId'));
+  if (!Number.isInteger(categoryId) || categoryId <= 0) categoriesError('invalid');
+  const category = await prisma.expenseCategory.findFirst({ where: { id: categoryId, workspaceId: current.workspace.id } });
+  if (!category) categoriesError('not_found');
+  await prisma.workspace.update({ where: { id: current.workspace.id }, data: { vatSettlementCategoryId: category.id } });
+  redirect(`${categoriesPath}?saved=vat_settlement_category`);
 }

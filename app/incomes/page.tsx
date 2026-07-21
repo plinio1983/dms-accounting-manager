@@ -696,9 +696,11 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
   let recoverableExpenseVat: number | null = null;
   if (hasBillingPeriodRange) {
     recoverableExpenseVat = expensesForVat.reduce((sum, expense) => {
-      if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey) || !expense.isDeclared) return sum;
+      if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey)) return sum;
       const amount = Number(expense.amount.toString());
       const paid = Math.min(amount, expense.payments.reduce((partial, payment) => partial + Number(payment.amount.toString()), 0));
+      if (expense.expenseType === 'VAT_SETTLEMENT') return sum + paid;
+      if (!expense.isDeclared) return sum;
       const vatRate = Number(expense.vatRate.toString());
       return sum + vatAmountFromGross(paid, vatRate);
     }, 0);

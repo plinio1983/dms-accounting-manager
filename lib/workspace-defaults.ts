@@ -81,6 +81,9 @@ export const defaultPaymentMethods = [
   [fallbackPaymentMethodName, 'BOTH']
 ] as const;
 
+export const vatSettlementSupplierName = 'Erario – Saldo IVA';
+export const vatSettlementCategoryCode = 'TAX';
+
 export function orderExpenseCategories<T extends { id: number; code: string; name: string }>(categories: T[]) {
   const defaultCodes = defaultCategories.map(([code]) => code);
   const defaultItems = defaultCodes
@@ -156,7 +159,24 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
 
   for (const [name, kind] of defaultPaymentMethods) {
     const existing = await prisma.paymentMethod.findFirst({ where: { workspaceId, name } });
-    if (!existing) await prisma.paymentMethod.create({ data: { workspaceId, name, kind, isFallback: name === fallbackPaymentMethodName } });
-    else if (name === fallbackPaymentMethodName && !existing.isFallback) await prisma.paymentMethod.update({ where: { id: existing.id }, data: { isFallback: true } });
+    const systemRole = name === 'Cash' ? 'CASH' as const : null;
+    if (!existing) await prisma.paymentMethod.create({ data: { workspaceId, name, kind, isFallback: name === fallbackPaymentMethodName, systemRole } });
+    else if ((name === fallbackPaymentMethodName && !existing.isFallback) || (systemRole && existing.systemRole !== systemRole)) {
+      await prisma.paymentMethod.update({ where: { id: existing.id }, data: { ...(name === fallbackPaymentMethodName ? { isFallback: true } : {}), ...(systemRole ? { systemRole } : {}) } });
+    }
+  }
+
+
+  const vatSupplier = await prisma.supplier.findFirst({ where: { workspaceId, systemRole: 'VAT_SETTLEMENT' } });
+  if (!vatSupplier) {
+    await prisma.supplier.create({
+      data: { workspaceId, businessName: vatSettlementSupplierName, alias: 'Erario', systemRole: 'VAT_SETTLEMENT', internalNotes: 'Fornitore di sistema per i versamenti del saldo IVA.' }
+    });
+  }
+
+  const workspace = await prisma.workspace.findUnique({ where: { id: workspaceId }, select: { vatSettlementCategoryId: true } });
+  if (!workspace?.vatSettlementCategoryId) {
+    const category = await prisma.expenseCategory.findFirst({ where: { workspaceId, code: vatSettlementCategoryCode } });
+    if (category) await prisma.workspace.update({ where: { id: workspaceId }, data: { vatSettlementCategoryId: category.id } });
   }
 }

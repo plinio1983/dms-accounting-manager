@@ -92,24 +92,25 @@ function computeVatBalance(incomes: any[], expenses: any[], periods?: Array<{ ye
     return sum + vatAmountFromGross(Number(income.amount), Number(income.vatRate));
   }, 0);
 
-  const expenseVatForKey = (key?: number) => expenses.reduce((sum, expense) => {
-    if (!expense.isDeclared) return sum;
+  const expenseVatForKey = (key?: number, kind: 'deductible' | 'settled' = 'deductible') => expenses.reduce((sum, expense) => {
     if (key !== undefined && periodRecordKey(expense, 'expense') !== key) return sum;
     const expenseAmount = Number(expense.amount);
     const paidAmount = Math.min(expenseAmount, (expense.payments ?? []).reduce((partial: number, payment: any) => partial + Number(payment.amount), 0));
+    if (expense.expenseType === 'VAT_SETTLEMENT') return kind === 'settled' ? sum + paidAmount : sum;
+    if (!expense.isDeclared || kind === 'settled') return sum;
     return sum + vatAmountFromGross(paidAmount, Number(expense.vatRate));
   }, 0);
 
-  if (periodKeys.length > 1) {
-    const generated = periodKeys.reduce((sum, key) => sum + incomeVatForKey(key), 0);
-    const paid = periodKeys.reduce((sum, key) => sum + expenseVatForKey(key), 0);
-    const balance = periodKeys.reduce((sum, key) => sum + Math.max(incomeVatForKey(key) - expenseVatForKey(key), 0), 0);
-    return { generated, paid, balance };
-  }
-
-  const generated = incomeVatForKey();
-  const paid = expenseVatForKey();
-  return { generated, paid, balance: Math.max(generated - paid, 0) };
+  const generated = periodKeys.length > 1
+    ? periodKeys.reduce((sum, key) => sum + incomeVatForKey(key), 0)
+    : incomeVatForKey();
+  const deductible = periodKeys.length > 1
+    ? periodKeys.reduce((sum, key) => sum + expenseVatForKey(key, 'deductible'), 0)
+    : expenseVatForKey(undefined, 'deductible');
+  const settled = periodKeys.length > 1
+    ? periodKeys.reduce((sum, key) => sum + expenseVatForKey(key, 'settled'), 0)
+    : expenseVatForKey(undefined, 'settled');
+  return { generated, deductible, settled, paid: deductible + settled, balance: generated - deductible - settled };
 }
 
 
@@ -139,8 +140,8 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
   const incassoNonFiscale = incassoTotale - incassoFiscale;
 
   const speseTotali = expenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
-  const speseInDetrazione = expenses.reduce((sum, expense) => expense.isDeclared ? sum + Number(expense.amount) : sum, 0);
-  const usciteNonFiscali = expenses.reduce((sum, expense) => expense.isDeclared ? sum : sum + Number(expense.amount), 0);
+  const speseInDetrazione = expenses.reduce((sum, expense) => expense.expenseType !== 'VAT_SETTLEMENT' && expense.isDeclared ? sum + Number(expense.amount) : sum, 0);
+  const usciteNonFiscali = expenses.reduce((sum, expense) => expense.expenseType !== 'VAT_SETTLEMENT' && !expense.isDeclared ? sum + Number(expense.amount) : sum, 0);
   const usciteFiscali = speseInDetrazione;
   const openTotalExpenses = options.declaredExpensesOnlyForOpenTotals ? expenses.filter(expense => expense.isDeclared) : expenses;
   const nonSaldato = openTotalExpenses.reduce((sum, expense) => sum + expenseResidualAmount(expense), 0);
@@ -154,13 +155,14 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
   const ivaGenerataIncassi = vatBalance.generated;
   const imponibileIncassi = incassoFiscale - ivaGenerataIncassi;
   const ivaVersataSpese = vatBalance.paid;
+  const ivaDetraibileSpese = vatBalance.deductible;
+  const ivaSaldoVersato = vatBalance.settled;
   const debitoIva = vatBalance.balance;
-  const ivaComplessivaDaConsiderare = ivaVersataSpese + debitoIva;
   const utileLordo = incassoTotale - speseTotali;
-  // Utile netto = Entrate totali - Uscite totali - IVA già saldata nelle spese - IVA ancora da saldare sugli incassi.
-  const utileNetto = incassoTotale - speseTotali - ivaComplessivaDaConsiderare;
-  // Utile fiscale = Entrate fiscali - Uscite fiscali - IVA già saldata nelle spese - IVA ancora da saldare sugli incassi.
-  const utileFiscale = incassoFiscale - usciteFiscali - ivaComplessivaDaConsiderare;
+  // Il saldo IVA è già incluso nelle spese; si sottrae soltanto il debito IVA ancora aperto.
+  const utileNetto = incassoTotale - speseTotali - debitoIva;
+  // Il saldo IVA non è un costo deducibile. Per le spese fiscali si considera il solo imponibile.
+  const utileFiscale = imponibileIncassi - (usciteFiscali - ivaDetraibileSpese);
   const previsioneImposte = Math.max(utileFiscale, 0) * 0.30;
   const fattureNonInviate = incomes.reduce((sum, income) => {
     if (!income.isFiscal) return sum;
@@ -187,6 +189,8 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
     previsioneImposte,
     ivaGenerataIncassi,
     ivaVersataSpese,
+    ivaDetraibileSpese,
+    ivaSaldoVersato,
     fattureNonInviate,
     fattureNonRicevute,
     fattureScadute,
@@ -311,13 +315,25 @@ export async function getAccountingDashboardReport(
   };
 }
 
-export async function getMonthlyReport(year: number, month: number, workspaceId?: number) {
+export async function getMonthlyReport(year: number, month: number, workspaceId?: number, mode: 'fiscal' | 'overall' = 'fiscal') {
+  const dateRange = monthDateRange(year, month);
   const [expenses, incomes] = await Promise.all([
-    prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), year, month }, include: { category: true, bank: true, company: true, supplier: true, payments: true }, orderBy: [{ receivedDate: 'asc' }, { id: 'asc' }] }),
-    prisma.income.findMany({ where: incomePeriodWhere([{ year, month }], workspaceId), include: { salesChannelRef: true } })
+    prisma.expense.findMany({
+      where: mode === 'fiscal'
+        ? { ...(workspaceId ? { workspaceId } : {}), year, month }
+        : { ...(workspaceId ? { workspaceId } : {}), receivedDate: dateRange },
+      include: { category: true, bank: true, company: true, supplier: true, payments: true },
+      orderBy: [{ receivedDate: 'asc' }, { id: 'asc' }]
+    }),
+    prisma.income.findMany({
+      where: mode === 'fiscal'
+        ? incomePeriodWhereIncludingUncredited([{ year, month }], workspaceId)
+        : { ...(workspaceId ? { workspaceId } : {}), creditDate: dateRange },
+      include: { salesChannelRef: true, incomeCategory: true, paymentMethodRef: true, creditBank: true }
+    })
   ]);
 
-  const summary = summarizeRecords(incomes, expenses, [{ year, month }]);
+  const summary = summarizeRecords(incomes, expenses, mode === 'fiscal' ? [{ year, month }] : undefined);
   const web = incomes.reduce((sum, income) => income.isFiscal && income.salesChannelRef.code === 'ONLINE_SHOP' ? sum + Number(income.amount) : sum, 0);
   const shop = incomes.reduce((sum, income) => income.isFiscal && income.salesChannelRef.code === 'SHOP' ? sum + Number(income.amount) : sum, 0);
   const noInvoice = incomes.reduce((sum, income) => !income.isFiscal ? sum + Number(income.amount) : sum, 0);
@@ -327,7 +343,9 @@ export async function getMonthlyReport(year: number, month: number, workspaceId?
   return {
     year,
     month,
+    mode,
     expenses,
+    incomes,
     revenues: [],
     totals: {
       totalExpenses: summary.speseTotali,

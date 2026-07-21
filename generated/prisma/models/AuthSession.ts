@@ -478,14 +478,6 @@ export type AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput = {
   deleteMany?: Prisma.AuthSessionScalarWhereInput | Prisma.AuthSessionScalarWhereInput[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type AuthSessionCreateWithoutUserInput = {
   tokenHash: string
   expiresAt: Date | string

@@ -27,6 +27,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const raw = Object.fromEntries(formData.entries());
   const action = String(raw._action || 'update');
 
+  const protectedSupplier = await prisma.supplier.findFirst({ where: { id: supplierId, workspaceId: current.workspace.id }, select: { systemRole: true } });
+  if (protectedSupplier?.systemRole) return redirectToPath(appendFlash(returnTo, { error: 'system_protected' }));
+
   if (action === 'delete') {
     const linkedUsage = await prisma.expense.count({ where: { supplierId, workspaceId: current.workspace.id } })
       + await prisma.recurringExpense.count({ where: { supplierId, workspaceId: current.workspace.id } });

@@ -39,13 +39,14 @@ export async function GET(request: Request) {
   const suppliers = await prisma.supplier.findMany({
     where: search ? {
       workspaceId: current.workspace.id,
+      systemRole: null,
       OR: [
         { businessName: { contains: search, mode: 'insensitive' } },
         { alias: { contains: search, mode: 'insensitive' } },
         { vatNumber: { contains: search, mode: 'insensitive' } },
         { iban: { contains: search, mode: 'insensitive' } }
       ]
-    } : { workspaceId: current.workspace.id },
+    } : { workspaceId: current.workspace.id, systemRole: null },
     orderBy: { businessName: 'asc' },
     take: 50
   });

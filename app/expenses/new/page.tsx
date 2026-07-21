@@ -37,10 +37,10 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
       <Link className="btn btn-xs btn-default" href={returnTo}><span className="btn-icon">×</span> Annulla</Link>
     </div>
     <ExpenseCreationSwitcher
-      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
+      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
-      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
-      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
+      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
+      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, systemRole: s.systemRole }))}
       expenseAction={`/api/expenses?returnTo=${encodedReturnTo}`}
       recurringAction={`/api/recurring-expenses?returnTo=${encodedReturnTo}`}
       title={copyExpense ? 'Nuova spesa da copia' : 'Nuova spesa'}
@@ -54,6 +54,7 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
         categoryId: copyExpense.categoryId,
         description: copyExpense.description,
         amount: copyExpense.amount.toString(),
+        expenseType: copyExpense.expenseType,
         vatRate: copyExpense.vatRate.toString(),
         paymentStatus: 'DA_PAGARE',
         month: copyBillingPeriod?.month,

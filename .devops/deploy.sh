@@ -244,6 +244,7 @@ ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" \
      \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml exec -T tabularium-db sh -c 'pg_restore --clean --if-exists --no-owner --no-acl -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\"' < '${REMOTE_DB_DUMP}'; \
    fi; \
    \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml run --rm tabularium npx prisma db push --accept-data-loss; \
+   \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml run --rm tabularium npm run db:backfill-vat-settlement; \
    \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml up -d; \
    if [ -n '${REMOTE_UPLOADS_ARCHIVE}' ]; then \
      \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml cp '${REMOTE_UPLOADS_ARCHIVE}' tabularium:/tmp/tabularium-uploads.tar.gz; \

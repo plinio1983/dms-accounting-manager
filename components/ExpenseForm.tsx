@@ -4,7 +4,7 @@ import {type FormEvent, useEffect, useMemo, useRef, useState} from "react";
 import {createPortal} from "react-dom";
 import {bankIcons, categoryIcon} from "@/lib/expense-ui";
 
-type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null };
+type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; systemRole?: string | null; isVatSettlementDefault?: boolean };
 type SupplierOption = {
     id: number;
     businessName: string;
@@ -15,6 +15,7 @@ type SupplierOption = {
     pec?: string | null;
     taxCodeSdi?: string | null;
     internalNotes?: string | null;
+    systemRole?: string | null;
 };
 type PaymentRow = {
     key: number;
@@ -55,6 +56,7 @@ type InitialExpense = {
     invoiceStatus?: string | null;
     isDeclared?: boolean;
     isRecurring?: boolean;
+    expenseType?: "STANDARD" | "VAT_SETTLEMENT";
     payments?: InitialPayment[];
     notes?: string | null;
 };
@@ -613,7 +615,13 @@ export default function ExpenseForm({
     cancelHref,
     onSwitchToRecurring,
 }: Props) {
-    const defaultPaymentMethod = paymentMethods.find(method => method.name === defaultChannel) ?? paymentMethods[0];
+    const [isVatSettlement, setIsVatSettlement] = useState(initialExpense?.expenseType === "VAT_SETTLEMENT");
+    const vatSettlementCategory = categories.find(category => category.isVatSettlementDefault);
+    const vatSettlementSupplier = suppliers.find(supplier => supplier.systemRole === "VAT_SETTLEMENT");
+    const availablePaymentMethods = isVatSettlement
+        ? paymentMethods.filter(method => method.systemRole !== "CASH" && !isCashChannel(method.name))
+        : paymentMethods;
+    const defaultPaymentMethod = availablePaymentMethods.find(method => method.name === defaultChannel) ?? availablePaymentMethods[0];
     const fallbackBank = banks.find(bank => bank.name.toLowerCase() === cashBankName.toLowerCase()) ?? banks.find(bank => bank.isFallback) ?? banks[0];
     const cashBankId = banks.find((bank) => bank.name.toLowerCase() === cashBankName.toLowerCase())?.id;
     const cashBankIdValue = cashBankId ? String(cashBankId) : (fallbackBank ? String(fallbackBank.id) : "");
@@ -654,6 +662,7 @@ export default function ExpenseForm({
         initialExpense?.isRecurring ?? false,
     );
     const canEditRecurringFlag = !initialExpense || initialExpense.isRecurring;
+    const canEditExpenseType = !initialExpense;
 
     const amountValue = Number(amount || 0);
     const paidAmountValue = payments.reduce(
@@ -850,29 +859,57 @@ export default function ExpenseForm({
 
                     <div className="toggle-field switch-toggle-field expense-type-switch-in-form full">
                         <span>Tipo spesa: {isRecurring ? "Ricorrente" : "Singola"}</span>
-                        <label className="switch">
-                            <input type="hidden" name="isRecurring" value="false"/>
-                            <input
-                                type="checkbox"
-                                name="isRecurring"
-                                value="true"
-                                checked={isRecurring}
-                                disabled={!canEditRecurringFlag}
-                                onChange={(event) => {
-                                    const checked = event.currentTarget.checked;
-                                    setIsRecurring(checked);
-                                    if (checked && onSwitchToRecurring && !initialExpense) {
-                                        onSwitchToRecurring?.();
-                                    }
-                                }}
-                            />
-                            <span className="slider"/>
-                            <span>Ricorrente</span>
-                        </label>
+                        <div className="switch-group">
+                            <label className="switch">
+                                <input type="hidden" name="isRecurring" value="false"/>
+                                <input
+                                    type="checkbox"
+                                    name="isRecurring"
+                                    value="true"
+                                    checked={isRecurring}
+                                    disabled={!canEditRecurringFlag}
+                                    onChange={(event) => {
+                                        const checked = event.currentTarget.checked;
+                                        setIsRecurring(checked);
+                                        if (checked) setIsVatSettlement(false);
+                                        if (checked && onSwitchToRecurring && !initialExpense) {
+                                            onSwitchToRecurring?.();
+                                        }
+                                    }}
+                                />
+                                <span className="slider"/>
+                                <span>Ricorrente</span>
+                            </label>
+                            <label className="switch">
+                                <input type="hidden" name="expenseType" value={isVatSettlement ? "VAT_SETTLEMENT" : "STANDARD"}/>
+                                <input
+                                    type="checkbox"
+                                    checked={isVatSettlement}
+                                    disabled={!canEditExpenseType}
+                                    onChange={(event) => {
+                                        const checked = event.currentTarget.checked;
+                                        setIsVatSettlement(checked);
+                                        if (checked) setIsRecurring(false);
+                                        if (checked) {
+                                            const replacement = paymentMethods.find(method => method.systemRole !== "CASH" && !isCashChannel(method.name));
+                                            setPayments(rows => rows.map(row => isCashChannel(methodName(row.paymentMethodId) || row.channel)
+                                                ? { ...row, paymentMethodId: replacement ? String(replacement.id) : "", channel: replacement?.name ?? "" }
+                                                : row));
+                                        }
+                                    }}
+                                />
+                                <span className="slider"/>
+                                <span>Saldo IVA</span>
+                            </label>
+                        </div>
                     </div>
 
+                    {isVatSettlement && (!vatSettlementCategory || !vatSettlementSupplier) ? <div className="inline-form-error full">
+                        Configura la categoria Saldo IVA nelle Impostazioni. Il fornitore di sistema deve essere inizializzato per il workspace.
+                    </div> : null}
+
                     <label>
-                        Data ordine
+                        {isVatSettlement ? "Data registrazione" : "Data ordine"}
                         <input
                             type="date"
                             name="receivedDate"
@@ -888,6 +925,7 @@ export default function ExpenseForm({
                             }}
                             required
                         />
+                        {isVatSettlement ? <small className="muted">Usata per l’andamento temporale complessivo.</small> : null}
                     </label>
                     <label>
                         Data scadenza
@@ -899,6 +937,21 @@ export default function ExpenseForm({
                         />
                     </label>
                     <label>
+                        Periodo Contabile
+                        <input
+                            type="month"
+                            name="billingPeriod"
+                            value={billingPeriod}
+                            onChange={(event) => setBillingPeriod(event.currentTarget.value)}
+                            required
+                        />
+                        {isVatSettlement ? <small className="muted">Determina il periodo fiscale nel quale conteggiare il saldo IVA.</small> : null}
+                    </label>
+                    {isVatSettlement ? <label>
+                        Categoria
+                        <input value={vatSettlementCategory?.name ?? "Non configurata"} readOnly />
+                        <input type="hidden" name="categoryId" value={vatSettlementCategory?.id ?? ""} />
+                    </label> : <label>
                         {/*🏷️ Categoria*/}
                         Categoria
                         <select
@@ -912,18 +965,23 @@ export default function ExpenseForm({
                                 </option>
                             ))}
                         </select>
-                    </label>
-                    <SupplierAutocomplete
-                        suppliers={suppliers}
+                    </label>}
+                    {isVatSettlement ? <label>
+                        Esercente
+                        <input value={vatSettlementSupplier?.businessName ?? "Non configurato"} readOnly />
+                        <input type="hidden" name="supplierId" value={vatSettlementSupplier?.id ?? ""} />
+                        <input type="hidden" name="merchant" value={vatSettlementSupplier?.businessName ?? ""} />
+                    </label> : <SupplierAutocomplete
+                        suppliers={suppliers.filter(supplier => !supplier.systemRole)}
                         initialSupplierId={initialExpense?.supplierId ?? null}
                         initialMerchant={initialExpense?.merchant ?? ""}
-                    />
+                    />}
                     <ProductServiceAutocomplete
                         initialValue={initialExpense?.description ?? ""}
                     />
                     <div className="amount-vat-row full">
                         <label>
-                            Costo IVA inclusa
+                            {!isVatSettlement ? "Costo IVA inclusa" : "Importo IVA"}
                             <MoneyInput
                                 name="amount"
                                 required
@@ -931,7 +989,7 @@ export default function ExpenseForm({
                                 onChange={(e) => handleAmountChange(e.currentTarget.value)}
                             />
                         </label>
-                        <label>
+                        {!isVatSettlement ? <label>
                             IVA
                             <select
                                 name="vatRate"
@@ -942,13 +1000,13 @@ export default function ExpenseForm({
                                 <option value="10">10%</option>
                                 <option value="22">22%</option>
                             </select>
-                        </label>
+                        </label> : <div></div>}
                     </div>
                     <input type="hidden" name="paymentStatus" value={computedPaymentStatus}/>
                 </div>
             </details>
 
-            <details className="form-section full" open>
+            {!isVatSettlement ? <details className="form-section full" open>
                 <summary>
                     <span>Fiscale</span>
                     <small>IVA, detrazione e fattura elettronica</small>
@@ -998,16 +1056,6 @@ export default function ExpenseForm({
                         </div>
                     </div>
                     <label>
-                        Periodo Contabile
-                        <input
-                            type="month"
-                            name="billingPeriod"
-                            value={billingPeriod}
-                            onChange={(event) => setBillingPeriod(event.currentTarget.value)}
-                            required
-                        />
-                    </label>
-                    <label>
                         🧾 Stato Fattura
                         <select
                             name="invoiceStatus"
@@ -1024,7 +1072,12 @@ export default function ExpenseForm({
                         {invoiceNotExpected && <input type="hidden" name="invoiceStatus" value="NON_PREVISTA"/>}
                     </label>
                 </div>
-            </details>
+            </details> : <>
+                <input type="hidden" name="vatRate" value="0" />
+                <input type="hidden" name="isDeclared" value="false" />
+                <input type="hidden" name="hasElectronicInvoice" value="false" />
+                <input type="hidden" name="invoiceStatus" value="NON_PREVISTA" />
+            </>}
 
             <details className="form-section full" open>
                 <summary>
@@ -1116,6 +1169,7 @@ export default function ExpenseForm({
                                     ref={openPaymentKey === payment.key ? openPaymentRef : null}
                                 >
                                     <input type="hidden" name="paymentId[]" value={payment.id ?? ""}/>
+                                    <input type="hidden" name="paymentChannel[]" value={methodName(payment.paymentMethodId) || payment.channel}/>
                                     <label>
                                         Data pagamento
                                         <input
@@ -1133,12 +1187,12 @@ export default function ExpenseForm({
                                             name="paymentMethodId[]"
                                             value={payment.paymentMethodId}
                                             onChange={(e) => {
-                                                const nextMethod = paymentMethods.find(method => String(method.id) === e.target.value);
+                                                const nextMethod = availablePaymentMethods.find(method => String(method.id) === e.target.value);
                                                 updatePayment(index, {paymentMethodId: e.target.value, channel: nextMethod?.name ?? ""});
                                             }}
                                         >
                                             <option value="">Seleziona metodo</option>
-                                            {paymentMethods.map(method => <option key={method.id} value={method.id}>{method.name}</option>)}
+                                            {availablePaymentMethods.map(method => <option key={method.id} value={method.id}>{method.name}</option>)}
                                         </select>
                                     </label>
                                     <label>

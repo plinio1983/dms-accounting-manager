@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import ExpenseForm from "@/components/ExpenseForm";
 import { clampDateToToday, clampPeriodToCurrentMonth } from "@/lib/copy-dates";
 
-type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
+type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string; systemRole?: string | null; isVatSettlementDefault?: boolean };
 type SupplierOption = {
   id: number;
   businessName: string;
@@ -15,6 +15,7 @@ type SupplierOption = {
   pec?: string | null;
   taxCodeSdi?: string | null;
   internalNotes?: string | null;
+  systemRole?: string | null;
 };
 
 type EditExpense = {
@@ -34,6 +35,7 @@ type EditExpense = {
   invoiceStatus?: string | null;
   isDeclared?: boolean;
   isRecurring?: boolean;
+  expenseType?: "STANDARD" | "VAT_SETTLEMENT";
   notes?: string | null;
   payments?: Array<{
     id?: number;
