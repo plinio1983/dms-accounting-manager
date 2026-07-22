@@ -11,6 +11,7 @@ import {
   updatePaymentMethodAction
 } from './actions';
 import PaymentCreditCreatePanel from './PaymentCreditCreatePanel';
+import PaymentCreditEditRow from './PaymentCreditEditRow';
 
 const errorMessages: Record<string, string> = {
   invalid: 'Compila correttamente i campi richiesti.',
@@ -100,28 +101,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
       </div>
       {orderedBanks.length ? orderedBanks.map(bank => {
         const usageCount = bank._count.expenses + bank._count.payments + bank._count.recurringExpenses + bank._count.incomeCredits;
-        return <div className="category-settings-row" key={bank.id}>
-          <form action={updateBankAction} className="category-settings-edit-form payment-credit-edit-form">
-            <input type="hidden" name="id" value={bank.id} />
-            <label><span>Label</span><input name="name" defaultValue={bank.name} maxLength={80} required /></label>
-            <label><span>Icona</span><select name="icon" defaultValue={bank.icon ?? ''}><option value="">Nessuna</option>{paymentCreditIconOptions.map(icon => <option key={icon} value={icon}>{icon}</option>)}</select></label>
-            <div className="category-settings-usage">
-              <strong>{bank.isFallback ? 'Generico' : 'Banca'}</strong>
-              <small>{bank.isFallback ? 'non eliminabile' : 'configurabile'}</small>
-            </div>
-            <div className="category-settings-usage">
-              <strong>{usageCount}</strong>
-              <small>{usageCount === 1 ? 'movimento' : 'movimenti'}</small>
-            </div>
-            <div className="category-settings-actions">
-              <button type="submit" className="btn btn-xs btn-primary">✓ Salva</button>
-            </div>
-          </form>
-          {bank.isFallback ? <div className="category-settings-delete-form"><button type="button" className="btn btn-xs btn-danger" disabled>Rimuovi</button></div> : <form action={deleteBankAction} className="category-settings-delete-form">
-            <input type="hidden" name="id" value={bank.id} />
-            <button type="submit" className="btn btn-xs btn-danger">Rimuovi</button>
-          </form>}
-        </div>;
+        return <PaymentCreditEditRow key={bank.id} id={bank.id} name={bank.name} icon={bank.icon} kindLabel={bank.isFallback ? 'Generico' : 'Banca'} usageCount={usageCount} protectedFromDelete={bank.isFallback} iconOptions={paymentCreditIconOptions} updateAction={updateBankAction} deleteAction={deleteBankAction} />;
       }) : <p className="muted">Nessuna banca configurata.</p>}
     </details>
 
@@ -141,29 +121,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
       </div>
       {orderedMethods.length ? orderedMethods.map(method => {
         const usageCount = method._count.incomePayments + method._count.expensePayments + method._count.recurringExpenses;
-        return <div className="category-settings-row" key={method.id}>
-          <form action={updatePaymentMethodAction} className="category-settings-edit-form payment-credit-edit-form">
-            <input type="hidden" name="id" value={method.id} />
-            <label><span>Label</span><input name="name" defaultValue={method.name} maxLength={80} required /></label>
-            <label><span>Icona</span><select name="icon" defaultValue={method.icon ?? ''}><option value="">Nessuna</option>{paymentCreditIconOptions.map(icon => <option key={icon} value={icon}>{icon}</option>)}</select></label>
-            <label><span>Uso</span><select name="kind" defaultValue={method.kind}>
-              <option value="BOTH">Entrambi</option>
-              <option value="INCOME">Incassi</option>
-              <option value="EXPENSE">Spese</option>
-            </select></label>
-            <div className="category-settings-usage">
-              <strong>{usageCount}</strong>
-              <small>{method.isFallback ? 'generico' : kindLabels[method.kind] ?? method.kind}</small>
-            </div>
-            <div className="category-settings-actions">
-              <button type="submit" className="btn btn-xs btn-primary">✓ Salva</button>
-            </div>
-          </form>
-          {method.isFallback ? <div className="category-settings-delete-form"><button type="button" className="btn btn-xs btn-danger" disabled>Rimuovi</button></div> : <form action={deletePaymentMethodAction} className="category-settings-delete-form">
-            <input type="hidden" name="id" value={method.id} />
-            <button type="submit" className="btn btn-xs btn-danger">Rimuovi</button>
-          </form>}
-        </div>;
+        return <PaymentCreditEditRow key={method.id} id={method.id} name={method.name} icon={method.icon} kind={method.kind} kindLabel={method.isFallback ? 'Generico' : kindLabels[method.kind] ?? method.kind} usageCount={usageCount} protectedFromDelete={method.isFallback || Boolean(method.systemRole)} iconOptions={paymentCreditIconOptions} updateAction={updatePaymentMethodAction} deleteAction={deletePaymentMethodAction} />;
       }) : <p className="muted">Nessun metodo configurato.</p>}
     </details>
   </div>;

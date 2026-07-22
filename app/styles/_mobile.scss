@@ -1795,6 +1795,56 @@
     display: contents;
   }
 
+  .payment-credit-display-row {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 8px 12px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .payment-credit-display-name {
+    grid-column: 2;
+    grid-row: 1;
+    flex-grow: 1;
+    min-width: 50%;
+  }
+
+  .payment-credit-display-icon {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .payment-credit-display-row > span:not(.payment-credit-display-icon) {
+    grid-column: 1 / -1;
+  }
+
+  .payment-credit-display-actions {
+    grid-column: 1 / -1;
+    //justify-content: stretch;
+    flex-grow: 1;
+    justify-content: flex-end;
+    display: flex;
+    text-align: right;
+  }
+
+  //.payment-credit-display-actions > button,
+  //.payment-credit-display-actions form,
+  .payment-credit-display-actions form button {
+    width: 100%;
+  }
+
+  .payment-credit-expanded-form {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-credit-expanded-actions {
+    justify-content: stretch;
+  }
+
+  .payment-credit-expanded-actions .btn {
+    flex: 1;
+  }
+
   .category-settings-edit-form label,
   .category-settings-usage {
     grid-column: 1 / -1;

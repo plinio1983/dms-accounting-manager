@@ -79,7 +79,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
       bank: true,
       paymentMethod: true,
       generatedExpenses: {
-        include: { category: true, supplier: true, payments: true },
+        include: { category: true, supplier: true, payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } } },
         orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }],
         take: 24
       }

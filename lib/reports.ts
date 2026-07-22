@@ -201,7 +201,7 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
 export async function getPeriodSummary(periods: Array<{ year: number; month: number }>, options: SummaryOptions = {}) {
   const [incomes, expenses] = await Promise.all([
     prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(periods, options.workspaceId) }),
-    prisma.expense.findMany({ where: periodWhere(periods, options.workspaceId), include: { payments: true } })
+    prisma.expense.findMany({ where: periodWhere(periods, options.workspaceId), include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } } } })
   ]);
 
   return summarizeRecords(incomes, expenses, periods, options);
@@ -222,7 +222,7 @@ export async function getOrderDatePeriodSummary(periods: Array<{ year: number; m
 
   const [incomes, expenses] = await Promise.all([
     prisma.income.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), creditDate: { gte: from, lt: to } } }),
-    prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), receivedDate: { gte: from, lt: to } }, include: { payments: true } })
+    prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), receivedDate: { gte: from, lt: to } }, include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } } } })
   ]);
 
   return summarizeRecords(incomes, expenses);
@@ -251,7 +251,7 @@ export async function getAccountingDashboardReport(
     getPeriodSummary(fiscalMonthPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId }),
     getPeriodSummary(fiscalQuarterPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId }),
     prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(reportPeriods, workspaceId), include: { incomeCategory: true, salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true } }),
-    prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), year: { in: reportYears } }, include: { payments: true, category: true } })
+    prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), year: { in: reportYears } }, include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } }, category: true } })
   ]);
 
   const months = Array.from({ length: 12 }, (_, index) => {
@@ -322,7 +322,7 @@ export async function getMonthlyReport(year: number, month: number, workspaceId?
       where: mode === 'fiscal'
         ? { ...(workspaceId ? { workspaceId } : {}), year, month }
         : { ...(workspaceId ? { workspaceId } : {}), receivedDate: dateRange },
-      include: { category: true, bank: true, company: true, supplier: true, payments: true },
+      include: { category: true, bank: true, company: true, supplier: true, payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } } },
       orderBy: [{ receivedDate: 'asc' }, { id: 'asc' }]
     }),
     prisma.income.findMany({

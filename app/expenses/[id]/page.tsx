@@ -209,7 +209,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           </div>
           {!isVatSettlement ? <div>
             <span>Stato fattura</span>
-            <strong>{invoiceStyle.label}</strong>
+            <strong>{invoiceStyle.icon} {invoiceStyle.label}</strong>
           </div> : null}
           <div>
             <span>Periodo contabile</span>

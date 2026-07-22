@@ -37,7 +37,7 @@ type ExpenseListItem = {
   supplier?: { businessName: string } | null;
   merchant?: string | null;
   category?: { code: string; name: string; icon?: string | null } | null;
-  payments?: Array<{ amount: unknown }>;
+  payments?: Array<{ amount: unknown; paymentMethod?: { icon?: string | null } | null }>;
 };
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string; systemRole?: string | null; isVatSettlementDefault?: boolean };
@@ -130,6 +130,11 @@ function expenseResidualAmount(expense: ExpenseListItem) {
   const expenseAmount = Number(expense.amount);
   const paidAmount = (expense.payments ?? []).reduce((partial, payment) => partial + Number(payment.amount), 0);
   return Math.max(expenseAmount - paidAmount, 0);
+}
+
+function expensePaymentIcon(expense: ExpenseListItem) {
+  // return expense.payments?.find(payment => payment.paymentMethod)?.paymentMethod?.icon ?? '•';
+  return expense.payments?.find(payment => payment.paymentMethod)?.paymentMethod?.icon ?? '';
 }
 
 function isExpenseOverdue(expense: ExpenseListItem) {
@@ -277,7 +282,7 @@ export default function ExpensesList({
                   <strong>{showSupplierColumn ? supplierName : (expense.description || 'Spesa senza descrizione')}</strong>
                 </div>
                 <div className="expense-mobile-title-right">
-                  <span className={moneyTone(amount)}>{euro(expense.amount as string | number)}</span>
+                  <span className={moneyTone(amount)}>{expensePaymentIcon(expense)} &nbsp;{euro(expense.amount as string | number)}</span>
                 </div>
               </div>
               <div className="expense-mobile-subtitle">
@@ -356,7 +361,7 @@ export default function ExpensesList({
               <td className="cell-type"><span className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{isVatSettlement ? 'IVA' : expense.isRecurring ? 'R' : 'S'}</span></td>
               <td className="cell-category">{expense.category ? <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}</td>
               {showSupplierColumn ? <td className="cell-supplier cell-compact" title={supplierName}>{expense.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${expense.supplierId}?returnTo=${returnTo}`}>{supplierName}</Link> : supplierName}</td> : null}
-              <td className="cell-amount"><strong className={moneyTone(amount)}>{euro(expense.amount as string | number)}</strong></td>
+              <td className="cell-amount"><strong className={moneyTone(amount)}>{expensePaymentIcon(expense)} {euro(expense.amount as string | number)}</strong></td>
               <td className="cell-vat">{isVatSettlement ? <span className="badge tone-neutral">100%</span> : <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate)}%</span>}</td>
               <td className="cell-description" title={expense.description ?? ''}>{expense.description ?? '-'}</td>
               <td className="cell-payment-state">{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>

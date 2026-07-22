@@ -8095,6 +8095,7 @@ button.bulk-direct-danger {
 .expense-detail-section.expense-detail-section-actions {
   display: flex;
   border-top: 1px solid var(--line);
+  flex-direction: row;
 }
 
 .expense-detail-section-heading {
@@ -9832,6 +9833,73 @@ table .cell-description {
       flex-grow: 1;
     }
   }
+}
+
+.payment-credit-row-shell {
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.payment-credit-display-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 90px 130px 110px auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+}
+
+.payment-credit-display-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.payment-credit-display-icon {
+  font-size: 22px;
+  max-width: 50px;
+}
+
+.payment-credit-display-usage {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.payment-credit-display-usage strong {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.payment-credit-display-actions,
+.payment-credit-expanded-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.payment-credit-expanded-form {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 120px 160px auto;
+  gap: 12px;
+  align-items: flex-end;
+  padding: 14px 12px;
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.payment-credit-expanded-form label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.payment-credit-expanded-form label span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .inline-form-error {

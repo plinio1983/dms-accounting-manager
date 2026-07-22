@@ -34,7 +34,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const [supplier, categories, banks, paymentMethods, suppliers] = await Promise.all([
     prisma.supplier.findUnique({
       where: { id: Number(id) },
-      include: { expenses: { include: { payments: true, category: true, supplier: true }, orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }] } }
+      include: { expenses: { include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } }, category: true, supplier: true }, orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }] } }
     }),
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),

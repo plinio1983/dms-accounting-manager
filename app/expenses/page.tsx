@@ -639,7 +639,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   const [expenses, categories, banks, paymentMethods, suppliers] = await Promise.all([
     prisma.expense.findMany({
       where: { workspaceId: current.workspace.id },
-      include: { category: true, bank: true, supplier: true, payments: { include: { bank: true } }, attachments: true },
+      include: { category: true, bank: true, supplier: true, payments: { include: { bank: true, paymentMethod: true }, orderBy: { id: 'asc' } }, attachments: true },
       orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }],
       take: 500
     }),
