@@ -357,7 +357,7 @@ export default function ExpensesList({
               <td className="cell-category">{expense.category ? <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}</td>
               {showSupplierColumn ? <td className="cell-supplier cell-compact" title={supplierName}>{expense.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${expense.supplierId}?returnTo=${returnTo}`}>{supplierName}</Link> : supplierName}</td> : null}
               <td className="cell-amount"><strong className={moneyTone(amount)}>{euro(expense.amount as string | number)}</strong></td>
-              <td className="cell-vat">{isVatSettlement ? <span className="badge tone-neutral">Saldo</span> : <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate)}%</span>}</td>
+              <td className="cell-vat">{isVatSettlement ? <span className="badge tone-neutral">100%</span> : <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate)}%</span>}</td>
               <td className="cell-description" title={expense.description ?? ''}>{expense.description ?? '-'}</td>
               <td className="cell-payment-state">{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>
               <td className="cell-invoice-state">{isVatSettlement ? '-' : <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>}</td>

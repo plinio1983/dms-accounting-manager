@@ -345,6 +345,15 @@ function DashboardPieChart({
         segments.push(`#eef1f7 ${((chartTotal / denominator) * 100).toFixed(3)}% 100%`);
     }
     const background = segments.length ? `conic-gradient(${segments.join(', ')})` : undefined;
+    const legendContent = <>
+        {data.map((item, index) => {
+            const percentage = percentageDenominator ? (chartValue(item) / percentageDenominator) * 100 : 0;
+            const barWidth = Math.min(percentage, 100);
+            const rowContent = <><div className="expense-impact-pie-legend-row"><span className="expense-impact-pie-dot" style={{background: dashboardChartColors[index % dashboardChartColors.length]}}/><div><strong className="hidden-mobile">{item.code}</strong><span>{item.name}</span></div><div className="flex-grow justify-end"><strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div></div><div className="expense-impact-pie-bar" style={{width: `${barWidth.toFixed(1)}%`, background: dashboardChartColors[index % dashboardChartColors.length]}}/></>;
+            return item.href ? <Link className="expense-impact-pie-row-wrap expense-impact-pie-row-link" href={item.href} key={`${item.code}-${item.name}`}>{rowContent}</Link> : <div className="expense-impact-pie-row-wrap" key={`${item.code}-${item.name}`}>{rowContent}</div>;
+        })}
+        {denominator > chartTotal && remainderLabel && remainderName ? <div className="expense-impact-pie-legend-row"><span className="expense-impact-pie-dot expense-impact-pie-dot-muted"/><div><strong>{remainderLabel}</strong><span>{remainderName}</span></div><div><strong>{chartEuro(denominator - chartTotal)}</strong><small>{(((denominator - chartTotal) / percentageDenominator) * 100).toFixed(1)}%</small></div></div> : null}
+    </>;
 
     return <div className="card expense-category-chart-card expense-impact-pie-card">
         <div className="card-heading-row">
@@ -362,45 +371,14 @@ function DashboardPieChart({
                     {centerDetail === null ? null : <span>{centerDetail ?? chartEuro(total.toFixed(2))}</span>}
                 </div>
             </div>
+            <div className="expense-impact-pie-legend dashboard-pie-legend-desktop">{legendContent}</div>
             <details className="dashboard-pie-legend-collapsible">
               <summary>
                 <span className="dashboard-pie-legend-show">Mostra legenda</span>
                 <span className="dashboard-pie-legend-hide">Nascondi legenda</span>
                 <span className="dashboard-pie-legend-caret" aria-hidden="true">⌄</span>
               </summary>
-              <div className="expense-impact-pie-legend">
-                {data.map((item, index) => {
-                    const percentage = percentageDenominator ? (chartValue(item) / percentageDenominator) * 100 : 0;
-                    const barWidth = Math.min(percentage, 100);
-                    const rowContent = <>
-                        <div className="expense-impact-pie-legend-row">
-                            <span className="expense-impact-pie-dot"
-                                  style={{background: dashboardChartColors[index % dashboardChartColors.length]}}/>
-                            <div><strong className="hidden-mobile">{item.code}</strong><span>{item.name}</span></div>
-                            <div className="flex-grow justify-end"><strong
-                                className={moneyTone(item.total)}>{chartEuro(item.total)}</strong><small>{percentage.toFixed(1)}%</small>
-                            </div>
-                        </div>
-                        <div className="expense-impact-pie-bar" style={{
-                            width: `${barWidth.toFixed(1)}%`,
-                            background: `${dashboardChartColors[index % dashboardChartColors.length]}`
-                        }}/>
-                    </>;
-                    return item.href
-                        ? <Link className="expense-impact-pie-row-wrap expense-impact-pie-row-link" href={item.href}
-                                key={`${item.code}-${item.name}`}>{rowContent}</Link>
-                        : <div className="expense-impact-pie-row-wrap"
-                               key={`${item.code}-${item.name}`}>{rowContent}</div>;
-                })}
-                {denominator > chartTotal && remainderLabel && remainderName ?
-                    <div className="expense-impact-pie-legend-row">
-                        <span className="expense-impact-pie-dot expense-impact-pie-dot-muted"/>
-                        <div><strong>{remainderLabel}</strong><span>{remainderName}</span></div>
-                        <div>
-                            <strong>{chartEuro(denominator - chartTotal)}</strong><small>{(((denominator - chartTotal) / percentageDenominator) * 100).toFixed(1)}%</small>
-                        </div>
-                    </div> : null}
-              </div>
+              <div className="expense-impact-pie-legend">{legendContent}</div>
             </details>
         </div> : <p className="muted">{emptyMessage}</p>}
     </div>;

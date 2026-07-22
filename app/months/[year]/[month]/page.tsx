@@ -184,7 +184,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
         <MonthReportAccordionController />
         <details className="month-report-section month-report-expenses month-report-collapsible" open>
             <summary className="month-report-section-heading">
-                <h3>{mode === 'fiscal' ? 'Spese registrate' : 'Spese registrate'}</h3>
+                <h3>{mode === 'fiscal' ? 'Spese del mese' : 'Spese del mese'}</h3>
                 <div className="month-report-value month-report-inline-total"><span>Spese non saldate</span><strong
                     className="money-warning">{euroInt(fiscalTotals.nonSaldato)}</strong></div>
             </summary>
@@ -239,7 +239,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
         <details className="month-report-section month-report-incomes month-report-collapsible">
             <summary className="month-report-section-heading">
                 <h3>{mode === 'fiscal' ? 'Incassi registrati' : 'Incassi registrati'}</h3>
-                <div className="month-report-value month-report-inline-total"><span>Totale incassi</span><strong
+                <div className="month-report-value month-report-inline-total flex-grow"><span>Totale incassi</span><strong
                     className="month-report-positive">{euroInt(report.totals.totalRevenue)}</strong></div>
             </summary>
             <div className="card expenses-list-card"><IncomesList

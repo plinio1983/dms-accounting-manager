@@ -4013,6 +4013,18 @@ table th, table td {
   margin-bottom: 14px;
 }
 
+.month-report-page {
+  .month-report-accordion {
+    .month-report-section {
+      margin-top: 18px;
+
+      .month-report-section-heading {
+        margin-right: 12px;
+      }
+    }
+  }
+}
+
 .dashboard-chart-collapsible {
   min-width: 0;
   padding: 0;
@@ -4219,11 +4231,11 @@ table th, table td {
   font-weight: 650;
 }
 
-.month-report-section table td:last-child {
-  text-align: right;
-  font-weight: 750;
-  white-space: nowrap;
-}
+//.month-report-section table td:last-child {
+//  text-align: right;
+//  font-weight: 750;
+//  white-space: nowrap;
+//}
 
 .month-report-section table tr:last-child td {
   border-bottom: 0;
@@ -10451,10 +10463,4 @@ table .cell-description {
   flex-grow: 0;
 }
 
-.dashboard-pie-legend-collapsible > summary {
-  display: none;
-}
-
-.dashboard-pie-legend-collapsible > .expense-impact-pie-legend {
-  display: grid !important;
-}
+.dashboard-pie-legend-collapsible { display: none; }
