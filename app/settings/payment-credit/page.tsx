@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getCurrentSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
+import { orderBanks, orderPaymentMethods, paymentCreditIconOptions } from '@/lib/workspace-defaults';
 import {
   createBankAction,
   createPaymentMethodAction,
@@ -16,6 +16,7 @@ const errorMessages: Record<string, string> = {
   invalid: 'Compila correttamente i campi richiesti.',
   name_length: 'La label deve essere lunga al massimo 80 caratteri.',
   kind_invalid: 'Seleziona un uso valido.',
+  icon_invalid: 'Seleziona un’icona valida.',
   bank_exists: 'Esiste già una banca/canale accredito con questa label.',
   bank_not_found: 'Banca/canale accredito non trovato.',
   method_exists: 'Esiste già un metodo con questa label.',
@@ -83,7 +84,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
     {saved ? <div className="form-summary full"><strong>{savedMessages[saved] ?? 'Configurazione aggiornata.'}</strong></div> : null}
     {error ? <div className="inline-form-error full">{errorMessages[error] ?? 'Impossibile aggiornare la configurazione.'}{error === 'in_use' && usage ? <span> Movimenti collegati: {usage}.</span> : null}</div> : null}
 
-    <PaymentCreditCreatePanel action={createBankAction} type="bank" />
+    <PaymentCreditCreatePanel action={createBankAction} type="bank" iconOptions={paymentCreditIconOptions} />
 
     <details className="card categories-settings-card payment-credit-settings-card payment-credit-collapsible" open>
       <summary className="category-create-toggle">
@@ -92,6 +93,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
       </summary>
       <div className="categories-settings-table-head payment-credit-table-head">
         <span>Label</span>
+        <span>Icona</span>
         <span>Tipo</span>
         <span>Uso</span>
         <span>Azioni</span>
@@ -102,6 +104,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
           <form action={updateBankAction} className="category-settings-edit-form payment-credit-edit-form">
             <input type="hidden" name="id" value={bank.id} />
             <label><span>Label</span><input name="name" defaultValue={bank.name} maxLength={80} required /></label>
+            <label><span>Icona</span><select name="icon" defaultValue={bank.icon ?? ''}><option value="">Nessuna</option>{paymentCreditIconOptions.map(icon => <option key={icon} value={icon}>{icon}</option>)}</select></label>
             <div className="category-settings-usage">
               <strong>{bank.isFallback ? 'Generico' : 'Banca'}</strong>
               <small>{bank.isFallback ? 'non eliminabile' : 'configurabile'}</small>
@@ -122,7 +125,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
       }) : <p className="muted">Nessuna banca configurata.</p>}
     </details>
 
-    <PaymentCreditCreatePanel action={createPaymentMethodAction} type="method" />
+    <PaymentCreditCreatePanel action={createPaymentMethodAction} type="method" iconOptions={paymentCreditIconOptions} />
 
     <details className="card categories-settings-card payment-credit-settings-card payment-credit-collapsible" open>
       <summary className="category-create-toggle">
@@ -131,6 +134,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
       </summary>
       <div className="categories-settings-table-head payment-credit-table-head">
         <span>Label</span>
+        <span>Icona</span>
         <span>Uso</span>
         <span>Movimenti</span>
         <span>Azioni</span>
@@ -141,6 +145,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
           <form action={updatePaymentMethodAction} className="category-settings-edit-form payment-credit-edit-form">
             <input type="hidden" name="id" value={method.id} />
             <label><span>Label</span><input name="name" defaultValue={method.name} maxLength={80} required /></label>
+            <label><span>Icona</span><select name="icon" defaultValue={method.icon ?? ''}><option value="">Nessuna</option>{paymentCreditIconOptions.map(icon => <option key={icon} value={icon}>{icon}</option>)}</select></label>
             <label><span>Uso</span><select name="kind" defaultValue={method.kind}>
               <option value="BOTH">Entrambi</option>
               <option value="INCOME">Incassi</option>

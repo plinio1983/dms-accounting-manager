@@ -201,10 +201,10 @@ async function ensureReferenceData(workspaceId?: number) {
     const existing = await prisma.bank.findFirst({ where: { workspaceId: workspaceId ?? null, name: bankName } });
     if (!existing) await prisma.bank.create({ data: { name: bankName, workspaceId: workspaceId ?? null } });
   }
-  for (const [name, kind] of defaultPaymentMethods) {
+  for (const [name, kind, icon] of defaultPaymentMethods) {
     const existing = await prisma.paymentMethod.findFirst({ where: { workspaceId: workspaceId ?? null, name } });
     if (!existing) {
-      await prisma.paymentMethod.create({ data: { workspaceId: workspaceId ?? null, name, kind, isFallback: name === fallbackPaymentMethodName } });
+      await prisma.paymentMethod.create({ data: { workspaceId: workspaceId ?? null, name, kind, icon, isFallback: name === fallbackPaymentMethodName } });
     } else if (name === fallbackPaymentMethodName && !existing.isFallback) {
       await prisma.paymentMethod.update({ where: { id: existing.id }, data: { isFallback: true } });
     }

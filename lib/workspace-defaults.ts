@@ -65,20 +65,29 @@ export const incomeEntityIconOptions = [
 export const fallbackBankName = 'Altra Banca';
 export const fallbackPaymentMethodName = 'Altro metodo';
 
-export const defaultBanks = ['MyTu', 'Unicredit', 'Wise', fallbackBankName] as const;
+export const paymentCreditIconOptions = [
+  '🏦', '🏛️', '💳', '💶', '💵', '🪙', '₿', '◈', '🌍', '📱', '🧾', '🔁', '↔️', '💸'
+] as const;
+
+export const defaultBanks = [
+  ['MyTu', '🏦'],
+  ['Unicredit', '🏛️'],
+  ['Wise', '🌍'],
+  [fallbackBankName, null]
+] as const;
 
 export const defaultPaymentMethods = [
-  ['Bonifico', 'BOTH'],
-  ['Carta di Debito/Credit', 'BOTH'],
-  ['Criptovaluta', 'INCOME'],
-  ['Stripe', 'INCOME'],
-  ['Cash', 'BOTH'],
-  ['Addebito', 'EXPENSE'],
-  ['RID Bancario', 'EXPENSE'],
-  ['Modello F24', 'EXPENSE'],
-  ['PayPal', 'EXPENSE'],
-  ['Mooney', 'EXPENSE'],
-  [fallbackPaymentMethodName, 'BOTH']
+  ['Bonifico', 'BOTH', '🏦'],
+  ['Carta di Debito/Credit', 'BOTH', '💳'],
+  ['Criptovaluta', 'INCOME', '₿'],
+  ['Stripe', 'INCOME', '◈'],
+  ['Cash', 'BOTH', '💶'],
+  ['Addebito', 'EXPENSE', '🔁'],
+  ['RID Bancario', 'EXPENSE', '🏦'],
+  ['Modello F24', 'EXPENSE', '🧾'],
+  ['PayPal', 'EXPENSE', '💳'],
+  ['Mooney', 'EXPENSE', '💸'],
+  [fallbackPaymentMethodName, 'BOTH', null]
 ] as const;
 
 export const vatSettlementSupplierName = 'Erario – Saldo IVA';
@@ -100,7 +109,7 @@ export function orderExpenseCategories<T extends { id: number; code: string; nam
 
 export function orderBanks<T extends { id: number; name: string; isFallback?: boolean | null }>(banks: T[]) {
   const defaultItems = defaultBanks
-    .map(name => banks.find(bank => bank.name === name))
+    .map(([name]) => banks.find(bank => bank.name === name))
     .filter(Boolean) as T[];
   const defaultIds = new Set(defaultItems.map(bank => bank.id));
   const fallbackItems = banks.filter(bank => bank.isFallback && !defaultIds.has(bank.id));
@@ -158,18 +167,18 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
     });
   }
 
-  for (const name of defaultBanks) {
+  for (const [name, icon] of defaultBanks) {
     const existing = await prisma.bank.findFirst({ where: { workspaceId, name } });
-    if (!existing) await prisma.bank.create({ data: { workspaceId, name, isFallback: name === fallbackBankName } });
-    else if (name === fallbackBankName && !existing.isFallback) await prisma.bank.update({ where: { id: existing.id }, data: { isFallback: true } });
+    if (!existing) await prisma.bank.create({ data: { workspaceId, name, icon, isFallback: name === fallbackBankName } });
+    else if ((name === fallbackBankName && !existing.isFallback) || (!existing.icon && icon)) await prisma.bank.update({ where: { id: existing.id }, data: { ...(name === fallbackBankName ? { isFallback: true } : {}), ...(!existing.icon && icon ? { icon } : {}) } });
   }
 
-  for (const [name, kind] of defaultPaymentMethods) {
+  for (const [name, kind, icon] of defaultPaymentMethods) {
     const existing = await prisma.paymentMethod.findFirst({ where: { workspaceId, name } });
     const systemRole = name === 'Cash' ? 'CASH' as const : null;
-    if (!existing) await prisma.paymentMethod.create({ data: { workspaceId, name, kind, isFallback: name === fallbackPaymentMethodName, systemRole } });
-    else if ((name === fallbackPaymentMethodName && !existing.isFallback) || (systemRole && existing.systemRole !== systemRole)) {
-      await prisma.paymentMethod.update({ where: { id: existing.id }, data: { ...(name === fallbackPaymentMethodName ? { isFallback: true } : {}), ...(systemRole ? { systemRole } : {}) } });
+    if (!existing) await prisma.paymentMethod.create({ data: { workspaceId, name, kind, icon, isFallback: name === fallbackPaymentMethodName, systemRole } });
+    else if ((name === fallbackPaymentMethodName && !existing.isFallback) || (systemRole && existing.systemRole !== systemRole) || (!existing.icon && icon)) {
+      await prisma.paymentMethod.update({ where: { id: existing.id }, data: { ...(name === fallbackPaymentMethodName ? { isFallback: true } : {}), ...(systemRole ? { systemRole } : {}), ...(!existing.icon && icon ? { icon } : {}) } });
     }
   }
 

@@ -10,21 +10,6 @@ export const saleCategoryStyles: Record<string, { label: string; icon: string; c
   Altro: { label: 'Altro', icon: '•', className: 'tone-neutral' }
 };
 
-export const paymentMethodStyles: Record<string, { icon: string; className: string }> = {
-  Bonifico: { icon: '🏦', className: 'tone-bank-services' },
-  'Carta di Debito/Credito': { icon: '💳', className: 'tone-paid' },
-  Criptovaluta: { icon: '₿', className: 'tone-vat-10' },
-  Stripe: { icon: '◈', className: 'tone-web' },
-  Cash: { icon: '💶', className: 'tone-goods' }
-};
-
-export const creditChannelStyles: Record<string, { icon: string; className: string }> = {
-  Cash: { icon: '💶', className: 'tone-goods' },
-  Unicredit: { icon: '🏛️', className: 'tone-bank-services' },
-  MyTu: { icon: '🏦', className: 'tone-paid' },
-  Wise: { icon: '🌍', className: 'tone-web' }
-};
-
 export const fiscalStyles = {
   yes: { label: 'Si', icon: '✓', className: 'tone-yes' },
   no: { label: 'No', icon: '×', className: 'tone-no' }

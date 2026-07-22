@@ -879,8 +879,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     {/*<Link className="btn btn-md btn-default" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>*/}
     <NewExpensePanel
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
-      banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
-      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
+      banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback }))}
+      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
       suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, systemRole: s.systemRole }))}
       initialOpen={inputDefault(filters, 'new') === '1'}
     />
@@ -1208,8 +1208,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         selectable
         formId="expenseBulkForm"
         categories={orderedCategories.map(c => ({id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
-        banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
-        paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
+        banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback }))}
+        paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
         suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, systemRole: s.systemRole }))}
         emptyMessage="Nessuna spesa trovata con i filtri selezionati."
       />

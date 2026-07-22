@@ -360,8 +360,8 @@ export default function ExpensesList({
               <td className="cell-vat">{isVatSettlement ? <span className="badge tone-neutral">100%</span> : <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate)}%</span>}</td>
               <td className="cell-description" title={expense.description ?? ''}>{expense.description ?? '-'}</td>
               <td className="cell-payment-state">{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>
-              <td className="cell-invoice-state">{isVatSettlement ? '-' : <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>}</td>
-              <td className="cell-ebilling">{isVatSettlement ? '-' : invoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}</td>
+              <td className="cell-invoice-state">{isVatSettlement ? <span className="badge color-badge">✕</span> : <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>}</td>
+              <td className="cell-ebilling">{isVatSettlement ? <span className="badge color-badge tone-no">✕</span> : invoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}</td>
               <td className="cell-residual"><strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong></td>
             </tr>;
           })}

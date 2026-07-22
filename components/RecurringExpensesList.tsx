@@ -5,7 +5,7 @@ import RecurringExpenseFiltersDrawer from '@/components/RecurringExpenseFiltersD
 import RecurringExpenseDetailEditModalController from '@/components/RecurringExpenseDetailEditModalController';
 import MobileSortControl from '@/components/MobileSortControl';
 import { euro } from '@/lib/money';
-import { bankIcons, badgeClass, categoryLabel, categoryTone } from '@/lib/expense-ui';
+import { badgeClass, categoryLabel, categoryTone } from '@/lib/expense-ui';
 import { compareDate, compareNumber, compareText } from '@/lib/mobile-sort';
 
 const cadenceLabels: Record<string, string> = { MONTHLY:'Ogni mese', EVERY_2_MONTHS:'Ogni 2 mesi', EVERY_3_MONTHS:'Ogni 3 mesi', EVERY_6_MONTHS:'Ogni 6 mesi', YEARLY:'Annuale', EVERY_2_YEARS:'Ogni 2 anni' };
@@ -91,7 +91,7 @@ const paymentChannelLabels: Record<string, string> = {
   Cash: 'Cash'
 };
 
-type FilterOption = { id: number; name: string; kind?: string; isFallback?: boolean | null };
+type FilterOption = { id: number; name: string; icon?: string | null; kind?: string; isFallback?: boolean | null };
 type CategoryOption = { id: number; code?: string; name: string; icon?: string | null };
 type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; vatNumber?: string | null; iban?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
 
@@ -250,7 +250,7 @@ export default function RecurringExpensesList({
               const supplier = item.supplier?.businessName || item.merchant || '-';
               const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
               const paymentChannelName = item.paymentMethod?.name ?? item.paymentChannel;
-              const payment = paymentChannelName ? `${paymentChannelName}${item.bank ? ` · ${item.bank.name}` : ''}` : '-';
+              const payment = paymentChannelName ? `${item.paymentMethod?.icon ?? '•'} ${paymentChannelName}${item.bank ? ` · ${item.bank.icon ?? '•'} ${item.bank.name}` : ''}` : '-';
               const categoryClassName = categoryTone(item.category);
               const cadenceStyle = cadenceStyles[item.cadence] ?? { icon: '↻', className: 'tone-neutral' };
               const billingStyle = billingStyles[item.billingPeriodMode] ?? { icon: 'CAL', className: 'tone-neutral' };
@@ -265,7 +265,7 @@ export default function RecurringExpensesList({
                 <td className="cell-left"><span className={badgeClass(cadenceStyle.className)}>{cadenceStyle.icon} {cadenceLabels[item.cadence] ?? item.cadence}</span></td>
                 <td className="cell-left nowrap-cell"><span className={badgeClass('tone-waiting')}>📅 {dueLabel(item)}</span></td>
                 <td className="cell-left nowrap-cell"><span className={badgeClass(billingStyle.className)}>{billingStyle.icon} {billing}</span></td>
-                <td className="cell-left recurring-payment-cell" title={payment}>{paymentChannelName ? <span className={badgeClass(item.bank ? 'tone-bank-services' : 'tone-neutral')}>{item.bank ? `${bankIcons[item.bank.name] ?? '🏦'} ` : '• '}{payment}</span> : <span className={badgeClass('tone-neutral')}>• Manuale</span>}</td>
+                <td className="cell-left recurring-payment-cell" title={payment}>{paymentChannelName ? <span className={badgeClass(item.bank ? 'tone-bank-services' : 'tone-neutral')}>{payment}</span> : <span className={badgeClass('tone-neutral')}>• Manuale</span>}</td>
                 <td className="cell-left nowrap-cell">{dateLabel(item.startDate)}</td>
               </tr>;
             })}
@@ -279,7 +279,7 @@ export default function RecurringExpensesList({
           const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
           const supplier = item.supplier?.businessName || item.merchant || 'Fornitore non impostato';
           const paymentChannelName = item.paymentMethod?.name ?? item.paymentChannel;
-          const payment = paymentChannelName ? `${paymentChannelName}${item.bank ? ` · ${item.bank.name}` : ''}` : 'Pagamento manuale';
+          const payment = paymentChannelName ? `${item.paymentMethod?.icon ?? '•'} ${paymentChannelName}${item.bank ? ` · ${item.bank.icon ?? '•'} ${item.bank.name}` : ''}` : 'Pagamento manuale';
           return <div className="recurring-mobile-item-shell" key={`mobile-recurring-${item.id}`}>
             <div className="recurring-mobile-select">
               <input form="recurringExpenseBulkForm" type="checkbox" name="ids" value={item.id} aria-label={`Seleziona spesa ricorrente ${item.id}`} />

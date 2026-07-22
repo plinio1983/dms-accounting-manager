@@ -212,10 +212,11 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     icon: category.icon,
                     isVatSettlementDefault: category.id === current.workspace.vatSettlementCategoryId
                 }))}
-                banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, isFallback: bank.isFallback}))}
+                banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback}))}
                 paymentMethods={expensePaymentMethods.map(method => ({
                     id: method.id,
                     name: method.name,
+                    icon: method.icon,
                     kind: method.kind,
                     isFallback: method.isFallback,
                     systemRole: method.systemRole
@@ -245,8 +246,8 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             <div className="card expenses-list-card"><IncomesList
                 incomes={report.incomes}
                 returnTo={returnTo}
-                banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, isFallback: bank.isFallback}))}
-                paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback}))}
+                banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback}))}
+                paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback}))}
                 incomeCategories={incomeCategories}
                 salesChannels={salesChannels}
                 customers={customers}

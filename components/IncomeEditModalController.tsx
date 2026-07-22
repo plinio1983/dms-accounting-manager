@@ -25,7 +25,7 @@ type EditIncome = {
   notes?: string | null;
 };
 
-type Option = { id: number; name: string; isFallback?: boolean | null };
+type Option = { id: number; name: string; icon?: string | null; isFallback?: boolean | null };
 type PaymentMethodOption = Option & { kind?: string };
 type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null };
 type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };

@@ -51,13 +51,6 @@ export const invoiceStatusStyles: Record<string, { label: string; icon: string; 
   KO: { label: 'Ko', icon: '×', className: 'tone-no' }
 };
 
-export const bankIcons: Record<string, string> = {
-  MyTu: '🏦',
-  Unicredit: '🏛️',
-  Wise: '🌍',
-  'Altra Banca': '💳'
-};
-
 type CategoryDisplay = { name?: string | null; code?: string | null; icon?: string | null };
 
 export function categoryIcon(category?: CategoryDisplay | null) {

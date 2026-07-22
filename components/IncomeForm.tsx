@@ -24,7 +24,7 @@ type InitialIncome = {
   notes?: string | null;
 };
 
-type Option = { id: number; name: string; isFallback?: boolean | null };
+type Option = { id: number; name: string; icon?: string | null; isFallback?: boolean | null };
 type PaymentMethodOption = Option & { kind?: string };
 type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null };
 type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };
@@ -225,7 +225,7 @@ export default function IncomeForm({
           <label>
             Metodo di accredito
             <select name="paymentMethodId" value={paymentMethodId} onChange={(event) => setPaymentMethodId(event.currentTarget.value)} required>
-              {paymentMethods.map(method => <option key={method.id} value={method.id}>{method.name}</option>)}
+              {paymentMethods.map(method => <option key={method.id} value={method.id}>{method.icon ?? '•'} {method.name}</option>)}
             </select>
           </label>
 
@@ -233,7 +233,7 @@ export default function IncomeForm({
             Canale accr.
             <select name="creditBankId" value={cashPaymentSelected && fallbackBank ? String(fallbackBank.id) : creditBankId} onChange={(event) => setCreditBankId(event.currentTarget.value)} disabled={cashPaymentSelected} required>
               {banks.map(bank => (
-                <option key={bank.id} value={bank.id}>{bank.name}</option>
+                <option key={bank.id} value={bank.id}>{bank.icon ?? '•'} {bank.name}</option>
               ))}
             </select>
             {cashPaymentSelected && fallbackBank ? <input type="hidden" name="creditBankId" value={fallbackBank.id} /> : null}

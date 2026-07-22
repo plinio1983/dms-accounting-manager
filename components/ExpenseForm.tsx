@@ -2,7 +2,7 @@
 
 import {type FormEvent, useEffect, useMemo, useRef, useState} from "react";
 import {createPortal} from "react-dom";
-import {bankIcons, categoryIcon} from "@/lib/expense-ui";
+import {categoryIcon} from "@/lib/expense-ui";
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; systemRole?: string | null; isVatSettlementDefault?: boolean };
 type SupplierOption = {
@@ -788,7 +788,7 @@ export default function ExpenseForm({
         const bankName = banks.find((bank) => String(bank.id) === payment.bankId)?.name ?? "-";
         return [
             payment.paymentDate ? formatDateInputLabel(payment.paymentDate) : "Data non impostata",
-            methodName(payment.paymentMethodId) || payment.channel || "Canale non impostato",
+            `${paymentMethods.find(method => String(method.id) === payment.paymentMethodId)?.icon ?? "•"} ${methodName(payment.paymentMethodId) || payment.channel || "Canale non impostato"}`,
             bankName,
             formatEuro(Number(payment.amount || 0)),
             payment.paidBy === "ALTRO_OPERATORE" ? "Altro Operatore" : "Herbal Market",
@@ -1192,7 +1192,7 @@ export default function ExpenseForm({
                                             }}
                                         >
                                             <option value="">Seleziona metodo</option>
-                                            {availablePaymentMethods.map(method => <option key={method.id} value={method.id}>{method.name}</option>)}
+                                            {availablePaymentMethods.map(method => <option key={method.id} value={method.id}>{method.icon ?? "•"} {method.name}</option>)}
                                         </select>
                                     </label>
                                     <label>
@@ -1210,7 +1210,7 @@ export default function ExpenseForm({
                                             <option value="">-</option>
                                             {banks.map((b) => (
                                                 <option key={b.id} value={b.id}>
-                                                    {bankIcons[b.name] ?? "🏦"} {b.name}
+                                                    {b.icon ?? "•"} {b.name}
                                                 </option>
                                             ))}
                                         </select>

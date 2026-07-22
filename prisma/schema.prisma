@@ -195,6 +195,7 @@ model IncomeSalesChannel {
 model Bank {
   id        Int       @id @default(autoincrement())
   name      String
+  icon      String?
   isFallback Boolean @default(false)
   workspaceId Int?
   workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
@@ -210,6 +211,7 @@ model Bank {
 model PaymentMethod {
   id        Int       @id @default(autoincrement())
   name      String
+  icon      String?
   kind      String    @default("BOTH")
   isFallback Boolean  @default(false)
   systemRole PaymentMethodSystemRole?

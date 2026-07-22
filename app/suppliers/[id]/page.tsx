@@ -62,10 +62,11 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
     <SupplierEditModalController/>
     <NewExpensePanel
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
-      banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
+      banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback }))}
       paymentMethods={expensePaymentMethods.map(method => ({
         id: method.id,
         name: method.name,
+        icon: method.icon,
         kind: method.kind,
         isFallback: method.isFallback
       }))}
@@ -199,8 +200,8 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
         selectable
         formId="expenseBulkForm"
         categories={orderedCategories.map(c => ({id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
-        banks={orderedBanks.map(b => ({ id: b.id, name: b.name, isFallback: b.isFallback }))}
-        paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
+        banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback }))}
+        paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
         suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, systemRole: s.systemRole }))}
         mobileLabel="Spese collegate mobile"
         emptyMessage="Nessuna spesa collegata a questo fornitore."

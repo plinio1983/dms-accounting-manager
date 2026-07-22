@@ -11,11 +11,9 @@ import SortableTableController from '@/components/SortableTableController';
 import IncomesList from '@/components/IncomesList';
 import {
     badgeClass,
-    creditChannelStyles,
     fiscalStyles,
     incomeCreditStatusStyles,
     incomeInvoiceStatusStyles,
-    paymentMethodStyles,
     saleCategoryStyles,
     salesChannelStyles
 } from '@/lib/income-ui';
@@ -863,8 +861,8 @@ export default async function IncomesPage({searchParams}: {
                     quickBillingPeriodFilter={quickBillingPeriodFilter}
                     billingPeriodFromFilter={billingPeriodFromFilter}
                     billingPeriodToFilter={billingPeriodToFilter}
-                    banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name}))}
-                    paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name}))}
+                    banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon}))}
+                    paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name, icon: method.icon}))}
                     incomeCategories={incomeCategories}
                     salesChannels={salesChannels}
                 />
@@ -955,8 +953,8 @@ export default async function IncomesPage({searchParams}: {
                         quickBillingPeriodFilter={quickBillingPeriodFilter}
                         billingPeriodFromFilter={billingPeriodFromFilter}
                         billingPeriodToFilter={billingPeriodToFilter}
-                        banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name}))}
-                        paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name}))}
+                        banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon}))}
+                        paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name, icon: method.icon}))}
                         incomeCategories={incomeCategories}
                         salesChannels={salesChannels}
                     />
@@ -1166,8 +1164,8 @@ export default async function IncomesPage({searchParams}: {
                 incomes={filteredIncomes}
                 mobileIncomes={mobileSortedIncomes}
                 returnTo={returnTo}
-                banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
-                paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+                banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback }))}
+                paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback }))}
                 incomeCategories={incomeCategories}
                 salesChannels={salesChannels}
                 customers={customers}

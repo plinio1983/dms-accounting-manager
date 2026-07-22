@@ -15,6 +15,7 @@
     "db:reset-local": "prisma migrate reset --force && prisma generate",
     "db:sync": "prisma db push && prisma generate",
     "db:backfill-vat-settlement": "node scripts/backfill-vat-settlement-defaults.js",
+    "db:backfill-payment-credit-icons": "node scripts/backfill-payment-credit-icons.js",
     "db:backfill-customers": "node scripts/backfill-customers.js",
     "db:migrate:recurring-automatic-payment": "tsx scripts/migrate-recurring-automatic-payment.ts",
     "import:expenses": "tsx scripts/import-expenses.ts"

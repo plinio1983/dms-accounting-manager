@@ -12,7 +12,6 @@ import {
     fiscalStyles,
     incomeCreditStatusStyles,
     incomeInvoiceStatusStyles,
-    paymentMethodStyles,
     saleCategoryStyles
 } from '@/lib/income-ui';
 
@@ -31,9 +30,9 @@ type IncomeItem = {
     salesChannelRef: { name: string; icon?: string | null };
     customer?: { id: number; businessName: string } | null;
     paymentMethod?: string | null;
-    paymentMethodRef?: { name: string } | null;
+    paymentMethodRef?: { name: string; icon?: string | null } | null;
     creditChannel?: string | null;
-    creditBank?: { name: string } | null;
+    creditBank?: { name: string; icon?: string | null } | null;
 };
 
 function dateLabel(value?: Date | null) {
@@ -73,7 +72,7 @@ function fiscalBadge(value: boolean) {
 }
 
 type EntityOption = { id: number; code: string; name: string; icon?: string | null };
-type SimpleOption = { id: number; name: string; isFallback?: boolean | null; kind?: string };
+type SimpleOption = { id: number; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
 
 export default function IncomesList({
                                         incomes,
@@ -140,7 +139,6 @@ export default function IncomesList({
             {mobileIncomes.map(income => {
                 const catStyle = saleCategoryStyles[income.incomeCategory.name];
                 const paymentMethod = income.paymentMethodRef?.name ?? income.paymentMethod ?? '-';
-                const paymentStyle = paymentMethodStyles[paymentMethod];
                 const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
                 const status = creditStatus(income);
                 const vatStyle = vatStyles[String(Number(income.vatRate))] ?? vatStyles['0'];
@@ -169,7 +167,7 @@ export default function IncomesList({
                                     <div className="expense-mobile-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div>
                                 </div>
                                 <div className="right-side">
-                                    <span>{paymentStyle?.icon ?? '•'}</span><span className={moneyTone(amount)}>{euro(amount)}</span>
+                                    <span>{income.paymentMethodRef?.icon ?? '•'}</span><span className={moneyTone(amount)}>{euro(amount)}</span>
                                 </div>
                             </div>
                             {/*<div className="expense-mobile-title-row">*/}
@@ -236,8 +234,8 @@ export default function IncomesList({
                         <td><strong className={moneyTone(Number(income.amount))}>{euro(Number(income.amount))}</strong>
                         </td>
                         <td>{Number(income.vatRate)}%</td>
-                        <td>{paymentMethod}</td>
-                        <td>{creditChannel}</td>
+                        <td>{income.paymentMethodRef?.icon ?? '•'} {paymentMethod}</td>
+                        <td>{income.creditBank?.icon ?? '•'} {creditChannel}</td>
                         <td><span className={badgeClass(status.className)}>{status.icon} {status.label}</span></td>
                         <td>{income.isFiscal ?
                             <span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span> : '-'}</td>

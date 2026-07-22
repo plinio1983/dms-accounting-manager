@@ -11,7 +11,6 @@ import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/w
 import { stripFlashParams } from '@/lib/flash';
 import {
   badgeClass,
-  bankIcons,
   categoryLabel,
   categoryTone,
   formatPeriod,
@@ -122,8 +121,8 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
   return <div className="grid expense-detail-page recurring-expense-detail-page">
     <RecurringExpenseDetailEditModalController
       categories={categories.map(category => ({ id: category.id, code: category.code, name: category.name, icon: category.icon }))}
-      banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
-      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+      banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback }))}
+      paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback }))}
       suppliers={suppliers.map(supplier => ({ id: supplier.id, businessName: supplier.businessName, alias: supplier.alias, email: supplier.email, vatNumber: supplier.vatNumber, iban: supplier.iban, pec: supplier.pec, taxCodeSdi: supplier.taxCodeSdi, internalNotes: supplier.internalNotes }))}
       returnTo={currentDetailReturnTo}
     />
@@ -252,11 +251,11 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
           <div className="expense-detail-status-strip">
             <div>
               <span>Canale pagamento</span>
-              <strong>{paymentChannelName ?? '-'}</strong>
+              <strong>{paymentChannelName ? `${item.paymentMethod?.icon ?? '•'} ${paymentChannelName}` : '-'}</strong>
             </div>
             <div>
               <span>Banca</span>
-              <strong>{item.bank ? `${bankIcons[item.bank.name] ?? '🏦'} ${item.bank.name}` : '-'}</strong>
+              <strong>{item.bank ? `${item.bank.icon ?? '•'} ${item.bank.name}` : '-'}</strong>
             </div>
             <div>
               <span>Pagamento automatico</span>
@@ -293,8 +292,8 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
               selectable
               formId="recurringGeneratedExpenseBulkForm"
               categories={orderedCategories.map(category => ({ id: category.id, code: category.code, name: category.name, icon: category.icon, isVatSettlementDefault: category.id === current.workspace.vatSettlementCategoryId }))}
-              banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
-              paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
+              banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback }))}
+              paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
               suppliers={suppliers.map(supplier => ({ id: supplier.id, businessName: supplier.businessName, alias: supplier.alias, email: supplier.email, vatNumber: supplier.vatNumber, iban: supplier.iban, pec: supplier.pec, taxCodeSdi: supplier.taxCodeSdi, internalNotes: supplier.internalNotes, systemRole: supplier.systemRole }))}
               mobileLabel="Spese generate mobile"
               emptyMessage="Nessuna spesa generata da questa ricorrenza."

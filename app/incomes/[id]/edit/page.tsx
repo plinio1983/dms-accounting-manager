@@ -31,8 +31,8 @@ export default async function EditIncomePage({ params, searchParams }: { params:
       title={`Modifica incasso #${income.id}`}
       cancelHref={returnTo}
       submitLabel="Salva modifiche"
-      banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
-      paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, kind: method.kind, isFallback: method.isFallback }))}
+      banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback }))}
+      paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback }))}
       incomeCategories={incomeCategories}
       salesChannels={salesChannels}
       customers={customers}

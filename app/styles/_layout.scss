@@ -5045,6 +5045,14 @@ html, body {
   align-items: center;
   gap: 9px;
   padding: 10px 0 5px 0;
+
+  @media (max-width: 1040px) and (min-width: 900px) {
+    flex-wrap: wrap;
+
+    >div:last-child {
+      width: calc(100%);
+    }
+  }
 }
 
 .expense-impact-pie-row-wrap {
@@ -9807,7 +9815,15 @@ table .cell-description {
 }
 
 .payment-credit-settings-card {
+  .payment-credit-table-head,
   .payment-credit-edit-form {
+    grid-template-columns: minmax(180px, 1fr) 90px 130px 110px 92px;
+  }
+
+  .payment-credit-edit-form {
+    display: grid;
+    width: 100%;
+
     .category-settings-usage {
       flex-grow: 1;
     }
@@ -10241,6 +10257,10 @@ table .cell-description {
   .dashboard-actions-bottom .actions-row {
     justify-content: flex-end;
   }
+
+  .income-summary-row {
+    grid-template-columns:1fr;
+  }
 }
 
 @media (max-width: 1100px) {
@@ -10256,10 +10276,6 @@ table .cell-description {
     .card-heading-row {
       display: block;
     }
-  }
-
-  .income-summary-row {
-    grid-template-columns:1fr;
   }
 
   .totals-row .total-card,

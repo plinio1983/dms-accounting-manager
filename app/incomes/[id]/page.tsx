@@ -13,7 +13,6 @@ import {
     fiscalStyles,
     incomeCreditStatusStyles,
     incomeInvoiceStatusStyles,
-    paymentMethodStyles,
     saleCategoryStyles,
     salesChannelStyles
 } from '@/lib/income-ui';
@@ -112,7 +111,6 @@ export default async function IncomeDetailPage({params, searchParams}: {
     const incomeCreditChannelName = income.creditBank?.name ?? income.creditChannel;
     const salesStyle = salesChannelStyles[income.salesChannelRef.name];
     const categoryStyle = saleCategoryStyles[income.incomeCategory.name];
-    const paymentStyle = paymentMethodStyles[incomePaymentMethodName];
     const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
     const creditStatus = incomeCreditStatus(income);
     const detailToneClass = isIncomeCreditOverdue(income)
@@ -136,10 +134,11 @@ export default async function IncomeDetailPage({params, searchParams}: {
     return <div className="grid expense-detail-page income-detail-page">
         <IncomeEditModalController
             returnTo={currentDetailReturnTo}
-            banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, isFallback: bank.isFallback}))}
+            banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback}))}
             paymentMethods={incomePaymentMethods.map(method => ({
                 id: method.id,
                 name: method.name,
+                icon: method.icon,
                 kind: method.kind,
                 isFallback: method.isFallback
             }))}
@@ -250,9 +249,9 @@ export default async function IncomeDetailPage({params, searchParams}: {
                         </div>
                         <div><span>Data accr.</span><strong>{dateLabel(income.creditDate)}</strong></div>
                         <div>
-                            <span>Pagamento</span><strong>{paymentStyle?.icon ?? '•'} {incomePaymentMethodName}</strong>
+                            <span>Pagamento</span><strong>{income.paymentMethodRef?.icon ?? '•'} {incomePaymentMethodName}</strong>
                         </div>
-                        <div><span>Canale</span><strong>{incomeCreditChannelName}</strong></div>
+                        <div><span>Canale</span><strong>{income.creditBank?.icon ?? '•'} {incomeCreditChannelName}</strong></div>
                     </div>
                 </section>
 
