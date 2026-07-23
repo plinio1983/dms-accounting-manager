@@ -64,6 +64,14 @@ export async function destroyCurrentSession() {
     await prisma.authSession.deleteMany({ where: { tokenHash: { in: tokens.map(tokenHash) } } });
   }
   cookieStore.delete(sessionCookieName);
+  cookieStore.set(sessionCookieName, '', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 0,
+    expires: new Date(0)
+  });
 }
 
 export async function getCurrentSession() {

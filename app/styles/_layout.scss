@@ -802,6 +802,15 @@ body:has(.admin-login-page) .app-footer {
   font-weight: 800;
 }
 
+@media (min-width: 761px) and (max-width: 1080px) {
+  .nav-links .nav-link-month {
+    display: none;
+  }
+  //.nav-links a:last-of-type {
+  //  display: none;
+  //}
+}
+
 .card {
   background: var(--card);
   border: 1px solid var(--line);

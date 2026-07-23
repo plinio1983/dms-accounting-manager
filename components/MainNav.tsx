@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import {useEffect, useState, Suspense} from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
+import MonthlyReportIcon from '@/components/MonthlyReportIcon';
 
 const persistedFilterKeys: Record<string, string> = {
   '/expenses': 'dmsAccounting.expenses.filters',
@@ -57,7 +58,24 @@ function MainNavContent() {
   const pathname = usePathname() || '/';
   const searchParams = useSearchParams();
   const [savedFilters, setSavedFilters] = useState<Record<string, string>>({});
-
+  const now = new Date();
+  const currentMonthHref = `/months/${now.getFullYear()}/${now.getMonth() + 1}?mode=overall&returnTo=${encodeURIComponent('/')}`;
+  const navigationLinks = [
+      { href: '/', label: 'Dashboard', shortLabel: 'Home', icon: '⌂', match: (pathname: string) => pathname === '/' },
+      { href: '/expenses', label: 'Spese', shortLabel: 'Spese', icon: '−', match: (pathname: string) => pathname.startsWith('/expenses') },
+      { href: '/incomes', label: 'Incassi', shortLabel: 'Incassi', icon: '+', match: (pathname: string) => pathname.startsWith('/incomes') },
+      { href: currentMonthHref, label: 'Mese', shortLabel: 'Mese', icon: <MonthlyReportIcon/>,
+          match: (currentPathname: string) => currentPathname.startsWith('/months/'), isMonthLink: true
+      },
+      { href: '/suppliers', label: 'Fornitori', shortLabel: 'Fornitori', icon: '◇', match: (pathname: string) => pathname.startsWith('/suppliers') },
+  ];
+  const navigationMobileLinks = [
+      navigationLinks[0],
+      navigationLinks[1],
+      navigationLinks[3],
+      navigationLinks[2],
+      navigationLinks[4],
+  ];
   useEffect(() => {
     const nextSavedFilters: Record<string, string> = {};
 
@@ -89,13 +107,13 @@ function MainNavContent() {
   return (
     <>
       <div className="nav-links" aria-label="Menu principale">
-        {links.map((link) => {
+        {navigationLinks.map((link) => {
           const isActive = link.match(pathname);
           return (
             <Link
               key={link.href}
               href={navHref(link.href)}
-              className={isActive ? 'nav-link-active' : undefined}
+              className={[isActive ? 'nav-link-active' : '', 'isMonthLink' in link && link.isMonthLink ? 'nav-link-month' : ''].filter(Boolean).join(' ') || undefined}
               aria-current={isActive ? 'page' : undefined}
             >
               <span className="nav-link-icon" aria-hidden="true">{link.icon}</span>
@@ -105,7 +123,7 @@ function MainNavContent() {
         })}
       </div>
       <nav className="mobile-bottom-nav" aria-label="Menu mobile principale">
-        {links.map((link) => {
+        {navigationMobileLinks.map((link) => {
           const isActive = link.match(pathname);
           return (
             <Link

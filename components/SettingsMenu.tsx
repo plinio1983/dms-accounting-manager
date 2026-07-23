@@ -101,7 +101,7 @@ export default function SettingsMenu() {
             <span>{link.label}</span>
           </Link>)}
           <form action="/logout" method="post">
-            <button type="submit" onClick={closeMenu}>
+            <button type="submit">
               <span className="settings-drawer-item-icon" aria-hidden="true">↪</span>
               <span>Logout</span>
             </button>
