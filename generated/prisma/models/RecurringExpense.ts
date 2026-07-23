@@ -72,7 +72,6 @@ export type RecurringExpenseMinAggregateOutputType = {
   vatRate: runtime.Decimal | null
   isDeclared: boolean | null
   hasElectronicInvoice: boolean | null
-  paymentChannel: string | null
   paymentMethodId: number | null
   bankId: number | null
   notes: string | null
@@ -99,7 +98,6 @@ export type RecurringExpenseMaxAggregateOutputType = {
   vatRate: runtime.Decimal | null
   isDeclared: boolean | null
   hasElectronicInvoice: boolean | null
-  paymentChannel: string | null
   paymentMethodId: number | null
   bankId: number | null
   notes: string | null
@@ -126,7 +124,6 @@ export type RecurringExpenseCountAggregateOutputType = {
   vatRate: number
   isDeclared: number
   hasElectronicInvoice: number
-  paymentChannel: number
   paymentMethodId: number
   bankId: number
   notes: number
@@ -183,7 +180,6 @@ export type RecurringExpenseMinAggregateInputType = {
   vatRate?: true
   isDeclared?: true
   hasElectronicInvoice?: true
-  paymentChannel?: true
   paymentMethodId?: true
   bankId?: true
   notes?: true
@@ -210,7 +206,6 @@ export type RecurringExpenseMaxAggregateInputType = {
   vatRate?: true
   isDeclared?: true
   hasElectronicInvoice?: true
-  paymentChannel?: true
   paymentMethodId?: true
   bankId?: true
   notes?: true
@@ -237,7 +232,6 @@ export type RecurringExpenseCountAggregateInputType = {
   vatRate?: true
   isDeclared?: true
   hasElectronicInvoice?: true
-  paymentChannel?: true
   paymentMethodId?: true
   bankId?: true
   notes?: true
@@ -351,7 +345,6 @@ export type RecurringExpenseGroupByOutputType = {
   vatRate: runtime.Decimal
   isDeclared: boolean
   hasElectronicInvoice: boolean
-  paymentChannel: string | null
   paymentMethodId: number | null
   bankId: number | null
   notes: string | null
@@ -401,7 +394,6 @@ export type RecurringExpenseWhereInput = {
   vatRate?: Prisma.DecimalFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   hasElectronicInvoice?: Prisma.BoolFilter<"RecurringExpense"> | boolean
-  paymentChannel?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
   paymentMethodId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   bankId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   notes?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
@@ -434,7 +426,6 @@ export type RecurringExpenseOrderByWithRelationInput = {
   vatRate?: Prisma.SortOrder
   isDeclared?: Prisma.SortOrder
   hasElectronicInvoice?: Prisma.SortOrder
-  paymentChannel?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
   bankId?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -470,7 +461,6 @@ export type RecurringExpenseWhereUniqueInput = Prisma.AtLeast<{
   vatRate?: Prisma.DecimalFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   hasElectronicInvoice?: Prisma.BoolFilter<"RecurringExpense"> | boolean
-  paymentChannel?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
   paymentMethodId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   bankId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   notes?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
@@ -503,7 +493,6 @@ export type RecurringExpenseOrderByWithAggregationInput = {
   vatRate?: Prisma.SortOrder
   isDeclared?: Prisma.SortOrder
   hasElectronicInvoice?: Prisma.SortOrder
-  paymentChannel?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
   bankId?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -538,7 +527,6 @@ export type RecurringExpenseScalarWhereWithAggregatesInput = {
   vatRate?: Prisma.DecimalWithAggregatesFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolWithAggregatesFilter<"RecurringExpense"> | boolean
   hasElectronicInvoice?: Prisma.BoolWithAggregatesFilter<"RecurringExpense"> | boolean
-  paymentChannel?: Prisma.StringNullableWithAggregatesFilter<"RecurringExpense"> | string | null
   paymentMethodId?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
   bankId?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"RecurringExpense"> | string | null
@@ -561,7 +549,6 @@ export type RecurringExpenseCreateInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   notes?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -592,7 +579,6 @@ export type RecurringExpenseUncheckedCreateInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   paymentMethodId?: number | null
   bankId?: number | null
   notes?: string | null
@@ -616,7 +602,6 @@ export type RecurringExpenseUpdateInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -647,7 +632,6 @@ export type RecurringExpenseUncheckedUpdateInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -675,7 +659,6 @@ export type RecurringExpenseCreateManyInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   paymentMethodId?: number | null
   bankId?: number | null
   notes?: string | null
@@ -698,7 +681,6 @@ export type RecurringExpenseUpdateManyMutationInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -723,7 +705,6 @@ export type RecurringExpenseUncheckedUpdateManyInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -760,7 +741,6 @@ export type RecurringExpenseCountOrderByAggregateInput = {
   vatRate?: Prisma.SortOrder
   isDeclared?: Prisma.SortOrder
   hasElectronicInvoice?: Prisma.SortOrder
-  paymentChannel?: Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrder
   bankId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
@@ -801,7 +781,6 @@ export type RecurringExpenseMaxOrderByAggregateInput = {
   vatRate?: Prisma.SortOrder
   isDeclared?: Prisma.SortOrder
   hasElectronicInvoice?: Prisma.SortOrder
-  paymentChannel?: Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrder
   bankId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
@@ -828,7 +807,6 @@ export type RecurringExpenseMinOrderByAggregateInput = {
   vatRate?: Prisma.SortOrder
   isDeclared?: Prisma.SortOrder
   hasElectronicInvoice?: Prisma.SortOrder
-  paymentChannel?: Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrder
   bankId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
@@ -1104,7 +1082,6 @@ export type RecurringExpenseCreateWithoutWorkspaceInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   notes?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1133,7 +1110,6 @@ export type RecurringExpenseUncheckedCreateWithoutWorkspaceInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   paymentMethodId?: number | null
   bankId?: number | null
   notes?: string | null
@@ -1190,7 +1166,6 @@ export type RecurringExpenseScalarWhereInput = {
   vatRate?: Prisma.DecimalFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   hasElectronicInvoice?: Prisma.BoolFilter<"RecurringExpense"> | boolean
-  paymentChannel?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
   paymentMethodId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   bankId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   notes?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
@@ -1213,7 +1188,6 @@ export type RecurringExpenseCreateWithoutCategoryInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   notes?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1242,7 +1216,6 @@ export type RecurringExpenseUncheckedCreateWithoutCategoryInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   paymentMethodId?: number | null
   bankId?: number | null
   notes?: string | null
@@ -1292,7 +1265,6 @@ export type RecurringExpenseCreateWithoutBankInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   notes?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1322,7 +1294,6 @@ export type RecurringExpenseUncheckedCreateWithoutBankInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   paymentMethodId?: number | null
   notes?: string | null
   isActive?: boolean
@@ -1371,7 +1342,6 @@ export type RecurringExpenseCreateWithoutPaymentMethodInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   notes?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1401,7 +1371,6 @@ export type RecurringExpenseUncheckedCreateWithoutPaymentMethodInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   bankId?: number | null
   notes?: string | null
   isActive?: boolean
@@ -1450,7 +1419,6 @@ export type RecurringExpenseCreateWithoutSupplierInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   notes?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1479,7 +1447,6 @@ export type RecurringExpenseUncheckedCreateWithoutSupplierInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   paymentMethodId?: number | null
   bankId?: number | null
   notes?: string | null
@@ -1529,7 +1496,6 @@ export type RecurringExpenseCreateWithoutGeneratedExpensesInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   notes?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1559,7 +1525,6 @@ export type RecurringExpenseUncheckedCreateWithoutGeneratedExpensesInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   paymentMethodId?: number | null
   bankId?: number | null
   notes?: string | null
@@ -1598,7 +1563,6 @@ export type RecurringExpenseUpdateWithoutGeneratedExpensesInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1628,7 +1592,6 @@ export type RecurringExpenseUncheckedUpdateWithoutGeneratedExpensesInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1654,7 +1617,6 @@ export type RecurringExpenseCreateManyWorkspaceInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   paymentMethodId?: number | null
   bankId?: number | null
   notes?: string | null
@@ -1677,7 +1639,6 @@ export type RecurringExpenseUpdateWithoutWorkspaceInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1706,7 +1667,6 @@ export type RecurringExpenseUncheckedUpdateWithoutWorkspaceInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1733,7 +1693,6 @@ export type RecurringExpenseUncheckedUpdateManyWithoutWorkspaceInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1759,7 +1718,6 @@ export type RecurringExpenseCreateManyCategoryInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   paymentMethodId?: number | null
   bankId?: number | null
   notes?: string | null
@@ -1782,7 +1740,6 @@ export type RecurringExpenseUpdateWithoutCategoryInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1811,7 +1768,6 @@ export type RecurringExpenseUncheckedUpdateWithoutCategoryInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1838,7 +1794,6 @@ export type RecurringExpenseUncheckedUpdateManyWithoutCategoryInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1865,7 +1820,6 @@ export type RecurringExpenseCreateManyBankInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   paymentMethodId?: number | null
   notes?: string | null
   isActive?: boolean
@@ -1887,7 +1841,6 @@ export type RecurringExpenseUpdateWithoutBankInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1917,7 +1870,6 @@ export type RecurringExpenseUncheckedUpdateWithoutBankInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1944,7 +1896,6 @@ export type RecurringExpenseUncheckedUpdateManyWithoutBankInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1970,7 +1921,6 @@ export type RecurringExpenseCreateManyPaymentMethodInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   bankId?: number | null
   notes?: string | null
   isActive?: boolean
@@ -1992,7 +1942,6 @@ export type RecurringExpenseUpdateWithoutPaymentMethodInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2022,7 +1971,6 @@ export type RecurringExpenseUncheckedUpdateWithoutPaymentMethodInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2049,7 +1997,6 @@ export type RecurringExpenseUncheckedUpdateManyWithoutPaymentMethodInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2074,7 +2021,6 @@ export type RecurringExpenseCreateManySupplierInput = {
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: string | null
   paymentMethodId?: number | null
   bankId?: number | null
   notes?: string | null
@@ -2097,7 +2043,6 @@ export type RecurringExpenseUpdateWithoutSupplierInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2126,7 +2071,6 @@ export type RecurringExpenseUncheckedUpdateWithoutSupplierInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2153,7 +2097,6 @@ export type RecurringExpenseUncheckedUpdateManyWithoutSupplierInput = {
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2211,7 +2154,6 @@ export type RecurringExpenseSelect<ExtArgs extends runtime.Types.Extensions.Inte
   vatRate?: boolean
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: boolean
   paymentMethodId?: boolean
   bankId?: boolean
   notes?: boolean
@@ -2245,7 +2187,6 @@ export type RecurringExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   vatRate?: boolean
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: boolean
   paymentMethodId?: boolean
   bankId?: boolean
   notes?: boolean
@@ -2277,7 +2218,6 @@ export type RecurringExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   vatRate?: boolean
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: boolean
   paymentMethodId?: boolean
   bankId?: boolean
   notes?: boolean
@@ -2309,7 +2249,6 @@ export type RecurringExpenseSelectScalar = {
   vatRate?: boolean
   isDeclared?: boolean
   hasElectronicInvoice?: boolean
-  paymentChannel?: boolean
   paymentMethodId?: boolean
   bankId?: boolean
   notes?: boolean
@@ -2318,7 +2257,7 @@ export type RecurringExpenseSelectScalar = {
   updatedAt?: boolean
 }
 
-export type RecurringExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "startDate" | "cadence" | "dueDay" | "dueMonth" | "isAutomaticPayment" | "billingPeriodMode" | "billingMonth" | "merchant" | "supplierId" | "categoryId" | "description" | "amount" | "vatRate" | "isDeclared" | "hasElectronicInvoice" | "paymentChannel" | "paymentMethodId" | "bankId" | "notes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringExpense"]>
+export type RecurringExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "startDate" | "cadence" | "dueDay" | "dueMonth" | "isAutomaticPayment" | "billingPeriodMode" | "billingMonth" | "merchant" | "supplierId" | "categoryId" | "description" | "amount" | "vatRate" | "isDeclared" | "hasElectronicInvoice" | "paymentMethodId" | "bankId" | "notes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringExpense"]>
 export type RecurringExpenseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.RecurringExpense$workspaceArgs<ExtArgs>
   supplier?: boolean | Prisma.RecurringExpense$supplierArgs<ExtArgs>
@@ -2371,7 +2310,6 @@ export type $RecurringExpensePayload<ExtArgs extends runtime.Types.Extensions.In
     vatRate: runtime.Decimal
     isDeclared: boolean
     hasElectronicInvoice: boolean
-    paymentChannel: string | null
     paymentMethodId: number | null
     bankId: number | null
     notes: string | null
@@ -2824,7 +2762,6 @@ export interface RecurringExpenseFieldRefs {
   readonly vatRate: Prisma.FieldRef<"RecurringExpense", 'Decimal'>
   readonly isDeclared: Prisma.FieldRef<"RecurringExpense", 'Boolean'>
   readonly hasElectronicInvoice: Prisma.FieldRef<"RecurringExpense", 'Boolean'>
-  readonly paymentChannel: Prisma.FieldRef<"RecurringExpense", 'String'>
   readonly paymentMethodId: Prisma.FieldRef<"RecurringExpense", 'Int'>
   readonly bankId: Prisma.FieldRef<"RecurringExpense", 'Int'>
   readonly notes: Prisma.FieldRef<"RecurringExpense", 'String'>

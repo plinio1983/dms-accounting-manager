@@ -10,9 +10,7 @@ type InitialIncome = {
   incomeCategoryId?: number;
   description?: string | null;
   amount?: string | number | { toString(): string } | null;
-  paymentMethod?: string | null;
   paymentMethodId?: number | null;
-  creditChannel?: string | null;
   creditBankId?: number | null;
   creditDate?: string | Date | null;
   isCredited?: boolean;
@@ -79,12 +77,8 @@ function MoneyInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   );
 }
 
-function findOptionId(options: Option[], id?: number | null, name?: string | null) {
+function findOptionId(options: Option[], id?: number | null) {
   if (id && options.some(option => option.id === id)) return String(id);
-  if (name) {
-    const match = options.find(option => option.name.toLowerCase() === name.toLowerCase());
-    if (match) return String(match.id);
-  }
   return "";
 }
 
@@ -107,8 +101,8 @@ export default function IncomeForm({
 }: Props) {
   const fallbackBank = banks.find(bank => bank.isFallback) ?? banks.find(bank => bank.name.toLowerCase().includes("altra")) ?? banks[0];
   const defaultPaymentMethod = paymentMethods.find(method => method.name === "Bonifico") ?? paymentMethods[0];
-  const initialPaymentMethodId = findOptionId(paymentMethods, initialIncome?.paymentMethodId, initialIncome?.paymentMethod) || (defaultPaymentMethod ? String(defaultPaymentMethod.id) : "");
-  const initialCreditBankId = findOptionId(banks, initialIncome?.creditBankId, initialIncome?.creditChannel) || (fallbackBank ? String(fallbackBank.id) : "");
+  const initialPaymentMethodId = findOptionId(paymentMethods, initialIncome?.paymentMethodId) || (defaultPaymentMethod ? String(defaultPaymentMethod.id) : "");
+  const initialCreditBankId = findOptionId(banks, initialIncome?.creditBankId) || (fallbackBank ? String(fallbackBank.id) : "");
   const initialSalesChannelId = initialIncome?.salesChannelId ? String(initialIncome.salesChannelId) : String(salesChannels[0]?.id ?? "");
   const initialIncomeCategoryId = initialIncome?.incomeCategoryId ? String(initialIncome.incomeCategoryId) : String(incomeCategories[0]?.id ?? "");
   const [amount, setAmount] = useState(normalizeMoney(initialIncome?.amount));
@@ -225,7 +219,7 @@ export default function IncomeForm({
           <label>
             Metodo di accredito
             <select name="paymentMethodId" value={paymentMethodId} onChange={(event) => setPaymentMethodId(event.currentTarget.value)} required>
-              {paymentMethods.map(method => <option key={method.id} value={method.id}>{method.icon ?? '•'} {method.name}</option>)}
+              {paymentMethods.map(method => <option key={method.id} value={method.id}>{method.icon ?? '  •  '} {method.name}</option>)}
             </select>
           </label>
 
@@ -233,7 +227,7 @@ export default function IncomeForm({
             Canale accr.
             <select name="creditBankId" value={cashPaymentSelected && fallbackBank ? String(fallbackBank.id) : creditBankId} onChange={(event) => setCreditBankId(event.currentTarget.value)} disabled={cashPaymentSelected} required>
               {banks.map(bank => (
-                <option key={bank.id} value={bank.id}>{bank.icon ?? '•'} {bank.name}</option>
+                <option key={bank.id} value={bank.id}>{bank.icon ?? '  •  '} {bank.name}</option>
               ))}
             </select>
             {cashPaymentSelected && fallbackBank ? <input type="hidden" name="creditBankId" value={fallbackBank.id} /> : null}

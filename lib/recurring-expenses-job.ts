@@ -110,14 +110,6 @@ function periodKey(year: number, month: number) {
   return `${year}-${String(month).padStart(2, '0')}`;
 }
 
-function getRecurringPaymentMethod(recurringExpense: any) {
-  return recurringExpense.paymentMethod ?? null;
-}
-
-function getRecurringPaymentChannel(recurringExpense: any) {
-  return getRecurringPaymentMethod(recurringExpense)?.name ?? recurringExpense.paymentChannel ?? null;
-}
-
 function isAutomaticRecurringPayment(recurringExpense: any) {
   return Boolean(recurringExpense?.isAutomaticPayment);
 }
@@ -186,8 +178,6 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
             isDeclared: recurringExpense.isDeclared,
             isRecurring: true,
             isAutomaticPayment: isAutomaticRecurringPayment(recurringExpense),
-            bankId: recurringExpense.bankId || null,
-            channel: getRecurringPaymentChannel(recurringExpense),
             notes: recurringExpense.notes || null,
             recurringExpenseId: recurringExpense.id,
             recurringExpensePeriodKey
@@ -245,6 +235,11 @@ export async function settleAutomaticRecurringPayments(todayInput = new Date()):
         result.skipped += 1;
         continue;
       }
+      if (!expense.recurringExpense.paymentMethodId) {
+        result.errors.push({ expenseId: expense.id, message: 'Metodo di pagamento automatico mancante' });
+        result.skipped += 1;
+        continue;
+      }
 
       const amount = Number(expense.amount.toString());
       const paid = expense.payments.reduce((sum: number, payment: any) => sum + Number(payment.amount.toString()), 0);
@@ -270,8 +265,7 @@ export async function settleAutomaticRecurringPayments(todayInput = new Date()):
           data: {
             expenseId: expense.id,
             paymentDate: expense.dueDate,
-            channel: getRecurringPaymentChannel(expense.recurringExpense),
-            paymentMethodId: expense.recurringExpense.paymentMethodId || expense.recurringExpense.paymentMethod?.id || null,
+            paymentMethodId: expense.recurringExpense.paymentMethodId,
             bankId: expense.recurringExpense.bankId || null,
             amount: residual,
             paidBy: 'HERBAL_MARKET'
@@ -281,8 +275,6 @@ export async function settleAutomaticRecurringPayments(todayInput = new Date()):
           where: { id: expense.id },
           data: {
             paymentDate: expense.dueDate,
-            bankId: expense.recurringExpense.bankId || null,
-            channel: getRecurringPaymentChannel(expense.recurringExpense),
             paidAmount: amount,
             paymentStatus: 'COMPLETATO',
             isComplete: true,

@@ -1,4 +1,27 @@
 @media (max-width: 420px) {
+  .admin-login-form-panel {
+    padding: 14px;
+  }
+
+  .admin-login-card {
+    gap: 20px;
+    padding: 24px 20px;
+    border-radius: 16px;;
+  }
+
+  .admin-login-card-heading {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-login-lock {
+    width: 42px;
+    height: 42px;
+  }
+
+  .admin-login-card-heading h2 {
+    font-size: 28px;
+  }
+
   .login-form-panel {
     padding: 16px;
   }

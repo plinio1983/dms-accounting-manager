@@ -114,8 +114,7 @@ async function getOrCreateBank(name?: string) {
   return existing ?? prisma.bank.create({ data: { name: bankName } });
 }
 async function getOrCreatePaymentMethod(name?: string) {
-  const methodName = mapChannel(name);
-  if (!methodName) return null;
+  const methodName = mapChannel(name) || 'Altro metodo';
   const existing = await prisma.paymentMethod.findFirst({ where: { workspaceId: null, name: { equals: methodName, mode: 'insensitive' } } });
   return existing ?? prisma.paymentMethod.create({ data: { name: methodName, kind: paymentMethodKind(methodName), isFallback: methodName === 'Altro metodo' } });
 }
@@ -175,7 +174,7 @@ async function main() {
       await prisma.expense.create({ data: {
         receivedDate: excelDate(row[0]), merchant: supplier.businessName, supplierId: supplier.id, categoryId: category?.id,
         description: row[3]?.toString().trim() || null, amount: asNumber(row[4]), paymentDate: excelDate(row[5]), vatRate: asNumber(row[6]),
-        channel: paymentMethod?.name ?? row[7]?.toString().trim() ?? null, bankId: bank?.id, isComplete: Boolean(row[9]),
+        isComplete: Boolean(row[9]),
         isDeclared: row[10]?.toString().toLowerCase() === 'si', hasElectronicInvoice: row[11]?.toString().toLowerCase() === 'si',
         invoiceStatus: (row[11]?.toString().toLowerCase() === 'si' ? 'IN_ATTESA' : 'RICEVUTA') as InvoiceStatus,
         companyId: company?.id, paidByCurrentAccount: Boolean(row[14]),
@@ -185,8 +184,7 @@ async function main() {
         year, month,
         payments: paidAmount > 0 ? { create: [{
           paymentDate: excelDate(row[5]),
-          channel: paymentMethod?.name ?? row[7]?.toString().trim() ?? null,
-          paymentMethodId: paymentMethod?.id ?? null,
+          paymentMethodId: paymentMethod.id,
           bankId: bank?.id,
           amount: paidAmount,
           paidBy: 'HERBAL_MARKET'

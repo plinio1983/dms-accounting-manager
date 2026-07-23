@@ -14,6 +14,7 @@ import { stripFlashRecord, stripFlashSearchParams } from '@/lib/flash';
 import { isExpenseInvoiceNotReceived } from '@/lib/expense-invoice';
 import { badgeClass, formatPeriod } from '@/lib/expense-ui';
 import { compareDate, compareNumber, compareText } from '@/lib/mobile-sort';
+import SearchIcon from '@/components/SearchIcon';
 
 const paymentStatusOptions = [
   ['overdue', 'Scaduto'],
@@ -639,7 +640,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   const [expenses, categories, banks, paymentMethods, suppliers] = await Promise.all([
     prisma.expense.findMany({
       where: { workspaceId: current.workspace.id },
-      include: { category: true, bank: true, supplier: true, payments: { include: { bank: true, paymentMethod: true }, orderBy: { id: 'asc' } }, attachments: true },
+      include: { category: true, supplier: true, payments: { include: { bank: true, paymentMethod: true }, orderBy: { id: 'asc' } }, attachments: true },
       orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }],
       take: 500
     }),
@@ -816,8 +817,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       case 'notes_asc': return compareText(a.notes, b.notes, 'asc');
       case 'category_asc': return compareText(a.category?.name, b.category?.name, 'asc');
       case 'category_desc': return compareText(a.category?.name, b.category?.name, 'desc');
-      case 'bank_asc': return compareText(a.bank?.name, b.bank?.name, 'asc');
-      case 'channel_asc': return compareText(a.channel, b.channel, 'asc');
+      case 'bank_asc': return compareText(a.payments[0]?.bank?.name, b.payments[0]?.bank?.name, 'asc');
+      case 'channel_asc': return compareText(a.payments[0]?.paymentMethod.name, b.payments[0]?.paymentMethod.name, 'asc');
       case 'amount_desc': return compareNumber(a.amount, b.amount, 'desc');
       case 'amount_asc': return compareNumber(a.amount, b.amount, 'asc');
       case 'paidAmount_desc': return compareNumber(a.paidAmount, b.paidAmount, 'desc');
@@ -967,7 +968,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       <form className="supplier-quick-search" action="/expenses" method="get" role="search">
         {Object.entries(filters).flatMap(([key, value]) => key === 'supplierQuick' || key === 'mobileSort' ? [] : (Array.isArray(value) ? value.map(item => <input type="hidden" name={key} value={item} key={`${key}-${item}`} />) : value ? [<input type="hidden" name={key} value={value} key={key} />] : []))}
         <label htmlFor="expenseSupplierQuickSearch">Ricerca rapida</label>
-        <div className="supplier-quick-search-field"><input id="expenseSupplierQuickSearch" name="supplierQuick" defaultValue={inputDefault(filters, 'supplierQuick')} placeholder="Nome o ragione sociale" autoComplete="off" /><button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca fornitore">🔎</button></div>
+        <div className="supplier-quick-search-field"><input id="expenseSupplierQuickSearch" name="supplierQuick" defaultValue={inputDefault(filters, 'supplierQuick')} placeholder="Nome o ragione sociale" autoComplete="off" /><button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca fornitore"><SearchIcon /></button></div>
       </form>
       <MobileSortControl action="/expenses" currentValue={mobileSort} options={expenseMobileSortOptions} searchParams={filters} />
 

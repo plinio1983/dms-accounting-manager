@@ -34,7 +34,7 @@ export default function PaymentCreditEditRow({
   return <div className="payment-credit-row-shell">
     <div className="payment-credit-display-row">
         <strong className="payment-credit-display-name">{name}</strong>
-        <span className="payment-credit-display-icon" aria-label={icon ? `Icona ${icon}` : 'Nessuna icona'}>{icon ?? '•'}</span>
+        <span className="payment-credit-display-icon" aria-label={icon ? `Icona ${icon}` : 'Nessuna icona'}>{icon ?? '  •  '}</span>
       <span>{kindLabel}</span>
       <span className="payment-credit-display-usage"><strong>{usageCount}</strong> {usageCount === 1 ? 'movimento' : 'movimenti'}</span>
       <div className="payment-credit-display-actions">

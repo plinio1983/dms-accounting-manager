@@ -24,7 +24,6 @@ const RecurringExpenseSchema = z.object({
   vatRate: z.coerce.number().default(22),
   isDeclared: BooleanFromForm.default(false),
   hasElectronicInvoice: BooleanFromForm.default(false),
-  paymentChannel: z.string().optional(),
   paymentMethodId: z.coerce.number().optional().nullable(),
   bankId: z.coerce.number().optional().nullable(),
   notes: z.string().optional()
@@ -47,12 +46,10 @@ async function resolveCategoryId(categoryId: number | null | undefined, workspac
   return category.id;
 }
 
-async function resolvePaymentMethod(paymentMethodId: number | null | undefined, paymentChannel: string | undefined, workspaceId: number) {
-  if (!paymentMethodId && !paymentChannel) return null;
-  const method = paymentMethodId
-    ? await prisma.paymentMethod.findFirst({ where: { id: paymentMethodId, workspaceId } })
-    : await prisma.paymentMethod.findFirst({ where: { workspaceId, name: { equals: paymentChannel, mode: 'insensitive' } } });
-  if (paymentMethodId && !method) throw new Error('Metodo pagamento non valido');
+async function resolvePaymentMethod(paymentMethodId: number | null | undefined, workspaceId: number) {
+  if (!paymentMethodId) return null;
+  const method = await prisma.paymentMethod.findFirst({ where: { id: paymentMethodId, workspaceId } });
+  if (!method) throw new Error('Metodo pagamento non valido');
   return method;
 }
 
@@ -88,7 +85,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     throw error;
   }
   const categoryId = await resolveCategoryId(data.categoryId, current.workspace.id);
-  const paymentMethod = await resolvePaymentMethod(data.paymentMethodId, data.paymentChannel, current.workspace.id);
+  const paymentMethod = await resolvePaymentMethod(data.paymentMethodId, current.workspace.id);
   const isYearly = data.cadence === 'YEARLY' || data.cadence === 'EVERY_2_YEARS';
 
   await prisma.recurringExpense.update({
@@ -109,7 +106,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       vatRate: data.vatRate,
       isDeclared: data.isDeclared,
       hasElectronicInvoice: data.isDeclared ? data.hasElectronicInvoice : false,
-      paymentChannel: data.isAutomaticPayment ? (paymentMethod?.name ?? data.paymentChannel ?? null) : null,
       paymentMethodId: data.isAutomaticPayment ? (paymentMethod?.id ?? null) : null,
       bankId: data.isAutomaticPayment ? (data.bankId || null) : null,
       notes: data.notes || null

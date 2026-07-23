@@ -21,7 +21,6 @@ type PaymentRow = {
     key: number;
     id?: number;
     paymentDate: string;
-    channel: string;
     paymentMethodId: string;
     bankId: string;
     amount: string;
@@ -32,7 +31,6 @@ type PaymentRow = {
 type InitialPayment = {
     id?: number;
     paymentDate?: string | Date | null;
-    channel?: string | null;
     paymentMethodId?: number | null;
     bankId?: number | null;
     amount?: string | number | { toString(): string } | null;
@@ -130,7 +128,6 @@ function emptyPaymentRow(key: number): PaymentRow {
     return {
         key,
         paymentDate: today,
-        channel: defaultChannel,
         paymentMethodId: "",
         bankId: "",
         amount: "",
@@ -139,12 +136,8 @@ function emptyPaymentRow(key: number): PaymentRow {
     };
 }
 
-function findOptionId(options: Option[], id?: number | null, name?: string | null) {
+function findOptionId(options: Option[], id?: number | null) {
     if (id && options.some(option => option.id === id)) return String(id);
-    if (name) {
-        const match = options.find(option => option.name.toLowerCase() === name.toLowerCase());
-        if (match) return String(match.id);
-    }
     return "";
 }
 
@@ -157,8 +150,7 @@ function paymentRowFromInitial(
         key: payment.id ?? Date.now() + index,
         id: payment.id,
         paymentDate: toDateInput(payment.paymentDate),
-        channel: payment.channel ?? defaultChannel,
-        paymentMethodId: findOptionId(paymentMethods, payment.paymentMethodId, payment.channel),
+        paymentMethodId: findOptionId(paymentMethods, payment.paymentMethodId),
         bankId: payment.bankId ? String(payment.bankId) : "",
         amount: normalizeMoney(payment.amount),
         paidBy: payment.paidBy ?? "HERBAL_MARKET",
@@ -169,7 +161,7 @@ function paymentRowFromInitial(
 function isPaymentComplete(row: PaymentRow) {
     return Boolean(
         row.paymentDate &&
-        row.channel &&
+        row.paymentMethodId &&
         row.bankId &&
         Number(row.amount || 0) > 0 &&
         row.paidBy,
@@ -627,7 +619,7 @@ export default function ExpenseForm({
     const cashBankIdValue = cashBankId ? String(cashBankId) : (fallbackBank ? String(fallbackBank.id) : "");
     const methodName = (methodId: string) => paymentMethods.find(method => String(method.id) === methodId)?.name ?? "";
     const normalizePaymentRow = (row: PaymentRow): PaymentRow =>
-        isCashChannel(methodName(row.paymentMethodId) || row.channel) && cashBankIdValue ? {...row, bankId: cashBankIdValue} : row;
+        isCashChannel(methodName(row.paymentMethodId)) && cashBankIdValue ? {...row, bankId: cashBankIdValue} : row;
     const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount));
     const [submitError, setSubmitError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -721,8 +713,8 @@ export default function ExpenseForm({
             rows.map((row, i) => {
                 if (i !== index) return row;
                 const next = {...row, ...patch};
-                const nextMethodName = methodName(next.paymentMethodId) || next.channel;
-                if (("channel" in patch || "paymentMethodId" in patch) && isCashChannel(nextMethodName) && cashBankIdValue) {
+                const nextMethodName = methodName(next.paymentMethodId);
+                if ("paymentMethodId" in patch && isCashChannel(nextMethodName) && cashBankIdValue) {
                     next.bankId = cashBankIdValue;
                 }
                 return next;
@@ -754,7 +746,6 @@ export default function ExpenseForm({
             {
                 ...emptyPaymentRow(key),
                 paymentMethodId: defaultPaymentMethod ? String(defaultPaymentMethod.id) : "",
-                channel: defaultPaymentMethod?.name ?? defaultChannel,
                 amount: suggestedAmount,
                 amountTouched: Boolean(suggestedAmount),
             },
@@ -770,13 +761,12 @@ export default function ExpenseForm({
     }
 
     function renderPaymentHiddenInputs(payment: PaymentRow) {
-        const cashBankLocked = isCashChannel(methodName(payment.paymentMethodId) || payment.channel) && cashBankIdValue;
+        const cashBankLocked = isCashChannel(methodName(payment.paymentMethodId)) && cashBankIdValue;
         return (
             <>
                 <input type="hidden" name="paymentId[]" value={payment.id ?? ""}/>
                 <input type="hidden" name="paymentDate[]" value={payment.paymentDate}/>
                 <input type="hidden" name="paymentMethodId[]" value={payment.paymentMethodId}/>
-                <input type="hidden" name="paymentChannel[]" value={methodName(payment.paymentMethodId) || payment.channel}/>
                 <input type="hidden" name="paymentBankId[]" value={cashBankLocked ? cashBankIdValue : payment.bankId}/>
                 <input type="hidden" name="paymentAmount[]" value={payment.amount}/>
                 <input type="hidden" name="paymentPaidBy[]" value={payment.paidBy}/>
@@ -788,7 +778,7 @@ export default function ExpenseForm({
         const bankName = banks.find((bank) => String(bank.id) === payment.bankId)?.name ?? "-";
         return [
             payment.paymentDate ? formatDateInputLabel(payment.paymentDate) : "Data non impostata",
-            `${paymentMethods.find(method => String(method.id) === payment.paymentMethodId)?.icon ?? "•"} ${methodName(payment.paymentMethodId) || payment.channel || "Canale non impostato"}`,
+            `${paymentMethods.find(method => String(method.id) === payment.paymentMethodId)?.icon ?? "  •  "} ${methodName(payment.paymentMethodId) || "Canale non impostato"}`,
             bankName,
             formatEuro(Number(payment.amount || 0)),
             payment.paidBy === "ALTRO_OPERATORE" ? "Altro Operatore" : "Herbal Market",
@@ -892,8 +882,8 @@ export default function ExpenseForm({
                                         if (checked) setIsRecurring(false);
                                         if (checked) {
                                             const replacement = paymentMethods.find(method => method.systemRole !== "CASH" && !isCashChannel(method.name));
-                                            setPayments(rows => rows.map(row => isCashChannel(methodName(row.paymentMethodId) || row.channel)
-                                                ? { ...row, paymentMethodId: replacement ? String(replacement.id) : "", channel: replacement?.name ?? "" }
+                                            setPayments(rows => rows.map(row => isCashChannel(methodName(row.paymentMethodId))
+                                                ? { ...row, paymentMethodId: replacement ? String(replacement.id) : "" }
                                                 : row));
                                         }
                                     }}
@@ -1132,7 +1122,7 @@ export default function ExpenseForm({
                         </div>
                         {payments.map((payment, index) => {
                             const isOpen = openPaymentKey === payment.key || !payment.id;
-                            const cashBankLocked = isCashChannel(methodName(payment.paymentMethodId) || payment.channel) && cashBankIdValue;
+                            const cashBankLocked = isCashChannel(methodName(payment.paymentMethodId)) && cashBankIdValue;
 
                             if (!isOpen) {
                                 return (
@@ -1169,7 +1159,6 @@ export default function ExpenseForm({
                                     ref={openPaymentKey === payment.key ? openPaymentRef : null}
                                 >
                                     <input type="hidden" name="paymentId[]" value={payment.id ?? ""}/>
-                                    <input type="hidden" name="paymentChannel[]" value={methodName(payment.paymentMethodId) || payment.channel}/>
                                     <label>
                                         Data pagamento
                                         <input
@@ -1187,12 +1176,11 @@ export default function ExpenseForm({
                                             name="paymentMethodId[]"
                                             value={payment.paymentMethodId}
                                             onChange={(e) => {
-                                                const nextMethod = availablePaymentMethods.find(method => String(method.id) === e.target.value);
-                                                updatePayment(index, {paymentMethodId: e.target.value, channel: nextMethod?.name ?? ""});
+                                                updatePayment(index, {paymentMethodId: e.target.value});
                                             }}
                                         >
                                             <option value="">Seleziona metodo</option>
-                                            {availablePaymentMethods.map(method => <option key={method.id} value={method.id}>{method.icon ?? "•"} {method.name}</option>)}
+                                            {availablePaymentMethods.map(method => <option key={method.id} value={method.id}>{method.icon ?? "  •  "} {method.name}</option>)}
                                         </select>
                                     </label>
                                     <label>
@@ -1210,7 +1198,7 @@ export default function ExpenseForm({
                                             <option value="">-</option>
                                             {banks.map((b) => (
                                                 <option key={b.id} value={b.id}>
-                                                    {b.icon ?? "•"} {b.name}
+                                                    {b.icon ?? "  •  "} {b.name}
                                                 </option>
                                             ))}
                                         </select>

@@ -40,7 +40,7 @@ export const categoryIconOptions = [
 export const defaultIncomeCategories = [
   ['B2C', 'B2C', '👤'],
   ['B2B', 'B2B', '🏢'],
-  ['OTHER', 'Altro', '•']
+  ['OTHER', 'Altro', '  •  ']
 ] as const;
 
 export const defaultIncomeSalesChannels = [
@@ -53,7 +53,7 @@ export const incomeEntityIconOptions = [
   ...categoryIconOptions,
   '👤',
   '🏢',
-  '•',
+  '  •  ',
   '🏬',
   '🔀',
   '💶',

@@ -343,18 +343,260 @@ body:has(.settings-page) .app-footer {
 }
 
 body:has(.login-page),
-body:has(.register-page) {
+body:has(.register-page),
+body:has(.admin-login-page) {
   min-height: 100vh;
   background: #eef2f7;
   padding-bottom: 0;
 }
 
 body:has(.login-page) .shell,
-body:has(.register-page) .shell {
+body:has(.register-page) .shell,
+body:has(.admin-login-page) .shell {
   width: 100%;
   max-width: none;
   min-height: 100vh;
   padding: 0;
+}
+
+body:has(.admin-login-page) .app-footer {
+  display: none;
+}
+
+.admin-login-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(400px, .9fr) minmax(480px, 1.1fr);
+  background: #f4f6fa;
+}
+
+.admin-login-brand-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: clamp(36px, 5vw, 68px);
+  background:
+    radial-gradient(circle at 85% 12%, rgba(84, 126, 255, .3), transparent 29%),
+    linear-gradient(145deg, #07162f 0%, #0c2854 55%, #123b76 100%);
+  color: #fff;
+}
+
+.admin-login-brand-panel::after {
+  content: "";
+  position: absolute;
+  right: -170px;
+  bottom: -210px;
+  width: 520px;
+  height: 520px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 50%;
+  box-shadow: 0 0 0 70px rgba(255, 255, 255, .025), 0 0 0 140px rgba(255, 255, 255, .02);
+}
+
+.admin-login-brand,
+.admin-login-brand-content,
+.admin-login-brand-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-login-brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -.02em;
+}
+
+.admin-login-mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, .3);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .1);
+  font-size: 17px;
+}
+
+.admin-login-brand-content {
+  max-width: 590px;
+}
+
+.admin-login-environment {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  margin-bottom: 24px;
+  color: #b9cdf3;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.admin-login-environment span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #60e6ad;
+  box-shadow: 0 0 0 5px rgba(96, 230, 173, .12);
+}
+
+.admin-login-brand-content h1 {
+  margin: 0;
+  font-size: clamp(42px, 5vw, 68px);
+  line-height: .98;
+  letter-spacing: -.055em;
+}
+
+.admin-login-brand-content p {
+  max-width: 500px;
+  margin: 24px 0 0;
+  color: rgba(224, 234, 255, .76);
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.admin-login-brand-footer {
+  margin: 0;
+  color: rgba(215, 226, 248, .55);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-login-form-panel {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: clamp(30px, 7vw, 92px);
+}
+
+.admin-login-card {
+  width: min(100%, 470px);
+  grid-template-columns: 1fr;
+  gap: 24px;
+  padding: 38px;
+  border: 1px solid #e1e6ef;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 28px 75px rgba(31, 47, 78, .11);
+  display: block !important;
+}
+
+.admin-login-card-heading {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.admin-login-lock {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: #eaf0ff;
+  color: #2456c7;
+  font-size: 25px;
+  font-weight: 900;
+}
+
+.admin-login-kicker {
+  margin: 1px 0 7px;
+  color: #2456c7;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.admin-login-card-heading h2 {
+  margin: 0;
+  color: #172238;
+  font-size: 32px;
+  line-height: 1.05;
+  letter-spacing: -.035em;
+}
+
+.admin-login-card-heading p:last-child {
+  margin: 10px 0 0;
+  color: #6b7485;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.admin-login-fields {
+  display: grid;
+  gap: 17px;
+  margin: 20px 0;
+}
+
+.admin-login-fields label {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-login-fields label > span {
+  color: #364157;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.admin-login-fields input {
+  min-height: 50px;
+  padding-inline: 15px;
+  border: 1px solid #d7deea;
+  border-radius: 11px;
+  background: #f9fbfe;
+  color: #172238;
+  font-size: 15px;
+}
+
+.admin-login-fields input::placeholder {
+  color: #9ba5b5;
+}
+
+.admin-login-fields input:focus {
+  outline: 3px solid rgba(47, 91, 211, .14);
+  border-color: #3565d4;
+  background: #fff;
+}
+
+.admin-login-error {
+  margin: 0;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.admin-login-submit {
+  width: 100%;
+  min-height: 50px;
+  justify-content: space-between;
+  padding-inline: 18px;
+  border-radius: 11px;
+}
+
+.admin-login-security-note {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0 0;
+  color: #8a94a5;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-login-security-note span {
+  color: #36a879;
+  font-size: 8px;
 }
 
 .login-page,
@@ -4134,6 +4376,7 @@ table th, table td {
   width: max-content;
   max-width: 100%;
   min-width: 0;
+  flex-grow: 1;
 
   @media (max-width: 576px) {
     border-bottom: 1px solid var(--line);
@@ -4244,7 +4487,7 @@ table th, table td {
 .month-report-section-heading {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  //justify-content: space-between;
   gap: 16px;
   margin-bottom: 14px;
 }
@@ -6039,13 +6282,13 @@ html, body {
   text-overflow: ellipsis;
 }
 
-.compact-expenses-table th:first-child,
-.compact-expenses-table td:first-child,
-.compact-incomes-table th:first-child,
-.compact-incomes-table td:first-child {
-  width: 38px;
-  text-align: center;
-}
+//.compact-expenses-table th:first-child,
+//.compact-expenses-table td:first-child,
+//.compact-incomes-table th:first-child,
+//.compact-incomes-table td:first-child {
+//  width: 38px;
+//  text-align: center;
+//}
 
 .compact-incomes-table {
   min-width: 1020px;
@@ -6068,51 +6311,8 @@ html, body {
   text-overflow: ellipsis;
 }
 
-/*.compact-incomes-table th:nth-child(2), .compact-incomes-table td:nth-child(2) {*/
-/*    width: 76px;*/
-/*}*/
-
-/*.compact-incomes-table th:nth-child(3), .compact-incomes-table td:nth-child(3) {*/
-/*    width: 78px;*/
-/*}*/
-
-/*.compact-incomes-table th:nth-child(4), .compact-incomes-table td:nth-child(4) {*/
-/*    width: 112px;*/
-/*}*/
-
-/*.compact-incomes-table th:nth-child(5), .compact-incomes-table td:nth-child(5) {*/
-/*    width: 72px;*/
-/*}*/
-
-/*.compact-incomes-table th:nth-child(6), .compact-incomes-table td:nth-child(6) {*/
-/*    width: 94px;*/
-/*    text-align: right;*/
-/*}*/
-
-/*.compact-incomes-table th:nth-child(7), .compact-incomes-table td:nth-child(7) {*/
-/*    width: 116px;*/
-/*}*/
-
-/*.compact-incomes-table th:nth-child(8), .compact-incomes-table td:nth-child(8) {*/
-/*    width: 92px;*/
-/*}*/
-
-/*.compact-incomes-table th:nth-child(9), .compact-incomes-table td:nth-child(9) {*/
-/*    width: 72px;*/
-/*}*/
-
-/*.compact-incomes-table th:nth-child(10), .compact-incomes-table td:nth-child(10) {*/
-/*    width: 92px;*/
-/*}*/
-
-/*.compact-incomes-table th:nth-child(11), .compact-incomes-table td:nth-child(11) {*/
-/*    width: 56px;*/
-/*    text-align: center;*/
-/*}*/
-
 .income-amount-row {
   display: flex;
-  /*grid-template-columns:minmax(0, 1fr) auto;*/
   gap: 10px;
   align-items: center;
 }
@@ -6143,7 +6343,6 @@ html, body {
 }
 
 
-/* v47: totali di periodo + totali risultati filtrati, liste più compatte */
 .totals-row,
 .income-totals-row {
   gap: 8px;
@@ -6181,16 +6380,11 @@ html, body {
   gap: 0;
   margin: 10px 0 10px;
   padding: 10px;
-  /*border: 1px solid #e2e8f0;*/
-  /*border-radius: 14px;*/
-  /*background: #f8fafc;*/
-  /*background: #eef2ff;*/
 }
 
 .search-totals-row > div {
   min-width: 0;
   border-bottom: 1px solid #e5eaf3;
-  /*border-radius: 12px;*/
   background: #fff;
   padding: 6px 10px;
 }
@@ -6251,7 +6445,6 @@ html, body {
   padding: 5px 6px;
 }
 
-/* v49 - tabella fornitori più compatta */
 .compact-suppliers-table {
   min-width: 660px;
 }
@@ -6283,7 +6476,6 @@ html, body {
   min-width: 920px;
   width: 100%;
   table-layout: fixed;
-  /*font-size: 11px;*/
 }
 
 .compact-incomes-table th,
@@ -6536,7 +6728,6 @@ html, body {
 }
 
 
-/* v56: bulk actions dirette */
 .bulk-actions-bar {
   justify-content: flex-end;
 }
@@ -6551,8 +6742,6 @@ html, body {
   white-space: nowrap;
 }
 
-
-/* v57: menu azioni bulk diretto, senza select né pulsante Esegui */
 .bulk-actions-bar {
   justify-content: flex-end;
   align-items: center;
@@ -6798,7 +6987,6 @@ html, body {
   content: "IVA";
 }
 
-/* v61 pre-refactor: collapsible payments and auto-submit dashboard selectors */
 .payments-collapse {
   display: block;
 }
@@ -6903,8 +7091,6 @@ select:disabled {
   border-width: 1px;
   border-color: #b7bccc;
   border-radius: 999px;
-  //background: #fff;
-  //color: var(--accent);
   font-size: 12px;
   font-weight: 800;
   line-height: 1;
@@ -6913,7 +7099,6 @@ select:disabled {
 }
 
 button.bulk-direct-link {
-  //background: #fff;
   max-width: max-content;
 }
 
@@ -6940,7 +7125,6 @@ button.bulk-direct-link {
 }
 
 
-/* v64: full width layout and disabled invoice switch */
 .shell {
   max-width: none !important;
   width: 100% !important;
@@ -6956,7 +7140,6 @@ button.bulk-direct-link {
   color: var(--muted);
 }
 
-/* v71: modalized create/edit forms and mobile-safe modal layout */
 .app-form-modal,
 .modal-backdrop {
   align-items: flex-start;
@@ -9651,7 +9834,7 @@ table .cell-supplier {
 table .cell-residual,
 table .cell-amount {
   width: 7% !important;
-  text-align: center;
+  //text-align: center;
 }
 
 table .cell-vat {
@@ -9948,15 +10131,18 @@ table .cell-description {
 /* Responsive layout adjustments above the mobile breakpoint. */
 @media (max-width: 860px) {
   .login-page,
-  .register-page {
+  .register-page,
+  .admin-login-page {
     grid-template-columns: 1fr;
   }
 
-  .login-hero-panel {
+  .login-hero-panel,
+  .admin-login-brand-panel {
     display: none;
   }
 
-  .login-form-panel {
+  .login-form-panel,
+  .admin-login-form-panel {
     min-height: 100vh;
     padding: 24px;
   }
@@ -10547,4 +10733,6 @@ table .cell-description {
   flex-grow: 0;
 }
 
-.dashboard-pie-legend-collapsible { display: none; }
+.dashboard-pie-legend-collapsible {
+  display: none;
+}

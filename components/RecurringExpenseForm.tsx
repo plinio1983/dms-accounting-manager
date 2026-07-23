@@ -32,7 +32,6 @@ type InitialRecurringExpense = {
   vatRate?: string | number | { toString(): string } | null;
   isDeclared?: boolean;
   hasElectronicInvoice?: boolean;
-  paymentChannel?: string | null;
   paymentMethodId?: number | null;
   bankId?: number | null;
   notes?: string | null;
@@ -397,7 +396,7 @@ export default function RecurringExpenseForm({
 }: Props) {
   const initialPaymentMethodId = initialExpense?.paymentMethodId && paymentMethods.some(method => method.id === initialExpense.paymentMethodId)
     ? String(initialExpense.paymentMethodId)
-    : paymentMethods.find(method => method.name === initialExpense?.paymentChannel)?.id?.toString() ?? "";
+    : "";
   const cashBankIdValue = banks.find(bank => bank.name.trim().toLowerCase() === cashBankName.toLowerCase())?.id.toString()
     ?? banks.find(bank => bank.isFallback)?.id.toString()
     ?? "";
@@ -593,7 +592,7 @@ export default function RecurringExpenseForm({
           setPaymentMethodId(nextPaymentMethodId);
           if (isCashChannel(nextPaymentMethodName) && cashBankIdValue) setBankId(cashBankIdValue);
         }}
-      ><option value="">Seleziona canale</option>{paymentMethods.map(c => <option key={c.id} value={c.id}>{c.icon ?? '•'} {c.name}</option>)}</select></label>
+      ><option value="">Seleziona canale</option>{paymentMethods.map(c => <option key={c.id} value={c.id}>{c.icon ?? '  •  '} {c.name}</option>)}</select></label>
       <label>Banca
         {cashBankLocked ? <input type="hidden" name="bankId" value={cashBankIdValue} /> : null}
         <select
@@ -602,7 +601,7 @@ export default function RecurringExpenseForm({
           disabled={!isAutomaticAccrual || cashBankLocked}
           required={isAutomaticAccrual && !cashBankLocked}
           onChange={(event) => setBankId(event.currentTarget.value)}
-        ><option value="">Seleziona banca</option>{banks.map(b => <option key={b.id} value={b.id}>{b.icon ?? '•'} {b.name}</option>)}</select>
+        ><option value="">Seleziona banca</option>{banks.map(b => <option key={b.id} value={b.id}>{b.icon ?? '  •  '} {b.name}</option>)}</select>
       </label>
         </div>
       </details>

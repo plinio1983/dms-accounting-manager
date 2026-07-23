@@ -61,7 +61,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
   const [banks, paymentMethods] = await Promise.all([
     prisma.bank.findMany({
       where: { workspaceId: current.workspace.id },
-      include: { _count: { select: { expenses: true, payments: true, recurringExpenses: true, incomeCredits: true } } },
+      include: { _count: { select: { payments: true, recurringExpenses: true, incomeCredits: true } } },
       orderBy: { id: 'asc' }
     }),
     prisma.paymentMethod.findMany({
@@ -100,7 +100,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
         <span>Azioni</span>
       </div>
       {orderedBanks.length ? orderedBanks.map(bank => {
-        const usageCount = bank._count.expenses + bank._count.payments + bank._count.recurringExpenses + bank._count.incomeCredits;
+                const usageCount = bank._count.payments + bank._count.recurringExpenses + bank._count.incomeCredits;
         return <PaymentCreditEditRow key={bank.id} id={bank.id} name={bank.name} icon={bank.icon} kindLabel={bank.isFallback ? 'Generico' : 'Banca'} usageCount={usageCount} protectedFromDelete={bank.isFallback} iconOptions={paymentCreditIconOptions} updateAction={updateBankAction} deleteAction={deleteBankAction} />;
       }) : <p className="muted">Nessuna banca configurata.</p>}
     </details>

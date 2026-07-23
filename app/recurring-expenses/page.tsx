@@ -30,7 +30,7 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
   const activeFilter = inputDefault(filters, 'isActive');
   const cadenceFilter = inputDefault(filters, 'cadence');
   const billingModeFilter = inputDefault(filters, 'billingPeriodMode');
-  const paymentFilter = inputDefault(filters, 'paymentChannel').trim();
+  const paymentMethodFilter = inputDefault(filters, 'paymentMethodId');
   const bankFilter = inputDefault(filters, 'bankId');
   const amountMinFilter = inputDefault(filters, 'amountMin');
   const amountMaxFilter = inputDefault(filters, 'amountMax');
@@ -49,7 +49,7 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
   if (activeFilter === 'false') where.isActive = false;
   if (cadenceFilter) where.cadence = cadenceFilter;
   if (billingModeFilter) where.billingPeriodMode = billingModeFilter;
-  if (paymentFilter) where.paymentChannel = { contains: paymentFilter, mode: 'insensitive' };
+  if (paymentMethodFilter) where.paymentMethodId = Number(paymentMethodFilter);
   if (bankFilter) where.bankId = Number(bankFilter);
   if (amountWhere) where.amount = amountWhere;
 

@@ -11,9 +11,7 @@ type EditIncome = {
   incomeCategoryId: number;
   description?: string | null;
   amount?: string | number | null;
-  paymentMethod?: string | null;
   paymentMethodId?: number | null;
-  creditChannel?: string | null;
   creditBankId?: number | null;
   creditDate?: string | Date | null;
   isCredited?: boolean;

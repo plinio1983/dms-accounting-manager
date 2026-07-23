@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireWorkspace } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -7,6 +6,7 @@ import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
 import IncomesList from '@/components/IncomesList';
 import ClientEditModalController from '@/components/ClientEditModalController';
 import DeleteActionButton from '@/components/DeleteActionButton';
+import DetailBackButton from '@/components/DetailBackButton';
 import { badgeClass, incomeCreditStatusStyles } from '@/lib/income-ui';
 
 function valueOrDash(value?: string | null) { return value?.trim() || '-'; }
@@ -39,7 +39,7 @@ export default async function ClientDetailPage({ params, searchParams }: { param
     <ClientEditModalController />
     <script dangerouslySetInnerHTML={{ __html: `document.addEventListener('click',async function(event){const button=event.target.closest('[data-copy]');if(!button)return;const value=button.getAttribute('data-copy')||'';if(!value)return;try{await navigator.clipboard.writeText(value);button.textContent='✓';setTimeout(()=>button.textContent='⧉',900)}catch(e){alert('Impossibile copiare il valore.')}});` }} />
     <div className="expense-detail-shell"><article className="expense-detail-document supplier-detail-document">
-      <div className="expense-detail-action-row"><div className="left-side"><Link className="btn btn-sm btn-default" href={backHref}>↩ Indietro</Link></div>{!customer.systemRole ? <div className="right-side"><button className="btn btn-sm btn-primary" type="button" data-client-edit-id={customer.id}>✎ Modifica</button><DeleteActionButton action={`/api/clients/${customer.id}`} confirmMessage="Confermi la rimozione del cliente?" className="btn btn-sm btn-danger">🗑 Elimina</DeleteActionButton></div> : <span className="badge">Cliente di sistema</span>}</div>
+      <div className="expense-detail-action-row"><div className="left-side"><DetailBackButton href={backHref} /></div>{!customer.systemRole ? <div className="right-side"><button className="btn btn-sm btn-primary" type="button" data-client-edit-id={customer.id}>✎ Modifica</button><DeleteActionButton action={`/api/clients/${customer.id}`} confirmMessage="Confermi la rimozione del cliente?" className="btn btn-sm btn-danger">🗑 Elimina</DeleteActionButton></div> : <span className="badge">Cliente di sistema</span>}</div>
       <section className="expense-detail-hero"><div><div className="expense-detail-title-block"><p className="expense-detail-kicker">Cliente #{customer.id}</p><h1>{customer.businessName}</h1><div className="expense-detail-meta-line"><span>{valueOrDash(customer.alias)}</span><span className="badge">{customer.incomes.length} incassi collegati</span></div></div></div>
         <aside className="expense-detail-amount-panel"><div className="expense-detail-amount-panel-header-row"><span className="expense-detail-amount-panel-header">Da accreditare</span></div><strong className={uncreditedTotal > 0 ? 'text-warning' : 'text-ok'}>{euro(uncreditedTotal)}</strong><div className="expense-detail-badge-row"><span className={badgeClass(uncreditedTotal > 0 ? incomeCreditStatusStyles.DA_ACCREDITARE.className : incomeCreditStatusStyles.ACCREDITATO.className)}>{uncredited.length} incassi aperti</span></div></aside>
       </section>

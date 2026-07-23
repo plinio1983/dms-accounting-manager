@@ -58,7 +58,6 @@ export default async function EditExpensePage({ params, searchParams }: { params
             payments: expense.payments.map(payment => ({
               id: payment.id,
               paymentDate: payment.paymentDate,
-              channel: payment.channel,
               paymentMethodId: payment.paymentMethodId,
               bankId: payment.bankId,
               amount: payment.amount.toString(),

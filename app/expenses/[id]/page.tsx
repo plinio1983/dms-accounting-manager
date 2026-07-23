@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import ExpenseDetailEditModalController from '@/components/ExpenseDetailEditModalController';
+import DetailBackButton from '@/components/DetailBackButton';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import { euro } from '@/lib/money';
@@ -66,7 +67,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
   const [expense, categories, banks, paymentMethods, suppliers] = await Promise.all([
     prisma.expense.findUnique({
       where: { id: Number(id) },
-      include: { category: true, bank: true, supplier: true, payments: { include: { bank: true, paymentMethod: true }, orderBy: { id: 'asc' } }, attachments: true }
+      include: { category: true, supplier: true, payments: { include: { bank: true, paymentMethod: true }, orderBy: { id: 'asc' } }, attachments: true }
     }),
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
@@ -135,7 +136,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       <article className="expense-detail-document">
         <div className="expense-detail-action-row">
           <div className="left-side">
-            <Link className="btn btn-sm btn-default" href={returnTo}><span className="btn-icon">↩</span> Indietro</Link>
+            <DetailBackButton href={returnTo} />
           </div>
           <div className="right-side">
             <button className="btn btn-sm btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉
@@ -254,8 +255,8 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
               </div>
               <div className="expense-payment-data">
                 <div><span>Importo</span><strong>{euro(payment.amount.toString())}</strong></div>
-                <div><span>Canale</span><strong>{payment.paymentMethod?.icon ?? '•'} {payment.paymentMethod?.name ?? payment.channel ?? '-'}</strong></div>
-                <div><span>Banca</span><strong>{payment.bank ? `${payment.bank.icon ?? '•'} ${payment.bank.name}` : '-'}</strong></div>
+                <div><span>Canale</span><strong>{payment.paymentMethod.icon ?? '  •  '} {payment.paymentMethod.name}</strong></div>
+                <div><span>Banca</span><strong>{payment.bank ? `${payment.bank.icon ?? '  •  '} ${payment.bank.name}` : '-'}</strong></div>
                 <div><span>Operatore</span><strong>{paidByLabel(payment.paidBy)}</strong></div>
               </div>
             </article>)}
@@ -275,8 +276,8 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
               </div>
 
               <div className="expense-payment-data">
-                <div><span>Canale</span><strong>{payment.paymentMethod?.icon ?? '•'} {payment.paymentMethod?.name ?? payment.channel ?? '-'}</strong></div>
-                <div><span>Banca</span><strong>{payment.bank ? `${payment.bank.icon ?? '•'} ${payment.bank.name}` : '-'}</strong></div>
+                <div><span>Canale</span><strong>{payment.paymentMethod.icon ?? '  •  '} {payment.paymentMethod.name}</strong></div>
+                <div><span>Banca</span><strong>{payment.bank ? `${payment.bank.icon ?? '  •  '} ${payment.bank.name}` : '-'}</strong></div>
                 <div className=""><span>Operatore</span><strong>{paidByLabel(payment.paidBy)}</strong></div>
               </div>
             </article>)}

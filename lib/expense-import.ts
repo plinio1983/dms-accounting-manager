@@ -348,7 +348,9 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
     const bankName = mapBankName(rowValue(row, ['Banca']));
     const bank = refs.banks[bankName] ?? refs.banks['Altra Banca'];
     const channel = mapChannel(rowValue(row, ['Canale Pagamento', 'Canale']));
-    const paymentMethod = channel ? (refs.paymentMethods[channel] ?? await getOrCreatePaymentMethod(channel, options.workspaceId)) : null;
+    const paymentMethod = channel
+      ? (refs.paymentMethods[channel] ?? await getOrCreatePaymentMethod(channel, options.workspaceId))
+      : refs.paymentMethods[fallbackPaymentMethodName];
     const vatRate = parseMoney(rowValue(row, ['Aliquota IVA', '% IVA', 'Applicazione IVA', 'IVA']));
     const isDeclared = parseBool(rowValue(row, ['Detrazione', 'Dich.', 'Dichiarazione']));
     const hasElectronicInvoice = parseBool(rowValue(row, ['Fattura elettronica', 'F. Elett.', 'Fattura Elettronica']));
@@ -405,7 +407,6 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
         vatRate,
         isDeclared,
         hasElectronicInvoice,
-        paymentChannel: paymentMethod?.name ?? channel,
         paymentMethodId: paymentMethod?.id ?? null,
         bankId: bank?.id ?? null,
         notes: notes || null,
@@ -463,7 +464,9 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
     const bankName = mapBankName(rowValue(row, ['Banca']));
     const bank = refs.banks[bankName] ?? refs.banks['Altra Banca'];
     const channel = mapChannel(rowValue(row, ['Canale Pagamento', 'Canale']));
-    const paymentMethod = channel ? (refs.paymentMethods[channel] ?? await getOrCreatePaymentMethod(channel, options.workspaceId)) : null;
+    const paymentMethod = channel
+      ? (refs.paymentMethods[channel] ?? await getOrCreatePaymentMethod(channel, options.workspaceId))
+      : refs.paymentMethods[fallbackPaymentMethodName];
     const paidBy = mapPaidBy(rowValue(row, ['Pagamento effettuato da', 'Pagato da']));
     const paidCompleted = parseBool(rowValue(row, ['Pagamento completato', 'Compl.', 'Completato']));
     const explicitPaidAmount = parseMoney(rowValue(row, ['Importo pagamento', 'Importo pagato']));
@@ -493,8 +496,6 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
         amount,
         paymentDate: paymentStatus === 'DA_PAGARE' ? null : effectivePaymentDate,
         vatRate,
-        channel,
-        bankId: bank?.id ?? null,
         isComplete: paymentStatus === 'COMPLETATO',
         isDeclared,
         hasElectronicInvoice,
@@ -509,7 +510,7 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
         paidBy,
         month: billingDate.getMonth() + 1,
         year: billingDate.getFullYear(),
-        payments: paidAmount > 0 ? { create: [{ paymentDate: effectivePaymentDate, channel: paymentMethod?.name ?? channel, paymentMethodId: paymentMethod?.id ?? null, bankId: bank?.id ?? null, amount: paidAmount, paidBy }] } : undefined
+        payments: paidAmount > 0 && paymentMethod ? { create: [{ paymentDate: effectivePaymentDate, paymentMethodId: paymentMethod.id, bankId: bank?.id ?? null, amount: paidAmount, paidBy }] } : undefined
       }
     });
     imported++;

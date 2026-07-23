@@ -80,17 +80,6 @@ const activeLabels: Record<string, string> = {
   false: 'Disattivate'
 };
 
-const paymentChannelLabels: Record<string, string> = {
-  Addebito: 'Addebito',
-  Bonifico: 'Bonifico',
-  'RID Bancario': 'RID Bancario',
-  'Modello F24': 'Modello F24',
-  'Carta di Debito': 'Carta di Debito',
-  PayPal: 'PayPal',
-  Mooney: 'Mooney',
-  Cash: 'Cash'
-};
-
 type FilterOption = { id: number; name: string; icon?: string | null; kind?: string; isFallback?: boolean | null };
 type CategoryOption = { id: number; code?: string; name: string; icon?: string | null };
 type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; vatNumber?: string | null; iban?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
@@ -116,8 +105,8 @@ export default function RecurringExpensesList({
   const mobileSortedItems = [...items].sort((a, b) => {
     const supplierA = a.supplier?.businessName || a.merchant;
     const supplierB = b.supplier?.businessName || b.merchant;
-    const paymentA = a.paymentMethod?.name ?? a.paymentChannel;
-    const paymentB = b.paymentMethod?.name ?? b.paymentChannel;
+    const paymentA = a.paymentMethod?.name;
+    const paymentB = b.paymentMethod?.name;
 
     switch (mobileSort) {
       case 'startDate_asc': return compareDate(a.startDate, b.startDate, 'asc');
@@ -156,7 +145,7 @@ export default function RecurringExpensesList({
     inputDefault(currentFilters, 'isActive') ? `Stato: ${activeLabels[inputDefault(currentFilters, 'isActive')] ?? inputDefault(currentFilters, 'isActive')}` : '',
     inputDefault(currentFilters, 'cadence') ? `Cadenza: ${cadenceLabels[inputDefault(currentFilters, 'cadence')] ?? inputDefault(currentFilters, 'cadence')}` : '',
     inputDefault(currentFilters, 'billingPeriodMode') ? `Periodo: ${billingLabels[inputDefault(currentFilters, 'billingPeriodMode')] ?? inputDefault(currentFilters, 'billingPeriodMode')}` : '',
-    inputDefault(currentFilters, 'paymentChannel') ? `Pagamento: ${paymentChannelLabels[inputDefault(currentFilters, 'paymentChannel')] ?? inputDefault(currentFilters, 'paymentChannel')}` : '',
+    inputDefault(currentFilters, 'paymentMethodId') ? `Pagamento: ${optionLabel(paymentMethods, inputDefault(currentFilters, 'paymentMethodId'))}` : '',
     inputDefault(currentFilters, 'bankId') ? `Banca: ${optionLabel(banks, inputDefault(currentFilters, 'bankId'))}` : '',
     inputDefault(currentFilters, 'amountMin') ? `Importo min: ${inputDefault(currentFilters, 'amountMin')}` : '',
     inputDefault(currentFilters, 'amountMax') ? `Importo max: ${inputDefault(currentFilters, 'amountMax')}` : '',
@@ -249,8 +238,8 @@ export default function RecurringExpensesList({
             {items.map(item => {
               const supplier = item.supplier?.businessName || item.merchant || '-';
               const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
-              const paymentChannelName = item.paymentMethod?.name ?? item.paymentChannel;
-              const payment = paymentChannelName ? `${item.paymentMethod?.icon ?? '•'} ${paymentChannelName}${item.bank ? ` · ${item.bank.icon ?? '•'} ${item.bank.name}` : ''}` : '-';
+              const paymentChannelName = item.paymentMethod?.name;
+              const payment = paymentChannelName ? `${item.paymentMethod?.icon ?? '  •  '} ${paymentChannelName}${item.bank ? ` · ${item.bank.icon ?? '  •  '} ${item.bank.name}` : ''}` : '-';
               const categoryClassName = categoryTone(item.category);
               const cadenceStyle = cadenceStyles[item.cadence] ?? { icon: '↻', className: 'tone-neutral' };
               const billingStyle = billingStyles[item.billingPeriodMode] ?? { icon: 'CAL', className: 'tone-neutral' };
@@ -260,12 +249,12 @@ export default function RecurringExpensesList({
                 <td className="cell-left"><span className={badgeClass(statusStyle.className)}>{statusStyle.icon} {statusStyle.label}</span></td>
                 <td className="cell-left recurring-supplier-cell" title={supplier}><span className="recurring-table-supplier-icon">↻</span>{supplier}</td>
                 <td className="cell-left recurring-description-cell" title={item.description ?? ''}>{item.description || '-'}</td>
-                <td className="cell-left">{item.category ? <span title={item.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(item.category, item.category.code)}</span> : <span className={badgeClass('tone-neutral')}>• ND</span>}</td>
+                <td className="cell-left">{item.category ? <span title={item.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(item.category, item.category.code)}</span> : <span className={badgeClass('tone-neutral')}>  •   ND</span>}</td>
                 <td className="cell-right nowrap-cell"><strong className="recurring-table-amount">€ {euro(item.amount.toString()).replace('€', '').trim()}</strong></td>
                 <td className="cell-left"><span className={badgeClass(cadenceStyle.className)}>{cadenceStyle.icon} {cadenceLabels[item.cadence] ?? item.cadence}</span></td>
                 <td className="cell-left nowrap-cell"><span className={badgeClass('tone-waiting')}>📅 {dueLabel(item)}</span></td>
                 <td className="cell-left nowrap-cell"><span className={badgeClass(billingStyle.className)}>{billingStyle.icon} {billing}</span></td>
-                <td className="cell-left recurring-payment-cell" title={payment}>{paymentChannelName ? <span className={badgeClass(item.bank ? 'tone-bank-services' : 'tone-neutral')}>{payment}</span> : <span className={badgeClass('tone-neutral')}>• Manuale</span>}</td>
+                <td className="cell-left recurring-payment-cell" title={payment}>{paymentChannelName ? <span className={badgeClass(item.bank ? 'tone-bank-services' : 'tone-neutral')}>{payment}</span> : <span className={badgeClass('tone-neutral')}>  •   Manuale</span>}</td>
                 <td className="cell-left nowrap-cell">{dateLabel(item.startDate)}</td>
               </tr>;
             })}
@@ -278,8 +267,8 @@ export default function RecurringExpensesList({
           const cadence = cadenceLabels[item.cadence] ?? item.cadence;
           const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
           const supplier = item.supplier?.businessName || item.merchant || 'Fornitore non impostato';
-          const paymentChannelName = item.paymentMethod?.name ?? item.paymentChannel;
-          const payment = paymentChannelName ? `${item.paymentMethod?.icon ?? '•'} ${paymentChannelName}${item.bank ? ` · ${item.bank.icon ?? '•'} ${item.bank.name}` : ''}` : 'Pagamento manuale';
+          const paymentChannelName = item.paymentMethod?.name;
+          const payment = paymentChannelName ? `${item.paymentMethod?.icon ?? '  •  '} ${paymentChannelName}${item.bank ? ` · ${item.bank.icon ?? '  •  '} ${item.bank.name}` : ''}` : 'Pagamento manuale';
           return <div className="recurring-mobile-item-shell" key={`mobile-recurring-${item.id}`}>
             <div className="recurring-mobile-select">
               <input form="recurringExpenseBulkForm" type="checkbox" name="ids" value={item.id} aria-label={`Seleziona spesa ricorrente ${item.id}`} />

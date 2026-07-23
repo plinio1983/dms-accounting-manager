@@ -47,7 +47,6 @@ function normalizeInvoiceFields(data: z.infer<typeof ExpenseSchema>) {
 
 type PaymentInput = {
   paymentDate?: string;
-  channel?: string;
   paymentMethodId?: number | null;
   bankId?: number | null;
   amount: number;
@@ -77,33 +76,30 @@ function parsePayments(formData: FormData | null, jsonPayments: unknown): Paymen
     return jsonPayments
       .map((row: any) => ({
         paymentDate: row.paymentDate ? String(row.paymentDate) : undefined,
-        channel: row.channel ? String(row.channel) : undefined,
         paymentMethodId: row.paymentMethodId ? Number(row.paymentMethodId) : null,
         bankId: row.bankId ? Number(row.bankId) : null,
         amount: Number(row.amount || 0),
         paidBy: (row.paidBy === 'ALTRO_OPERATORE' ? 'ALTRO_OPERATORE' : 'HERBAL_MARKET') as PaymentInput['paidBy']
       }))
-      .filter(row => row.amount > 0 || row.paymentDate || row.channel || row.bankId);
+      .filter(row => row.amount > 0 || row.paymentDate || row.paymentMethodId || row.bankId);
   }
 
   const dates = getAll(formData, 'paymentDate[]');
-  const channels = getAll(formData, 'paymentChannel[]');
   const methodIds = getAll(formData, 'paymentMethodId[]');
   const banks = getAll(formData, 'paymentBankId[]');
   const amounts = getAll(formData, 'paymentAmount[]');
   const paidByRows = getAll(formData, 'paymentPaidBy[]');
-  const length = Math.max(dates.length, channels.length, methodIds.length, banks.length, amounts.length, paidByRows.length);
+  const length = Math.max(dates.length, methodIds.length, banks.length, amounts.length, paidByRows.length);
   const payments: PaymentInput[] = [];
 
   for (let index = 0; index < length; index++) {
     const amount = Number(amounts[index] || 0);
     const bankId = banks[index] ? Number(banks[index]) : null;
     const paymentDate = dates[index] || undefined;
-    const channel = channels[index] || undefined;
     const paymentMethodId = methodIds[index] ? Number(methodIds[index]) : null;
     const paidBy = paidByRows[index] === 'ALTRO_OPERATORE' ? 'ALTRO_OPERATORE' : 'HERBAL_MARKET';
-    if (amount > 0 || paymentDate || bankId || channel || paymentMethodId) {
-      payments.push({ amount, bankId, paymentDate, channel, paymentMethodId, paidBy });
+    if (amount > 0 || paymentDate || bankId || paymentMethodId) {
+      payments.push({ amount, bankId, paymentDate, paymentMethodId, paidBy });
     }
   }
 
@@ -127,14 +123,10 @@ async function resolvePaymentInputs(payments: PaymentInput[], workspaceId: numbe
   if (!payments.length) return payments;
   const methods = await prisma.paymentMethod.findMany({ where: { workspaceId } });
   return payments.map(payment => {
-    const method = payment.paymentMethodId
-      ? methods.find(item => item.id === payment.paymentMethodId)
-      : payment.channel
-        ? methods.find(item => item.name.toLowerCase() === payment.channel!.toLowerCase())
-        : null;
-    if (payment.paymentMethodId && !method) throw new Error('Metodo pagamento non valido');
+    const method = payment.paymentMethodId ? methods.find(item => item.id === payment.paymentMethodId) : null;
+    if (!method) throw new Error('Metodo pagamento non valido');
     if (forbidCash && method && (method.systemRole === 'CASH' || method.name.trim().toLowerCase() === 'cash')) throw new Error('Cash non è disponibile per i saldi IVA');
-    return { ...payment, paymentMethodId: method?.id ?? null, channel: method?.name ?? payment.channel };
+    return { ...payment, paymentMethodId: method.id };
   });
 }
 
@@ -174,7 +166,7 @@ export async function GET() {
   if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const expenses = await prisma.expense.findMany({
     where: { workspaceId: current.workspace.id },
-    include: { category: true, bank: true, company: true, supplier: true, payments: { include: { bank: true } }, attachments: true },
+    include: { category: true, company: true, supplier: true, payments: { include: { bank: true, paymentMethod: true } }, attachments: true },
     orderBy: { id: 'desc' },
     take: 500
   });
@@ -219,7 +211,6 @@ export async function POST(request: Request) {
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
   const attachments = formData ? await saveAttachments(formData.getAll('attachments')) : [];
   const firstPayment = payments[0];
-  // Expense.bankId is legacy/denormalized. The real bank lives on each ExpensePayment row.
   const firstPaidBy = firstPayment?.paidBy ?? 'HERBAL_MARKET';
 
   await prisma.expense.create({ data: {
@@ -234,8 +225,6 @@ export async function POST(request: Request) {
     expenseType: data.expenseType,
     paymentDate: data.paymentStatus === 'DA_PAGARE' ? null : (firstPayment?.paymentDate ? new Date(firstPayment.paymentDate) : null),
     vatRate: isVatSettlement ? 0 : data.vatRate,
-    channel: firstPayment?.channel || null,
-    bankId: firstPayment?.bankId || null,
     companyId: null,
     isDeclared: invoiceFields.isDeclared,
     isRecurring: false,
@@ -253,8 +242,7 @@ export async function POST(request: Request) {
     payments: {
       create: payments.map(payment => ({
         paymentDate: payment.paymentDate ? new Date(payment.paymentDate) : null,
-        channel: payment.channel || null,
-        paymentMethodId: payment.paymentMethodId || null,
+        paymentMethodId: payment.paymentMethodId!,
         bankId: payment.bankId || null,
         amount: payment.amount,
         paidBy: payment.paidBy

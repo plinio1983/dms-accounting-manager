@@ -13,15 +13,14 @@ import {
     badgeClass,
     fiscalStyles,
     incomeCreditStatusStyles,
-    incomeInvoiceStatusStyles,
-    saleCategoryStyles,
-    salesChannelStyles
+    incomeInvoiceStatusStyles
 } from '@/lib/income-ui';
 import {vatStyles} from '@/lib/expense-ui';
 import {requireWorkspace} from '@/lib/auth';
 import {orderBanks, orderPaymentMethods} from '@/lib/workspace-defaults';
 import {stripFlashRecord, stripFlashSearchParams} from '@/lib/flash';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
+import SearchIcon from '@/components/SearchIcon';
 
 const invoiceStatusOptions = [
     ['NON_INVIATA', 'Non inviata'],
@@ -637,6 +636,7 @@ export default async function IncomesPage({searchParams}: {
     const amountFilterValue = parseAmountFilter(amountFilterRaw);
     const paymentMethodFilter = inputDefault(filters, 'paymentMethod');
     const creditChannelFilter = inputDefault(filters, 'creditChannel');
+    const customerQuickFilter = normalize(inputDefault(filters, 'customerQuick'));
     const fiscalFilter = inputDefault(filters, 'fiscal');
     const invoiceStatusFilter = inputDefault(filters, 'invoiceStatus');
     const invoiceStatusModeFilter = inputDefault(filters, 'invoiceStatusMode');
@@ -681,8 +681,9 @@ export default async function IncomesPage({searchParams}: {
         if (salesChannelFilter && income.salesChannelRef.name !== salesChannelFilter) return false;
         if (saleCategoryFilter && income.incomeCategory.name !== saleCategoryFilter) return false;
         if (!amountMatchesFilter(Number(income.amount.toString()), amountFilterValue)) return false;
-        if (paymentMethodFilter && (income.paymentMethodRef?.name ?? income.paymentMethod) !== paymentMethodFilter) return false;
-        if (creditChannelFilter && (income.creditBank?.name ?? income.creditChannel) !== creditChannelFilter) return false;
+        if (paymentMethodFilter && income.paymentMethodRef.name !== paymentMethodFilter) return false;
+        if (creditChannelFilter && income.creditBank.name !== creditChannelFilter) return false;
+        if (customerQuickFilter && !normalize(income.customer?.businessName).includes(customerQuickFilter)) return false;
         if (fiscalFilter === 'yes' && !income.isFiscal) return false;
         if (fiscalFilter === 'no' && income.isFiscal) return false;
         if (invoiceStatusModeFilter === 'not_emitted' && income.invoiceStatus === 'EMESSA') return false;
@@ -775,6 +776,7 @@ export default async function IncomesPage({searchParams}: {
         amountFilterRaw && {label: 'Importo', value: amountFilterRaw},
         paymentMethodFilter && {label: 'Metodo pagamento', value: paymentMethodFilter},
         creditChannelFilter && {label: 'Canale accredito', value: creditChannelFilter},
+        customerQuickFilter && {label: 'Cliente', value: inputDefault(filters, 'customerQuick')},
         fiscalFilter && {label: 'Fiscale', value: fiscalFilter === 'yes' ? 'Si' : 'No'},
         (invoiceStatusFilter || invoiceStatusModeFilter) && {
             label: 'Stato fattura',
@@ -787,10 +789,10 @@ export default async function IncomesPage({searchParams}: {
     const mobileSortedIncomes = [...filteredIncomes].sort((a, b) => {
         const billingA = ((a.billingYear ?? 0) * 100) + (a.billingMonth ?? 0);
         const billingB = ((b.billingYear ?? 0) * 100) + (b.billingMonth ?? 0);
-        const paymentA = a.paymentMethodRef?.name ?? a.paymentMethod;
-        const paymentB = b.paymentMethodRef?.name ?? b.paymentMethod;
-        const creditA = a.creditBank?.name ?? a.creditChannel;
-        const creditB = b.creditBank?.name ?? b.creditChannel;
+        const paymentA = a.paymentMethodRef.name;
+        const paymentB = b.paymentMethodRef.name;
+        const creditA = a.creditBank.name;
+        const creditB = b.creditBank.name;
 
         switch (mobileSort) {
             case 'creditDate_asc':
@@ -960,6 +962,13 @@ export default async function IncomesPage({searchParams}: {
                     />
                 </div>
             </div>
+            <form className="supplier-quick-search" action="/incomes" method="get" role="search">
+                <label htmlFor="incomeCustomerQuickSearch">Ricerca rapida</label>
+                <div className="supplier-quick-search-field">
+                    <input id="incomeCustomerQuickSearch" name="customerQuick" defaultValue={inputDefault(filters, 'customerQuick')} placeholder="Nome o ragione sociale" autoComplete="off"/>
+                    <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca cliente"><SearchIcon /></button>
+                </div>
+            </form>
             <MobileSortControl action="/incomes" currentValue={mobileSort} options={incomeMobileSortOptions} searchParams={filters}/>
 
             <BulkSelectionController/>

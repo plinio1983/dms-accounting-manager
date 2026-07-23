@@ -39,7 +39,6 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       vatRate: expense.vatRate.toString(),
       isDeclared: expense.isDeclared,
       hasElectronicInvoice: expense.hasElectronicInvoice,
-      paymentChannel: expense.paymentChannel,
       paymentMethodId: expense.paymentMethodId,
       bankId: expense.bankId,
       notes: expense.notes

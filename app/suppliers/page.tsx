@@ -11,6 +11,7 @@ import SupplierEditModalController from '@/components/SupplierEditModalControlle
 import { requireWorkspace } from '@/lib/auth';
 import { stripFlashRecord, stripFlashSearchParams } from '@/lib/flash';
 import { compareDate, compareNumber, compareText } from '@/lib/mobile-sort';
+import SearchIcon from '@/components/SearchIcon';
 
 const supplierMobileSortOptions = [
   { value: 'businessName_asc', label: 'Ragione sociale (A-Z)' },
@@ -200,7 +201,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
             placeholder="Nome o ragione sociale"
             autoComplete="off"
           />
-          <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca fornitore">🔎</button>
+          <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca fornitore"><SearchIcon /></button>
         </div>
       </form>
       <MobileSortControl action="/suppliers" currentValue={mobileSort} options={supplierMobileSortOptions} searchParams={filters} />
@@ -218,7 +219,6 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
       <script dangerouslySetInnerHTML={{ __html: `
         (() => {
           const storageKey = 'dmsAccounting.suppliers.filters';
-          const resetLink = document.querySelector('a[href="/suppliers"].reset-button');
           const sanitizedSearch = (search) => {
             const params = new URLSearchParams(search || '');
             ['new', 'saved', 'error', 'usage'].forEach(key => params.delete(key));
@@ -228,7 +228,14 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
             const clean = params.toString();
             return clean ? '?' + clean : '';
           };
-          if (resetLink) resetLink.addEventListener('click', () => localStorage.removeItem(storageKey));
+          document.addEventListener('click', (event) => {
+            const resetLink = event.target instanceof Element
+              ? event.target.closest('a.reset-button, a.reset-btn, a.recurring-active-filters-reset')
+              : null;
+            if (resetLink && resetLink.getAttribute('href') === '/suppliers') {
+              localStorage.removeItem(storageKey);
+            }
+          });
           const query = sanitizedSearch(window.location.search);
           const form = document.querySelector('form.supplier-filters');
           const quickSearchForm = document.querySelector('form.supplier-quick-search');

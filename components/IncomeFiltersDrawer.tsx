@@ -285,7 +285,7 @@ export default function IncomeFiltersDrawer({
 
           <label>Metodo pagamento<select name="paymentMethod" defaultValue={inputDefault(filters, "paymentMethod")}>
             <option value="">Tutti</option>
-            {paymentMethods.map(value => <option key={value.id} value={value.name}>{value.icon ?? '•'} {value.name}</option>)}
+            {paymentMethods.map(value => <option key={value.id} value={value.name}>{value.icon ?? '  •  '} {value.name}</option>)}
           </select></label>
 
           <label>Canale accredito<select name="creditChannel" defaultValue={inputDefault(filters, "creditChannel")}>

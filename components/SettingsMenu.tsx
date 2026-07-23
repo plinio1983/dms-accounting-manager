@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import MonthlyReportIcon from '@/components/MonthlyReportIcon';
 
 const settingsLinks = [
   { href: '/settings/account', label: 'Account', icon: '👤' },
@@ -19,7 +20,7 @@ function currentMonthReportHref() {
 }
 
 const mainMenuLinks = [
-  { href: currentMonthReportHref, label: 'Report mese', icon: '▤' },
+  { href: currentMonthReportHref, label: 'Report mese', icon: <MonthlyReportIcon /> },
   { href: () => '/recurring-expenses', label: 'Spese ricorrenti', icon: '↻' },
   { href: () => '/suppliers', label: 'Fornitori', icon: '◇' },
   { href: () => '/clients', label: 'Clienti', icon: '♙' },

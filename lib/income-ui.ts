@@ -1,13 +1,13 @@
-export const salesChannelStyles: Record<string, { label: string; icon: string; className: string }> = {
-  Shop: { label: 'Shop', icon: '🏬', className: 'tone-goods' },
-  'Online Shop': { label: 'Online Shop', icon: '🛒', className: 'tone-web' },
-  'Altro Canale': { label: 'Altro Canale', icon: '🔀', className: 'tone-services' }
+export const salesChannelTones: Record<string, string> = {
+  SHOP: 'tone-goods',
+  ONLINE_SHOP: 'tone-web',
+  OTHER: 'tone-services'
 };
 
-export const saleCategoryStyles: Record<string, { label: string; icon: string; className: string }> = {
-  B2C: { label: 'B2C', icon: '👤', className: 'tone-yes' },
-  B2B: { label: 'B2B', icon: '🏢', className: 'tone-bank-services' },
-  Altro: { label: 'Altro', icon: '•', className: 'tone-neutral' }
+export const saleCategoryTones: Record<string, string> = {
+  B2C: 'tone-yes',
+  B2B: 'tone-bank-services',
+  OTHER: 'tone-neutral'
 };
 
 export const fiscalStyles = {

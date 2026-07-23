@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import ExpensesList from '@/components/ExpensesList';
+import NewExpensePanel from '@/components/NewExpensePanel';
 import MonthReportMonthSelect from '@/components/MonthReportMonthSelect';
 import IncomesList from '@/components/IncomesList';
 import MonthReportAccordionController from '@/components/MonthReportAccordionController';
@@ -8,6 +9,7 @@ import {getMonthlyReport, getOrderDateMonthSummary, getPeriodSummary} from '@/li
 import {monthName} from '@/lib/money';
 import {requireWorkspace} from '@/lib/auth';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
+import SearchIcon from '@/components/SearchIcon';
 
 function capitalize(value: string) {
     return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : value;
@@ -82,6 +84,43 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     });
 
     return <div className="grid month-report-page">
+        <NewExpensePanel
+            categories={orderedCategories.map(category => ({
+                id: category.id,
+                code: category.code,
+                name: category.name,
+                icon: category.icon,
+                isVatSettlementDefault: category.id === current.workspace.vatSettlementCategoryId
+            }))}
+            banks={orderedBanks.map(bank => ({
+                id: bank.id,
+                name: bank.name,
+                icon: bank.icon,
+                isFallback: bank.isFallback
+            }))}
+            paymentMethods={expensePaymentMethods.map(method => ({
+                id: method.id,
+                name: method.name,
+                icon: method.icon,
+                kind: method.kind,
+                isFallback: method.isFallback,
+                systemRole: method.systemRole
+            }))}
+            suppliers={suppliers.map(supplier => ({
+                id: supplier.id,
+                businessName: supplier.businessName,
+                alias: supplier.alias,
+                email: supplier.email,
+                vatNumber: supplier.vatNumber,
+                iban: supplier.iban,
+                pec: supplier.pec,
+                taxCodeSdi: supplier.taxCodeSdi,
+                systemRole: supplier.systemRole,
+                internalNotes: supplier.internalNotes
+            }))}
+            initialExpense={{ month, year }}
+            showToolbar={false}
+        />
         <section className="month-report-header">
             <div className="flex gap-6 justify-between">
                 <span>
@@ -194,7 +233,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 <label htmlFor="monthExpenseSupplierQuickSearch">Ricerca rapida</label>
                 <div className="supplier-quick-search-field">
                     <input id="monthExpenseSupplierQuickSearch" name="supplierQuick" defaultValue={supplierQuickValue} placeholder="Nome o ragione sociale" autoComplete="off"/>
-                    <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca fornitore">🔎</button>
+                    <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca fornitore"><SearchIcon /></button>
                 </div>
             </form>
             {supplierQuickValue ? <div className="recurring-active-filters"><div><span className="recurring-active-filters-title">Filtri attivi</span><div className="recurring-active-filter-tags"><span className="badge"><strong>Fornitore:</strong> {supplierQuickValue}</span></div></div><Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href={`/months/${year}/${month}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`}>× Reset</Link></div> : null}

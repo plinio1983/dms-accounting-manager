@@ -1,6 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { requireWorkspace } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { paymentCreditIconOptions } from '@/lib/workspace-defaults';
@@ -14,6 +15,10 @@ function formValue(formData: FormData, key: string) {
 
 function settingsError(code: string): never {
   redirect(`${settingsPath}?error=${encodeURIComponent(code)}`);
+}
+
+function refreshPaymentCreditPages() {
+  revalidatePath('/', 'layout');
 }
 
 function validateName(formData: FormData) {
@@ -43,6 +48,7 @@ export async function createBankAction(formData: FormData) {
   if (existing) settingsError('bank_exists');
 
   await prisma.bank.create({ data: { workspaceId: current.workspace.id, name, icon } });
+  refreshPaymentCreditPages();
   redirect(`${settingsPath}?saved=bank_created`);
 }
 
@@ -59,6 +65,7 @@ export async function updateBankAction(formData: FormData) {
   if (duplicate) settingsError('bank_exists');
 
   await prisma.bank.update({ where: { id }, data: { name, icon } });
+  refreshPaymentCreditPages();
   redirect(`${settingsPath}?saved=bank_updated`);
 }
 
@@ -69,15 +76,16 @@ export async function deleteBankAction(formData: FormData) {
 
   const bank = await prisma.bank.findFirst({
     where: { id, workspaceId: current.workspace.id },
-    include: { _count: { select: { expenses: true, payments: true, recurringExpenses: true, incomeCredits: true } } }
+    include: { _count: { select: { payments: true, recurringExpenses: true, incomeCredits: true } } }
   });
   if (!bank) settingsError('bank_not_found');
   if (bank.isFallback) settingsError('fallback_delete');
 
-  const usageCount = bank._count.expenses + bank._count.payments + bank._count.recurringExpenses + bank._count.incomeCredits;
+  const usageCount = bank._count.payments + bank._count.recurringExpenses + bank._count.incomeCredits;
   if (usageCount > 0) redirect(`${settingsPath}?error=in_use&usage=${usageCount}`);
 
   await prisma.bank.delete({ where: { id } });
+  refreshPaymentCreditPages();
   redirect(`${settingsPath}?saved=bank_deleted`);
 }
 
@@ -90,6 +98,7 @@ export async function createPaymentMethodAction(formData: FormData) {
   if (existing) settingsError('method_exists');
 
   await prisma.paymentMethod.create({ data: { workspaceId: current.workspace.id, name, kind, icon } });
+  refreshPaymentCreditPages();
   redirect(`${settingsPath}?saved=method_created`);
 }
 
@@ -107,6 +116,7 @@ export async function updatePaymentMethodAction(formData: FormData) {
   if (duplicate) settingsError('method_exists');
 
   await prisma.paymentMethod.update({ where: { id }, data: { name, kind, icon } });
+  refreshPaymentCreditPages();
   redirect(`${settingsPath}?saved=method_updated`);
 }
 
@@ -127,5 +137,6 @@ export async function deletePaymentMethodAction(formData: FormData) {
   if (usageCount > 0) redirect(`${settingsPath}?error=in_use&usage=${usageCount}`);
 
   await prisma.paymentMethod.delete({ where: { id } });
+  refreshPaymentCreditPages();
   redirect(`${settingsPath}?saved=method_deleted`);
 }

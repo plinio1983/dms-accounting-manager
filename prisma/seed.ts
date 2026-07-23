@@ -107,6 +107,12 @@ async function main() {
 
   for (const expense of seed.expenses) {
     const paidAmount = expense.paymentDate || expense.isComplete ? expense.amount : 0;
+    const methodName = String(expense.channel || 'Altro metodo').trim();
+    const paymentMethod = await prisma.paymentMethod.findFirst({
+      where: { workspaceId: null, name: { equals: methodName, mode: 'insensitive' } }
+    }) ?? await prisma.paymentMethod.create({
+      data: { name: methodName, kind: 'BOTH', isFallback: methodName === 'Altro metodo' }
+    });
     await prisma.expense.create({ data: {
       receivedDate: expense.receivedDate ? new Date(expense.receivedDate) : null,
       merchant: expense.merchant,
@@ -116,8 +122,6 @@ async function main() {
       amount: expense.amount,
       paymentDate: expense.paymentDate ? new Date(expense.paymentDate) : null,
       vatRate: expense.vatRate || 22,
-      channel: expense.channel,
-      bankId: expense.bankName ? banks[expense.bankName] : null,
       isComplete: expense.isComplete,
       isDeclared: expense.isDeclared ?? true,
       hasElectronicInvoice: expense.hasElectronicInvoice ?? true,
@@ -131,7 +135,7 @@ async function main() {
       month: expense.month,
       payments: paidAmount > 0 ? { create: [{
         paymentDate: expense.paymentDate ? new Date(expense.paymentDate) : null,
-        channel: expense.channel,
+        paymentMethodId: paymentMethod.id,
         bankId: expense.bankName ? banks[expense.bankName] : null,
         amount: paidAmount,
         paidBy: 'HERBAL_MARKET'

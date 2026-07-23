@@ -446,6 +446,11 @@ export type PaymentMethodNullableScalarRelationFilter = {
   isNot?: Prisma.PaymentMethodWhereInput | null
 }
 
+export type PaymentMethodScalarRelationFilter = {
+  is?: Prisma.PaymentMethodWhereInput
+  isNot?: Prisma.PaymentMethodWhereInput
+}
+
 export type PaymentMethodCreateNestedManyWithoutWorkspaceInput = {
   create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutWorkspaceInput, Prisma.PaymentMethodUncheckedCreateWithoutWorkspaceInput> | Prisma.PaymentMethodCreateWithoutWorkspaceInput[] | Prisma.PaymentMethodUncheckedCreateWithoutWorkspaceInput[]
   connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutWorkspaceInput | Prisma.PaymentMethodCreateOrConnectWithoutWorkspaceInput[]
@@ -514,12 +519,10 @@ export type PaymentMethodCreateNestedOneWithoutExpensePaymentsInput = {
   connect?: Prisma.PaymentMethodWhereUniqueInput
 }
 
-export type PaymentMethodUpdateOneWithoutExpensePaymentsNestedInput = {
+export type PaymentMethodUpdateOneRequiredWithoutExpensePaymentsNestedInput = {
   create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutExpensePaymentsInput, Prisma.PaymentMethodUncheckedCreateWithoutExpensePaymentsInput>
   connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutExpensePaymentsInput
   upsert?: Prisma.PaymentMethodUpsertWithoutExpensePaymentsInput
-  disconnect?: Prisma.PaymentMethodWhereInput | boolean
-  delete?: Prisma.PaymentMethodWhereInput | boolean
   connect?: Prisma.PaymentMethodWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.PaymentMethodUpdateToOneWithWhereWithoutExpensePaymentsInput, Prisma.PaymentMethodUpdateWithoutExpensePaymentsInput>, Prisma.PaymentMethodUncheckedUpdateWithoutExpensePaymentsInput>
 }
@@ -530,12 +533,10 @@ export type PaymentMethodCreateNestedOneWithoutIncomePaymentsInput = {
   connect?: Prisma.PaymentMethodWhereUniqueInput
 }
 
-export type PaymentMethodUpdateOneWithoutIncomePaymentsNestedInput = {
+export type PaymentMethodUpdateOneRequiredWithoutIncomePaymentsNestedInput = {
   create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutIncomePaymentsInput, Prisma.PaymentMethodUncheckedCreateWithoutIncomePaymentsInput>
   connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutIncomePaymentsInput
   upsert?: Prisma.PaymentMethodUpsertWithoutIncomePaymentsInput
-  disconnect?: Prisma.PaymentMethodWhereInput | boolean
-  delete?: Prisma.PaymentMethodWhereInput | boolean
   connect?: Prisma.PaymentMethodWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.PaymentMethodUpdateToOneWithWhereWithoutIncomePaymentsInput, Prisma.PaymentMethodUpdateWithoutIncomePaymentsInput>, Prisma.PaymentMethodUncheckedUpdateWithoutIncomePaymentsInput>
 }

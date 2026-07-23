@@ -63,7 +63,7 @@ function activateHeader(header: HTMLElement) {
 
 function isInteractiveTarget(target: EventTarget | null) {
   if (!(target instanceof Element)) return false;
-  return Boolean(target.closest('a, button, input, select, textarea, label, summary, details'));
+  return Boolean(target.closest('a, button, input, select, textarea, label, summary'));
 }
 
 export default function SortableTableController() {

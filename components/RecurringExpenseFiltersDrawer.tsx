@@ -111,9 +111,9 @@ export default function RecurringExpenseFiltersDrawer({ filters, categories, ban
 
           <label>
             Canale pagamento
-            <select name="paymentChannel" defaultValue={inputDefault(filters, "paymentChannel")}>
+            <select name="paymentMethodId" defaultValue={inputDefault(filters, "paymentMethodId")}>
               <option value="">Tutti</option>
-              {paymentMethods.map(value => <option key={value.id} value={value.name}>{value.icon ?? '•'} {value.name}</option>)}
+              {paymentMethods.map(value => <option key={value.id} value={value.id}>{value.icon ?? '  •  '} {value.name}</option>)}
             </select>
           </label>
 
@@ -121,7 +121,7 @@ export default function RecurringExpenseFiltersDrawer({ filters, categories, ban
             Banca
             <select name="bankId" defaultValue={inputDefault(filters, "bankId")}>
               <option value="">Tutte</option>
-              {banks.map(bank => <option key={bank.id} value={bank.id}>{bank.icon ?? '•'} {bank.name}</option>)}
+              {banks.map(bank => <option key={bank.id} value={bank.id}>{bank.icon ?? '  •  '} {bank.name}</option>)}
             </select>
           </label>
 

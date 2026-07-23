@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import RecurringExpenseDetailEditModalController from '@/components/RecurringExpenseDetailEditModalController';
+import DetailBackButton from '@/components/DetailBackButton';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import ExpensesList from '@/components/ExpensesList';
@@ -101,7 +102,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
   const orderedCategories = orderExpenseCategories(categories);
   const orderedBanks = orderBanks(banks);
   const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
-  const paymentChannelName = item.paymentMethod?.name ?? item.paymentChannel;
+  const paymentChannelName = item.paymentMethod?.name;
   const recurringDetailHref = `/recurring-expenses/${item.id}`;
   const encodedRecurringDetailHref = encodeURIComponent(recurringDetailHref);
   const flashMessages = {
@@ -138,7 +139,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
       <article className="expense-detail-document recurring-detail-document">
         <div className="expense-detail-action-row">
           <div className="left-side">
-            <Link className="btn btn-sm btn-default" href={returnTo}><span className="btn-icon">↩</span> Indietro</Link>
+            <DetailBackButton href={returnTo} />
           </div>
           <div className="right-side">
             <button className="btn btn-sm btn-default" type="button" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</button>
@@ -251,11 +252,11 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
           <div className="expense-detail-status-strip">
             <div>
               <span>Canale pagamento</span>
-              <strong>{paymentChannelName ? `${item.paymentMethod?.icon ?? '•'} ${paymentChannelName}` : '-'}</strong>
+              <strong>{paymentChannelName ? `${item.paymentMethod?.icon ?? ' • '} ${paymentChannelName}` : '-'}</strong>
             </div>
             <div>
               <span>Banca</span>
-              <strong>{item.bank ? `${item.bank.icon ?? '•'} ${item.bank.name}` : '-'}</strong>
+              <strong>{item.bank ? `${item.bank.icon ?? ' • '} ${item.bank.name}` : '-'}</strong>
             </div>
             <div>
               <span>Pagamento automatico</span>

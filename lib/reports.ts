@@ -322,7 +322,7 @@ export async function getMonthlyReport(year: number, month: number, workspaceId?
       where: mode === 'fiscal'
         ? { ...(workspaceId ? { workspaceId } : {}), year, month }
         : { ...(workspaceId ? { workspaceId } : {}), receivedDate: dateRange },
-      include: { category: true, bank: true, company: true, supplier: true, payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } } },
+      include: { category: true, company: true, supplier: true, payments: { include: { bank: true, paymentMethod: true }, orderBy: { id: 'asc' } } },
       orderBy: [{ receivedDate: 'asc' }, { id: 'asc' }]
     }),
     prisma.income.findMany({

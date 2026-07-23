@@ -33,7 +33,6 @@ type EditRecurringExpense = {
   vatRate?: string | number | null;
   isDeclared?: boolean;
   hasElectronicInvoice?: boolean;
-  paymentChannel?: string | null;
   paymentMethodId?: number | null;
   bankId?: number | null;
   notes?: string | null;

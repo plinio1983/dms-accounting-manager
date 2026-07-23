@@ -2,6 +2,7 @@ import Link from 'next/link';
 import {notFound} from 'next/navigation';
 import {prisma} from '@/lib/prisma';
 import IncomeEditModalController from '@/components/IncomeEditModalController';
+import DetailBackButton from '@/components/DetailBackButton';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import {euro} from '@/lib/money';
@@ -13,8 +14,8 @@ import {
     fiscalStyles,
     incomeCreditStatusStyles,
     incomeInvoiceStatusStyles,
-    saleCategoryStyles,
-    salesChannelStyles
+    saleCategoryTones,
+    salesChannelTones
 } from '@/lib/income-ui';
 import {vatRateLabel, yesNoStyles} from "@/lib/expense-ui";
 
@@ -107,10 +108,10 @@ export default async function IncomeDetailPage({params, searchParams}: {
     // const supplierName = income.description?.trim() || 'Non indicato';
     const customerName = income.customer?.businessName?.trim() || 'Non indicato';
     const title = customerName !== 'Non indicato' ? customerName : `Incasso ${income.salesChannelRef.name}`;
-    const incomePaymentMethodName = income.paymentMethodRef?.name ?? income.paymentMethod;
-    const incomeCreditChannelName = income.creditBank?.name ?? income.creditChannel;
-    const salesStyle = salesChannelStyles[income.salesChannelRef.name];
-    const categoryStyle = saleCategoryStyles[income.incomeCategory.name];
+    const incomePaymentMethodName = income.paymentMethodRef.name;
+    const incomeCreditChannelName = income.creditBank.name;
+    const salesTone = salesChannelTones[income.salesChannelRef.code];
+    const categoryTone = saleCategoryTones[income.incomeCategory.code];
     const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
     const creditStatus = incomeCreditStatus(income);
     const detailToneClass = isIncomeCreditOverdue(income)
@@ -158,7 +159,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
             <article className={['expense-detail-document', 'income-detail-document', detailToneClass].filter(Boolean).join(' ')}>
                 <div className="expense-detail-action-row">
                     <div className="left-side">
-                        <Link className="btn btn-sm btn-default" href={returnTo}><span className="btn-icon">↩</span> Indietro</Link>
+                        <DetailBackButton href={returnTo} />
                     </div>
                     <div className="right-side">
                         <Link className="btn btn-sm btn-primary" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
@@ -180,7 +181,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                             <div className="income-detail-description">{income.description?.trim()}</div>
                             {/*<div className="expense-detail-meta-line">*/}
                             {/*    {fiscalBadge(income.isFiscal)}*/}
-                            {/*    <span>{income.salesChannelRef.icon ?? salesStyle?.icon ?? '•'} {income.salesChannelRef.name}</span>*/}
+                            {/*    <span>{income.salesChannelRef.icon ?? '  •  '} {income.salesChannelRef.name}</span>*/}
                             {/*</div>*/}
                         </div>
                     </div>
@@ -193,7 +194,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                         <strong>{euro(amount)}</strong>
                         <div className="expense-detail-badge-row">
                             <span className={badgeClass(creditStatus.className)}>{creditStatus.icon} {creditStatus.label}</span>
-                            {/*<span className={badgeClass(paymentStyle?.className)}>{paymentStyle?.icon ?? '•'} {incomePaymentMethodName}</span>*/}
+                            {/*<span className={badgeClass(paymentStyle?.className)}>{paymentStyle?.icon ?? '  •  '} {incomePaymentMethodName}</span>*/}
                             <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} Fatt. {invoiceStyle.label}</span>
                         </div>
                     </aside>
@@ -242,16 +243,16 @@ export default async function IncomeDetailPage({params, searchParams}: {
                             <strong>{euro(amount)}</strong>
                         </div>
                         <div>
-                            <span>Canale</span><strong>{income.salesChannelRef.icon ?? salesStyle?.icon ?? '•'} {income.salesChannelRef.name}</strong>
+                            <span>Canale</span><strong className={salesTone}>{income.salesChannelRef.icon ?? '  •  '} {income.salesChannelRef.name}</strong>
                         </div>
                         <div>
-                            <span>Categoria</span><strong>{income.incomeCategory.icon ?? categoryStyle?.icon ?? '•'} {income.incomeCategory.name}</strong>
+                            <span>Categoria</span><strong className={categoryTone}>{income.incomeCategory.icon ?? '  •  '} {income.incomeCategory.name}</strong>
                         </div>
                         <div><span>Data accr.</span><strong>{dateLabel(income.creditDate)}</strong></div>
                         <div>
-                            <span>Pagamento</span><strong>{income.paymentMethodRef?.icon ?? '•'} {incomePaymentMethodName}</strong>
+                            <span>Pagamento</span><strong>{income.paymentMethodRef?.icon ?? '  •  '} {incomePaymentMethodName}</strong>
                         </div>
-                        <div><span>Canale</span><strong>{income.creditBank?.icon ?? '•'} {incomeCreditChannelName}</strong></div>
+                        <div><span>Canale</span><strong>{income.creditBank?.icon ?? '  •  '} {incomeCreditChannelName}</strong></div>
                     </div>
                 </section>
 

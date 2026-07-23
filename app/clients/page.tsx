@@ -11,6 +11,7 @@ import MobileSortControl from '@/components/MobileSortControl';
 import SortableTableController from '@/components/SortableTableController';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
+import SearchIcon from '@/components/SearchIcon';
 
 const input = (filters: Record<string, string | string[] | undefined>, key: string) => {
     const item = filters[key];
@@ -97,7 +98,7 @@ export default async function ClientsPage({searchParams}: {
                 <label htmlFor="clientQuickSearch">Ricerca rapida</label>
                 <div className="supplier-quick-search-field">
                     <input id="clientQuickSearch" name="businessName" defaultValue={input(filters, 'businessName')} placeholder="Nome o ragione sociale" autoComplete="off"/>
-                    <button className="btn btn-sm btn-secondary" type="submit" aria-label="Cerca cliente">🔎</button>
+                    <button className="btn btn-sm btn-secondary" type="submit" aria-label="Cerca cliente"><SearchIcon /></button>
                 </div>
             </form>
             <MobileSortControl action="/clients" currentValue={mobileSort} options={mobileSortOptions} searchParams={filters}/>

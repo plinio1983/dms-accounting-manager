@@ -6,7 +6,7 @@ import { requireWorkspace } from '@/lib/auth';
 import { stripFlashParams } from '@/lib/flash';
 import ExpensesList from '@/components/ExpensesList';
 import NewExpensePanel from '@/components/NewExpensePanel';
-import SupplierBackButton from '@/components/SupplierBackButton';
+import DetailBackButton from '@/components/DetailBackButton';
 import SupplierEditModalController from '@/components/SupplierEditModalController';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import { badgeClass, paymentStatusStyles, yesNoStyles } from '@/lib/expense-ui';
@@ -98,7 +98,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       <article className="expense-detail-document supplier-detail-document">
         <div className="expense-detail-action-row">
           <div className="left-side">
-            <SupplierBackButton fallbackHref={returnTo}/>
+            <DetailBackButton href={returnTo}/>
           </div>
           {!supplier.systemRole ? <div className="right-side">
             <button className="btn btn-sm btn-primary" type="button" data-supplier-edit-id={supplier.id}>

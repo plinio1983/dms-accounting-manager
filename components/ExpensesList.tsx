@@ -3,6 +3,7 @@ import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
 import ExpenseEditModalController from '@/components/ExpenseEditModalController';
+import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
 import SortableTableController from '@/components/SortableTableController';
 import { euro, moneyTone } from '@/lib/money';
 import {
@@ -133,7 +134,7 @@ function expenseResidualAmount(expense: ExpenseListItem) {
 }
 
 function expensePaymentIcon(expense: ExpenseListItem) {
-  // return expense.payments?.find(payment => payment.paymentMethod)?.paymentMethod?.icon ?? '•';
+  // return expense.payments?.find(payment => payment.paymentMethod)?.paymentMethod?.icon ?? '  •  ';
   return expense.payments?.find(payment => payment.paymentMethod)?.paymentMethod?.icon ?? '';
 }
 
@@ -219,10 +220,10 @@ export default function ExpensesList({
           </button>
         </div>
         <div className="bulk-inner-container">
-          <button className="bulk-direct-link btn btn-md btn-primary" type="button" data-bulk-new data-expense-new data-floating-label="Aggiungi spesa">
+          <ExpenseNewTriggerButton className="bulk-direct-link btn btn-md btn-primary" floatingLabel="Aggiungi spesa">
             <span className="btn-icon">+</span>
             <span className="bulk-label">Spesa</span>
-          </button>
+          </ExpenseNewTriggerButton>
         </div>
       </form>
 
@@ -361,7 +362,7 @@ export default function ExpensesList({
               <td className="cell-type"><span className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{isVatSettlement ? 'IVA' : expense.isRecurring ? 'R' : 'S'}</span></td>
               <td className="cell-category">{expense.category ? <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}</td>
               {showSupplierColumn ? <td className="cell-supplier cell-compact" title={supplierName}>{expense.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${expense.supplierId}?returnTo=${returnTo}`}>{supplierName}</Link> : supplierName}</td> : null}
-              <td className="cell-amount"><strong className={moneyTone(amount)}>{expensePaymentIcon(expense)} {euro(expense.amount as string | number)}</strong></td>
+              <td className="cell-amount"><strong className={moneyTone(amount)}>{euro(expense.amount as string | number)} &nbsp; {expensePaymentIcon(expense)}</strong></td>
               <td className="cell-vat">{isVatSettlement ? <span className="badge tone-neutral">100%</span> : <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate)}%</span>}</td>
               <td className="cell-description" title={expense.description ?? ''}>{expense.description ?? '-'}</td>
               <td className="cell-payment-state">{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>

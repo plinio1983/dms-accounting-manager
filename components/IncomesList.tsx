@@ -12,7 +12,7 @@ import {
     fiscalStyles,
     incomeCreditStatusStyles,
     incomeInvoiceStatusStyles,
-    saleCategoryStyles
+    saleCategoryTones
 } from '@/lib/income-ui';
 
 type IncomeItem = {
@@ -26,13 +26,11 @@ type IncomeItem = {
     isFiscal: boolean;
     isCredited: boolean;
     invoiceStatus: string | null;
-    incomeCategory: { name: string; icon?: string | null };
-    salesChannelRef: { name: string; icon?: string | null };
+    incomeCategory: { code: string; name: string; icon?: string | null };
+    salesChannelRef: { code: string; name: string; icon?: string | null };
     customer?: { id: number; businessName: string } | null;
-    paymentMethod?: string | null;
-    paymentMethodRef?: { name: string; icon?: string | null } | null;
-    creditChannel?: string | null;
-    creditBank?: { name: string; icon?: string | null } | null;
+    paymentMethodRef: { name: string; icon?: string | null };
+    creditBank: { name: string; icon?: string | null };
 };
 
 function dateLabel(value?: Date | null) {
@@ -137,8 +135,8 @@ export default function IncomesList({
         </form>
         <div className="income-mobile-list expense-mobile-list" aria-label="Lista incassi mobile">
             {mobileIncomes.map(income => {
-                const catStyle = saleCategoryStyles[income.incomeCategory.name];
-                const paymentMethod = income.paymentMethodRef?.name ?? income.paymentMethod ?? '-';
+                const categoryTone = saleCategoryTones[income.incomeCategory.code];
+                const paymentMethod = income.paymentMethodRef.name;
                 const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
                 const status = creditStatus(income);
                 const vatStyle = vatStyles[String(Number(income.vatRate))] ?? vatStyles['0'];
@@ -152,7 +150,7 @@ export default function IncomesList({
                         <div className="expense-mobile-main">
                             <div className="expense-mobile-header">
                                 <div className="left-side flex-grow">
-                                    <span title={income.incomeCategory.name} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{income.incomeCategory.icon ?? catStyle?.icon ?? '•'} {income.incomeCategory.name}</span>
+                                    <span title={income.incomeCategory.name} className={`${badgeClass(categoryTone)} income-badge-compact`}>{income.incomeCategory.icon ?? '  •  '} {income.incomeCategory.name}</span>
                                     {fiscalBadge(income.isFiscal)}
                                     <span className="text-pre">{formatPeriod(income.billingMonth, income.billingYear)}</span>
                                     {income.isFiscal ?
@@ -167,7 +165,7 @@ export default function IncomesList({
                                     <div className="expense-mobile-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div>
                                 </div>
                                 <div className="right-side">
-                                    <span>{income.paymentMethodRef?.icon ?? '•'}</span><span className={moneyTone(amount)}>{euro(amount)}</span>
+                                    <span>{income.paymentMethodRef?.icon ?? '  •  '}</span><span className={moneyTone(amount)}>{euro(amount)}</span>
                                 </div>
                             </div>
                             {/*<div className="expense-mobile-title-row">*/}
@@ -210,8 +208,8 @@ export default function IncomesList({
                 <tbody>{incomes.map(income => {
                     const status = creditStatus(income);
                     const invoice = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
-                    const paymentMethod = income.paymentMethodRef?.name ?? income.paymentMethod ?? '-';
-                    const creditChannel = income.creditBank?.name ?? income.creditChannel ?? '-';
+                    const paymentMethod = income.paymentMethodRef.name;
+                    const creditChannel = income.creditBank.name;
                     const rowClass = ['clickable-desktop-row', status === incomeCreditStatusStyles.SCADUTO ? 'income-row-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : ''].filter(Boolean).join(' ');
                     return <tr className={rowClass} data-row-href={`/incomes/${income.id}?returnTo=${returnTo}`} data-sort-row
                                data-sort-billing-period={String(income.billingYear * 12 + income.billingMonth)} data-sort-credit-date={dateSortValue(income.creditDate)}
@@ -225,17 +223,17 @@ export default function IncomesList({
                         </td>
                         <td>{formatPeriod(income.billingMonth, income.billingYear)}</td>
                         <td>{dateLabel(income.creditDate)}</td>
-                        <td>{income.salesChannelRef.icon ?? '•'} {income.salesChannelRef.name}</td>
+                        <td>{income.salesChannelRef.icon ?? '  •  '} {income.salesChannelRef.name}</td>
                         <td>{income.customer ?
                             <Link href={`/clients/${income.customer.id}?returnTo=${returnTo}`}>{income.customer.businessName}</Link> : '-'}</td>
                         <td>{fiscalBadge(income.isFiscal)}</td>
-                        <td>{income.incomeCategory.icon ?? '•'} {income.incomeCategory.name}</td>
+                        <td>{income.incomeCategory.icon ?? '  •  '} {income.incomeCategory.name}</td>
                         <td>{income.description ?? '-'}</td>
                         <td><strong className={moneyTone(Number(income.amount))}>{euro(Number(income.amount))}</strong>
                         </td>
                         <td>{Number(income.vatRate)}%</td>
-                        <td>{income.paymentMethodRef?.icon ?? '•'} {paymentMethod}</td>
-                        <td>{income.creditBank?.icon ?? '•'} {creditChannel}</td>
+                        <td>{income.paymentMethodRef?.icon ?? '  •  '} {paymentMethod}</td>
+                        <td>{income.creditBank?.icon ?? '  •  '} {creditChannel}</td>
                         <td><span className={badgeClass(status.className)}>{status.icon} {status.label}</span></td>
                         <td>{income.isFiscal ?
                             <span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span> : '-'}</td>

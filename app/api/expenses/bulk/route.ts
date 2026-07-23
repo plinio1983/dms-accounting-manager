@@ -107,8 +107,6 @@ export async function POST(request: Request) {
           paymentDate: null,
           dueDate: dueOffset === null ? null : addDays(receivedDate, dueOffset),
           vatRate: expense.vatRate,
-          channel: expense.channel,
-          bankId: expense.bankId,
           isComplete: false,
           isDeclared: expense.isDeclared,
           hasElectronicInvoice: expense.hasElectronicInvoice,
@@ -144,10 +142,19 @@ export async function POST(request: Request) {
 
   if (action === 'payment_completed') {
     const today = todayAtMidnight();
-    const expenses = await prisma.expense.findMany({
-      where: { id: { in: ids }, workspaceId: current.workspace.id },
-      include: { payments: true }
-    });
+    const [expenses, fallbackMethod] = await Promise.all([
+      prisma.expense.findMany({
+        where: { id: { in: ids }, workspaceId: current.workspace.id },
+        include: { payments: true }
+      }),
+      prisma.paymentMethod.findFirst({
+        where: {
+          workspaceId: current.workspace.id,
+          OR: [{ isFallback: true }, { kind: { in: ['EXPENSE', 'BOTH'] } }]
+        },
+        orderBy: [{ isFallback: 'desc' }, { name: 'asc' }]
+      })
+    ]);
 
     await prisma.$transaction(expenses.flatMap(expense => {
       const amount = Number(expense.amount.toString());
@@ -155,12 +162,13 @@ export async function POST(request: Request) {
       const residual = Math.max(0, amount - paid);
       const operations = [];
       if (residual > 0) {
+        const paymentMethodId = expense.payments[0]?.paymentMethodId ?? fallbackMethod?.id;
+        if (!paymentMethodId) throw new Error('Nessun metodo di pagamento disponibile');
         operations.push(prisma.expensePayment.create({ data: {
           expenseId: expense.id,
           paymentDate: today,
-          channel: expense.channel,
-          paymentMethodId: expense.payments[0]?.paymentMethodId ?? null,
-          bankId: expense.bankId,
+          paymentMethodId,
+          bankId: expense.payments[0]?.bankId ?? null,
           amount: residual,
           paidBy: expense.paidBy
         } }));

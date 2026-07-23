@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ExpenseCreationSwitcher from '@/components/ExpenseCreationSwitcher';
+import { expenseNewEventName } from '@/components/ExpenseNewTriggerButton';
 import { flashParamNames } from '@/lib/flash';
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string; systemRole?: string | null; isVatSettlementDefault?: boolean };
@@ -36,24 +37,15 @@ export default function NewExpensePanel({ categories, banks, paymentMethods, sup
   }, []);
 
   useEffect(() => {
-    const handler = (event: MouseEvent) => {
-      const target = event.target as HTMLElement | null;
-      if (!target?.closest('[data-expense-new]')) return;
-
-      event.preventDefault();
-      setIsOpen(true);
-    };
-
-    document.addEventListener('click', handler);
-    return () => document.removeEventListener('click', handler);
+    const handler = () => setIsOpen(true);
+    window.addEventListener(expenseNewEventName, handler);
+    return () => window.removeEventListener(expenseNewEventName, handler);
   }, []);
 
   function handleSaved() {
     setIsOpen(false);
     router.refresh();
   }
-
-  if (!showToolbar && !isOpen) return null;
 
   return <div className="grid">
     {showToolbar ? <div className="toolbar-card expense-toolbar-card">
@@ -73,7 +65,7 @@ export default function NewExpensePanel({ categories, banks, paymentMethods, sup
       <div className="toolbar-actions expense-toolbar-actions">
         {/*<Link className="btn btn-md btn-default expense-import-btn-large" href="/expenses/import"><span className="btn-icon">⬆</span>Importa Excel</Link>*/}
         <Link className="btn btn-sm btn-secondary" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>
-        <button className="btn btn-sm btn-primary" type="button" data-expense-new><span className="btn-icon">+</span><span className="hidden-mobile">Aggiungi </span>Spesa</button>
+        <button className="btn btn-sm btn-primary" type="button" onClick={() => setIsOpen(true)}><span className="btn-icon">+</span><span className="hidden-mobile">Aggiungi </span>Spesa</button>
       </div>
     </div> : null}
 
