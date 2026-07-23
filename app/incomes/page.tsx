@@ -503,7 +503,7 @@ function IncomePieBreakdownChart({title, data}: {
                         <div className="expense-impact-pie-legend-row">
                             <span className="expense-impact-pie-dot" style={{background: incomePieChartColors[index % incomePieChartColors.length]}}/>
                             <div><strong>{item.code}</strong><span>{item.name}</span></div>
-                            <div>
+                            <div className="justify-end">
                                 <strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small>
                             </div>
                         </div>

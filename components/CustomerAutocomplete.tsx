@@ -42,7 +42,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId }: {
 
   return <div className="supplier-autocomplete">
     <input type="hidden" name="customerId" value={selected?.id ?? ''} />
-    <input value={query} required autoComplete="off" placeholder="Cerca cliente…" onFocus={openPicker} onBlur={() => window.setTimeout(() => setOpen(false), 150)} onChange={event => { setQuery(event.currentTarget.value); setSelected(undefined); setOpen(true); }} />
+    <input value={query} required autoComplete="off" placeholder="Cerca cliente…" onFocus={openPicker} onClick={openPicker} onBlur={() => window.setTimeout(() => setOpen(false), 150)} onChange={event => { setQuery(event.currentTarget.value); setSelected(undefined); setOpen(true); }} />
     {open ? <div className="supplier-suggestions" role="listbox">
       {matches.map(customer => <button type="button" role="option" key={customer.id} onMouseDown={event => event.preventDefault()} onClick={() => { setSelected(customer); setQuery(customer.businessName); setOpen(false); }}>
         <strong>{customer.businessName}</strong>{customer.alias ? <span>{customer.alias}</span> : null}

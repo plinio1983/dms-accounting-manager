@@ -4169,7 +4169,8 @@ table th, table td {
 
   @media (max-width: 576px) {
     border-bottom: none;
-
+  }
+  @media (max-width: 760px) {
     .btn {
       height: 100%;
     }
@@ -4515,7 +4516,137 @@ table th, table td {
 }
 
 .month-report-expenses {
+  overflow-x: visible;
+}
+
+/*
+ * Le tabelle condivise hanno una min-width elevata. Dentro un <details> questa
+ * larghezza può contribuire alla dimensione intrinseca del pannello e spingerlo
+ * oltre il report, prima che .table-scroll possa intervenire.
+ */
+.month-report-accordion,
+.month-report-collapsible,
+.month-report-collapsible > .expenses-list-card,
+.month-report-collapsible .incomes-list-shared {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.month-report-collapsible {
+  contain: inline-size;
+}
+
+.month-report-collapsible .table-scroll,
+.month-report-collapsible .incomes-table-scroll {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  .mobile-entity-picker {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    box-sizing: border-box;
+    width: 100vw;
+    max-width: none;
+    height: 100vh;
+    height: 100dvh;
+    background: var(--bg, #f6f7fb);
+    color: var(--text);
+  }
+
+  .mobile-entity-picker-header {
+    padding: max(14px, env(safe-area-inset-top)) 14px 12px;
+    border-bottom: 1px solid var(--line);
+    background: #fff;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, .07);
+  }
+
+  .mobile-entity-picker-header label {
+    display: grid;
+    gap: 7px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .mobile-entity-picker-header input {
+    width: 100%;
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .mobile-entity-picker-results {
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 10px 12px;
+  }
+
+  .mobile-entity-picker-results > button {
+    display: grid;
+    gap: 4px;
+    width: 100%;
+    padding: 14px 13px;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: #fff;
+    color: var(--text);
+    text-align: left;
+  }
+
+  .mobile-entity-picker-results > button:first-child {
+    border-radius: 12px 12px 0 0;
+  }
+
+  .mobile-entity-picker-results > button:last-of-type {
+    border-bottom: 0;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .mobile-entity-picker-results > button.is-selected {
+    background: #eaf1ff;
+    color: var(--accent);
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+
+  .mobile-entity-picker-results > button span {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .mobile-entity-picker-empty {
+    padding: 24px 14px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .mobile-entity-picker-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 12px 14px max(12px, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    background: #fff;
+    box-shadow: 0 -4px 18px rgba(15, 23, 42, .08);
+  }
+
+  .mobile-entity-picker-actions .btn {
+    width: 100%;
+    min-height: 46px;
+  }
 }
 
 .period-selector {
@@ -5296,19 +5427,24 @@ html, body {
   min-width: 0;
 }
 
+@media (max-width: 1040px) and (min-width: 900px) {
+  .income-summary-row,
+  .expense-summary-row {
+    .expense-impact-pie-legend-row {
+      flex-wrap: wrap;
+
+      >div:last-child {
+        width: calc(100%);
+      }
+    }
+  }
+}
+
 .expense-impact-pie-legend-row {
   display: flex;
   align-items: center;
   gap: 9px;
   padding: 10px 0 5px 0;
-
-  @media (max-width: 1040px) and (min-width: 900px) {
-    flex-wrap: wrap;
-
-    >div:last-child {
-      width: calc(100%);
-    }
-  }
 }
 
 .expense-impact-pie-row-wrap {
@@ -5609,16 +5745,18 @@ html, body {
   align-items: center;
 }
 
+.expense-type-switch-in-form.switch-toggle-field .switch {
+  @media (max-width: 576px) {
+    flex-direction: column;
+  }
+}
+
 .switch-toggle-field .switch {
   display: flex;
   min-height: 42px;
   align-items: center;
   justify-content: flex-start;
   font-style: italic;
-
-  @media (max-width: 576px) {
-    flex-direction: column;
-  }
 }
 
 .income-form .fiscal-toggle-field {
@@ -10424,10 +10562,6 @@ table .cell-description {
     margin-left: 0;
     margin-right: 0;
     border-radius: 12px;
-  }
-
-  .compact-expenses-table {
-    min-width: 1040px;
   }
 
   .compact-incomes-table {

@@ -341,6 +341,7 @@ function SupplierAutocomplete({
                             setIsOpen(true);
                         }}
                         onFocus={openSupplierPicker}
+                        onClick={openSupplierPicker}
                         onKeyDown={onKeyDown}
                         placeholder="Cerca per ragione sociale o alias"
                         autoComplete="off"

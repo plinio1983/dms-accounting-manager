@@ -15,7 +15,8 @@ type Props = {
 };
 
 export function isMobileEntityPickerViewport() {
-  return typeof window !== 'undefined' && window.matchMedia('(max-width: 760px)').matches;
+  return typeof window !== 'undefined'
+    && window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
 }
 
 export default function MobileEntityPicker({
