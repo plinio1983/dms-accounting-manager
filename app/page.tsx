@@ -1032,6 +1032,245 @@ function MonthlyNetFiscalProfitRatioChart({months, year}: {
     </section>;
 }
 
+type DashboardMonth = {
+    year: number;
+    month: number;
+    totals: any;
+};
+
+function EconomicTrendChart({months, year}: { months: DashboardMonth[]; year: number }) {
+    const positiveValues = months.flatMap(month => [month.totals.incassoTotale, month.totals.speseTotali, month.totals.utileNetto]);
+    const maxValue = Math.max(...positiveValues, 1);
+    const minValue = Math.min(0, ...months.map(month => month.totals.utileNetto));
+    const range = Math.max(maxValue - minValue, 1);
+    const width = 960;
+    const height = 300;
+    const left = 42;
+    const right = 18;
+    const top = 24;
+    const bottom = 48;
+    const chartWidth = width - left - right;
+    const chartHeight = height - top - bottom;
+    const groupWidth = chartWidth / Math.max(months.length, 1);
+    const y = (value: number) => top + ((maxValue - value) / range) * chartHeight;
+    const baselineY = y(0);
+    const profitPoints = months.map((month, index) => {
+        const x = left + groupWidth * index + groupWidth / 2;
+        return `${x},${y(month.totals.utileNetto)}`;
+    }).join(' ');
+
+    return <section className="card dashboard-insight-card">
+        <div className="card-heading-row">
+            <div>
+                <h2>Entrate, uscite e utile per mese</h2>
+                <p className="muted">Andamento economico dell’anno {year}. La linea rappresenta l’utile netto.</p>
+            </div>
+            <div className="dashboard-chart-legend" aria-label="Legenda">
+                <span><i className="legend-income"/>Entrate</span>
+                <span><i className="legend-expense"/>Uscite</span>
+                <span><i className="legend-profit"/>Utile netto</span>
+            </div>
+        </div>
+        {months.length ? <div className="dashboard-svg-chart-scroll">
+            <svg className="dashboard-economic-chart" viewBox={`0 0 ${width} ${height}`} role="img"
+                 aria-label={`Entrate, uscite e utile netto mensile ${year}`}>
+                {[minValue, 0, maxValue / 2, maxValue].filter((value, index, all) => all.indexOf(value) === index).map(value => {
+                    const gridY = y(value);
+                    return <g key={value}>
+                        <line className={value === 0 ? 'dashboard-chart-zero-line' : 'dashboard-chart-grid-line'}
+                              x1={left} y1={gridY} x2={width - right} y2={gridY}/>
+                        <text className="dashboard-chart-axis-label" x={left - 8} y={gridY + 4} textAnchor="end">
+                            {chartEuro(value)}
+                        </text>
+                    </g>;
+                })}
+                {months.map((month, index) => {
+                    const center = left + groupWidth * index + groupWidth / 2;
+                    const barWidth = Math.min(22, groupWidth * .28);
+                    const incomeY = y(month.totals.incassoTotale);
+                    const expenseY = y(month.totals.speseTotali);
+                    return <g key={`${month.year}-${month.month}`}>
+                        <rect className="dashboard-chart-income-bar" x={center - barWidth - 2} y={incomeY}
+                              width={barWidth} height={Math.max(baselineY - incomeY, 0)} rx="3"/>
+                        <rect className="dashboard-chart-expense-bar" x={center + 2} y={expenseY}
+                              width={barWidth} height={Math.max(baselineY - expenseY, 0)} rx="3"/>
+                        <text className="dashboard-chart-month-label" x={center} y={height - 20} textAnchor="middle">
+                            {capitalizedMonthName(month.month).slice(0, 3)}
+                        </text>
+                    </g>;
+                })}
+                <polyline className="dashboard-chart-profit-line" points={profitPoints}/>
+                {months.map((month, index) => {
+                    const x = left + groupWidth * index + groupWidth / 2;
+                    return <circle key={`profit-${month.month}`} className={month.totals.utileNetto < 0 ? 'dashboard-chart-profit-point is-negative' : 'dashboard-chart-profit-point'}
+                                   cx={x} cy={y(month.totals.utileNetto)} r="4"
+                                   role="img"
+                                   aria-label={`${capitalizedMonthName(month.month)}: utile netto ${chartEuro(month.totals.utileNetto)}`}/>;
+                })}
+            </svg>
+        </div> : <p className="muted">Nessun dato economico disponibile per l’anno selezionato.</p>}
+    </section>;
+}
+
+function ProfitabilityTrendChart({months, year}: { months: DashboardMonth[]; year: number }) {
+    const ratio = (value: number, income: number) => income ? (value / Math.abs(income)) * 100 : 0;
+    const series = [
+        {label: 'Margine lordo', key: 'utileLordo', className: 'is-gross'},
+        {label: 'Utile netto', key: 'utileNetto', className: 'is-net'},
+        {label: 'Utile fiscale', key: 'utileFiscale', className: 'is-fiscal'}
+    ] as const;
+    const percentages = months.flatMap(month => series.map(item => ratio(month.totals[item.key], month.totals.incassoTotale)));
+    const minValue = Math.min(0, ...percentages);
+    const maxValue = Math.max(10, ...percentages);
+    const range = Math.max(maxValue - minValue, 1);
+    const width = 960;
+    const height = 280;
+    const left = 42;
+    const right = 18;
+    const top = 24;
+    const bottom = 48;
+    const chartWidth = width - left - right;
+    const chartHeight = height - top - bottom;
+    const x = (index: number) => left + (chartWidth * index / Math.max(months.length - 1, 1));
+    const y = (value: number) => top + ((maxValue - value) / range) * chartHeight;
+
+    return <section className="card dashboard-insight-card">
+        <div className="card-heading-row">
+            <div>
+                <h2>Marginalità per mese</h2>
+                <p className="muted">Percentuale rispetto alle entrate mensili nell’anno {year}.</p>
+            </div>
+            <div className="dashboard-chart-legend">
+                {series.map(item => <span key={item.key}><i className={`legend-line ${item.className}`}/>{item.label}</span>)}
+            </div>
+        </div>
+        {months.length ? <div className="dashboard-svg-chart-scroll">
+            <svg className="dashboard-profitability-chart" viewBox={`0 0 ${width} ${height}`} role="img"
+                 aria-label={`Marginalità mensile ${year}`}>
+                {[minValue, 0, maxValue / 2, maxValue].filter((value, index, all) => all.indexOf(value) === index).map(value =>
+                    <g key={value}>
+                        <line className={value === 0 ? 'dashboard-chart-zero-line' : 'dashboard-chart-grid-line'}
+                              x1={left} y1={y(value)} x2={width - right} y2={y(value)}/>
+                        <text className="dashboard-chart-axis-label" x={left - 8} y={y(value) + 4} textAnchor="end">{value.toFixed(0)}%</text>
+                    </g>
+                )}
+                {series.map(item => <polyline key={item.key} className={`dashboard-margin-line ${item.className}`}
+                                              points={months.map((month, index) => `${x(index)},${y(ratio(month.totals[item.key], month.totals.incassoTotale))}`).join(' ')}/>)}
+                {months.map((month, index) => <text key={month.month} className="dashboard-chart-month-label"
+                                                   x={x(index)} y={height - 20} textAnchor="middle">
+                    {capitalizedMonthName(month.month).slice(0, 3)}
+                </text>)}
+            </svg>
+        </div> : <p className="muted">Nessun dato di marginalità disponibile.</p>}
+    </section>;
+}
+
+type CashScheduleItem = { month: number; incoming: number; outgoing: number; overdue: number };
+
+function CashScheduleChart({items, year}: { items: CashScheduleItem[]; year: number }) {
+    const maxValue = Math.max(...items.flatMap(item => [item.incoming, item.outgoing, item.overdue]), 1);
+    return <section className="card dashboard-insight-card">
+        <div className="card-heading-row">
+            <div>
+                <h2>Scadenzario incassi e pagamenti</h2>
+                <p className="muted">Movimenti ancora aperti, raggruppati per data prevista nel {year}.</p>
+            </div>
+            <div className="dashboard-chart-legend">
+                <span><i className="legend-income"/>Da incassare</span>
+                <span><i className="legend-expense"/>Da pagare</span>
+                <span><i className="legend-overdue"/>Scaduto</span>
+            </div>
+        </div>
+        {items.some(item => item.incoming || item.outgoing) ? <div className="cash-schedule-list">
+            {items.map(item => <div className="cash-schedule-row" key={item.month}>
+                <strong>{capitalizedMonthName(item.month).slice(0, 3)}</strong>
+                <div className="cash-schedule-bars">
+                    <span aria-label={`${capitalizedMonthName(item.month)} da incassare ${chartEuro(item.incoming)}`}>
+                        <i className="cash-schedule-income" style={{width: `${item.incoming / maxValue * 100}%`}}/>
+                    </span>
+                    <span aria-label={`${capitalizedMonthName(item.month)} da pagare ${chartEuro(item.outgoing)}`}>
+                        <i className="cash-schedule-expense" style={{width: `${item.outgoing / maxValue * 100}%`}}/>
+                        {item.overdue ? <i className="cash-schedule-overdue" style={{width: `${item.overdue / maxValue * 100}%`}}/> : null}
+                    </span>
+                </div>
+                <div className="cash-schedule-values">
+                    <span>{chartEuro(item.incoming)}</span>
+                    <span>{chartEuro(item.outgoing)}</span>
+                </div>
+            </div>)}
+        </div> : <p className="muted">Non risultano incassi o pagamenti aperti con scadenza nel {year}.</p>}
+    </section>;
+}
+
+function VatSituationCard({months, year}: { months: DashboardMonth[]; year: number }) {
+    const quarters = [0, 1, 2, 3].map(index => {
+        const quarterMonths = months.filter(month => Math.floor((month.month - 1) / 3) === index);
+        const generated = quarterMonths.reduce((sum, month) => sum + month.totals.ivaGenerataIncassi, 0);
+        const deductible = quarterMonths.reduce((sum, month) => sum + month.totals.ivaVersataSpese, 0);
+        return {index, generated, deductible, balance: generated - deductible};
+    });
+    let runningBalance = 0;
+    const rows = quarters.map(quarter => ({...quarter, progressive: runningBalance += quarter.balance}));
+    const generated = rows.reduce((sum, quarter) => sum + quarter.generated, 0);
+    const deductible = rows.reduce((sum, quarter) => sum + quarter.deductible, 0);
+    const balance = generated - deductible;
+    const fiscalIncome = months.reduce((sum, month) => sum + month.totals.incassoFiscale, 0);
+    const effectiveRate = fiscalIncome ? generated / fiscalIncome * 100 : 0;
+    const maxValue = Math.max(...rows.flatMap(row => [row.generated, row.deductible]), 1);
+
+    return <section className="card dashboard-insight-card vat-situation-card">
+        <div className="card-heading-row">
+            <div>
+                <h2>Situazione IVA</h2>
+                <p className="muted">Stima ricavata dai movimenti fiscali registrati nel {year}.</p>
+            </div>
+            <span className={`vat-balance-badge ${balance > 0 ? 'is-debit' : balance < 0 ? 'is-credit' : ''}`}>
+                {balance > 0 ? 'A debito' : balance < 0 ? 'A credito' : 'In equilibrio'}
+            </span>
+        </div>
+        <div className="vat-kpi-grid">
+            <div><span>IVA generata</span><strong>{chartEuro(generated)}</strong></div>
+            <div><span>IVA detraibile / liquidata</span><strong>{chartEuro(deductible)}</strong></div>
+            <div className="is-primary"><span>Saldo IVA stimato</span><strong>{chartEuro(balance)}</strong></div>
+            <div><span>Incidenza su incasso fiscale</span><strong>{effectiveRate.toFixed(1)}%</strong></div>
+        </div>
+        <div className="vat-quarter-chart">
+            {rows.map(row => <div className="vat-quarter-column" key={row.index}>
+                <div className="vat-quarter-bars">
+                    <i className="vat-generated-column" style={{height: `${row.generated / maxValue * 100}%`}}>
+                        <span>{chartEuro(row.generated)}</span>
+                    </i>
+                    <i className="vat-deductible-column" style={{height: `${row.deductible / maxValue * 100}%`}}>
+                        <span>{chartEuro(row.deductible)}</span>
+                    </i>
+                </div>
+                <strong>T{row.index + 1}</strong>
+                <small className={moneyTone(row.balance)}>Saldo {chartEuro(row.balance)}</small>
+            </div>)}
+        </div>
+        <div className="dashboard-chart-legend vat-chart-legend">
+            <span><i className="legend-vat-generated"/>IVA generata</span>
+            <span><i className="legend-vat-deductible"/>IVA detraibile / liquidata</span>
+        </div>
+        <details className="vat-detail">
+            <summary>Mostra dettaglio trimestrale</summary>
+            <div className="table-scroll">
+                <table className="dashboard-report-table vat-detail-table">
+                    <thead><tr><th>Periodo</th><th>IVA generata</th><th>IVA detraibile / liquidata</th><th>Saldo</th><th>Progressivo</th></tr></thead>
+                    <tbody>{rows.map(row => <tr key={row.index}>
+                        <td><strong>T{row.index + 1}</strong></td>
+                        <td>{chartEuro(row.generated)}</td>
+                        <td>{chartEuro(row.deductible)}</td>
+                        <td className={moneyTone(row.balance)}>{chartEuro(row.balance)}</td>
+                        <td className={moneyTone(row.progressive)}>{chartEuro(row.progressive)}</td>
+                    </tr>)}</tbody>
+                </table>
+            </div>
+            <p className="muted vat-detail-note">Il progressivo considera solo i movimenti dell’anno selezionato e non eventuali crediti IVA provenienti da anni precedenti.</p>
+        </details>
+    </section>;
+}
+
 function IncomeExpenseBreakdownChart({
                                          totals,
                                          periods
@@ -1134,7 +1373,9 @@ export default async function Dashboard({searchParams}: {
     const selectedQuarter = {...rawSelectedQuarter, year: annualYear};
     const reportYear = annualYear;
     const trendQuarterPeriods = fiscalQuarterMonthsByIndex(selectedTrendQuarter.year, selectedTrendQuarter.quarterIndex);
-    const [report, monthlyTrendTotals, quarterlyTrendTotals, expenseCategories, banks, paymentMethods, suppliers] = await Promise.all([
+    const scheduleFrom = new Date(annualYear, 0, 1);
+    const scheduleTo = new Date(annualYear + 1, 0, 1);
+    const [report, monthlyTrendTotals, quarterlyTrendTotals, expenseCategories, banks, paymentMethods, suppliers, pendingIncomes, pendingExpenses] = await Promise.all([
         getAccountingDashboardReport(reportYear, now, selectedMonth, selectedQuarter, annualYear, current.workspace.id),
         getOrderDateMonthSummary(selectedTrendMonth.year, selectedTrendMonth.month, current.workspace.id),
         getOrderDatePeriodSummary(trendQuarterPeriods, current.workspace.id),
@@ -1145,6 +1386,26 @@ export default async function Dashboard({searchParams}: {
             where: {workspaceId: current.workspace.id},
             orderBy: {businessName: 'asc'},
             take: 100
+        }),
+        prisma.income.findMany({
+            where: {
+                workspaceId: current.workspace.id,
+                isCredited: false,
+                creditDate: {gte: scheduleFrom, lt: scheduleTo}
+            },
+            select: {amount: true, creditDate: true}
+        }),
+        prisma.expense.findMany({
+            where: {
+                workspaceId: current.workspace.id,
+                isComplete: false,
+                dueDate: {gte: scheduleFrom, lt: scheduleTo}
+            },
+            select: {
+                amount: true,
+                dueDate: true,
+                payments: {select: {amount: true}}
+            }
         })
     ]);
     const orderedExpenseCategories = orderExpenseCategories(expenseCategories);
@@ -1198,6 +1459,23 @@ export default async function Dashboard({searchParams}: {
     const quarterOptions = Array.from({length: 4}, (_, index) => ({year: quarterOptionYear, quarterIndex: index}));
     const annualPeriods = Array.from({length: 12}, (_, index) => ({year: report.annualYear, month: index + 1}));
     const nonFiscalExpenseChartMonths = report.months.filter(month => report.annualYear === currentYear ? month.month <= currentMonth : true);
+    const cashSchedule: CashScheduleItem[] = Array.from({length: 12}, (_, index) => ({
+        month: index + 1,
+        incoming: 0,
+        outgoing: 0,
+        overdue: 0
+    }));
+    pendingIncomes.forEach(income => {
+        cashSchedule[income.creditDate.getMonth()].incoming += Number(income.amount);
+    });
+    pendingExpenses.forEach(expense => {
+        if (!expense.dueDate) return;
+        const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount), 0);
+        const residual = Math.max(Number(expense.amount) - paid, 0);
+        const item = cashSchedule[expense.dueDate.getMonth()];
+        item.outgoing += residual;
+        if (expense.dueDate < now) item.overdue += residual;
+    });
 
     return <div className="grid dashboard-grid">
         <NewExpensePanel
@@ -1470,24 +1748,11 @@ export default async function Dashboard({searchParams}: {
         </div>
 
         <div className="dashboard-report-charts">
-            <div className="charts-grid">
-                <details className="card dashboard-chart-collapsible">
-                    <summary><span><strong>Rapporto utile netto / utile fiscale per mese</strong><small>Percentuale di margine lordo, utile netto e utile fiscale sull’incasso totale nell’anno {report.annualYear}.</small></span></summary>
-                    <MonthlyNetFiscalProfitRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
-                </details>
-                <details className="card dashboard-chart-collapsible">
-                    <summary><span><strong>Spese e incassi non fiscali per mese</strong><small>Percentuali mensili calcolate sull’incasso totale da inizio anno {report.annualYear}.</small></span></summary>
-                    <MonthlyNonFiscalRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
-                </details>
-                <details className="card dashboard-chart-collapsible">
-                    <summary><span><strong>Impatto spese fiscali per mese</strong><small>Percentuale delle uscite fiscali rispetto agli incassi fiscali da inizio anno {report.annualYear}.</small></span></summary>
-                    <MonthlyFiscalExpenseImpactChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
-                </details>
-                {/*<MonthlyIncomeExpenseRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>*/}
-                <details className="card dashboard-chart-collapsible">
-                    <summary><span><strong>IVA generata e versata per mese</strong><small>IVA degli incassi e IVA pagata con le spese fiscali, in percentuale sull’incasso totale da inizio anno {report.annualYear}.</small></span></summary>
-                    <MonthlyVatRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
-                </details>
+            <div className="dashboard-insights-grid">
+                <EconomicTrendChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
+                <ProfitabilityTrendChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
+                <CashScheduleChart items={cashSchedule} year={report.annualYear}/>
+                <VatSituationCard months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
             </div>
         </div>
 

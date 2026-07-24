@@ -5268,6 +5268,350 @@ html, body {
   background: #cbd5e1;
 }
 
+.dashboard-insights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.dashboard-insight-card {
+  min-width: 0;
+}
+
+.dashboard-insight-card h2 {
+  font-size: 18px;
+}
+
+.dashboard-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px 14px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.dashboard-chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.dashboard-chart-legend i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.legend-income,
+.dashboard-chart-income-bar {
+  fill: #2563eb;
+  background: #2563eb;
+}
+
+.legend-expense,
+.dashboard-chart-expense-bar {
+  fill: #f59e0b;
+  background: #f59e0b;
+}
+
+.legend-profit {
+  background: #0f766e;
+}
+
+.legend-overdue {
+  background: #dc2626;
+}
+
+.legend-line {
+  height: 3px !important;
+  border-radius: 99px !important;
+}
+
+.legend-line.is-gross {
+  background: #2563eb;
+}
+
+.legend-line.is-net {
+  background: #0f766e;
+}
+
+.legend-line.is-fiscal {
+  background: #7c3aed;
+}
+
+.dashboard-svg-chart-scroll {
+  margin-top: 18px;
+  overflow-x: auto;
+}
+
+.dashboard-economic-chart,
+.dashboard-profitability-chart {
+  display: block;
+  width: 100%;
+  min-width: 640px;
+  height: auto;
+}
+
+.dashboard-chart-grid-line {
+  stroke: #e2e8f0;
+  stroke-width: 1;
+}
+
+.dashboard-chart-zero-line {
+  stroke: #94a3b8;
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+.dashboard-chart-axis-label,
+.dashboard-chart-month-label {
+  fill: #64748b;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.dashboard-chart-profit-line,
+.dashboard-margin-line {
+  fill: none;
+  stroke: #0f766e;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dashboard-chart-profit-point {
+  fill: #fff;
+  stroke: #0f766e;
+  stroke-width: 3;
+}
+
+.dashboard-chart-profit-point.is-negative {
+  stroke: #dc2626;
+}
+
+.dashboard-margin-line.is-gross {
+  stroke: #2563eb;
+}
+
+.dashboard-margin-line.is-net {
+  stroke: #0f766e;
+}
+
+.dashboard-margin-line.is-fiscal {
+  stroke: #7c3aed;
+}
+
+.cash-schedule-list {
+  display: grid;
+  gap: 11px;
+  margin-top: 20px;
+}
+
+.cash-schedule-row {
+  display: grid;
+  grid-template-columns: 34px minmax(120px, 1fr) minmax(90px, auto);
+  align-items: center;
+  gap: 10px;
+}
+
+.cash-schedule-row > strong {
+  color: #475569;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.cash-schedule-bars {
+  display: grid;
+  gap: 4px;
+}
+
+.cash-schedule-bars > span {
+  position: relative;
+  display: block;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #eef2f7;
+}
+
+.cash-schedule-bars i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+}
+
+.cash-schedule-income {
+  background: #2563eb;
+}
+
+.cash-schedule-expense {
+  background: #f59e0b;
+}
+
+.cash-schedule-overdue {
+  background: #dc2626;
+}
+
+.cash-schedule-values {
+  display: grid;
+  gap: 1px;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.vat-situation-card {
+  border-color: #d8d1f2;
+}
+
+.vat-balance-badge {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.vat-balance-badge.is-debit {
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.vat-balance-badge.is-credit {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.vat-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.vat-kpi-grid > div {
+  display: grid;
+  gap: 5px;
+  padding: 11px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.vat-kpi-grid > div.is-primary {
+  border-color: #c4b5fd;
+  background: #f5f3ff;
+}
+
+.vat-kpi-grid span {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.vat-kpi-grid strong {
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.vat-quarter-chart {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(70px, 1fr));
+  gap: 12px;
+  min-height: 220px;
+  margin-top: 20px;
+}
+
+.vat-quarter-column {
+  display: grid;
+  grid-template-rows: 170px auto auto;
+  gap: 5px;
+  text-align: center;
+}
+
+.vat-quarter-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+  padding: 24px 6px 0;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.vat-quarter-bars i {
+  position: relative;
+  display: block;
+  width: min(34%, 34px);
+  min-height: 2px;
+  border-radius: 5px 5px 0 0;
+}
+
+.vat-quarter-bars i span {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  color: #64748b;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+  white-space: nowrap;
+  transform: translateX(-50%) rotate(-35deg);
+  transform-origin: bottom center;
+}
+
+.vat-generated-column,
+.legend-vat-generated {
+  background: #7c3aed;
+}
+
+.vat-deductible-column,
+.legend-vat-deductible {
+  background: #0d9488;
+}
+
+.vat-quarter-column > small {
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.vat-chart-legend {
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.vat-detail {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.vat-detail > summary {
+  padding: 14px 0 0;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.vat-detail-table {
+  margin-top: 12px;
+}
+
+.vat-detail-table td:not(:first-child),
+.vat-detail-table th:not(:first-child) {
+  text-align: right;
+}
+
+.vat-detail-note {
+  margin: 10px 0 0;
+  font-size: 11px;
+}
+
 .expense-impact-pie-layout {
   display: flex;
   align-items: center;
@@ -10474,6 +10818,14 @@ table .cell-description {
     grid-template-columns:1fr;
   }
 
+  .dashboard-insights-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vat-kpi-grid {
+    //grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .category-chart-row {
     grid-template-columns: 1fr;
     gap: 7px;
@@ -10490,6 +10842,48 @@ table .cell-description {
   .monthly-income-expense-ratio-chart-values {
     grid-template-columns: minmax(0, 1fr) auto auto;
     gap: 4px 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-insight-card .card-heading-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .dashboard-chart-legend {
+    justify-content: flex-start;
+  }
+
+  .dashboard-economic-chart,
+  .dashboard-profitability-chart {
+    min-width: 620px;
+  }
+
+  .cash-schedule-row {
+    grid-template-columns: 30px minmax(90px, 1fr);
+  }
+
+  .cash-schedule-values {
+    grid-column: 2;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .vat-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vat-quarter-chart {
+    gap: 4px;
+    overflow-x: auto;
+  }
+
+  .vat-quarter-column {
+    min-width: 66px;
+  }
+
+  .vat-quarter-bars i span {
+    display: none;
   }
 }
 
